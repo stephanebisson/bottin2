@@ -1,0 +1,149 @@
+<template>
+  <v-navigation-drawer
+    v-model="drawerModel"
+    app
+    :permanent="!mobile"
+    :temporary="mobile"
+    width="280"
+  >
+    <v-list>
+      <!-- App Title -->
+      <v-list-item
+        class="mb-2"
+        prepend-icon="mdi-book-open-page-variant"
+        :subtitle="$t('nav.schoolDirectory')"
+        :title="$t('nav.schoolDirectorySystem')"
+      />
+
+      <!-- User Info (when authenticated) -->
+      <template v-if="authStore.isAuthenticated">
+        <v-list-item class="mb-2 bg-primary-lighten-5">
+          <template #prepend>
+            <v-avatar color="primary" size="40">
+              <v-icon>mdi-account</v-icon>
+            </v-avatar>
+          </template>
+          
+          <v-list-item-title class="font-weight-bold text-body-2">
+            {{ authStore.userDisplayName }}
+          </v-list-item-title>
+          <v-list-item-subtitle class="text-caption">
+            {{ authStore.userEmail }}
+          </v-list-item-subtitle>
+        </v-list-item>
+      </template>
+
+      <v-divider />
+
+      <!-- Navigation Items (only show when authenticated) -->
+      <template v-if="authStore.isAuthenticated">
+        <v-list-item
+          v-for="item in navigationItems"
+          :key="item.title"
+          :active="$route.path === item.to"
+          link
+          :prepend-icon="item.icon"
+          :title="item.title"
+          :to="item.to"
+        />
+      </template>
+
+      <!-- Welcome message for unauthenticated users -->
+      <template v-else>
+        <v-list-item class="text-center py-4">
+          <v-list-item-title class="text-body-2 text-grey-darken-1">
+            {{ $t('nav.pleaseLogin') }}
+          </v-list-item-title>
+        </v-list-item>
+        
+        <v-list-item class="px-4">
+          <v-btn
+            block
+            color="primary"
+            variant="elevated"
+            @click="$router.push({ name: 'auth' })"
+          >
+            <v-icon start>mdi-login</v-icon>
+            {{ $t('auth.login') }}
+          </v-btn>
+        </v-list-item>
+      </template>
+    </v-list>
+
+    <template #append>
+      <v-divider />
+      <v-list>
+        <v-list-item
+          class="text-caption"
+          prepend-icon="mdi-information-outline"
+          :subtitle="$t('nav.schoolDirectorySystem')"
+          :title="$t('nav.about')"
+        />
+      </v-list>
+    </template>
+  </v-navigation-drawer>
+</template>
+
+<script setup>
+  import { computed } from 'vue'
+  import { useDisplay } from 'vuetify'
+  import { useI18n } from '@/composables/useI18n'
+  import { useAuthStore } from '@/stores/auth'
+
+  const props = defineProps({
+    modelValue: {
+      type: Boolean,
+      default: false,
+    },
+  })
+
+  const emit = defineEmits(['update:modelValue'])
+
+  const { mobile } = useDisplay()
+
+  const drawerModel = computed({
+    get: () => props.modelValue,
+    set: value => emit('update:modelValue', value),
+  })
+
+  const { t } = useI18n()
+  const authStore = useAuthStore()
+
+  const navigationItems = computed(() => [
+    {
+      title: t('nav.home'),
+      icon: 'mdi-home',
+      to: '/',
+    },
+    {
+      title: t('nav.classes'),
+      icon: 'mdi-school',
+      to: '/classes',
+    },
+    {
+      title: t('nav.students'),
+      icon: 'mdi-account-multiple',
+      to: '/students',
+    },
+    {
+      title: t('nav.parents'),
+      icon: 'mdi-account-supervisor',
+      to: '/parents',
+    },
+    {
+      title: t('nav.staff'),
+      icon: 'mdi-account-tie',
+      to: '/staff',
+    },
+    {
+      title: t('nav.committees'),
+      icon: 'mdi-account-group',
+      to: '/committees',
+    },
+    {
+      title: t('admin.title'),
+      icon: 'mdi-cog',
+      to: '/admin',
+    },
+  ])
+</script>
