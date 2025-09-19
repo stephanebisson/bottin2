@@ -3,23 +3,23 @@
     <v-card-title class="text-h5 text-center pb-2">
       {{ $t('auth.resetPassword') }}
     </v-card-title>
-    
+
     <v-card-text>
       <p class="text-body-2 text-grey-darken-1 mb-4">
         {{ $t('auth.resetPasswordInstructions') }}
       </p>
-      
+
       <v-text-field
         v-model="email"
-        :label="$t('auth.email')"
-        :rules="emailRules"
         autocomplete="email"
+        :label="$t('auth.email')"
         prepend-inner-icon="mdi-email"
+        required
+        :rules="emailRules"
         type="email"
         variant="outlined"
-        required
       />
-      
+
       <!-- Error Alert -->
       <v-alert
         v-if="authStore.error"
@@ -29,34 +29,34 @@
         type="error"
         @click:close="authStore.clearError()"
       />
-      
+
       <!-- Success Alert -->
       <v-alert
         v-if="resetSent"
         class="mb-4"
-        type="success"
         :text="$t('auth.resetEmailSent')"
+        type="success"
       />
-      
+
       <!-- Back to Login Link -->
       <div class="text-center mb-4">
         <v-btn
           color="primary"
-          variant="text"
           size="small"
+          variant="text"
           @click="$emit('back-to-login')"
         >
           {{ $t('auth.backToLogin') }}
         </v-btn>
       </div>
     </v-card-text>
-    
+
     <v-card-actions class="px-6 pb-6">
       <v-btn
-        :disabled="!formValid || authStore.loading || resetSent"
-        :loading="authStore.loading"
         block
         color="primary"
+        :disabled="!formValid || authStore.loading || resetSent"
+        :loading="authStore.loading"
         size="large"
         type="submit"
         variant="elevated"
@@ -69,8 +69,8 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useAuthStore } from '@/stores/auth'
   import { useI18n } from '@/composables/useI18n'
+  import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['back-to-login'])
 
@@ -85,7 +85,7 @@
   // Validation rules
   const emailRules = [
     v => !!v || t('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid')
+    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid'),
   ]
 
   // Handle password reset
@@ -95,7 +95,7 @@
     try {
       await authStore.resetPassword(email.value)
       resetSent.value = true
-      
+
       // Auto-redirect after 5 seconds
       setTimeout(() => {
         resetSent.value = false

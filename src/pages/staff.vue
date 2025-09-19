@@ -76,9 +76,9 @@
               <!-- Staff Member Header -->
               <v-card-title class="pb-2">
                 <div class="text-h6 font-weight-bold">
-                  <HighlightedText 
-                    :text="`${member.first_name} ${member.last_name}`" 
-                    :query="searchQuery" 
+                  <HighlightedText
+                    :query="searchQuery"
+                    :text="`${member.first_name} ${member.last_name}`"
                   />
                 </div>
               </v-card-title>
@@ -91,7 +91,7 @@
                     size="small"
                     variant="outlined"
                   >
-                    <HighlightedText :text="member.title" :query="searchQuery" />
+                    <HighlightedText :query="searchQuery" :text="member.title" />
                   </v-chip>
                 </div>
 
@@ -100,7 +100,7 @@
                   <div v-if="member.email" class="mb-2 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
                     <a class="text-decoration-none text-body-2" :href="`mailto:${member.email}`">
-                      <HighlightedText :text="member.email" :query="searchQuery" />
+                      <HighlightedText :query="searchQuery" :text="member.email" />
                     </a>
                   </div>
 
@@ -159,9 +159,9 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import HighlightedText from '@/components/HighlightedText.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
-  import HighlightedText from '@/components/HighlightedText.vue'
 
   const searchQuery = ref('')
 
@@ -206,9 +206,9 @@
           `${member.first_name} ${member.last_name}`,
           member.title || '',
           member.email || '',
-          member.directory_table || ''
+          member.directory_table || '',
         ]
-        
+
         return matchesAnyField(searchFields, searchQuery.value)
       }),
     })).filter(group => group.members.length > 0)

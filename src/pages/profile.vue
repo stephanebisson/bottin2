@@ -37,24 +37,24 @@
               <h1 class="text-h4 font-weight-bold mb-2">
                 {{ parentProfile.first_name }} {{ parentProfile.last_name }}
               </h1>
-              
+
               <!-- Contact Information -->
               <div class="d-flex flex-column flex-sm-row gap-4 mb-4">
                 <div v-if="parentProfile.email" class="d-flex align-center">
                   <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
-                  <a 
-                    :href="`mailto:${parentProfile.email}`"
+                  <a
                     class="text-decoration-none"
+                    :href="`mailto:${parentProfile.email}`"
                   >
                     {{ parentProfile.email }}
                   </a>
                 </div>
-                
+
                 <div v-if="parentProfile.phone" class="d-flex align-center">
                   <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
-                  <a 
-                    :href="`tel:${parentProfile.phone}`"
+                  <a
                     class="text-decoration-none"
+                    :href="`tel:${parentProfile.phone}`"
                   >
                     {{ formatPhone(parentProfile.phone) }}
                   </a>
@@ -81,7 +81,7 @@
               <v-icon class="me-2" color="primary">mdi-account-child</v-icon>
               {{ $t('profile.myChildren') }}
             </v-card-title>
-            
+
             <v-card-text v-if="children.length > 0" class="pa-0">
               <v-list>
                 <v-list-item
@@ -100,7 +100,7 @@
                   <v-list-item-title class="font-weight-bold">
                     {{ child.first_name }} {{ child.last_name }}
                   </v-list-item-title>
-                  
+
                   <v-list-item-subtitle>
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-1">
                       <v-chip
@@ -111,7 +111,7 @@
                       >
                         {{ $t('profile.class') }}: {{ child.className }}
                       </v-chip>
-                      
+
                       <v-chip
                         v-if="child.level"
                         color="secondary"
@@ -121,7 +121,7 @@
                         {{ child.level }}
                       </v-chip>
                     </div>
-                    
+
                     <div v-if="getTeacherName(child.className)" class="mt-2">
                       <span class="text-body-2">
                         {{ $t('profile.teacher') }}: {{ getTeacherName(child.className) }}
@@ -131,9 +131,9 @@
                 </v-list-item>
               </v-list>
             </v-card-text>
-            
+
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
-              <v-icon size="48" class="mb-2">mdi-account-child-outline</v-icon>
+              <v-icon class="mb-2" size="48">mdi-account-child-outline</v-icon>
               <p>{{ $t('profile.noChildrenFound') }}</p>
             </v-card-text>
           </v-card>
@@ -147,7 +147,7 @@
               <v-icon class="me-2" color="success">mdi-account-group</v-icon>
               {{ $t('profile.committees') }}
             </v-card-title>
-            
+
             <v-card-text v-if="committees.length > 0" class="pa-4">
               <div class="d-flex flex-column gap-3">
                 <v-card
@@ -171,9 +171,9 @@
                 </v-card>
               </div>
             </v-card-text>
-            
+
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
-              <v-icon size="32" class="mb-2">mdi-account-group-outline</v-icon>
+              <v-icon class="mb-2" size="32">mdi-account-group-outline</v-icon>
               <p class="text-body-2">{{ $t('profile.noCommitteesFound') }}</p>
             </v-card-text>
           </v-card>
@@ -184,7 +184,7 @@
               <v-icon class="me-2" color="info">mdi-star</v-icon>
               {{ $t('profile.interests') }}
             </v-card-title>
-            
+
             <v-card-text class="pa-4">
               <div class="d-flex flex-wrap gap-2">
                 <v-chip
@@ -206,7 +206,7 @@
     <!-- No Profile Found -->
     <v-card v-else-if="!loading" class="text-center py-8">
       <v-card-text>
-        <v-icon size="64" color="grey-darken-2" class="mb-4">mdi-account-question</v-icon>
+        <v-icon class="mb-4" color="grey-darken-2" size="64">mdi-account-question</v-icon>
         <h2 class="text-h5 mb-2">{{ $t('profile.noProfileFound') }}</h2>
         <p class="text-body-1 text-grey-darken-1">{{ $t('profile.contactAdmin') }}</p>
       </v-card-text>
@@ -216,9 +216,9 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-  import { useI18n } from '@/composables/useI18n'
 
   const { t } = useI18n()
   const authStore = useAuthStore()
@@ -231,20 +231,20 @@
   // Get current user's profile data
   const parentProfile = computed(() => {
     if (!authStore.user?.email) return null
-    
-    return firebaseStore.parents.find(parent => 
-      parent.email && parent.email.toLowerCase() === authStore.user.email.toLowerCase()
+
+    return firebaseStore.parents.find(parent =>
+      parent.email && parent.email.toLowerCase() === authStore.user.email.toLowerCase(),
     )
   })
 
   // Get children for this parent
   const children = computed(() => {
     if (!parentProfile.value?.email) return []
-    
+
     const parentEmail = parentProfile.value.email.toLowerCase()
     return firebaseStore.students.filter(student =>
-      (student.parent1_email && student.parent1_email.toLowerCase() === parentEmail) ||
-      (student.parent2_email && student.parent2_email.toLowerCase() === parentEmail)
+      (student.parent1_email && student.parent1_email.toLowerCase() === parentEmail)
+      || (student.parent2_email && student.parent2_email.toLowerCase() === parentEmail),
     ).sort((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
@@ -255,22 +255,22 @@
   // Get committees for this parent
   const committees = computed(() => {
     if (!parentProfile.value?.email) return []
-    
+
     const parentEmail = parentProfile.value.email.toLowerCase()
     return firebaseStore.committees
       .filter(committee =>
-        committee.members && committee.members.some(member => 
-          member.email && member.email.toLowerCase() === parentEmail
-        )
+        committee.members && committee.members.some(member =>
+          member.email && member.email.toLowerCase() === parentEmail,
+        ),
       )
       .map(committee => {
-        const member = committee.members.find(member => 
-          member.email && member.email.toLowerCase() === parentEmail
+        const member = committee.members.find(member =>
+          member.email && member.email.toLowerCase() === parentEmail,
         )
         return {
           id: committee.id,
           name: committee.name,
-          role: member?.role || 'Member'
+          role: member?.role || 'Member',
         }
       })
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -279,12 +279,12 @@
   // Computed properties for formatting
   const formattedAddress = computed(() => {
     if (!parentProfile.value) return ''
-    
+
     const addressParts = []
     if (parentProfile.value.address) addressParts.push(parentProfile.value.address)
     if (parentProfile.value.city) addressParts.push(parentProfile.value.city)
     if (parentProfile.value.postal_code) addressParts.push(parentProfile.value.postal_code)
-    
+
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   })
 
@@ -295,7 +295,7 @@
     return `${first}${last}` || '?'
   }
 
-  const formatPhone = (phone) => {
+  const formatPhone = phone => {
     if (!phone) return ''
     const cleaned = phone.toString().replace(/\D/g, '')
     if (cleaned.length === 10) {
@@ -304,7 +304,7 @@
     return phone
   }
 
-  const getTeacherName = (className) => {
+  const getTeacherName = className => {
     if (!className) return null
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null
@@ -317,33 +317,29 @@
     try {
       loading.value = true
       error.value = null
-      
+
       // Ensure we have user auth data
       if (!authStore.isAuthenticated) {
         throw new Error('User must be authenticated to view profile')
       }
-      
+
       // Load all data if not already loaded
       if (!firebaseStore.hasData.value) {
         await firebaseStore.loadAllData()
       }
-      
+
       // Check if user is a parent (not staff)
       if (!parentProfile.value) {
         // Check if they're staff instead
-        const isStaff = firebaseStore.staff.some(staff => 
-          staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase()
+        const isStaff = firebaseStore.staff.some(staff =>
+          staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
         )
-        
-        if (isStaff) {
-          error.value = 'Staff profiles are not available. This page is for parents only.'
-        } else {
-          error.value = 'No parent profile found for your account.'
-        }
+
+        error.value = isStaff ? 'Staff profiles are not available. This page is for parents only.' : 'No parent profile found for your account.'
       }
-    } catch (err) {
-      error.value = err.message || 'Failed to load profile data'
-      console.error('Profile page error:', err)
+    } catch (error_) {
+      error.value = error_.message || 'Failed to load profile data'
+      console.error('Profile page error:', error_)
     } finally {
       loading.value = false
     }
@@ -372,7 +368,7 @@
   .v-card-text {
     padding: 1rem !important;
   }
-  
+
   .text-h4 {
     font-size: 1.5rem !important;
   }

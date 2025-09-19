@@ -1,27 +1,54 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
+const admin = require('firebase-admin')
+const { FieldValue } = require('firebase-admin/firestore')
+const functions = require('firebase-functions')
+const nodemailer = require('nodemailer')
+const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
-const db = admin.firestore();
+const db = admin.firestore()
 
 /**
  * Email configuration and templates
  */
-function getEmailTransporter() {
-  // For development/testing, you might want to use a service like SendGrid, Mailgun, or Gmail
-  // For production, configure your preferred email service
-  return nodemailer.createTransporter({
-    // Example Gmail configuration (replace with your email service)
+function getEmailTransporter () {
+  // Check if we're in emulator/development mode
+  const isDevelopment = process.env.FUNCTIONS_EMULATOR === 'true' || process.env.NODE_ENV === 'development'
+
+  if (isDevelopment) {
+    // For development, create a mock transporter that logs emails instead of sending them
+    console.log('📧 Using development mode - emails will be logged, not sent')
+    return {
+      sendMail: async mailOptions => {
+        console.log('🔍 MOCK EMAIL SENT:')
+        console.log('📧 To:', mailOptions.to)
+        console.log('📋 Subject:', mailOptions.subject)
+        console.log('📝 Content preview:', mailOptions.html?.slice(0, 100) + '...')
+
+        // Return a mock successful response
+        return {
+          messageId: 'mock-' + Date.now(),
+          response: 'Mock email logged successfully',
+        }
+      },
+    }
+  }
+
+  // For production, use configured email service
+  const emailConfig = functions.config().email
+  if (!emailConfig?.user || !emailConfig?.password) {
+    throw new Error('Email configuration not found. Please set functions.config().email.user and functions.config().email.password')
+  }
+
+  return nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: functions.config().email?.user || process.env.EMAIL_USER,
-      pass: functions.config().email?.password || process.env.EMAIL_PASSWORD
-    }
-  });
+      user: emailConfig.user,
+      pass: emailConfig.password,
+    },
+  })
 }
 
-function getEmailTemplate(parentName, updateUrl, schoolYear, deadline, language = 'en') {
+function getEmailTemplate (parentName, updateUrl, schoolYear, deadline, language = 'en') {
   const templates = {
     en: {
       subject: `${schoolYear} - Annual Information Update Required`,
@@ -85,7 +112,7 @@ function getEmailTemplate(parentName, updateUrl, schoolYear, deadline, language 
           </div>
         </body>
         </html>
-      `
+      `,
     },
     fr: {
       subject: `${schoolYear} - Mise à Jour Annuelle des Informations Requise`,
@@ -149,164 +176,341 @@ function getEmailTemplate(parentName, updateUrl, schoolYear, deadline, language 
           </div>
         </body>
         </html>
-      `
-    }
-  };
-  
-  return templates[language] || templates.en;
+      `,
+    },
+  }
+
+  return templates[language] || templates.en
 }
 
 /**
  * Send email notifications to parents for annual update
  */
-exports.sendUpdateEmails = functions.https.onRequest(async (req, res) => {
+/**
+ * Send email notifications to selected parents for annual update
+ */
+exports.sendUpdateEmailsToSelected = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
   // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.set('Access-Control-Allow-Origin', '*')
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
-    return res.status(200).send();
+    return res.status(200).send()
   }
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method not allowed. Use POST.' 
-    });
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
   }
 
   try {
-    // Verify user is authenticated
-    const authHeader = req.headers.authorization;
+    // Verify user is authenticated and is admin
+    const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1];
-    
+    const idToken = authHeader.split('Bearer ')[1]
+    let decodedToken
+
     try {
-      await admin.auth().verifyIdToken(idToken);
-    } catch (error) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      decodedToken = await admin.auth().verifyIdToken(idToken)
+    } catch {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
     }
 
-    const { workflowId } = req.body;
+    // Verify admin claim
+    if (!decodedToken.admin) {
+      return res.status(403).json({ error: 'Admin access required' })
+    }
 
-    if (!workflowId) {
-      return res.status(400).json({ 
-        error: 'workflowId is required' 
-      });
+    const { workflowId, parentEmails } = req.body
+
+    if (!workflowId || !parentEmails || !Array.isArray(parentEmails)) {
+      return res.status(400).json({
+        error: 'workflowId and parentEmails array are required',
+      })
     }
 
     // Get workflow document
-    const workflowDoc = await db.collection('updateSessions').doc(workflowId).get();
-    
+    const workflowDoc = await db.collection('updateSessions').doc(workflowId).get()
+
     if (!workflowDoc.exists) {
-      return res.status(404).json({ 
-        error: 'Workflow not found' 
-      });
+      return res.status(404).json({
+        error: 'Workflow not found',
+      })
     }
 
-    const workflowData = workflowDoc.data();
-    
+    const workflowData = workflowDoc.data()
+
     if (workflowData.status !== 'active') {
-      return res.status(400).json({ 
-        error: 'Workflow is not active' 
-      });
+      return res.status(400).json({
+        error: 'Workflow is not active',
+      })
     }
 
-    // Get all parents with update tokens
+    // Get selected parents with update tokens
     const parentsSnapshot = await db.collection('parents')
       .where('updateToken', '!=', null)
-      .get();
+      .get()
 
-    if (parentsSnapshot.empty) {
-      return res.status(400).json({ 
-        error: 'No parents found with update tokens' 
-      });
+    const selectedParents = []
+    for (const doc of parentsSnapshot.docs) {
+      const parentData = doc.data()
+      if (parentEmails.includes(parentData.email)) {
+        selectedParents.push({
+          id: doc.id,
+          ...parentData,
+        })
+      }
     }
 
-    const transporter = getEmailTransporter();
-    let emailsSent = 0;
-    const emailResults = [];
-    const batch = db.batch();
+    if (selectedParents.length === 0) {
+      return res.status(400).json({
+        error: 'No selected parents found with update tokens',
+      })
+    }
+
+    const transporter = getEmailTransporter()
+    let emailsSent = 0
+    const emailResults = []
+    const batch = db.batch()
 
     // Format deadline for email
     const deadline = workflowData.deadline.toDate().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
-    });
+      day: 'numeric',
+    })
+
+    // Send emails to selected parents only
+    for (const parent of selectedParents) {
+      const parentName = `${parent.first_name || ''} ${parent.last_name || ''}`.trim() || 'Parent'
+
+      // Construct update URL
+      const baseUrl = functions.config().app?.url || 'https://your-app-domain.com'
+      const updateUrl = `${baseUrl}/update/${parent.updateToken}`
+
+      // Determine language (assume 'en' for now, could be based on parent preference)
+      const language = parent.preferredLanguage || 'en'
+      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, deadline, language)
+
+      try {
+        const mailOptions = {
+          from: functions.config().email?.from || 'noreply@school.com',
+          to: parent.email,
+          subject: template.subject,
+          html: template.html,
+        }
+
+        await transporter.sendMail(mailOptions)
+        emailsSent++
+
+        emailResults.push({
+          email: parent.email,
+          status: 'sent',
+          sentAt: new Date(),
+        })
+
+        // Update participant status in workflow
+        const participantPath = `participants.${parent.email}`
+        batch.update(db.collection('updateSessions').doc(workflowId), {
+          [`${participantPath}.emailSent`]: true,
+          [`${participantPath}.emailSentAt`]: FieldValue.serverTimestamp(),
+        })
+      } catch (emailError) {
+        console.error(`Failed to send email to ${parent.email}:`, emailError)
+        emailResults.push({
+          email: parent.email,
+          status: 'failed',
+          error: emailError.message,
+        })
+      }
+    }
+
+    // Update workflow stats
+    const currentStats = workflowData.stats || {}
+    batch.update(db.collection('updateSessions').doc(workflowId), {
+      'stats.emailsSent': (currentStats.emailsSent || 0) + emailsSent,
+    })
+
+    await batch.commit()
+
+    console.log(`Selected email sending completed: ${emailsSent} emails sent to selected parents`)
+
+    res.status(200).json({
+      success: true,
+      emailsSent,
+      totalSelected: selectedParents.length,
+      results: emailResults,
+    })
+  } catch (error) {
+    console.error('Send selected emails error:', error)
+    res.status(500).json({
+      error: 'Internal server error occurred while sending emails',
+    })
+  }
+})
+
+/**
+ * Send email notifications to all parents for annual update (original function)
+ */
+exports.sendUpdateEmails = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
+  // Set CORS headers
+  res.set('Access-Control-Allow-Origin', '*')
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send()
+  }
+
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
+  }
+
+  try {
+    // Verify user is authenticated and is admin
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
+    }
+
+    const idToken = authHeader.split('Bearer ')[1]
+    let decodedToken
+
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken)
+    } catch {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
+    }
+
+    // Verify admin claim
+    if (!decodedToken.admin) {
+      return res.status(403).json({ error: 'Admin access required' })
+    }
+
+    const { workflowId } = req.body
+
+    if (!workflowId) {
+      return res.status(400).json({
+        error: 'workflowId is required',
+      })
+    }
+
+    // Get workflow document
+    const workflowDoc = await db.collection('updateSessions').doc(workflowId).get()
+
+    if (!workflowDoc.exists) {
+      return res.status(404).json({
+        error: 'Workflow not found',
+      })
+    }
+
+    const workflowData = workflowDoc.data()
+
+    if (workflowData.status !== 'active') {
+      return res.status(400).json({
+        error: 'Workflow is not active',
+      })
+    }
+
+    // Get all parents with update tokens
+    const parentsSnapshot = await db.collection('parents')
+      .where('updateToken', '!=', null)
+      .get()
+
+    if (parentsSnapshot.empty) {
+      return res.status(400).json({
+        error: 'No parents found with update tokens',
+      })
+    }
+
+    const transporter = getEmailTransporter()
+    let emailsSent = 0
+    const emailResults = []
+    const batch = db.batch()
+
+    // Format deadline for email
+    const deadline = workflowData.deadline.toDate().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
 
     // Send emails to all parents
     for (const parentDoc of parentsSnapshot.docs) {
-      const parentData = parentDoc.data();
-      const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent';
-      
+      const parentData = parentDoc.data()
+      const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent'
+
       // Construct update URL
-      const baseUrl = functions.config().app?.url || 'https://your-app-domain.com';
-      const updateUrl = `${baseUrl}/update/${parentData.updateToken}`;
-      
+      const baseUrl = functions.config().app?.url || 'https://your-app-domain.com'
+      const updateUrl = `${baseUrl}/update/${parentData.updateToken}`
+
       // Determine language (assume 'en' for now, could be based on parent preference)
-      const language = parentData.preferredLanguage || 'en';
-      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, deadline, language);
+      const language = parentData.preferredLanguage || 'en'
+      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, deadline, language)
 
       try {
         const mailOptions = {
           from: functions.config().email?.from || 'noreply@school.com',
           to: parentData.email,
           subject: template.subject,
-          html: template.html
-        };
+          html: template.html,
+        }
 
-        await transporter.sendMail(mailOptions);
-        emailsSent++;
-        
+        await transporter.sendMail(mailOptions)
+        emailsSent++
+
         emailResults.push({
           email: parentData.email,
           status: 'sent',
-          sentAt: new Date()
-        });
+          sentAt: new Date(),
+        })
 
         // Update participant status in workflow
-        const participantPath = `participants.${parentData.email}`;
+        const participantPath = `participants.${parentData.email}`
         batch.update(db.collection('updateSessions').doc(workflowId), {
           [`${participantPath}.emailSent`]: true,
-          [`${participantPath}.emailSentAt`]: admin.firestore.FieldValue.serverTimestamp()
-        });
-
+          [`${participantPath}.emailSentAt`]: FieldValue.serverTimestamp(),
+        })
       } catch (emailError) {
-        console.error(`Failed to send email to ${parentData.email}:`, emailError);
+        console.error(`Failed to send email to ${parentData.email}:`, emailError)
         emailResults.push({
           email: parentData.email,
           status: 'failed',
-          error: emailError.message
-        });
+          error: emailError.message,
+        })
       }
     }
 
     // Update workflow stats
     batch.update(db.collection('updateSessions').doc(workflowId), {
-      'stats.emailsSent': emailsSent
-    });
+      'stats.emailsSent': emailsSent,
+    })
 
-    await batch.commit();
+    await batch.commit()
 
-    console.log(`Email sending completed: ${emailsSent} emails sent out of ${parentsSnapshot.size} parents`);
+    console.log(`Email sending completed: ${emailsSent} emails sent out of ${parentsSnapshot.size} parents`)
 
     res.status(200).json({
       success: true,
       emailsSent,
       totalParents: parentsSnapshot.size,
-      results: emailResults
-    });
-
+      results: emailResults,
+    })
   } catch (error) {
-    console.error('Send emails error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error occurred while sending emails' 
-    });
+    console.error('Send emails error:', error)
+    res.status(500).json({
+      error: 'Internal server error occurred while sending emails',
+    })
   }
-});
+})

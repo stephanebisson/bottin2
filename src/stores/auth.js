@@ -1,13 +1,14 @@
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  sendPasswordResetEmail,
+import {
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
-  updateProfile
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
 } from 'firebase/auth'
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { getFunctionsBaseUrl } from '@/config/functions'
 import { auth } from '@/firebase'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -28,19 +29,17 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Securely validate if email exists using Firebase Functions
-  const validateEmailExists = async (email) => {
+  const validateEmailExists = async email => {
     try {
       // Determine the correct function URL based on environment
-      const baseUrl = import.meta.env.DEV 
-        ? 'http://localhost:5001/bottin2-3b41d/us-central1'
-        : 'https://us-central1-bottin2-3b41d.cloudfunctions.net'
-      
+      const baseUrl = getFunctionsBaseUrl()
+
       const response = await fetch(`${baseUrl}/validateEmail`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       })
 
       if (!response.ok) {
@@ -57,18 +56,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Get user info (display name and type) from Firebase Functions
-  const getUserInfo = async (email) => {
+  const getUserInfo = async email => {
     try {
-      const baseUrl = import.meta.env.DEV 
+      const baseUrl = import.meta.env.DEV
         ? 'http://localhost:5001/bottin2-3b41d/us-central1'
-        : 'https://us-central1-bottin2-3b41d.cloudfunctions.net'
-      
+        : 'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net'
+
       const response = await fetch(`${baseUrl}/validateEmail`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       })
 
       if (!response.ok) {
@@ -79,31 +78,31 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         authorized: data.authorized || false,
         displayName: data.displayName || '',
-        userType: data.userType || ''
+        userType: data.userType || '',
       }
     } catch (error) {
       console.error('User info request failed:', error)
       return {
         authorized: false,
         displayName: '',
-        userType: ''
+        userType: '',
       }
     }
   }
 
-  const setLoading = (value) => {
+  const setLoading = value => {
     loading.value = value
   }
 
-  const setError = (errorMessage) => {
+  const setError = errorMessage => {
     error.value = errorMessage
     console.error('Auth Error:', errorMessage)
   }
 
   // Initialize auth state listener
   const initializeAuth = () => {
-    return new Promise((resolve) => {
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    return new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
         user.value = firebaseUser
         isInitialized.value = true
         unsubscribe() // Only need initial state
@@ -117,27 +116,27 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       setLoading(true)
       clearError()
-      
+
       // Get user info and validate authorization
       const userInfo = await getUserInfo(email)
       if (!userInfo.authorized) {
         throw new Error('UNAUTHORIZED_EMAIL')
       }
-      
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      
+
       // Set display name from database (first name)
       if (userInfo.displayName) {
         await updateProfile(userCredential.user, {
-          displayName: userInfo.displayName
+          displayName: userInfo.displayName,
         })
       }
-      
+
       user.value = userCredential.user
       return userCredential.user
-    } catch (err) {
-      setError(getAuthErrorMessage(err))
-      throw err
+    } catch (error_) {
+      setError(getAuthErrorMessage(error_))
+      throw error_
     } finally {
       setLoading(false)
     }
@@ -148,13 +147,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       setLoading(true)
       clearError()
-      
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       user.value = userCredential.user
       return userCredential.user
-    } catch (err) {
-      setError(getAuthErrorMessage(err))
-      throw err
+    } catch (error_) {
+      setError(getAuthErrorMessage(error_))
+      throw error_
     } finally {
       setLoading(false)
     }
@@ -165,53 +164,62 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       setLoading(true)
       clearError()
-      
+
       await signOut(auth)
       user.value = null
-    } catch (err) {
-      setError(getAuthErrorMessage(err))
-      throw err
+    } catch (error_) {
+      setError(getAuthErrorMessage(error_))
+      throw error_
     } finally {
       setLoading(false)
     }
   }
 
   // Send password reset email
-  const resetPassword = async (email) => {
+  const resetPassword = async email => {
     try {
       setLoading(true)
       clearError()
-      
+
       await sendPasswordResetEmail(auth, email)
-    } catch (err) {
-      setError(getAuthErrorMessage(err))
-      throw err
+    } catch (error_) {
+      setError(getAuthErrorMessage(error_))
+      throw error_
     } finally {
       setLoading(false)
     }
   }
 
   // Helper function to get user-friendly error messages
-  const getAuthErrorMessage = (error) => {
+  const getAuthErrorMessage = error => {
     switch (error.code || error.message) {
-      case 'auth/user-not-found':
+      case 'auth/user-not-found': {
         return 'No account found with this email address.'
-      case 'auth/wrong-password':
+      }
+      case 'auth/wrong-password': {
         return 'Incorrect password.'
-      case 'auth/email-already-in-use':
+      }
+      case 'auth/email-already-in-use': {
         return 'An account with this email already exists.'
-      case 'auth/weak-password':
+      }
+      case 'auth/weak-password': {
         return 'Password should be at least 6 characters.'
-      case 'auth/invalid-email':
+      }
+      case 'auth/invalid-email': {
         return 'Invalid email address.'
-      case 'auth/too-many-requests':
+      }
+      case 'auth/too-many-requests': {
         return 'Too many failed attempts. Please try again later.'
-      case 'auth/network-request-failed':
+      }
+      case 'auth/network-request-failed': {
         return 'Network error. Please check your connection.'
-      case 'UNAUTHORIZED_EMAIL':
+      }
+      case 'UNAUTHORIZED_EMAIL': {
         return 'This email address is not authorized to create an account. Only registered parents and staff can create accounts.'
-      default:
+      }
+      default: {
         return error.message || 'An unexpected error occurred.'
+      }
     }
   }
 
@@ -221,12 +229,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isInitialized,
-    
+
     // Getters
     isAuthenticated,
     userDisplayName,
     userEmail,
-    
+
     // Actions
     initializeAuth,
     register,
@@ -237,6 +245,6 @@ export const useAuthStore = defineStore('auth', () => {
     getUserInfo,
     clearError,
     setError,
-    setLoading
+    setLoading,
   }
 })

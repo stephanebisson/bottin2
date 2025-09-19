@@ -10,19 +10,19 @@ export const authMiddleware = {
    */
   requireAuth: async (to, from, next) => {
     const authStore = useAuthStore()
-    
+
     // Wait for auth initialization if not already done
     if (!authStore.isInitialized) {
       await authStore.initializeAuth()
     }
-    
+
     if (authStore.isAuthenticated) {
       next() // User is authenticated, proceed
     } else {
       // User is not authenticated, redirect to auth page
-      next({ 
-        path: '/auth', 
-        query: { redirect: to.fullPath } // Save intended destination
+      next({
+        path: '/auth',
+        query: { redirect: to.fullPath }, // Save intended destination
       })
     }
   },
@@ -33,12 +33,12 @@ export const authMiddleware = {
    */
   redirectIfAuth: async (to, from, next) => {
     const authStore = useAuthStore()
-    
+
     // Wait for auth initialization if not already done
     if (!authStore.isInitialized) {
       await authStore.initializeAuth()
     }
-    
+
     if (authStore.isAuthenticated) {
       // Check if there's a redirect query parameter
       const redirectPath = to.query.redirect || '/'
@@ -54,7 +54,7 @@ export const authMiddleware = {
    */
   initializeAuth: async (to, from, next) => {
     const authStore = useAuthStore()
-    
+
     // Initialize auth state if not already done
     if (!authStore.isInitialized) {
       try {
@@ -63,9 +63,9 @@ export const authMiddleware = {
         console.error('Failed to initialize auth:', error)
       }
     }
-    
+
     next()
-  }
+  },
 }
 
 /**
@@ -74,24 +74,24 @@ export const authMiddleware = {
 export const routeConfig = {
   // Routes that require authentication (using paths instead of names)
   protected: [
-    '/',          // Home page
-    '/students',  // Students directory
-    '/parents',   // Parents directory 
-    '/staff',     // Staff directory
-    '/classes',   // Classes page
+    '/', // Home page
+    '/students', // Students directory
+    '/parents', // Parents directory
+    '/staff', // Staff directory
+    '/classes', // Classes page
     '/committees', // Committees page
-    '/profile',   // User profile page
-    '/admin'      // Admin page
+    '/profile', // User profile page
+    '/admin', // Admin page and all admin sub-pages
   ],
-  
+
   // Routes that should redirect authenticated users
   public: [
-    '/auth'       // Authentication page
+    '/auth', // Authentication page
   ],
 
   // Routes that are completely public (no auth required)
   open: [
-    '/update',         // Parent update forms (with token)
-    '/update-success'  // Update completion page
-  ]
+    '/update', // Parent update forms (with token)
+    '/update-success', // Update completion page
+  ],
 }

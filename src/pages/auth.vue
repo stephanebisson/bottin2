@@ -7,7 +7,7 @@
           <template v-if="showReset">
             <ResetPasswordForm @back-to-login="showReset = false" />
           </template>
-          
+
           <!-- Show Login/Register Tabs -->
           <template v-else>
             <v-tabs
@@ -37,7 +37,7 @@
             </v-tabs-window>
           </template>
         </v-card>
-        
+
         <!-- Back to App Link for authenticated users -->
         <div v-if="authStore.isAuthenticated" class="text-center mt-4">
           <v-btn
@@ -55,13 +55,13 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
+  import { onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/auth'
-  import { useI18n } from '@/composables/useI18n'
   import LoginForm from '@/components/LoginForm.vue'
   import RegisterForm from '@/components/RegisterForm.vue'
   import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
+  import { useI18n } from '@/composables/useI18n'
+  import { useAuthStore } from '@/stores/auth'
 
   const router = useRouter()
   const authStore = useAuthStore()
@@ -75,7 +75,7 @@
   onMounted(async () => {
     // Wait for auth initialization
     await authStore.initializeAuth()
-    
+
     // If user is already authenticated, redirect to home
     if (authStore.isAuthenticated) {
       router.push('/')

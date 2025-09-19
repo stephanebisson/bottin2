@@ -3,32 +3,32 @@
     <v-card-title class="text-h5 text-center pb-2">
       {{ $t('auth.login') }}
     </v-card-title>
-    
+
     <v-card-text>
       <v-text-field
         v-model="email"
-        :label="$t('auth.email')"
-        :rules="emailRules"
         autocomplete="email"
+        :label="$t('auth.email')"
         prepend-inner-icon="mdi-email"
+        required
+        :rules="emailRules"
         type="email"
         variant="outlined"
-        required
       />
-      
+
       <v-text-field
         v-model="password"
-        :label="$t('auth.password')"
-        :rules="passwordRules"
-        :type="showPassword ? 'text' : 'password'"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="current-password"
+        :label="$t('auth.password')"
         prepend-inner-icon="mdi-lock"
-        variant="outlined"
         required
+        :rules="passwordRules"
+        :type="showPassword ? 'text' : 'password'"
+        variant="outlined"
         @click:append-inner="showPassword = !showPassword"
       />
-      
+
       <!-- Error Alert -->
       <v-alert
         v-if="authStore.error"
@@ -38,26 +38,26 @@
         type="error"
         @click:close="authStore.clearError()"
       />
-      
+
       <!-- Forgot Password Link -->
       <div class="text-center mb-4">
         <v-btn
           color="primary"
-          variant="text"
           size="small"
+          variant="text"
           @click="$emit('show-reset')"
         >
           {{ $t('auth.forgotPassword') }}
         </v-btn>
       </div>
     </v-card-text>
-    
+
     <v-card-actions class="px-6 pb-6">
       <v-btn
-        :disabled="!formValid || authStore.loading"
-        :loading="authStore.loading"
         block
         color="primary"
+        :disabled="!formValid || authStore.loading"
+        :loading="authStore.loading"
         size="large"
         type="submit"
         variant="elevated"
@@ -71,8 +71,8 @@
 <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/auth'
   import { useI18n } from '@/composables/useI18n'
+  import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['show-reset'])
 
@@ -89,12 +89,12 @@
   // Validation rules
   const emailRules = [
     v => !!v || t('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid')
+    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid'),
   ]
 
   const passwordRules = [
     v => !!v || t('validation.passwordRequired'),
-    v => (v && v.length >= 6) || t('validation.passwordMinLength')
+    v => (v && v.length >= 6) || t('validation.passwordMinLength'),
   ]
 
   // Handle login
@@ -103,7 +103,7 @@
 
     try {
       await authStore.login(email.value, password.value)
-      
+
       // Redirect to home page after successful login
       router.push('/')
     } catch (error) {

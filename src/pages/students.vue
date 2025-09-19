@@ -66,9 +66,9 @@
                 class="d-flex justify-space-between align-center mb-1"
               >
                 <div class="text-h6 font-weight-bold">
-                  <HighlightedText 
-                    :text="`${student.last_name}, ${student.first_name}`" 
-                    :query="searchQuery" 
+                  <HighlightedText
+                    :query="searchQuery"
+                    :text="`${student.last_name}, ${student.first_name}`"
                   />
                 </div>
                 <div class="text-body-1 text-right">
@@ -84,9 +84,9 @@
               <v-col cols="6">
                 <div v-if="group.parent1" class="parent-info">
                   <div class="text-subtitle-2 font-weight-bold mb-1">
-                    <HighlightedText 
-                      :text="`${group.parent1.first_name} ${group.parent1.last_name}`" 
-                      :query="searchQuery" 
+                    <HighlightedText
+                      :query="searchQuery"
+                      :text="`${group.parent1.first_name} ${group.parent1.last_name}`"
                     />
                   </div>
                   <div v-if="getParentCommittees(group.parent1.email).length > 0" class="text-caption mb-1 text-primary font-italic">
@@ -111,9 +111,9 @@
               <v-col cols="6">
                 <div v-if="group.parent2" class="parent-info">
                   <div class="text-subtitle-2 font-weight-bold mb-1">
-                    <HighlightedText 
-                      :text="`${group.parent2.first_name} ${group.parent2.last_name}`" 
-                      :query="searchQuery" 
+                    <HighlightedText
+                      :query="searchQuery"
+                      :text="`${group.parent2.first_name} ${group.parent2.last_name}`"
                     />
                   </div>
                   <div v-if="getParentCommittees(group.parent2.email).length > 0" class="text-caption mb-1 text-primary font-italic">
@@ -148,10 +148,10 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import HighlightedText from '@/components/HighlightedText.vue'
   import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
-  import HighlightedText from '@/components/HighlightedText.vue'
 
   const { t } = useI18n()
 
@@ -219,11 +219,11 @@
         // Student names (both formats)
         ...group.students.flatMap(student => [
           `${student.first_name} ${student.last_name}`,
-          `${student.last_name}, ${student.first_name}`
+          `${student.last_name}, ${student.first_name}`,
         ]),
         // Parent names
         group.parent1 ? `${group.parent1.first_name} ${group.parent1.last_name}` : '',
-        group.parent2 ? `${group.parent2.first_name} ${group.parent2.last_name}` : ''
+        group.parent2 ? `${group.parent2.first_name} ${group.parent2.last_name}` : '',
       ].filter(Boolean) // Remove empty strings
 
       return matchesAnyField(searchFields, searchQuery.value)

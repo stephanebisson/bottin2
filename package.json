@@ -21,7 +21,15 @@
     "backup:emulator": "firebase emulators:export backups/$(date +%Y-%m-%d-%H%M%S)-emulator-backup && echo '✅ Emulator data exported to backups/'",
     "emulator:start": "firebase emulators:start",
     "emulator:import": "firebase emulators:start --import=./backups/latest-backup 2>/dev/null || (echo '⚠️  No latest-backup found, starting fresh emulator' && firebase emulators:start)",
-    "restore:emulator": "echo '📋 Available backups:' && ls -1 backups/ 2>/dev/null || echo 'No backups found' && echo 'To restore: firebase emulators:start --import=./backups/BACKUP_NAME'"
+    "restore:emulator": "echo '📋 Available backups:' && ls -1 backups/ 2>/dev/null || echo 'No backups found' && echo 'To restore: firebase emulators:start --import=./backups/BACKUP_NAME'",
+    "setup:admin": "node scripts/createInitialAdmin.js",
+    "admin:grant": "node scripts/manageAdmin.js grant",
+    "admin:revoke": "node scripts/manageAdmin.js revoke",
+    "admin:list": "node scripts/manageAdmin.js list",
+    "admin:status": "node scripts/manageAdmin.js status",
+    "admin:auto": "NODE_ENV=development node scripts/autoSetupAdmin.js",
+    "emulator:with-admin": "firebase emulators:start --import=./backups/2025-09-18-175305-emulator-backup",
+    "dev:auto": "node scripts/devStart.js"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",

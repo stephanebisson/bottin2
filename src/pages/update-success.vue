@@ -1,17 +1,17 @@
 <template>
   <v-container class="py-12">
     <v-row justify="center">
-      <v-col cols="12" md="8" lg="6">
+      <v-col cols="12" lg="6" md="8">
         <v-card>
           <v-card-text class="text-center pa-8">
             <!-- Success Icon -->
             <v-icon color="success" size="80">mdi-check-circle</v-icon>
-            
+
             <!-- Success Title -->
             <h2 class="text-h4 font-weight-bold mt-4 mb-2 text-success">
               {{ $t('updateSuccess.title') }}
             </h2>
-            
+
             <!-- Thank You Message -->
             <p class="text-body-1 mb-6">
               {{ $t('updateSuccess.message') }}
@@ -20,10 +20,10 @@
             <!-- Account Creation Section -->
             <div v-if="!hasAccount" class="mb-6">
               <v-alert
+                class="mb-4"
                 color="info"
                 icon="mdi-account-plus"
                 variant="tonal"
-                class="mb-4"
               >
                 <div class="text-body-1 font-weight-medium mb-2">
                   {{ $t('updateSuccess.createAccountTitle') }}
@@ -46,10 +46,10 @@
             <!-- Account Exists Section -->
             <div v-else class="mb-6">
               <v-alert
+                class="mb-4"
                 color="success"
                 icon="mdi-account-check"
                 variant="tonal"
-                class="mb-4"
               >
                 <div class="text-body-1">
                   {{ $t('updateSuccess.accountExists') }}
@@ -68,7 +68,7 @@
 
             <!-- Additional Information -->
             <v-divider class="my-6" />
-            
+
             <div class="text-body-2 text-grey-darken-1">
               <p class="mb-2">
                 {{ $t('updateSuccess.nextSteps') }}
@@ -82,10 +82,10 @@
 
             <!-- Contact Information -->
             <v-alert
+              class="mt-6"
               color="grey-lighten-4"
               icon="mdi-help-circle"
               variant="flat"
-              class="mt-6"
             >
               <div class="text-body-2">
                 {{ $t('updateSuccess.questions') }}
@@ -125,21 +125,21 @@
   const goToAccountCreation = () => {
     router.push({
       path: '/auth',
-      query: { 
+      query: {
         mode: 'register',
         email: email.value,
-        fromUpdate: '1'
-      }
+        fromUpdate: '1',
+      },
     })
   }
 
   const goToLogin = () => {
     router.push({
       path: '/auth',
-      query: { 
+      query: {
         mode: 'login',
-        email: email.value 
-      }
+        email: email.value,
+      },
     })
   }
 

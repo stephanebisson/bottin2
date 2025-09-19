@@ -1,93 +1,95 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin = require('firebase-admin')
+const { FieldValue } = require('firebase-admin/firestore')
+const functions = require('firebase-functions')
+const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
-const db = admin.firestore();
+const db = admin.firestore()
 
 /**
  * Validate update token and return parent information
  */
-exports.validateUpdateToken = functions.https.onRequest(async (req, res) => {
+exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
   // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Origin', '*')
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type')
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
-    return res.status(200).send();
+    return res.status(200).send()
   }
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method not allowed. Use POST.' 
-    });
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
   }
 
   try {
-    const { token } = req.body;
+    const { token } = req.body
 
     if (!token || typeof token !== 'string') {
-      return res.status(400).json({ 
-        valid: false, 
-        error: 'Token is required and must be a string.' 
-      });
+      return res.status(400).json({
+        valid: false,
+        error: 'Token is required and must be a string.',
+      })
     }
 
     // Find parent with this token
     const parentsQuery = await db.collection('parents')
       .where('updateToken', '==', token)
       .limit(1)
-      .get();
+      .get()
 
     if (parentsQuery.empty) {
-      return res.status(404).json({ 
-        valid: false, 
-        error: 'Invalid or expired token.' 
-      });
+      return res.status(404).json({
+        valid: false,
+        error: 'Invalid or expired token.',
+      })
     }
 
-    const parentDoc = parentsQuery.docs[0];
-    const parentData = parentDoc.data();
+    const parentDoc = parentsQuery.docs[0]
+    const parentData = parentDoc.data()
 
     // Check if token has expired
     if (parentData.tokenExpiry && parentData.tokenExpiry.toDate() < new Date()) {
-      return res.status(410).json({ 
-        valid: false, 
-        error: 'Token has expired.' 
-      });
+      return res.status(410).json({
+        valid: false,
+        error: 'Token has expired.',
+      })
     }
 
     // Check if there's another parent with the same address (for shared address feature)
-    let otherParentHasAddress = false;
+    let otherParentHasAddress = false
     if (parentData.parent1_email || parentData.parent2_email) {
-      const otherParentEmail = parentData.parent1_email === parentData.email 
-        ? parentData.parent2_email 
-        : parentData.parent1_email;
+      const otherParentEmail = parentData.parent1_email === parentData.email
+        ? parentData.parent2_email
+        : parentData.parent1_email
 
       if (otherParentEmail) {
         const otherParentQuery = await db.collection('parents')
           .where('email', '==', otherParentEmail)
           .limit(1)
-          .get();
+          .get()
 
         if (!otherParentQuery.empty) {
-          const otherParentData = otherParentQuery.docs[0].data();
-          otherParentHasAddress = !!(otherParentData.address || otherParentData.city);
+          const otherParentData = otherParentQuery.docs[0].data()
+          otherParentHasAddress = !!(otherParentData.address || otherParentData.city)
         }
       }
     }
 
     // Get available committees
-    const committeesSnapshot = await db.collection('committees').get();
-    const committees = [];
-    committeesSnapshot.forEach(doc => {
+    const committeesSnapshot = await db.collection('committees').get()
+    const committees = []
+    for (const doc of committeesSnapshot) {
       committees.push({
         id: doc.id,
-        ...doc.data()
-      });
-    });
+        ...doc.data(),
+      })
+    }
 
     res.status(200).json({
       valid: true,
@@ -103,87 +105,86 @@ exports.validateUpdateToken = functions.https.onRequest(async (req, res) => {
         postal_code: parentData.postal_code || '',
         committees: parentData.committees || [],
         interests: parentData.interests || '',
-        directoryOptOut: parentData.directoryOptOut || false
+        directoryOptOut: parentData.directoryOptOut || false,
       },
       otherParentHasAddress,
-      availableCommittees: committees
-    });
-
+      availableCommittees: committees,
+    })
   } catch (error) {
-    console.error('Validate token error:', error);
-    res.status(500).json({ 
-      valid: false, 
-      error: 'Internal server error occurred during token validation.' 
-    });
+    console.error('Validate token error:', error)
+    res.status(500).json({
+      valid: false,
+      error: 'Internal server error occurred during token validation.',
+    })
   }
-});
+})
 
 /**
  * Process parent information update from the public form
  */
-exports.processParentUpdate = functions.https.onRequest(async (req, res) => {
+exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
   // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Origin', '*')
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type')
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
-    return res.status(200).send();
+    return res.status(200).send()
   }
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method not allowed. Use POST.' 
-    });
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
   }
 
   try {
-    const { token, parentData } = req.body;
+    const { token, parentData } = req.body
 
     if (!token || !parentData) {
-      return res.status(400).json({ 
-        error: 'Token and parent data are required' 
-      });
+      return res.status(400).json({
+        error: 'Token and parent data are required',
+      })
     }
 
     // Find parent with this token
     const parentsQuery = await db.collection('parents')
       .where('updateToken', '==', token)
       .limit(1)
-      .get();
+      .get()
 
     if (parentsQuery.empty) {
-      return res.status(404).json({ 
-        error: 'Invalid or expired token.' 
-      });
+      return res.status(404).json({
+        error: 'Invalid or expired token.',
+      })
     }
 
-    const parentDoc = parentsQuery.docs[0];
-    const existingParentData = parentDoc.data();
+    const parentDoc = parentsQuery.docs[0]
+    const existingParentData = parentDoc.data()
 
     // Check if token has expired
     if (existingParentData.tokenExpiry && existingParentData.tokenExpiry.toDate() < new Date()) {
-      return res.status(410).json({ 
-        error: 'Token has expired.' 
-      });
+      return res.status(410).json({
+        error: 'Token has expired.',
+      })
     }
 
     // Additional security: Check if form was already submitted recently (prevent duplicate submissions)
     if (existingParentData.lastUpdated) {
-      const lastUpdate = existingParentData.lastUpdated.toDate();
-      const oneMinuteAgo = new Date(Date.now() - 60 * 1000); // 1 minute cooldown
-      
+      const lastUpdate = existingParentData.lastUpdated.toDate()
+      const oneMinuteAgo = new Date(Date.now() - 60 * 1000) // 1 minute cooldown
+
       if (lastUpdate > oneMinuteAgo) {
-        return res.status(429).json({ 
-          error: 'Form was recently submitted. Please wait before submitting again.' 
-        });
+        return res.status(429).json({
+          error: 'Form was recently submitted. Please wait before submitting again.',
+        })
       }
     }
 
-    const batch = db.batch();
-    const parentRef = db.collection('parents').doc(parentDoc.id);
+    const batch = db.batch()
+    const parentRef = db.collection('parents').doc(parentDoc.id)
 
     // Prepare updated data
     const updatedData = {
@@ -194,91 +195,90 @@ exports.processParentUpdate = functions.https.onRequest(async (req, res) => {
       committees: parentData.committees || [],
       interests: parentData.interests || '',
       directoryOptOut: parentData.directoryOptOut || false,
-      lastUpdated: admin.firestore.FieldValue.serverTimestamp()
-    };
+      lastUpdated: FieldValue.serverTimestamp(),
+    }
 
     // Handle address logic
     if (parentData.sameAddressAsOther) {
       // Find the other parent and copy their address
-      const otherParentEmail = existingParentData.parent1_email === existingParentData.email 
-        ? existingParentData.parent2_email 
-        : existingParentData.parent1_email;
+      const otherParentEmail = existingParentData.parent1_email === existingParentData.email
+        ? existingParentData.parent2_email
+        : existingParentData.parent1_email
 
       if (otherParentEmail) {
         const otherParentQuery = await db.collection('parents')
           .where('email', '==', otherParentEmail)
           .limit(1)
-          .get();
+          .get()
 
         if (!otherParentQuery.empty) {
-          const otherParentData = otherParentQuery.docs[0].data();
-          updatedData.address = otherParentData.address || '';
-          updatedData.city = otherParentData.city || '';
-          updatedData.postal_code = otherParentData.postal_code || '';
+          const otherParentData = otherParentQuery.docs[0].data()
+          updatedData.address = otherParentData.address || ''
+          updatedData.city = otherParentData.city || ''
+          updatedData.postal_code = otherParentData.postal_code || ''
         }
       }
     } else {
       // Use provided address data
-      updatedData.address = parentData.address || '';
-      updatedData.city = parentData.city || '';
-      updatedData.postal_code = parentData.postal_code || '';
+      updatedData.address = parentData.address || ''
+      updatedData.city = parentData.city || ''
+      updatedData.postal_code = parentData.postal_code || ''
     }
 
     // Update parent document
-    batch.update(parentRef, updatedData);
+    batch.update(parentRef, updatedData)
 
     // Find the current active workflow and update participation
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-    const schoolYear = currentMonth >= 8 
+    const currentYear = new Date().getFullYear()
+    const currentMonth = new Date().getMonth()
+    const schoolYear = currentMonth >= 8
       ? `${currentYear}-${currentYear + 1}`
-      : `${currentYear - 1}-${currentYear}`;
-    
-    const workflowId = `${schoolYear.split('-')[0]}-annual-update`;
-    const workflowRef = db.collection('updateSessions').doc(workflowId);
-    const workflowDoc = await workflowRef.get();
+      : `${currentYear - 1}-${currentYear}`
+
+    const workflowId = `${schoolYear.split('-')[0]}-annual-update`
+    const workflowRef = db.collection('updateSessions').doc(workflowId)
+    const workflowDoc = await workflowRef.get()
 
     if (workflowDoc.exists) {
-      const participantPath = `participants.${existingParentData.email}`;
+      const participantPath = `participants.${existingParentData.email}`
       batch.update(workflowRef, {
         [`${participantPath}.formSubmitted`]: true,
-        [`${participantPath}.submittedAt`]: admin.firestore.FieldValue.serverTimestamp(),
+        [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
         [`${participantPath}.optedOut`]: parentData.directoryOptOut || false,
-        'stats.formsSubmitted': admin.firestore.FieldValue.increment(1)
-      });
+        'stats.formsSubmitted': FieldValue.increment(1),
+      })
 
       if (parentData.directoryOptOut) {
         batch.update(workflowRef, {
-          'stats.optedOut': admin.firestore.FieldValue.increment(1)
-        });
+          'stats.optedOut': FieldValue.increment(1),
+        })
       }
     }
 
     // Check if user already has an account
-    let hasAccount = false;
+    let hasAccount = false
     try {
-      await admin.auth().getUserByEmail(existingParentData.email);
-      hasAccount = true;
-    } catch (error) {
+      await admin.auth().getUserByEmail(existingParentData.email)
+      hasAccount = true
+    } catch {
       // User doesn't exist, which is fine
-      hasAccount = false;
+      hasAccount = false
     }
 
     // Commit all updates
-    await batch.commit();
+    await batch.commit()
 
-    console.log(`Parent information updated successfully for ${existingParentData.email}`);
+    console.log(`Parent information updated successfully for ${existingParentData.email}`)
 
     res.status(200).json({
       success: true,
       message: 'Parent information updated successfully',
-      hasAccount
-    });
-
+      hasAccount,
+    })
   } catch (error) {
-    console.error('Process parent update error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error occurred while processing update' 
-    });
+    console.error('Process parent update error:', error)
+    res.status(500).json({
+      error: 'Internal server error occurred while processing update',
+    })
   }
-});
+})

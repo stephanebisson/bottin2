@@ -27,10 +27,10 @@
         <v-card-text class="pa-6">
           <!-- Welcome Message -->
           <v-alert
+            class="mb-6"
             color="info"
             icon="mdi-information"
             variant="tonal"
-            class="mb-6"
           >
             <div class="text-body-1">
               {{ $t('updateForm.welcome', { name: `${parentData.first_name} ${parentData.last_name}` }) }}
@@ -96,8 +96,8 @@
               <v-col v-if="otherParentHasAddress" cols="12">
                 <v-checkbox
                   v-model="form.sameAddressAsOther"
-                  :label="$t('updateForm.sameAddressAsOther')"
                   color="primary"
+                  :label="$t('updateForm.sameAddressAsOther')"
                   @change="handleSameAddressToggle"
                 />
               </v-col>
@@ -143,7 +143,7 @@
                   <p class="text-body-2 text-grey-darken-1 mb-4">
                     {{ $t('updateForm.committeeInstructions') }}
                   </p>
-                  
+
                   <v-row>
                     <v-col
                       v-for="committee in availableCommittees"
@@ -153,9 +153,9 @@
                     >
                       <v-checkbox
                         v-model="form.committees"
-                        :value="committee.id"
-                        :label="committee.name"
                         color="primary"
+                        :label="committee.name"
+                        :value="committee.id"
                       />
                     </v-col>
                   </v-row>
@@ -205,23 +205,23 @@
 
                 <v-alert
                   v-if="form.directoryOption === 'optOut'"
+                  class="mt-4"
                   color="warning"
                   icon="mdi-alert"
                   variant="tonal"
-                  class="mt-4"
                 >
                   {{ $t('updateForm.optOutWarning') }}
                 </v-alert>
               </v-col>
 
               <!-- Submit Button -->
-              <v-col cols="12" class="text-center pt-6">
+              <v-col class="text-center pt-6" cols="12">
                 <v-btn
-                  :loading="submitting"
                   color="primary"
+                  :loading="submitting"
+                  prepend-icon="mdi-content-save"
                   size="large"
                   type="submit"
-                  prepend-icon="mdi-content-save"
                 >
                   {{ $t('updateForm.submit') }}
                 </v-btn>
@@ -238,6 +238,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from '@/composables/useI18n'
+  import { getFunctionsBaseUrl } from '@/config/functions'
 
   const route = useRoute()
   const router = useRouter()
@@ -264,7 +265,7 @@
     sameAddressAsOther: false,
     committees: [],
     interests: '',
-    directoryOption: 'full'
+    directoryOption: 'full',
   })
 
   // Validation rules
@@ -291,16 +292,14 @@
       loading.value = true
       error.value = null
 
-      const baseUrl = import.meta.env.DEV 
-        ? 'http://localhost:5001/bottin2-3b41d/us-central1'
-        : 'https://us-central1-bottin2-3b41d.cloudfunctions.net'
+      const baseUrl = getFunctionsBaseUrl()
 
       const response = await fetch(`${baseUrl}/validateUpdateToken`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token: token.value })
+        body: JSON.stringify({ token: token.value }),
       })
 
       if (!response.ok) {
@@ -336,12 +335,11 @@
         sameAddressAsOther: false,
         committees: data.parent.committees || [],
         interests: data.parent.interests || '',
-        directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full'
+        directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full',
       }
-
-    } catch (err) {
-      console.error('Failed to load parent data:', err)
-      error.value = err.message
+    } catch (error_) {
+      console.error('Failed to load parent data:', error_)
+      error.value = error_.message
     } finally {
       loading.value = false
     }
@@ -356,14 +354,12 @@
 
       submitting.value = true
 
-      const baseUrl = import.meta.env.DEV 
-        ? 'http://localhost:5001/bottin2-3b41d/us-central1'
-        : 'https://us-central1-bottin2-3b41d.cloudfunctions.net'
+      const baseUrl = getFunctionsBaseUrl()
 
       const response = await fetch(`${baseUrl}/processParentUpdate`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           token: token.value,
@@ -378,9 +374,9 @@
             sameAddressAsOther: form.value.sameAddressAsOther,
             committees: form.value.committees,
             interests: form.value.interests,
-            directoryOptOut: form.value.directoryOption === 'optOut'
-          }
-        })
+            directoryOptOut: form.value.directoryOption === 'optOut',
+          },
+        }),
       })
 
       if (!response.ok) {
@@ -388,18 +384,17 @@
       }
 
       const result = await response.json()
-      
+
       // Redirect to success page or show success message
       router.push({
         path: '/update-success',
-        query: { 
+        query: {
           hasAccount: result.hasAccount ? '1' : '0',
-          email: parentData.value.email 
-        }
+          email: parentData.value.email,
+        },
       })
-
-    } catch (err) {
-      console.error('Failed to submit form:', err)
+    } catch (error_) {
+      console.error('Failed to submit form:', error_)
       error.value = t('updateForm.submitError')
     } finally {
       submitting.value = false

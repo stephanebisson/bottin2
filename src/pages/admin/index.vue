@@ -1,0 +1,331 @@
+<template>
+  <v-container>
+    <div class="d-flex justify-space-between align-center mb-6">
+      <h1 class="text-h3 font-weight-bold">{{ $t('admin.title') }}</h1>
+    </div>
+
+    <!-- Access Control -->
+    <div v-if="!isAuthorized" class="text-center py-12">
+      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
+      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <p class="text-body-1 text-grey-darken-1 mt-2">
+        {{ $t('admin.adminAccessRequired') }}
+      </p>
+
+      <!-- Manual Refresh Button for newly granted admins -->
+      <div class="mt-6">
+        <p class="text-body-2 text-grey-darken-1 mb-4">
+          Just granted admin access? Try refreshing your permissions:
+        </p>
+        <v-btn
+          color="primary"
+          :loading="loading"
+          prepend-icon="mdi-refresh"
+          @click="checkAdminStatus"
+        >
+          Refresh Admin Status
+        </v-btn>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div v-else>
+      <!-- Welcome Section -->
+      <v-card class="mb-6" color="primary" variant="tonal">
+        <v-card-text>
+          <div class="d-flex align-center">
+            <v-icon class="mr-4" size="48">mdi-shield-account</v-icon>
+            <div>
+              <h2 class="text-h5 font-weight-bold">Welcome to Admin Dashboard</h2>
+              <p class="text-body-1 mt-2">
+                Manage your school directory system and administrative tasks.
+              </p>
+            </div>
+          </div>
+        </v-card-text>
+      </v-card>
+
+      <!-- Admin Tools Grid -->
+      <v-row>
+        <!-- Annual Parent Information Update -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="handleAnnualUpdateClick"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="primary" size="64">mdi-calendar-sync</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.annualUpdateWorkflow') }}</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                Manage the annual parent information update process, send notifications, and track responses.
+              </p>
+
+              <!-- Quick Status -->
+              <div v-if="currentWorkflow" class="mt-4">
+                <v-chip
+                  :color="getWorkflowStatusColor(currentWorkflow.status)"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ $t(`admin.status.${currentWorkflow.status}`) }}
+                </v-chip>
+                <div class="text-body-2 mt-2">
+                  {{ currentWorkflow.stats.formsSubmitted }}/{{ currentWorkflow.stats.totalParents }} completed
+                </div>
+              </div>
+              <div v-else class="mt-4">
+                <v-chip color="grey" size="small" variant="tonal">
+                  No active workflow
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- User Management -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="$router.push('/admin/users')"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="secondary" size="64">mdi-account-group</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">User Management</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                Manage user accounts, permissions, and admin privileges for the system.
+              </p>
+
+              <!-- Quick Status -->
+              <div class="mt-4">
+                <v-chip color="info" size="small" variant="tonal">
+                  Coming Soon
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- Directory Management -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="$router.push('/admin/directory')"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="success" size="64">mdi-book-account</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">Directory Management</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                Manage the school directory content, export data, and configure display settings.
+              </p>
+
+              <!-- Quick Status -->
+              <div class="mt-4">
+                <v-chip color="info" size="small" variant="tonal">
+                  Coming Soon
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- Google Sheets Sync -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="$router.push('/admin/sheets-sync')"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="warning" size="64">mdi-google-spreadsheet</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">Google Sheets Sync</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                Synchronize data with Google Sheets for external data management and backup.
+              </p>
+
+              <!-- Quick Status -->
+              <div class="mt-4">
+                <v-chip color="info" size="small" variant="tonal">
+                  Coming Soon
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- System Settings -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="$router.push('/admin/settings')"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="error" size="64">mdi-cog</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">System Settings</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                Configure system-wide settings, email templates, and application preferences.
+              </p>
+
+              <!-- Quick Status -->
+              <div class="mt-4">
+                <v-chip color="info" size="small" variant="tonal">
+                  Coming Soon
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- Audit Logs -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="$router.push('/admin/audit-logs')"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="info" size="64">mdi-file-document-outline</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">Audit Logs</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                View system activity logs, admin actions, and security events for compliance.
+              </p>
+
+              <!-- Quick Status -->
+              <div class="mt-4">
+                <v-chip color="info" size="small" variant="tonal">
+                  Coming Soon
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+  </v-container>
+</template>
+
+<script setup>
+  import { computed, onMounted, ref, watch } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useI18n } from '@/composables/useI18n'
+  import { getFunctionsBaseUrl } from '@/config/functions'
+  import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  const { t } = useI18n()
+  const router = useRouter()
+  const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
+
+  // State
+  const loading = ref(false)
+  const currentWorkflow = ref(null)
+
+  // Check if user is authorized using Firebase Custom Claims
+  const isAuthorized = ref(false)
+  const adminStatus = ref(null)
+
+  // Check admin status using custom claims
+  const checkAdminStatus = async () => {
+    if (!authStore.isAuthenticated || !authStore.user) {
+      isAuthorized.value = false
+      return
+    }
+
+    try {
+      // Get ID token result which includes custom claims - force refresh to get latest claims
+      const idTokenResult = await authStore.user.getIdTokenResult(true)
+      const isAdmin = !!idTokenResult.claims.admin
+
+      isAuthorized.value = isAdmin
+      adminStatus.value = {
+        isAdmin,
+        claims: idTokenResult.claims,
+        email: authStore.userEmail,
+      }
+    } catch (error) {
+      console.error('Failed to check admin status:', error)
+      isAuthorized.value = false
+    }
+  }
+
+  // Workflow status helpers (for dashboard overview)
+  const getWorkflowStatusColor = status => {
+    switch (status) {
+      case 'pending': { return 'warning'
+      }
+      case 'active': { return 'info'
+      }
+      case 'completed': { return 'success'
+      }
+      default: { return 'grey'
+      }
+    }
+  }
+
+  // Handle annual update card click
+  const handleAnnualUpdateClick = () => {
+    router.push('/admin/annual-update')
+  }
+
+  // Load current workflow for dashboard overview
+  const loadWorkflowData = async () => {
+    try {
+      const baseUrl = getFunctionsBaseUrl()
+
+      const response = await fetch(`${baseUrl}/getWorkflowStatus`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${await authStore.user.getIdToken()}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      currentWorkflow.value = data.current
+    } catch (error) {
+      console.error('Failed to load workflow data:', error)
+    }
+  }
+
+  onMounted(async () => {
+    await checkAdminStatus()
+    if (isAuthorized.value) {
+      await loadWorkflowData()
+    }
+  })
+
+  // Watch for authentication changes
+  watch(() => authStore.isAuthenticated, async newValue => {
+    if (newValue) {
+      await checkAdminStatus()
+      if (isAuthorized.value) {
+        await loadWorkflowData()
+      }
+    } else {
+      isAuthorized.value = false
+      adminStatus.value = null
+    }
+  })
+</script>
+
+<style scoped>
+  .admin-card {
+    transition: all 0.3s ease;
+  }
+
+  .admin-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+</style>

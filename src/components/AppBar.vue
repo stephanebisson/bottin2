@@ -27,7 +27,7 @@
             </v-avatar>
           </v-btn>
         </template>
-        
+
         <v-list>
           <!-- User Info -->
           <v-list-item>
@@ -38,9 +38,9 @@
               {{ authStore.userEmail }}
             </v-list-item-subtitle>
           </v-list-item>
-          
+
           <v-divider />
-          
+
           <!-- Profile -->
           <v-list-item
             prepend-icon="mdi-account-edit"
@@ -48,7 +48,7 @@
           >
             <v-list-item-title>{{ $t('nav.profile') }}</v-list-item-title>
           </v-list-item>
-          
+
           <!-- Logout -->
           <v-list-item
             :loading="authStore.loading"
@@ -85,8 +85,8 @@
   import { useRoute, useRouter } from 'vue-router'
   import ThemeSelector from '@/components/ThemeSelector.vue'
   import { useI18n } from '@/composables/useI18n'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   defineEmits(['toggle-drawer'])
 

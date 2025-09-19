@@ -58,7 +58,7 @@
             <!-- Committee Header -->
             <v-card-title class="bg-primary text-white">
               <div class="d-flex justify-space-between align-center w-100">
-                <HighlightedText :text="committee.name" :query="searchQuery" />
+                <HighlightedText :query="searchQuery" :text="committee.name" />
                 <v-chip
                   color="white"
                   size="small"
@@ -88,7 +88,7 @@
                         <!-- Member Header -->
                         <div class="d-flex justify-space-between align-center mb-2">
                           <div class="text-subtitle-1 font-weight-bold">
-                            <HighlightedText :text="member.fullName" :query="searchQuery" />
+                            <HighlightedText :query="searchQuery" :text="member.fullName" />
                           </div>
                           <v-chip
                             :color="member.memberType === 'staff' ? 'blue' : 'green'"
@@ -141,9 +141,9 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import HighlightedText from '@/components/HighlightedText.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
-  import HighlightedText from '@/components/HighlightedText.vue'
 
   const searchQuery = ref('')
 

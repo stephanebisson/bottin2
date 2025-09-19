@@ -6,7 +6,9 @@
 
 import { setupLayouts } from 'virtual:generated-layouts'
 // Composables
+/* eslint-disable-next-line import/no-duplicates */
 import { createRouter, createWebHistory } from 'vue-router'
+/* eslint-disable-next-line import/no-duplicates */
 import { routes } from 'vue-router/auto-routes'
 import { authMiddleware, routeConfig } from '@/middleware/auth'
 
@@ -42,12 +44,17 @@ router.onError((err, to) => {
 router.beforeEach(async (to, from, next) => {
   // Always initialize auth first
   await authMiddleware.initializeAuth(to, from, () => {})
-  
+
   // Check if route requires authentication
-  if (routeConfig.protected.includes(to.path)) {
+  const requiresAuth = routeConfig.protected.some(protectedPath => {
+    // Exact match or admin sub-route
+    return to.path === protectedPath || (protectedPath === '/admin' && to.path.startsWith('/admin'))
+  })
+
+  if (requiresAuth) {
     return authMiddleware.requireAuth(to, from, next)
   }
-  
+
   // Check if route should redirect authenticated users
   if (routeConfig.public.includes(to.path)) {
     return authMiddleware.redirectIfAuth(to, from, next)
@@ -58,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
   if (isOpenRoute) {
     return next()
   }
-  
+
   // No special auth requirements, proceed
   next()
 })

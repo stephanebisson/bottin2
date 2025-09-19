@@ -23,7 +23,7 @@
               <v-icon>mdi-account</v-icon>
             </v-avatar>
           </template>
-          
+
           <v-list-item-title class="font-weight-bold text-body-2">
             {{ authStore.userDisplayName }}
           </v-list-item-title>
@@ -55,7 +55,7 @@
             {{ $t('nav.pleaseLogin') }}
           </v-list-item-title>
         </v-list-item>
-        
+
         <v-list-item class="px-4">
           <v-btn
             block
@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { useDisplay } from 'vuetify'
   import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
@@ -109,41 +109,78 @@
   const { t } = useI18n()
   const authStore = useAuthStore()
 
-  const navigationItems = computed(() => [
-    {
-      title: t('nav.home'),
-      icon: 'mdi-home',
-      to: '/',
-    },
-    {
-      title: t('nav.classes'),
-      icon: 'mdi-school',
-      to: '/classes',
-    },
-    {
-      title: t('nav.students'),
-      icon: 'mdi-account-multiple',
-      to: '/students',
-    },
-    {
-      title: t('nav.parents'),
-      icon: 'mdi-account-supervisor',
-      to: '/parents',
-    },
-    {
-      title: t('nav.staff'),
-      icon: 'mdi-account-tie',
-      to: '/staff',
-    },
-    {
-      title: t('nav.committees'),
-      icon: 'mdi-account-group',
-      to: '/committees',
-    },
-    {
-      title: t('admin.title'),
-      icon: 'mdi-cog',
-      to: '/admin',
-    },
-  ])
+  // Admin status tracking
+  const isAdmin = ref(false)
+
+  // Check admin status using Firebase Custom Claims
+  const checkAdminStatus = async () => {
+    if (!authStore.isAuthenticated || !authStore.user) {
+      isAdmin.value = false
+      return
+    }
+
+    try {
+      // Get ID token result which includes custom claims
+      const idTokenResult = await authStore.user.getIdTokenResult(true)
+      isAdmin.value = !!idTokenResult.claims.admin
+    } catch (error) {
+      console.error('Failed to check admin status in nav:', error)
+      isAdmin.value = false
+    }
+  }
+
+  // Watch for authentication changes
+  watch(() => authStore.isAuthenticated, async newValue => {
+    if (newValue) {
+      await checkAdminStatus()
+    } else {
+      isAdmin.value = false
+    }
+  }, { immediate: true })
+
+  const navigationItems = computed(() => {
+    const baseItems = [
+      {
+        title: t('nav.home'),
+        icon: 'mdi-home',
+        to: '/',
+      },
+      {
+        title: t('nav.classes'),
+        icon: 'mdi-school',
+        to: '/classes',
+      },
+      {
+        title: t('nav.students'),
+        icon: 'mdi-account-multiple',
+        to: '/students',
+      },
+      {
+        title: t('nav.parents'),
+        icon: 'mdi-account-supervisor',
+        to: '/parents',
+      },
+      {
+        title: t('nav.staff'),
+        icon: 'mdi-account-tie',
+        to: '/staff',
+      },
+      {
+        title: t('nav.committees'),
+        icon: 'mdi-account-group',
+        to: '/committees',
+      },
+    ]
+
+    // Only add admin link if user is admin
+    if (isAdmin.value) {
+      baseItems.push({
+        title: t('admin.title'),
+        icon: 'mdi-cog',
+        to: '/admin',
+      })
+    }
+
+    return baseItems
+  })
 </script>

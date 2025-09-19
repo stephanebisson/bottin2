@@ -15,12 +15,12 @@
   const props = defineProps({
     text: {
       type: String,
-      default: ''
+      default: '',
     },
     query: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   })
 
   const segments = computed(() => {

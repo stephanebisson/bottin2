@@ -64,9 +64,9 @@
               <!-- Parent Column -->
               <td class="py-3">
                 <div class="text-subtitle-1 font-weight-bold">
-                  <HighlightedText 
-                    :text="`${parentData.parent.last_name}, ${parentData.parent.first_name}`" 
-                    :query="searchQuery" 
+                  <HighlightedText
+                    :query="searchQuery"
+                    :text="`${parentData.parent.last_name}, ${parentData.parent.first_name}`"
                   />
                 </div>
               </td>
@@ -79,9 +79,9 @@
                     :key="child.id"
                     class="mb-1"
                   >
-                    <HighlightedText 
-                      :text="`${child.last_name}, ${child.first_name}`" 
-                      :query="searchQuery" 
+                    <HighlightedText
+                      :query="searchQuery"
+                      :text="`${child.last_name}, ${child.first_name}`"
                     />
                   </div>
                 </div>
@@ -113,9 +113,9 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import HighlightedText from '@/components/HighlightedText.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
-  import HighlightedText from '@/components/HighlightedText.vue'
 
   const searchQuery = ref('')
 
