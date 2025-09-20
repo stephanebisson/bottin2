@@ -1,7 +1,7 @@
 const crypto = require('node:crypto')
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
-const functions = require('firebase-functions')
+const functions = require('firebase-functions/v1')
 const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
@@ -107,7 +107,7 @@ exports.startAnnualUpdate = functions.region(FUNCTIONS_REGION).https.onRequest(a
     const parents = []
     console.log(`Found ${parentsSnapshot.size} parent documents`)
 
-    for (const doc of parentsSnapshot) {
+    for (const doc of parentsSnapshot.docs) {
       const parentData = doc.data()
       if (parentData.email) {
         parents.push({
@@ -260,7 +260,7 @@ exports.getWorkflowStatus = functions.region(FUNCTIONS_REGION).https.onRequest(a
     const workflows = []
     let currentWorkflow = null
 
-    for (const doc of workflowsSnapshot) {
+    for (const doc of workflowsSnapshot.docs) {
       const data = doc.data()
       const workflow = {
         id: doc.id,
