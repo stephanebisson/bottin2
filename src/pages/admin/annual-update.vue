@@ -14,11 +14,11 @@
       </div>
     </div>
 
-    <!-- Current Workflow Status -->
+    <!-- Overall Status at Top -->
     <v-card class="mb-6">
       <v-card-title class="d-flex align-center">
         <v-icon class="mr-2">mdi-calendar-sync</v-icon>
-        {{ $t('admin.currentWorkflowStatus') }}
+        {{ $t('admin.overallStatus') }}
       </v-card-title>
 
       <v-card-text>
@@ -84,6 +84,25 @@
               </v-card>
             </v-col>
           </v-row>
+
+          <!-- Action Buttons -->
+          <div class="text-center mt-6">
+            <div class="d-flex flex-column flex-sm-row gap-4 justify-center">
+              <!-- Start New Workflow Button -->
+              <v-btn
+                color="primary"
+                :disabled="loading || (currentWorkflow && currentWorkflow.status === 'active')"
+                :loading="loading"
+                prepend-icon="mdi-rocket-launch"
+                size="large"
+                @click="showStartWorkflowDialog = true"
+              >
+                {{ currentWorkflow && currentWorkflow.status === 'active'
+                  ? $t('admin.workflowInProgress')
+                  : $t('admin.startAnnualUpdate') }}
+              </v-btn>
+            </div>
+          </div>
         </div>
 
         <!-- No Current Workflow -->
@@ -92,43 +111,154 @@
           <p class="text-h6 mt-2 text-grey-darken-2">
             {{ $t('admin.noActiveWorkflow') }}
           </p>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="text-center mt-6">
-          <div class="d-flex flex-column flex-sm-row gap-4 justify-center">
-            <!-- Start New Workflow Button -->
+          <!-- Action Buttons for No Workflow -->
+          <div class="mt-6">
             <v-btn
               color="primary"
-              :disabled="loading || (currentWorkflow && currentWorkflow.status === 'active')"
+              :disabled="loading"
               :loading="loading"
               prepend-icon="mdi-rocket-launch"
               size="large"
               @click="showStartWorkflowDialog = true"
             >
-              {{ currentWorkflow && currentWorkflow.status === 'active'
-                ? $t('admin.workflowInProgress')
-                : $t('admin.startAnnualUpdate') }}
-            </v-btn>
-
-            <!-- Manage Participants Button (only show if workflow is active) -->
-            <v-btn
-              v-if="currentWorkflow && currentWorkflow.status === 'active'"
-              color="secondary"
-              :disabled="loading"
-              prepend-icon="mdi-account-group"
-              size="large"
-              @click="showParentSelectionDialog = true"
-            >
-              {{ $t('admin.manageParticipants') }}
+              {{ $t('admin.startAnnualUpdate') }}
             </v-btn>
           </div>
         </div>
       </v-card-text>
     </v-card>
 
-    <!-- Recent Workflows History -->
-    <v-card>
+    <!-- Parents Management Table -->
+    <v-card v-if="currentWorkflow && currentWorkflow.status === 'active'">
+      <v-card-title class="d-flex align-center">
+        <v-icon class="mr-2">mdi-account-group</v-icon>
+        {{ $t('admin.parentsManagement') }}
+      </v-card-title>
+
+      <v-card-text>
+        <!-- Controls -->
+        <div class="d-flex flex-column flex-md-row gap-4 mb-4">
+          <!-- Search -->
+          <v-text-field
+            v-model="parentSearch"
+            class="flex-grow-1"
+            clearable
+            density="compact"
+            :label="$t('common.search')"
+            :placeholder="$t('admin.searchParents')"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+          />
+
+          <!-- Status Filter -->
+          <v-select
+            v-model="statusFilter"
+            class="flex-shrink-0"
+            clearable
+            density="compact"
+            :items="statusFilterOptions"
+            :label="$t('admin.filterByStatus')"
+            style="min-width: 200px;"
+            variant="outlined"
+          />
+
+          <!-- Bulk Actions -->
+          <div class="d-flex gap-2">
+            <v-btn
+              color="primary"
+              :disabled="selectedParentRows.length === 0 || sendingEmails"
+              :loading="sendingEmails"
+              size="small"
+              @click="sendSelectedEmails"
+            >
+              <v-icon start>mdi-email-send</v-icon>
+              {{ $t('admin.sendEmails') }} ({{ selectedParentRows.length }})
+            </v-btn>
+            <v-btn
+              size="small"
+              variant="outlined"
+              @click="selectAllVisibleParents"
+            >
+              {{ $t('admin.selectAllVisible') }}
+            </v-btn>
+            <v-btn
+              size="small"
+              variant="outlined"
+              @click="clearSelection"
+            >
+              {{ $t('admin.clearSelection') }}
+            </v-btn>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <v-data-table
+          v-model="selectedParentRows"
+          class="elevation-1"
+          :headers="parentTableHeaders"
+          :items="filteredAndSortedParents"
+          :items-per-page="25"
+          :items-per-page-options="[10, 25, 50, 100, 200, 300]"
+          :loading="loading"
+          return-object
+          select-strategy="page"
+          show-select
+          @update:options="updateTableOptions"
+        >
+          <!-- Name Column -->
+          <template #item.name="{ item }">
+            <div>
+              <div class="font-weight-medium">{{ item.firstName }} {{ item.lastName }}</div>
+              <div class="text-caption text-grey-darken-1">{{ item.email }}</div>
+            </div>
+          </template>
+
+          <!-- Email Status Column -->
+          <template #item.emailStatus="{ item }">
+            <div class="d-flex flex-column gap-1">
+              <v-chip
+                :color="getEmailStatusColor(item.emailStatus)"
+                size="small"
+                variant="tonal"
+              >
+                <v-icon size="16" start>{{ getEmailStatusIcon(item.emailStatus) }}</v-icon>
+                {{ getEmailStatusText(item.emailStatus) }}
+              </v-chip>
+              <div
+                v-if="item.emailSentAt"
+                class="text-caption text-grey-darken-2"
+              >
+                {{ formatEmailDate(item.emailSentAt) }}
+              </div>
+            </div>
+          </template>
+
+          <!-- Form Status Column -->
+          <template #item.formStatus="{ item }">
+            <v-chip
+              :color="getFormStatusColor(item.formStatus)"
+              size="small"
+              variant="tonal"
+            >
+              <v-icon size="16" start>{{ getFormStatusIcon(item.formStatus) }}</v-icon>
+              {{ getFormStatusText(item.formStatus) }}
+            </v-chip>
+          </template>
+
+          <!-- Last Updated Column -->
+          <template #item.lastUpdated="{ item }">
+            <div class="text-body-2">
+              {{ item.lastUpdated ? formatEmailDate(item.lastUpdated) : '—' }}
+            </div>
+          </template>
+
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+
+    <!-- Recent Workflows History (only show if no active workflow) -->
+    <v-card v-if="!currentWorkflow || currentWorkflow.status !== 'active'">
       <v-card-title class="d-flex align-center">
         <v-icon class="mr-2">mdi-history</v-icon>
         {{ $t('admin.workflowHistory') }}
@@ -244,172 +374,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Parent Selection Dialog -->
-    <v-dialog v-model="showParentSelectionDialog" max-width="800" scrollable>
-      <v-card>
-        <v-card-title class="d-flex align-center justify-space-between">
-          <div class="d-flex align-center">
-            <v-icon class="mr-2">mdi-account-group</v-icon>
-            {{ $t('admin.manageParticipants') }}
-          </div>
-          <v-btn icon="mdi-close" variant="text" @click="showParentSelectionDialog = false" />
-        </v-card-title>
-
-        <v-card-text>
-          <!-- Selection Controls -->
-          <div class="d-flex flex-column flex-sm-row gap-4 mb-4">
-            <v-text-field
-              v-model="parentSearch"
-              class="flex-grow-1"
-              clearable
-              density="compact"
-              :label="$t('common.search')"
-              :placeholder="$t('admin.searchParents')"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-            />
-
-            <div class="d-flex gap-2">
-              <v-btn
-                size="small"
-                variant="outlined"
-                @click="selectAllParents"
-              >
-                {{ $t('admin.selectAll') }}
-              </v-btn>
-              <v-btn
-                size="small"
-                variant="outlined"
-                @click="selectNoneParents"
-              >
-                {{ $t('admin.selectNone') }}
-              </v-btn>
-              <v-btn
-                size="small"
-                variant="outlined"
-                @click="selectUnsent"
-              >
-                {{ $t('admin.selectUnsent') }}
-              </v-btn>
-            </div>
-          </div>
-
-          <!-- Parent List -->
-          <div class="border rounded pa-4" style="max-height: 400px; overflow-y: auto;">
-            <div v-if="filteredParents.length === 0" class="text-center py-8">
-              <v-icon color="grey-darken-2" size="48">mdi-account-search</v-icon>
-              <p class="text-body-1 text-grey-darken-2 mt-2">
-                {{ parentSearch ? $t('admin.noParentsMatchSearch') : $t('admin.noParentsFound') }}
-              </p>
-            </div>
-
-            <v-list v-else lines="two">
-              <v-list-item
-                v-for="parent in filteredParents"
-                :key="parent.id"
-              >
-                <template #prepend>
-                  <v-checkbox
-                    color="primary"
-                    :model-value="selectedParents.includes(parent.id)"
-                    @update:model-value="toggleParentSelection(parent.id, $event)"
-                  />
-                </template>
-
-                <v-list-item-title>
-                  {{ parent.firstName }} {{ parent.lastName }}
-                </v-list-item-title>
-
-                <v-list-item-subtitle>
-                  {{ parent.email }}
-                </v-list-item-subtitle>
-
-                <template #append>
-                  <div class="d-flex flex-column align-end gap-1">
-                    <!-- Email Status -->
-                    <v-chip
-                      v-if="getParentEmailStatus(parent.email).sent"
-                      color="success"
-                      size="small"
-                      variant="tonal"
-                    >
-                      <v-icon size="16" start>mdi-email-check</v-icon>
-                      {{ $t('admin.emailSent') }}
-                    </v-chip>
-                    <v-chip
-                      v-else
-                      color="grey"
-                      size="small"
-                      variant="tonal"
-                    >
-                      <v-icon size="16" start>mdi-email-off</v-icon>
-                      {{ $t('admin.emailNotSent') }}
-                    </v-chip>
-
-                    <!-- Last Email Date -->
-                    <div
-                      v-if="getParentEmailStatus(parent.email).sent"
-                      class="text-caption text-grey-darken-2"
-                    >
-                      {{ formatEmailDate(getParentEmailStatus(parent.email).sentAt) }}
-                    </div>
-
-                    <!-- Submission Status -->
-                    <v-chip
-                      v-if="getParentFormStatus(parent.email).submitted"
-                      color="primary"
-                      size="small"
-                      variant="tonal"
-                    >
-                      <v-icon size="16" start>mdi-check-circle</v-icon>
-                      {{ $t('admin.formSubmitted') }}
-                    </v-chip>
-                  </div>
-                </template>
-              </v-list-item>
-            </v-list>
-          </div>
-
-          <!-- Selection Summary -->
-          <div class="mt-4 pa-4 bg-grey-lighten-4 rounded">
-            <div class="d-flex justify-space-between align-center">
-              <div>
-                <strong>{{ selectedParents.length }}</strong> {{ $t('admin.parentsSelected') }}
-                <span class="text-grey-darken-1 ml-2">
-                  ({{ filteredParents.length }} {{ $t('admin.totalVisible') }})
-                </span>
-              </div>
-
-              <div class="text-right">
-                <div class="text-caption text-grey-darken-2">
-                  {{ getSelectedEmailStats().sent }} {{ $t('admin.alreadySent') }} •
-                  {{ getSelectedEmailStats().unsent }} {{ $t('admin.willBeSent') }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="grey"
-            variant="text"
-            @click="showParentSelectionDialog = false"
-          >
-            {{ $t('common.cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            :disabled="selectedParents.length === 0 || sendingEmails"
-            :loading="sendingEmails"
-            @click="sendSelectedEmails"
-          >
-            {{ $t('admin.sendEmailsToSelected') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -429,15 +393,35 @@
   const sendingEmails = ref(false)
   const error = ref(null)
   const showStartWorkflowDialog = ref(false)
-  const showParentSelectionDialog = ref(false)
   const confirmationText = ref('')
   const currentWorkflow = ref(null)
   const workflowHistory = ref([])
 
-  // Parent selection state
+  // Parent management state
   const parents = ref([])
-  const selectedParents = ref([])
+  const selectedParentRows = ref([])
   const parentSearch = ref('')
+  const statusFilter = ref(null)
+  const tableOptions = ref({
+    sortBy: [],
+    sortDesc: [],
+  })
+
+  // Table configuration
+  const parentTableHeaders = [
+    { title: 'Name', key: 'name', sortable: true },
+    { title: 'Email Status', key: 'emailStatus', sortable: true },
+    { title: 'Form Status', key: 'formStatus', sortable: true },
+    { title: 'Last Updated', key: 'lastUpdated', sortable: true },
+  ]
+
+  const statusFilterOptions = [
+    { title: 'All Parents', value: null },
+    { title: 'Email Not Sent', value: 'email_not_sent' },
+    { title: 'Email Sent', value: 'email_sent' },
+    { title: 'Form Submitted', value: 'form_submitted' },
+    { title: 'Opted Out', value: 'opted_out' },
+  ]
 
   // Workflow status helpers
   const getWorkflowStatusType = status => {
@@ -498,31 +482,146 @@
     return date.toLocaleDateString()
   }
 
-  // Parent management computed properties
-  const filteredParents = computed(() => {
-    if (!parentSearch.value) return parents.value
+  // Enhanced parent data with status information
+  const enrichedParents = computed(() => {
+    if (!currentWorkflow.value?.participants) return []
 
-    const searchTerm = parentSearch.value.toLowerCase()
-    return parents.value.filter(parent =>
-      `${parent.firstName} ${parent.lastName}`.toLowerCase().includes(searchTerm)
-      || parent.email.toLowerCase().includes(searchTerm),
-    )
+    // Base the table on workflow participants, not the parents collection
+    // This ensures consistency with the workflow stats
+    const participantEntries = Object.entries(currentWorkflow.value.participants)
+
+    return participantEntries.map(([email, participant]) => {
+      // Try to find the parent in the parents collection for additional info
+      const parentInfo = parents.value.find(p => p.email === email) || {}
+
+      return {
+        id: parentInfo.id || email, // Use email as fallback ID
+        email,
+        firstName: parentInfo.firstName || parentInfo.first_name || '',
+        lastName: parentInfo.lastName || parentInfo.last_name || '',
+        emailSent: participant.emailSent || false,
+        emailSentAt: participant.emailSentAt,
+        formSubmitted: participant.formSubmitted || false,
+        submittedAt: participant.submittedAt,
+        optedOut: participant.optedOut || false,
+        emailStatus: participant.emailSent ? 'sent' : 'not_sent',
+        formStatus: participant.formSubmitted
+          ? 'submitted'
+          : (participant.optedOut ? 'opted_out' : 'pending'),
+        lastUpdated: participant.submittedAt || participant.emailSentAt,
+      }
+    })
   })
 
-  // Helper functions for parent status
-  const getParentEmailStatus = email => {
-    const participant = currentWorkflow.value?.participants?.[email]
-    return {
-      sent: !!participant?.emailSent,
-      sentAt: participant?.emailSentAt,
+  // Filtered and sorted parents for the table
+  const filteredAndSortedParents = computed(() => {
+    let filtered = enrichedParents.value
+
+    // Apply search filter
+    if (parentSearch.value) {
+      const searchTerm = parentSearch.value.toLowerCase()
+      filtered = filtered.filter(parent =>
+        `${parent.firstName} ${parent.lastName}`.toLowerCase().includes(searchTerm)
+        || parent.email.toLowerCase().includes(searchTerm),
+      )
+    }
+
+    // Apply status filter
+    if (statusFilter.value) {
+      switch (statusFilter.value) {
+        case 'email_not_sent': {
+          filtered = filtered.filter(parent => !parent.emailSent)
+          break
+        }
+        case 'email_sent': {
+          filtered = filtered.filter(parent => parent.emailSent)
+          break
+        }
+        case 'form_submitted': {
+          filtered = filtered.filter(parent => parent.formSubmitted)
+          break
+        }
+        case 'opted_out': {
+          filtered = filtered.filter(parent => parent.optedOut)
+          break
+        }
+      }
+    }
+
+    return filtered
+  })
+
+  // Email status helpers
+  const getEmailStatusColor = status => {
+    switch (status) {
+      case 'sent': { return 'success'
+      }
+      case 'not_sent': { return 'grey'
+      }
+      default: { return 'grey'
+      }
     }
   }
 
-  const getParentFormStatus = email => {
-    const participant = currentWorkflow.value?.participants?.[email]
-    return {
-      submitted: !!participant?.formSubmitted,
-      submittedAt: participant?.submittedAt,
+  const getEmailStatusIcon = status => {
+    switch (status) {
+      case 'sent': { return 'mdi-email-check'
+      }
+      case 'not_sent': { return 'mdi-email-off'
+      }
+      default: { return 'mdi-email-off'
+      }
+    }
+  }
+
+  const getEmailStatusText = status => {
+    switch (status) {
+      case 'sent': { return t('admin.emailSent')
+      }
+      case 'not_sent': { return t('admin.emailNotSent')
+      }
+      default: { return t('admin.emailNotSent')
+      }
+    }
+  }
+
+  // Form status helpers
+  const getFormStatusColor = status => {
+    switch (status) {
+      case 'submitted': { return 'success'
+      }
+      case 'opted_out': { return 'warning'
+      }
+      case 'pending': { return 'grey'
+      }
+      default: { return 'grey'
+      }
+    }
+  }
+
+  const getFormStatusIcon = status => {
+    switch (status) {
+      case 'submitted': { return 'mdi-check-circle'
+      }
+      case 'opted_out': { return 'mdi-cancel'
+      }
+      case 'pending': { return 'mdi-clock-outline'
+      }
+      default: { return 'mdi-clock-outline'
+      }
+    }
+  }
+
+  const getFormStatusText = status => {
+    switch (status) {
+      case 'submitted': { return t('admin.formSubmitted')
+      }
+      case 'opted_out': { return t('admin.optedOut')
+      }
+      case 'pending': { return t('admin.pending')
+      }
+      default: { return t('admin.pending')
+      }
     }
   }
 
@@ -532,44 +631,59 @@
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
-  const getSelectedEmailStats = () => {
-    const selectedParentEmails = selectedParents.value.map(id => {
-      const parent = parents.value.find(p => p.id === id)
-      return parent?.email
-    }).filter(Boolean)
-
-    const sent = selectedParentEmails.filter(email => getParentEmailStatus(email).sent).length
-    const unsent = selectedParentEmails.length - sent
-
-    return { sent, unsent }
+  // Table functions
+  const updateTableOptions = options => {
+    tableOptions.value = options
   }
 
-  // Parent selection functions
-  const toggleParentSelection = (parentId, selected) => {
-    if (selected) {
-      if (!selectedParents.value.includes(parentId)) {
-        selectedParents.value.push(parentId)
-      }
-    } else {
-      const index = selectedParents.value.indexOf(parentId)
-      if (index !== -1) {
-        selectedParents.value.splice(index, 1)
-      }
+  const selectAllVisibleParents = () => {
+    selectedParentRows.value = [...filteredAndSortedParents.value]
+  }
+
+  const clearSelection = () => {
+    selectedParentRows.value = []
+  }
+
+  // Email sending functions
+  const sendEmailToParent = async parent => {
+    if (!currentWorkflow.value) return
+
+    try {
+      sendingEmails.value = true
+      await sendEmailsToParents([parent.email])
+      await loadWorkflowData()
+    } catch (error) {
+      console.error('Failed to send email to parent:', error)
+    } finally {
+      sendingEmails.value = false
     }
   }
 
-  const selectAllParents = () => {
-    selectedParents.value = filteredParents.value.map(parent => parent.id)
+  const resendEmailToParent = async parent => {
+    await sendEmailToParent(parent)
   }
 
-  const selectNoneParents = () => {
-    selectedParents.value = []
-  }
+  const sendEmailsToParents = async emailList => {
+    const baseUrl = getFunctionsBaseUrl()
 
-  const selectUnsent = () => {
-    selectedParents.value = filteredParents.value
-      .filter(parent => !getParentEmailStatus(parent.email).sent)
-      .map(parent => parent.id)
+    const response = await fetch(`${baseUrl}/sendUpdateEmailsToSelected`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+      },
+      body: JSON.stringify({
+        workflowId: currentWorkflow.value.id,
+        parentEmails: emailList,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+    return result
   }
 
   // Start a new annual update workflow
@@ -668,42 +782,20 @@
 
   // Send emails to selected parents
   const sendSelectedEmails = async () => {
-    if (!currentWorkflow.value || selectedParents.value.length === 0) return
+    if (!currentWorkflow.value || selectedParentRows.value.length === 0) return
 
     try {
       sendingEmails.value = true
       error.value = null
 
       // Get selected parent emails
-      const selectedEmails = selectedParents.value.map(id => {
-        const parent = parents.value.find(p => p.id === id)
-        return parent?.email
-      }).filter(Boolean)
+      const selectedEmails = selectedParentRows.value.map(parent => parent.email).filter(Boolean)
 
-      const baseUrl = getFunctionsBaseUrl()
-
-      const response = await fetch(`${baseUrl}/sendUpdateEmailsToSelected`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          workflowId: currentWorkflow.value.id,
-          parentEmails: selectedEmails,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      console.log(`Emails sent successfully to ${result.emailsSent} parents`)
+      await sendEmailsToParents(selectedEmails)
+      console.log(`Emails sent successfully to ${selectedEmails.length} parents`)
 
       // Clear selection and refresh data
-      selectedParents.value = []
-      showParentSelectionDialog.value = false
+      selectedParentRows.value = []
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to send emails:', error_)

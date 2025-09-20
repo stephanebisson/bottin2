@@ -4,12 +4,12 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 const { setAdminClaim, getAdminStatus, listAdmins } = require('./adminManagement')
+const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmail } = require('./auth')
 const { sendUpdateEmails, sendUpdateEmailsToSelected } = require('./email')
 const { validateUpdateToken, processParentUpdate } = require('./parentUpdate')
 const { healthCheck } = require('./utils')
-const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow')
 
 // Export all functions
 exports.validateEmail = validateEmail
