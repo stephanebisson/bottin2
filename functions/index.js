@@ -7,7 +7,7 @@ const { setAdminClaim, getAdminStatus, listAdmins } = require('./adminManagement
 const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmail } = require('./auth')
-const { sendUpdateEmails, sendUpdateEmailsToSelected } = require('./email')
+const { sendUpdateEmailsToSelected } = require('./email')
 const { validateUpdateToken, processParentUpdate } = require('./parentUpdate')
 const { healthCheck } = require('./utils')
 
@@ -15,7 +15,6 @@ const { healthCheck } = require('./utils')
 exports.validateEmail = validateEmail
 exports.startAnnualUpdate = startAnnualUpdate
 exports.getWorkflowStatus = getWorkflowStatus
-exports.sendUpdateEmails = sendUpdateEmails
 exports.sendUpdateEmailsToSelected = sendUpdateEmailsToSelected
 exports.validateUpdateToken = validateUpdateToken
 exports.processParentUpdate = processParentUpdate
