@@ -27,6 +27,7 @@ credentials/
 *.json
 !package*.json
 !jsconfig.json
+!src/locales/*.json
 !vite.config.mjs
 !eslint.config.js
 
