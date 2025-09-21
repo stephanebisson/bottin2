@@ -28,6 +28,8 @@ credentials/
 !package*.json
 !jsconfig.json
 !src/locales/*.json
+!firebase.json
+!.eslintrc-auto-import.json
 !vite.config.mjs
 !eslint.config.js
 
