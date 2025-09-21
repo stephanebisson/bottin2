@@ -480,6 +480,9 @@
 <style scoped>
 .v-card-title {
   border-radius: 4px 4px 0 0;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .committee-grid {
@@ -556,6 +559,14 @@
   font-weight: 400;
 }
 
+/* Submit button text wrapping */
+.v-btn :deep(.v-btn__content) {
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  line-height: 1.2;
+}
+
 @media (max-width: 600px) {
   .committee-grid {
     grid-template-columns: 1fr;
@@ -569,6 +580,40 @@
 
   .committee-item {
     padding: 8px;
+  }
+
+  /* Ensure title wraps properly on mobile */
+  .v-card-title {
+    padding: 12px 16px;
+    font-size: 1.15rem !important;
+    line-height: 1.2;
+  }
+
+  /* Make submit button more compact on mobile */
+  .v-btn.v-btn--size-large {
+    min-width: 120px;
+    padding: 0 16px;
+  }
+
+  .v-btn.v-btn--size-large :deep(.v-btn__content) {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 400px) {
+  /* Extra small screens */
+  .v-card-title {
+    font-size: 1.1rem !important;
+    padding: 10px 12px;
+  }
+
+  .v-btn.v-btn--size-large {
+    min-width: 100px;
+    padding: 0 12px;
+  }
+
+  .v-btn.v-btn--size-large :deep(.v-btn__content) {
+    font-size: 0.85rem;
   }
 }
 </style>
