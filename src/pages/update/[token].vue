@@ -137,17 +137,33 @@
                   </p>
 
                   <div class="committee-grid">
-                    <v-checkbox
+                    <div
                       v-for="committee in availableCommittees"
                       :key="committee.id"
-                      v-model="form.committees"
-                      color="primary"
-                      :label="committee.name"
-                      :value="committee.id"
-                      class="committee-checkbox"
-                      density="compact"
-                      hide-details
-                    />
+                      class="committee-item"
+                    >
+                      <v-checkbox
+                        v-model="form.committees"
+                        class="committee-checkbox"
+                        color="primary"
+                        density="compact"
+                        hide-details
+                        :label="committee.name"
+                        :value="committee.id"
+                        @change="handleCommitteeChange(committee.id)"
+                      />
+
+                      <v-select
+                        v-if="form.committees.includes(committee.id)"
+                        v-model="form.committeeRoles[committee.id]"
+                        class="committee-role-select mt-2"
+                        density="compact"
+                        hide-details
+                        :items="getCommitteeRoles(committee.name)"
+                        :label="$t('updateForm.role')"
+                        variant="outlined"
+                      />
+                    </div>
                   </div>
                 </div>
               </v-col>
@@ -228,6 +244,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from '@/composables/useI18n'
+  import { getCommitteeRoles } from '@/config/committees'
   import { getFunctionsBaseUrl } from '@/config/functions'
 
   const route = useRoute()
@@ -253,6 +270,7 @@
     postal_code: '',
     sameAddressAsOther: false,
     committees: [],
+    committeeRoles: {}, // { committeeId: role }
     interests: '',
     directoryOption: 'full',
   })
@@ -275,21 +293,52 @@
     }
   }
 
-  // Helper function to get committee IDs that the parent belongs to
+  // Helper function to get committee IDs and roles that the parent belongs to
   const getParentCommitteeIds = (parentEmail, committees) => {
     if (!parentEmail || !committees) {
       return []
     }
 
     const parentCommittees = []
+    const parentRoles = {}
+
     for (const committee of committees) {
-      if (committee.members && committee.members.some(member => member.email === parentEmail)) {
-        parentCommittees.push(committee.id)
+      if (committee.members && committee.members.length > 0) {
+        const memberEntry = committee.members.find(member => member.email === parentEmail)
+        if (memberEntry) {
+          parentCommittees.push(committee.id)
+          // Convert English "Member" to French "Membre" for consistency
+          let role = memberEntry.role || 'Member'
+          if (role === 'Member') {
+            role = 'Membre'
+          }
+          parentRoles[committee.id] = role
+        }
       }
     }
-    
+
     console.log(`Parent ${parentEmail} belongs to committees:`, parentCommittees)
+    console.log(`Parent ${parentEmail} roles:`, parentRoles)
+
+    // Update form roles
+    form.value.committeeRoles = parentRoles
+
     return parentCommittees
+  }
+
+  // Handle committee checkbox change
+  const handleCommitteeChange = committeeId => {
+    if (form.value.committees.includes(committeeId)) {
+      // Committee was checked, set default role if not already set
+      if (!form.value.committeeRoles[committeeId]) {
+        const committee = availableCommittees.value.find(c => c.id === committeeId)
+        const roles = getCommitteeRoles(committee?.name)
+        form.value.committeeRoles[committeeId] = roles[0] || 'Membre'
+      }
+    } else {
+      // Committee was unchecked, remove role
+      delete form.value.committeeRoles[committeeId]
+    }
   }
 
   // Load parent data using token
@@ -339,6 +388,7 @@
         postal_code: data.parent.postal_code || '',
         sameAddressAsOther: false,
         committees: getParentCommitteeIds(data.parent.email, data.availableCommittees),
+        committeeRoles: {}, // Will be populated by getParentCommitteeIds
         interests: data.parent.interests || '',
         directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full',
       }
@@ -377,6 +427,7 @@
             postal_code: form.value.sameAddressAsOther ? '' : form.value.postal_code,
             sameAddressAsOther: form.value.sameAddressAsOther,
             committees: form.value.committees,
+            committeeRoles: form.value.committeeRoles,
             interests: form.value.interests,
             directoryOptOut: form.value.directoryOption === 'optOut',
           },
@@ -417,9 +468,17 @@
 
 .committee-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 8px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px 20px;
   align-items: start;
+}
+
+.committee-item {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.1);
 }
 
 .committee-checkbox {
@@ -441,12 +500,25 @@
   word-wrap: break-word;
   line-height: 1.2;
   max-width: calc(100% - 48px);
+  font-weight: 500;
+}
+
+.committee-role-select {
+  width: 100%;
+}
+
+.committee-role-select :deep(.v-field__input) {
+  min-height: 32px;
 }
 
 @media (max-width: 600px) {
   .committee-grid {
     grid-template-columns: 1fr;
-    gap: 4px;
+    gap: 12px;
+  }
+
+  .committee-item {
+    padding: 8px;
   }
 }
 </style>
