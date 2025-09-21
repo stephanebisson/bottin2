@@ -136,21 +136,19 @@
                     {{ $t('updateForm.committeeInstructions') }}
                   </p>
 
-                  <v-row>
-                    <v-col
+                  <div class="committee-grid">
+                    <v-checkbox
                       v-for="committee in availableCommittees"
                       :key="committee.id"
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-checkbox
-                        v-model="form.committees"
-                        color="primary"
-                        :label="committee.name"
-                        :value="committee.id"
-                      />
-                    </v-col>
-                  </v-row>
+                      v-model="form.committees"
+                      color="primary"
+                      :label="committee.name"
+                      :value="committee.id"
+                      class="committee-checkbox"
+                      density="compact"
+                      hide-details
+                    />
+                  </div>
                 </div>
               </v-col>
 
@@ -277,6 +275,23 @@
     }
   }
 
+  // Helper function to get committee IDs that the parent belongs to
+  const getParentCommitteeIds = (parentEmail, committees) => {
+    if (!parentEmail || !committees) {
+      return []
+    }
+
+    const parentCommittees = []
+    for (const committee of committees) {
+      if (committee.members && committee.members.some(member => member.email === parentEmail)) {
+        parentCommittees.push(committee.id)
+      }
+    }
+    
+    console.log(`Parent ${parentEmail} belongs to committees:`, parentCommittees)
+    return parentCommittees
+  }
+
   // Load parent data using token
   const loadParentData = async () => {
     try {
@@ -323,7 +338,7 @@
         city: data.parent.city || '',
         postal_code: data.parent.postal_code || '',
         sameAddressAsOther: false,
-        committees: data.parent.committees || [],
+        committees: getParentCommitteeIds(data.parent.email, data.availableCommittees),
         interests: data.parent.interests || '',
         directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full',
       }
@@ -398,5 +413,40 @@
 <style scoped>
 .v-card-title {
   border-radius: 4px 4px 0 0;
+}
+
+.committee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 8px 16px;
+  align-items: start;
+}
+
+.committee-checkbox {
+  width: 100%;
+  margin: 0;
+}
+
+.committee-checkbox :deep(.v-input__control) {
+  min-height: 32px;
+  width: 100%;
+}
+
+.committee-checkbox :deep(.v-checkbox .v-selection-control__wrapper) {
+  height: 32px;
+}
+
+.committee-checkbox :deep(.v-label) {
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.2;
+  max-width: calc(100% - 48px);
+}
+
+@media (max-width: 600px) {
+  .committee-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
 }
 </style>
