@@ -84,7 +84,7 @@ exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest
     // Get available committees
     const committeesSnapshot = await db.collection('committees').get()
     const committees = []
-    for (const doc of committeesSnapshot) {
+    for (const doc of committeesSnapshot.docs) {
       committees.push({
         id: doc.id,
         ...doc.data(),
