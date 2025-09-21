@@ -8,7 +8,7 @@ const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow
 // Import all functions from separate modules
 const { validateEmail } = require('./auth')
 const { sendUpdateEmailsToSelected } = require('./email')
-const { validateUpdateToken, processParentUpdate } = require('./parentUpdate')
+const { validateUpdateToken, processParentUpdate, processParentOptOut } = require('./parentUpdate')
 const { healthCheck } = require('./utils')
 
 // Export all functions
@@ -18,6 +18,7 @@ exports.getWorkflowStatus = getWorkflowStatus
 exports.sendUpdateEmailsToSelected = sendUpdateEmailsToSelected
 exports.validateUpdateToken = validateUpdateToken
 exports.processParentUpdate = processParentUpdate
+exports.processParentOptOut = processParentOptOut
 exports.setAdminClaim = setAdminClaim
 exports.getAdminStatus = getAdminStatus
 exports.listAdmins = listAdmins

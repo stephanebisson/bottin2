@@ -276,7 +276,17 @@
     "invalidToken": "This update link is invalid or has expired.",
     "expiredToken": "This update link has expired. Please contact the school office for assistance.",
     "serverError": "Unable to load your information. Please try again later.",
-    "submitError": "Failed to update information. Please try again."
+    "submitError": "Failed to update information. Please try again.",
+    "optOutWarningBox": "Need to completely remove your information from the school directory?",
+    "optOutWarningBoxDescription": "If you prefer to remove all your personal information from the directory while keeping minimal contact for school communications, you can opt out below.",
+    "optOutButton": "Remove My Information",
+    "optOutDialogTitle": "Remove All Information from Directory",
+    "optOutDialogContent": "This action will remove all your personal information from the school directory, including your phone number, address, committee memberships, and interests. Only your name and email address will be kept for essential school communications.",
+    "optOutDialogWarning": "You can re-opt in at any time by accessing this form again and submitting your updated information.",
+    "reOptInWarningBox": "You are currently opted out of the school directory",
+    "reOptInWarningBoxDescription": "Your information has been removed from the directory. To rejoin the directory and restore your information, simply fill out and submit this form using the 'Validate' button below.",
+    "optOutDialogConfirm": "Remove My Information",
+    "optOutProcessing": "Removing information..."
   },
   "updateSuccess": {
     "title": "Information Updated Successfully!",

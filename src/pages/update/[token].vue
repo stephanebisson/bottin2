@@ -40,6 +40,51 @@
             </div>
           </v-alert>
 
+          <!-- Opt-Out Warning Box (show if not currently opted out) -->
+          <v-alert
+            v-if="!parentData.optedOut"
+            border="start"
+            border-color="warning"
+            class="mb-6"
+            color="warning"
+            icon="mdi-alert-octagon"
+            variant="tonal"
+          >
+            <div class="text-body-1 font-weight-medium">
+              {{ $t('updateForm.optOutWarningBox') }}
+            </div>
+            <div class="text-body-2 mt-2 mb-3">
+              {{ $t('updateForm.optOutWarningBoxDescription') }}
+            </div>
+            <v-btn
+              color="error"
+              prepend-icon="mdi-account-remove"
+              size="small"
+              variant="outlined"
+              @click="showOptOutDialog = true"
+            >
+              {{ $t('updateForm.optOutButton') }}
+            </v-btn>
+          </v-alert>
+
+          <!-- Re-Opt-In Info Box (show if currently opted out) -->
+          <v-alert
+            v-if="parentData.optedOut"
+            border="start"
+            border-color="info"
+            class="mb-6"
+            color="info"
+            icon="mdi-information-outline"
+            variant="tonal"
+          >
+            <div class="text-body-1 font-weight-medium">
+              {{ $t('updateForm.reOptInWarningBox') }}
+            </div>
+            <div class="text-body-2 mt-2">
+              {{ $t('updateForm.reOptInWarningBoxDescription') }}
+            </div>
+          </v-alert>
+
           <v-form ref="formRef" @submit.prevent="submitForm">
             <v-row>
               <!-- Personal Information Section -->
@@ -198,41 +243,6 @@
                 </div>
               </v-col>
 
-              <!-- Directory Participation Section -->
-              <v-col cols="12">
-                <h3 class="text-h6 font-weight-bold mb-4 mt-4">
-                  <v-icon class="mr-2">mdi-book-open-page-variant</v-icon>
-                  {{ $t('updateForm.directoryParticipation') }}
-                </h3>
-              </v-col>
-
-              <v-col cols="12">
-                <v-radio-group v-model="form.directoryOption" color="primary">
-                  <v-radio
-                    :label="$t('updateForm.fullParticipation')"
-                    value="full"
-                  />
-                  <v-radio
-                    :label="$t('updateForm.limitedParticipation')"
-                    value="limited"
-                  />
-                  <v-radio
-                    :label="$t('updateForm.optOut')"
-                    value="optOut"
-                  />
-                </v-radio-group>
-
-                <v-alert
-                  v-if="form.directoryOption === 'optOut'"
-                  class="mt-4"
-                  color="warning"
-                  icon="mdi-alert"
-                  variant="tonal"
-                >
-                  {{ $t('updateForm.optOutWarning') }}
-                </v-alert>
-              </v-col>
-
               <!-- Submit Button -->
               <v-col class="text-center pt-6" cols="12">
                 <v-btn
@@ -250,6 +260,51 @@
         </v-card-text>
       </v-card>
     </div>
+
+    <!-- Opt-Out Confirmation Dialog -->
+    <v-dialog v-model="showOptOutDialog" max-width="500px" persistent>
+      <v-card>
+        <v-card-title class="d-flex align-center bg-error text-white">
+          <v-icon class="mr-2">mdi-alert-octagon</v-icon>
+          {{ $t('updateForm.optOutDialogTitle') }}
+        </v-card-title>
+
+        <v-card-text class="pa-6">
+          <div class="text-body-1 mb-4">
+            {{ $t('updateForm.optOutDialogContent') }}
+          </div>
+
+          <v-alert
+            class="mb-4"
+            color="warning"
+            icon="mdi-alert"
+            variant="tonal"
+          >
+            {{ $t('updateForm.optOutDialogWarning') }}
+          </v-alert>
+        </v-card-text>
+
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn
+            color="grey"
+            :disabled="optingOut"
+            variant="outlined"
+            @click="showOptOutDialog = false"
+          >
+            {{ $t('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="optingOut"
+            variant="flat"
+            @click="confirmOptOut"
+          >
+            {{ optingOut ? $t('updateForm.optOutProcessing') : $t('updateForm.optOutDialogConfirm') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -258,8 +313,8 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from '@/composables/useI18n'
   import { getCommitteeRoles } from '@/config/committees'
-  import { getAvailableInterests } from '@/config/interests'
   import { getFunctionsBaseUrl } from '@/config/functions'
+  import { getAvailableInterests } from '@/config/interests'
 
   const route = useRoute()
   const router = useRouter()
@@ -274,6 +329,8 @@
   const availableInterests = ref([])
   const otherParentHasAddress = ref(false)
   const formRef = ref(null)
+  const showOptOutDialog = ref(false)
+  const optingOut = ref(false)
 
   // Form data
   const form = ref({
@@ -287,7 +344,6 @@
     committees: [],
     committeeRoles: {}, // { committeeId: role }
     interests: [], // Array of selected interest IDs
-    directoryOption: 'full',
   })
 
   // Validation rules
@@ -406,13 +462,53 @@
         committees: getParentCommitteeIds(data.parent.email, data.availableCommittees),
         committeeRoles: {}, // Will be populated by getParentCommitteeIds
         interests: Array.isArray(data.parent.interests) ? data.parent.interests : [],
-        directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full',
       }
     } catch (error_) {
       console.error('Failed to load parent data:', error_)
       error.value = error_.message
     } finally {
       loading.value = false
+    }
+  }
+
+  // Handle opt-out confirmation
+  const confirmOptOut = async () => {
+    try {
+      optingOut.value = true
+
+      const baseUrl = getFunctionsBaseUrl()
+
+      const response = await fetch(`${baseUrl}/processParentOptOut`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: token.value,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      // Redirect to success page
+      router.push({
+        path: '/update-success',
+        query: {
+          hasAccount: result.hasAccount ? '1' : '0',
+          email: parentData.value.email,
+          optedOut: '1',
+        },
+      })
+    } catch (error_) {
+      console.error('Failed to process opt-out:', error_)
+      error.value = t('updateForm.submitError')
+      showOptOutDialog.value = false
+    } finally {
+      optingOut.value = false
     }
   }
 
@@ -445,7 +541,6 @@
             committees: form.value.committees,
             committeeRoles: form.value.committeeRoles,
             interests: form.value.interests,
-            directoryOptOut: form.value.directoryOption === 'optOut',
           },
         }),
       })

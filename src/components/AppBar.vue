@@ -11,7 +11,7 @@
       {{ pageTitle }}
     </v-toolbar-title>
 
-    <v-spacer />
+    <div style="flex-grow: 0.5" />
 
     <!-- User Menu (when authenticated) -->
     <template v-if="authStore.isAuthenticated">

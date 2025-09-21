@@ -63,20 +63,42 @@ exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest
 
     // Check if there's another parent with the same address (for shared address feature)
     let otherParentHasAddress = false
-    if (parentData.parent1_email || parentData.parent2_email) {
-      const otherParentEmail = parentData.parent1_email === parentData.email
-        ? parentData.parent2_email
-        : parentData.parent1_email
 
-      if (otherParentEmail) {
-        const otherParentQuery = await db.collection('parents')
-          .where('email', '==', otherParentEmail)
-          .limit(1)
-          .get()
+    // Find students that belong to this parent
+    const studentsSnapshot = await db.collection('students')
+      .where('parent1_email', '==', parentData.email)
+      .get()
 
-        if (!otherParentQuery.empty) {
-          const otherParentData = otherParentQuery.docs[0].data()
-          otherParentHasAddress = !!(otherParentData.address || otherParentData.city)
+    const studentsSnapshot2 = await db.collection('students')
+      .where('parent2_email', '==', parentData.email)
+      .get()
+
+    // Combine results and find other parent emails
+    const allStudents = [...studentsSnapshot.docs, ...studentsSnapshot2.docs]
+    const otherParentEmails = new Set()
+
+    for (const studentDoc of allStudents) {
+      const student = studentDoc.data()
+      if (student.parent1_email && student.parent1_email !== parentData.email) {
+        otherParentEmails.add(student.parent1_email)
+      }
+      if (student.parent2_email && student.parent2_email !== parentData.email) {
+        otherParentEmails.add(student.parent2_email)
+      }
+    }
+
+    // Check if any other parent has an address
+    for (const otherParentEmail of otherParentEmails) {
+      const otherParentQuery = await db.collection('parents')
+        .where('email', '==', otherParentEmail)
+        .limit(1)
+        .get()
+
+      if (!otherParentQuery.empty) {
+        const otherParentData = otherParentQuery.docs[0].data()
+        if (otherParentData.address || otherParentData.city) {
+          otherParentHasAddress = true
+          break
         }
       }
     }
@@ -107,7 +129,7 @@ exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest
         postal_code: parentData.postal_code || '',
         // committees: removed - membership stored in committees collection only
         interests: parentData.interests || '',
-        directoryOptOut: parentData.directoryOptOut || false,
+        optedOut: parentData.optedOut || false,
       },
       otherParentHasAddress,
       availableCommittees: committees,
@@ -195,33 +217,62 @@ exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest
     const parentRef = db.collection('parents').doc(parentDoc.id)
 
     // Prepare updated data - committees are NOT stored in parent document
+    // If parent was previously opted out, re-opt them in by clearing the optedOut flag
     const updatedData = {
       first_name: parentData.first_name || existingParentData.first_name,
       last_name: parentData.last_name || existingParentData.last_name,
       phone: parentData.phone || '',
       interests: parentData.interests || '',
-      directoryOptOut: parentData.directoryOptOut || false,
+      optedOut: false, // Re-opt in if they were previously opted out
       lastUpdated: FieldValue.serverTimestamp(),
     }
 
     // Handle address logic
     if (parentData.sameAddressAsOther) {
-      // Find the other parent and copy their address
-      const otherParentEmail = existingParentData.parent1_email === existingParentData.email
-        ? existingParentData.parent2_email
-        : existingParentData.parent1_email
+      // Find students that belong to this parent to get other parent emails
+      const studentsSnapshot1 = await db.collection('students')
+        .where('parent1_email', '==', existingParentData.email)
+        .get()
 
-      if (otherParentEmail) {
-        const otherParentQuery = await db.collection('parents')
-          .where('email', '==', otherParentEmail)
-          .limit(1)
-          .get()
+      const studentsSnapshot2 = await db.collection('students')
+        .where('parent2_email', '==', existingParentData.email)
+        .get()
 
-        if (!otherParentQuery.empty) {
-          const otherParentData = otherParentQuery.docs[0].data()
-          updatedData.address = otherParentData.address || ''
-          updatedData.city = otherParentData.city || ''
-          updatedData.postal_code = otherParentData.postal_code || ''
+      const allStudents = [...studentsSnapshot1.docs, ...studentsSnapshot2.docs]
+      let addressCopied = false
+
+      // Find other parent emails and try to copy their address
+      for (const studentDoc of allStudents) {
+        const student = studentDoc.data()
+        const otherEmails = []
+
+        if (student.parent1_email && student.parent1_email !== existingParentData.email) {
+          otherEmails.push(student.parent1_email)
+        }
+        if (student.parent2_email && student.parent2_email !== existingParentData.email) {
+          otherEmails.push(student.parent2_email)
+        }
+
+        // Try to get address from first other parent found
+        for (const otherParentEmail of otherEmails) {
+          const otherParentQuery = await db.collection('parents')
+            .where('email', '==', otherParentEmail)
+            .limit(1)
+            .get()
+
+          if (!otherParentQuery.empty) {
+            const otherParentData = otherParentQuery.docs[0].data()
+            if (otherParentData.address || otherParentData.city) {
+              updatedData.address = otherParentData.address || ''
+              updatedData.city = otherParentData.city || ''
+              updatedData.postal_code = otherParentData.postal_code || ''
+              addressCopied = true
+              break
+            }
+          }
+        }
+        if (addressCopied) {
+          break
         }
       }
     } else {
@@ -280,14 +331,16 @@ exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest
       batch.update(workflowRef, {
         [`${participantPath}.formSubmitted`]: true,
         [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
-        [`${participantPath}.optedOut`]: parentData.directoryOptOut || false,
+        [`${participantPath}.optedOut`]: false,
         'stats.formsSubmitted': FieldValue.increment(1),
       })
 
-      if (parentData.directoryOptOut) {
+      // If parent was previously opted out, decrement the opted out count
+      if (existingParentData.optedOut) {
         batch.update(workflowRef, {
-          'stats.optedOut': FieldValue.increment(1),
+          'stats.optedOut': FieldValue.increment(-1),
         })
+        console.log(`Parent ${existingParentData.email} re-opted in - decremented opt-out stats`)
       }
     }
 
@@ -315,6 +368,152 @@ exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest
     console.error('Process parent update error:', error)
     res.status(500).json({
       error: 'Internal server error occurred while processing update',
+    })
+  }
+})
+
+/**
+ * Process parent opt-out request - removes all personal data except name and email
+ */
+exports.processParentOptOut = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
+  // Set CORS headers
+  res.set('Access-Control-Allow-Origin', '*')
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type')
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send()
+  }
+
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
+  }
+
+  try {
+    const { token } = req.body
+
+    if (!token) {
+      return res.status(400).json({
+        error: 'Token is required',
+      })
+    }
+
+    console.log('Processing parent opt-out for token:', token)
+
+    // Find parent with this token
+    const parentsQuery = await db.collection('parents')
+      .where('updateToken', '==', token)
+      .limit(1)
+      .get()
+
+    if (parentsQuery.empty) {
+      return res.status(404).json({
+        error: 'Invalid or expired token.',
+      })
+    }
+
+    const parentDoc = parentsQuery.docs[0]
+    const existingParentData = parentDoc.data()
+
+    // Check if token has expired
+    if (existingParentData.tokenExpiry && existingParentData.tokenExpiry.toDate() < new Date()) {
+      return res.status(410).json({
+        error: 'Token has expired.',
+      })
+    }
+
+    const batch = db.batch()
+    const parentRef = db.collection('parents').doc(parentDoc.id)
+    const parentEmail = existingParentData.email
+
+    // Prepare minimal data - keep only essential fields
+    const optedOutData = {
+      email: existingParentData.email,
+      first_name: existingParentData.first_name || '',
+      last_name: existingParentData.last_name || '',
+      // Clear all other fields
+      phone: '',
+      address: '',
+      city: '',
+      postal_code: '',
+      interests: '',
+      optedOut: true,
+      lastUpdated: FieldValue.serverTimestamp(),
+      // Keep children data intact for school records
+      children: existingParentData.children || null,
+      // Keep token fields so parent can re-opt-in later
+      updateToken: existingParentData.updateToken || null,
+      tokenExpiry: existingParentData.tokenExpiry || null,
+    }
+
+    // Update parent document with minimal data
+    batch.set(parentRef, optedOutData)
+
+    // Remove from ALL committee memberships
+    const committeesSnapshot = await db.collection('committees').get()
+    for (const committeeDoc of committeesSnapshot.docs) {
+      const committeeData = committeeDoc.data()
+      const currentMembers = committeeData.members || []
+      const memberIndex = currentMembers.findIndex(member => member.email === parentEmail)
+
+      if (memberIndex !== -1) {
+        currentMembers.splice(memberIndex, 1)
+        batch.update(db.collection('committees').doc(committeeDoc.id), {
+          members: currentMembers,
+        })
+        console.log(`Removed ${parentEmail} from committee: ${committeeData.name}`)
+      }
+    }
+
+    // Update workflow participation to indicate opt-out
+    const currentYear = new Date().getFullYear()
+    const currentMonth = new Date().getMonth()
+    const schoolYear = currentMonth >= 8
+      ? `${currentYear}-${currentYear + 1}`
+      : `${currentYear - 1}-${currentYear}`
+
+    const workflowId = `${schoolYear.split('-')[0]}-annual-update`
+    const workflowRef = db.collection('updateSessions').doc(workflowId)
+    const workflowDoc = await workflowRef.get()
+
+    if (workflowDoc.exists) {
+      const participantPath = `participants.${parentEmail}`
+      batch.update(workflowRef, {
+        [`${participantPath}.formSubmitted`]: true,
+        [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
+        [`${participantPath}.optedOut`]: true,
+        'stats.formsSubmitted': FieldValue.increment(1),
+        'stats.optedOut': FieldValue.increment(1),
+      })
+    }
+
+    // Check if user has an account
+    let hasAccount = false
+    try {
+      await admin.auth().getUserByEmail(parentEmail)
+      hasAccount = true
+    } catch {
+      hasAccount = false
+    }
+
+    // Commit all changes
+    await batch.commit()
+
+    console.log(`Parent ${parentEmail} successfully opted out - all data cleared except name and email`)
+
+    res.status(200).json({
+      success: true,
+      message: 'Successfully opted out and removed personal information',
+      hasAccount,
+    })
+  } catch (error) {
+    console.error('Process parent opt-out error:', error)
+    res.status(500).json({
+      error: 'Internal server error occurred while processing opt-out',
     })
   }
 })

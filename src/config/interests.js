@@ -12,116 +12,116 @@
 export const PARENT_INTERESTS = [
   {
     id: 'architecture',
-    name: 'Architecture'
+    name: 'Architecture',
   },
   {
     id: 'arts_plastiques',
-    name: 'Arts Plastiques'
+    name: 'Arts Plastiques',
   },
   {
     id: 'banque_alimentaire',
-    name: 'Banque alimentaire'
+    name: 'Banque alimentaire',
   },
   {
     id: 'cinema',
-    name: 'Cinéma'
+    name: 'Cinéma',
   },
   {
     id: 'couture',
-    name: 'Couture'
+    name: 'Couture',
   },
   {
     id: 'cuisine',
-    name: 'Cuisine'
+    name: 'Cuisine',
   },
   {
     id: 'danse',
-    name: 'Danse'
+    name: 'Danse',
   },
   {
     id: 'developpement_international',
-    name: 'Développement international'
+    name: 'Développement international',
   },
   {
     id: 'echecs',
-    name: 'Échecs'
+    name: 'Échecs',
   },
   {
     id: 'eco_quartier',
-    name: 'Éco-quartier'
+    name: 'Éco-quartier',
   },
   {
     id: 'histoire',
-    name: 'Histoire'
+    name: 'Histoire',
   },
   {
     id: 'jardinage',
-    name: 'Jardinage'
+    name: 'Jardinage',
   },
   {
     id: 'jardin_communautaire',
-    name: 'Jardin communautaire'
+    name: 'Jardin communautaire',
   },
   {
     id: 'jeux_de_societe',
-    name: 'Jeux de société'
+    name: 'Jeux de société',
   },
   {
     id: 'langues_vivantes',
-    name: 'Langues vivantes'
+    name: 'Langues vivantes',
   },
   {
     id: 'litterature',
-    name: 'Littérature'
+    name: 'Littérature',
   },
   {
     id: 'maison_verte',
-    name: 'Maison verte'
+    name: 'Maison verte',
   },
   {
     id: 'menuiserie',
-    name: 'Menuiserie'
+    name: 'Menuiserie',
   },
   {
     id: 'musique',
-    name: 'Musique'
+    name: 'Musique',
   },
   {
     id: 'photos',
-    name: 'Photos'
+    name: 'Photos',
   },
   {
     id: 'residence_personnes_agees',
-    name: 'Résidence pour personnes âgées'
+    name: 'Résidence pour personnes âgées',
   },
   {
     id: 'sports_exterieurs',
-    name: 'Sports extérieurs'
+    name: 'Sports extérieurs',
   },
   {
     id: 'sports_interieurs',
-    name: 'Sports intérieurs'
+    name: 'Sports intérieurs',
   },
   {
     id: 'theatre',
-    name: 'Théâtre'
+    name: 'Théâtre',
   },
   {
     id: 'traduction',
-    name: 'Traduction'
+    name: 'Traduction',
   },
   {
     id: 'tricot',
-    name: 'Tricot'
+    name: 'Tricot',
   },
   {
     id: 'voyages',
-    name: 'Voyages'
+    name: 'Voyages',
   },
   {
     id: 'yoga',
-    name: 'Yoga'
-  }
+    name: 'Yoga',
+  },
 ]
 
 /**
@@ -137,7 +137,7 @@ export const getAvailableInterests = () => {
  * @param {string} interestId - ID of the interest
  * @returns {Object|null} Interest object or null if not found
  */
-export const getInterestById = (interestId) => {
+export const getInterestById = interestId => {
   return PARENT_INTERESTS.find(interest => interest.id === interestId) || null
 }
 

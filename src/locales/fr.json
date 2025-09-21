@@ -277,7 +277,17 @@
     "invalidToken": "Ce lien de mise à jour est invalide ou a expiré.",
     "expiredToken": "Ce lien de mise à jour a expiré. Veuillez contacter le bureau de l'école pour assistance.",
     "serverError": "Impossible de charger vos informations. Veuillez réessayer plus tard.",
-    "submitError": "Échec de la mise à jour des informations. Veuillez réessayer."
+    "submitError": "Échec de la mise à jour des informations. Veuillez réessayer.",
+    "optOutWarningBox": "Besoin de retirer complètement vos informations du bottin scolaire ?",
+    "optOutWarningBoxDescription": "Si vous préférez retirer toutes vos informations personnelles du bottin tout en gardant un contact minimal pour les communications scolaires, vous pouvez vous désinscrire ci-dessous.",
+    "optOutButton": "Retirer Mes Informations",
+    "optOutDialogTitle": "Retirer Toutes les Informations du Bottin",
+    "optOutDialogContent": "Cette action retirera toutes vos informations personnelles du bottin scolaire, incluant votre numéro de téléphone, adresse, adhésions aux comités, et intérêts. Seuls votre nom et adresse courriel seront conservés pour les communications scolaires essentielles.",
+    "optOutDialogWarning": "Vous pouvez vous réinscrire à tout moment en accédant à nouveau à ce formulaire et en soumettant vos informations mises à jour.",
+    "reOptInWarningBox": "Vous êtes actuellement désinscrit du bottin scolaire",
+    "reOptInWarningBoxDescription": "Vos informations ont été retirées du bottin. Pour rejoindre le bottin et restaurer vos informations, remplissez simplement ce formulaire et soumettez-le en utilisant le bouton 'Valider' ci-dessous.",
+    "optOutDialogConfirm": "Retirer Mes Informations",
+    "optOutProcessing": "Suppression en cours..."
   },
   "updateSuccess": {
     "title": "Informations Mises à Jour avec Succès !",
