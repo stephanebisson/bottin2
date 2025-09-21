@@ -70,16 +70,8 @@
 
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="form.phone1"
-                  :label="$t('updateForm.primaryPhone')"
-                  variant="outlined"
-                />
-              </v-col>
-
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="form.phone2"
-                  :label="$t('updateForm.secondaryPhone')"
+                  v-model="form.phone"
+                  :label="$t('updateForm.phone')"
                   variant="outlined"
                 />
               </v-col>
@@ -257,8 +249,7 @@
   const form = ref({
     first_name: '',
     last_name: '',
-    phone1: '',
-    phone2: '',
+    phone: '',
     address: '',
     city: '',
     postal_code: '',
@@ -327,8 +318,7 @@
       form.value = {
         first_name: data.parent.first_name || '',
         last_name: data.parent.last_name || '',
-        phone1: data.parent.phone1 || '',
-        phone2: data.parent.phone2 || '',
+        phone: data.parent.phone || '',
         address: data.parent.address || '',
         city: data.parent.city || '',
         postal_code: data.parent.postal_code || '',
@@ -366,8 +356,7 @@
           parentData: {
             first_name: form.value.first_name,
             last_name: form.value.last_name,
-            phone1: form.value.phone1,
-            phone2: form.value.phone2,
+            phone: form.value.phone,
             address: form.value.sameAddressAsOther ? '' : form.value.address,
             city: form.value.sameAddressAsOther ? '' : form.value.city,
             postal_code: form.value.sameAddressAsOther ? '' : form.value.postal_code,
