@@ -177,12 +177,25 @@
               </v-col>
 
               <v-col cols="12">
-                <v-textarea
-                  v-model="form.interests"
-                  :label="$t('updateForm.interestsPlaceholder')"
-                  rows="4"
-                  variant="outlined"
-                />
+                <div class="mb-4">
+                  <p class="text-body-2 text-grey-darken-1 mb-4">
+                    {{ $t('updateForm.interestsInstructions') }}
+                  </p>
+
+                  <div class="interests-grid">
+                    <v-checkbox
+                      v-for="interest in availableInterests"
+                      :key="interest.id"
+                      v-model="form.interests"
+                      class="interest-checkbox"
+                      color="primary"
+                      density="compact"
+                      hide-details
+                      :label="interest.name"
+                      :value="interest.id"
+                    />
+                  </div>
+                </div>
               </v-col>
 
               <!-- Directory Participation Section -->
@@ -245,6 +258,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from '@/composables/useI18n'
   import { getCommitteeRoles } from '@/config/committees'
+  import { getAvailableInterests } from '@/config/interests'
   import { getFunctionsBaseUrl } from '@/config/functions'
 
   const route = useRoute()
@@ -257,6 +271,7 @@
   const error = ref(null)
   const parentData = ref(null)
   const availableCommittees = ref([])
+  const availableInterests = ref([])
   const otherParentHasAddress = ref(false)
   const formRef = ref(null)
 
@@ -271,7 +286,7 @@
     sameAddressAsOther: false,
     committees: [],
     committeeRoles: {}, // { committeeId: role }
-    interests: '',
+    interests: [], // Array of selected interest IDs
     directoryOption: 'full',
   })
 
@@ -376,6 +391,7 @@
       // Set parent data and form values
       parentData.value = data.parent
       availableCommittees.value = data.availableCommittees || []
+      availableInterests.value = getAvailableInterests()
       otherParentHasAddress.value = data.otherParentHasAddress || false
 
       // Pre-fill form with existing data
@@ -389,7 +405,7 @@
         sameAddressAsOther: false,
         committees: getParentCommitteeIds(data.parent.email, data.availableCommittees),
         committeeRoles: {}, // Will be populated by getParentCommitteeIds
-        interests: data.parent.interests || '',
+        interests: Array.isArray(data.parent.interests) ? data.parent.interests : [],
         directoryOption: data.parent.directoryOptOut ? 'optOut' : 'full',
       }
     } catch (error_) {
@@ -473,6 +489,13 @@
   align-items: start;
 }
 
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 8px 12px;
+  align-items: start;
+}
+
 .committee-item {
   width: 100%;
   padding: 12px;
@@ -511,10 +534,37 @@
   min-height: 32px;
 }
 
+.interest-checkbox {
+  width: 100%;
+  margin: 0;
+}
+
+.interest-checkbox :deep(.v-input__control) {
+  min-height: 28px;
+  width: 100%;
+}
+
+.interest-checkbox :deep(.v-checkbox .v-selection-control__wrapper) {
+  height: 28px;
+}
+
+.interest-checkbox :deep(.v-label) {
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.1;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
 @media (max-width: 600px) {
   .committee-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .interests-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .committee-item {
