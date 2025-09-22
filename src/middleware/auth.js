@@ -19,7 +19,7 @@ export const authMiddleware = {
     if (authStore.isAuthenticated) {
       // Check if email is verified
       if (!authStore.isEmailVerified) {
-        next('/email-verification-required')
+        next('/email-verification-required?blocked=true')
         return
       }
       next() // User is authenticated and verified, proceed

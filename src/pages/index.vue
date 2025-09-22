@@ -1,5 +1,16 @@
 <template>
   <v-container>
+    <!-- Welcome verification success message -->
+    <v-alert
+      v-if="showWelcomeMessage"
+      class="mb-6"
+      closable
+      icon="mdi-check-circle"
+      :text="$t('auth.welcomeEmailVerified')"
+      type="success"
+      @click:close="showWelcomeMessage = false"
+    />
+
     <!-- Header Section -->
     <div class="text-center mb-8">
       <h1 class="text-h3 font-weight-bold mb-2">{{ $t('nav.schoolDirectory') }}</h1>
@@ -55,13 +66,26 @@
 </template>
 
 <script setup>
-  import { computed, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const router = useRouter()
+  const route = useRoute()
   const { t } = useI18n()
+
+  // Welcome message state
+  const showWelcomeMessage = ref(false)
+
+  // Check for welcome query parameter on mount
+  onMounted(() => {
+    if (route.query.welcome === 'verified') {
+      showWelcomeMessage.value = true
+      // Clean up the URL
+      router.replace({ path: '/', query: {} })
+    }
+  })
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()

@@ -79,15 +79,22 @@
         @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
-      <!-- Success Alert -->
+      <!-- Network Status Alert -->
       <v-alert
-        v-if="registrationSuccess"
+        v-if="!authStore.serviceHealth.isOnline"
         class="mb-4"
-        closable
-        icon="mdi-check-circle"
-        :text="$t('auth.accountCreatedSuccess')"
-        type="success"
-        @click:close="registrationSuccess = false"
+        icon="mdi-wifi-off"
+        :text="$t('auth.offlineMessage')"
+        type="warning"
+      />
+
+      <!-- Service Status Alert -->
+      <v-alert
+        v-if="authStore.serviceHealth.isOnline && !authStore.serviceHealth.firebaseReachable"
+        class="mb-4"
+        icon="mdi-cloud-alert"
+        :text="$t('auth.authServiceIssues')"
+        type="warning"
       />
 
       <!-- Error Alert -->
@@ -128,11 +135,30 @@
         {{ $t('auth.createAccount') }}
       </v-btn>
     </v-card-actions>
+
+    <!-- Debug Panel (Development Only) -->
+    <v-card-actions v-if="isDevelopment" class="px-6 pb-2">
+      <v-expansion-panels class="w-100" variant="accordion">
+        <v-expansion-panel>
+          <v-expansion-panel-title class="text-caption">
+            🔧 Debug Info
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <div class="text-caption">
+              <div><strong>Network:</strong> {{ authStore.serviceHealth.isOnline ? '✅ Online' : '❌ Offline' }}</div>
+              <div><strong>Firebase:</strong> {{ authStore.serviceHealth.firebaseReachable ? '✅ Reachable' : '❌ Unreachable' }}</div>
+              <div><strong>Last Check:</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : 'Never' }}</div>
+              <div><strong>Email Status:</strong> {{ emailAuthorized === null ? 'Not checked' : emailAuthorized ? '✅ Authorized' : '❌ Not authorized' }}</div>
+            </div>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-card-actions>
   </v-form>
 </template>
 
 <script setup>
-  import { ref, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
   import { useI18n } from '@/composables/useI18n'
@@ -142,6 +168,9 @@
   const authStore = useAuthStore()
   const { t } = useI18n()
   const { translateAuthError } = useAuthErrors()
+
+  // Environment check for debug panel
+  const isDevelopment = computed(() => import.meta.env.DEV)
 
   // Form data
   const email = ref('')
@@ -153,7 +182,6 @@
   const formValid = ref(false)
   const emailValidationLoading = ref(false)
   const emailAuthorized = ref(null) // null = not checked, true = authorized, false = not authorized
-  const registrationSuccess = ref(false)
 
   // Validation rules
   const emailRules = [
@@ -200,7 +228,7 @@
     emailValidationTimeout = setTimeout(async () => {
       emailValidationLoading.value = true
       try {
-        const info = await authStore.getUserInfo(newEmail)
+        const info = await authStore.validateAndGetUserInfo(newEmail)
         emailAuthorized.value = info.authorized
         userInfo.value = info
       } catch (error) {
@@ -220,20 +248,8 @@
     try {
       await authStore.register(email.value, password.value)
 
-      // Show success message
-      registrationSuccess.value = true
-
-      // Clear form
-      email.value = ''
-      password.value = ''
-      confirmPassword.value = ''
-      agreeToTerms.value = false
-      emailAuthorized.value = null
-
-      // Optionally redirect after delay to let user see the message
-      setTimeout(() => {
-        router.push('/auth')
-      }, 3000)
+      // Navigate directly to email verification page since user is now registered but unverified
+      router.push('/email-verification-required?newRegistration=true')
     } catch (error) {
       // Error is handled in the store
       console.error('Registration failed:', error)

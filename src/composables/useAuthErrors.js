@@ -23,6 +23,13 @@ export function useAuthErrors () {
       'Invalid email address.': 'validation.emailInvalid',
       'Too many failed attempts. Please try again later.': 'validation.tooManyRequests',
       'Network error. Please check your connection.': 'validation.networkError',
+      'No internet connection. Please check your network and try again.': 'auth.noInternetConnection',
+      'Email validation service temporarily unavailable. Please try again in a moment.': 'auth.emailValidationServiceUnavailable',
+      'Too many requests. Please wait a moment and try again.': 'auth.tooManyRequests',
+      'Server error during email validation. Please try again.': 'auth.serverErrorValidation',
+      ' Please check your internet connection and try again.': 'auth.checkInternetConnection',
+      ' You may have reached the email sending limit. Please try again in a few hours.': 'auth.emailLimitReached',
+      'Your session has expired. Please sign in again to resend verification email.': 'auth.sessionExpiredResendEmail',
     }
 
     // Check if we have a translation for this error

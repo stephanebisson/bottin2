@@ -61,7 +61,7 @@
             block
             color="primary"
             variant="elevated"
-            @click="$router.push({ name: 'auth' })"
+            @click="$router.push('/auth')"
           >
             <v-icon start>mdi-login</v-icon>
             {{ $t('auth.login') }}
