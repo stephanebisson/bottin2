@@ -34,7 +34,7 @@
         v-if="authStore.error"
         class="mb-4"
         closable
-        :text="authStore.error"
+        :text="translateAuthError(authStore.error)"
         type="error"
         @click:close="authStore.clearError()"
       />
@@ -71,6 +71,7 @@
 <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useAuthErrors } from '@/composables/useAuthErrors'
   import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
 
@@ -79,6 +80,7 @@
   const router = useRouter()
   const authStore = useAuthStore()
   const { t } = useI18n()
+  const { translateAuthError } = useAuthErrors()
 
   // Form data
   const email = ref('')

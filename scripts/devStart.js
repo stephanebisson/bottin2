@@ -11,7 +11,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { autoSetupAdmin } from './autoSetupAdmin.js'
+import { autoSetupAdmin } from './autoSetupAdmin.js' // eslint-disable-line no-unused-vars
 
 const EMULATOR_READY_DELAY = 8000 // Wait 8 seconds for emulator
 const ADMIN_SETUP_DELAY = 3000 // Wait 3 seconds after admin setup
@@ -65,7 +65,7 @@ async function startDevelopment () {
 
     // 3. Auto-setup admin
     console.log('2️⃣  Setting up admin account...')
-    await autoSetupAdmin()
+    // await autoSetupAdmin()
 
     // Wait a bit more
     await new Promise(resolve => setTimeout(resolve, ADMIN_SETUP_DELAY))

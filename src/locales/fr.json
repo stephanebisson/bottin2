@@ -162,7 +162,18 @@
     "backToLogin": "Retour à la connexion",
     "backToApp": "Retour à l'application",
     "agreeToTerms": "J'accepte les termes et conditions",
-    "resetPasswordInstructions": "Entrez votre adresse courriel et nous vous enverrons un lien pour réinitialiser votre mot de passe."
+    "resetPasswordInstructions": "Entrez votre adresse courriel et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "accountCreatedSuccess": "Compte créé avec succès ! Veuillez vérifier votre courriel avant de vous connecter.",
+    "emailVerificationRequired": "Vérification de courriel requise",
+    "pleaseVerifyEmail": "Veuillez vérifier votre adresse courriel avant d'accéder à l'application.",
+    "verificationEmailSent": "Nous avons envoyé un lien de vérification à votre adresse courriel. Cliquez sur le lien dans le courriel pour vérifier votre compte.",
+    "resendVerificationEmail": "Renvoyer le courriel de vérification",
+    "verificationEmailSentSuccess": "Courriel de vérification envoyé avec succès ! Veuillez vérifier votre boîte de réception.",
+    "iHaveVerifiedEmail": "J'ai vérifié mon courriel",
+    "emailStillNotVerified": "Le courriel n'est toujours pas vérifié. Veuillez vérifier votre boîte de réception et cliquer sur le lien de vérification.",
+    "checkEmailForVerification": "Veuillez vérifier votre adresse courriel avant de vous connecter. Consultez votre boîte de réception pour un lien de vérification.",
+    "failedCheckVerificationStatus": "Impossible de vérifier le statut de vérification. Veuillez réessayer.",
+    "noUserSignedIn": "Aucun utilisateur n'est actuellement connecté."
   },
   "validation": {
     "required": "Ce champ est requis",
@@ -178,7 +189,13 @@
     "displayNameMinLength": "Le nom d'affichage doit contenir au moins 2 caractères",
     "termsRequired": "Vous devez accepter les termes et conditions",
     "emailNotAuthorized": "Cette adresse courriel n'est pas autorisée à créer un compte. Seuls les parents et le personnel enregistrés peuvent s'inscrire.",
-    "emailAuthorized": "Courriel autorisé - vous pouvez créer un compte"
+    "emailAuthorized": "Courriel autorisé - vous pouvez créer un compte",
+    "userNotFound": "Aucun compte trouvé avec cette adresse courriel.",
+    "wrongPassword": "Mot de passe incorrect.",
+    "emailAlreadyInUse": "Un compte avec ce courriel existe déjà.",
+    "weakPassword": "Le mot de passe doit contenir au moins 6 caractères.",
+    "tooManyRequests": "Trop de tentatives échouées. Veuillez réessayer plus tard.",
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion."
   },
   "profile": {
     "myChildren": "Mes Enfants",

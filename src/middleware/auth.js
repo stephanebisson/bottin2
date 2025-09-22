@@ -17,7 +17,12 @@ export const authMiddleware = {
     }
 
     if (authStore.isAuthenticated) {
-      next() // User is authenticated, proceed
+      // Check if email is verified
+      if (!authStore.isEmailVerified) {
+        next('/email-verification-required')
+        return
+      }
+      next() // User is authenticated and verified, proceed
     } else {
       // User is not authenticated, redirect to auth page
       next({
@@ -93,5 +98,6 @@ export const routeConfig = {
   open: [
     '/update', // Parent update forms (with token)
     '/update-success', // Update completion page
+    '/email-verification-required', // Email verification page
   ],
 }

@@ -79,12 +79,23 @@
         @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
+      <!-- Success Alert -->
+      <v-alert
+        v-if="registrationSuccess"
+        class="mb-4"
+        closable
+        icon="mdi-check-circle"
+        :text="$t('auth.accountCreatedSuccess')"
+        type="success"
+        @click:close="registrationSuccess = false"
+      />
+
       <!-- Error Alert -->
       <v-alert
         v-if="authStore.error"
         class="mb-4"
         closable
-        :text="authStore.error"
+        :text="translateAuthError(authStore.error)"
         type="error"
         @click:close="authStore.clearError()"
       />
@@ -123,12 +134,14 @@
 <script setup>
   import { ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useAuthErrors } from '@/composables/useAuthErrors'
   import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
 
   const router = useRouter()
   const authStore = useAuthStore()
   const { t } = useI18n()
+  const { translateAuthError } = useAuthErrors()
 
   // Form data
   const email = ref('')
@@ -140,6 +153,7 @@
   const formValid = ref(false)
   const emailValidationLoading = ref(false)
   const emailAuthorized = ref(null) // null = not checked, true = authorized, false = not authorized
+  const registrationSuccess = ref(false)
 
   // Validation rules
   const emailRules = [
@@ -206,8 +220,20 @@
     try {
       await authStore.register(email.value, password.value)
 
-      // Redirect to home page after successful registration
-      router.push('/')
+      // Show success message
+      registrationSuccess.value = true
+
+      // Clear form
+      email.value = ''
+      password.value = ''
+      confirmPassword.value = ''
+      agreeToTerms.value = false
+      emailAuthorized.value = null
+
+      // Optionally redirect after delay to let user see the message
+      setTimeout(() => {
+        router.push('/auth')
+      }, 3000)
     } catch (error) {
       // Error is handled in the store
       console.error('Registration failed:', error)

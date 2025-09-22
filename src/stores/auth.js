@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
@@ -103,7 +104,13 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeAuth = () => {
     return new Promise(resolve => {
       const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
-        user.value = firebaseUser
+        // If user exists but email is not verified, sign them out
+        if (firebaseUser && !firebaseUser.emailVerified) {
+          signOut(auth)
+          user.value = null
+        } else {
+          user.value = firebaseUser
+        }
         isInitialized.value = true
         unsubscribe() // Only need initial state
         resolve(firebaseUser)
@@ -132,6 +139,9 @@ export const useAuthStore = defineStore('auth', () => {
         })
       }
 
+      // Send email verification
+      await sendEmailVerification(userCredential.user)
+
       user.value = userCredential.user
       return userCredential.user
     } catch (error_) {
@@ -149,6 +159,15 @@ export const useAuthStore = defineStore('auth', () => {
       clearError()
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
+
+      // Check if email is verified
+      if (!userCredential.user.emailVerified) {
+        // Sign out the user immediately if email is not verified
+        await signOut(auth)
+        user.value = null
+        throw new Error('EMAIL_NOT_VERIFIED')
+      }
+
       user.value = userCredential.user
       return userCredential.user
     } catch (error_) {
@@ -190,6 +209,45 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Send email verification
+  const sendVerificationEmail = async () => {
+    try {
+      setLoading(true)
+      clearError()
+
+      if (!user.value) {
+        throw new Error('No user is currently signed in')
+      }
+
+      await sendEmailVerification(user.value)
+      return { success: true, message: 'Verification email sent successfully' }
+    } catch (error_) {
+      const message = getAuthErrorMessage(error_)
+      setError(message)
+      throw new Error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Check if current user's email is verified
+  const isEmailVerified = computed(() => user.value?.emailVerified || false)
+
+  // Refresh current user's verification status
+  const refreshUser = async () => {
+    try {
+      if (auth.currentUser) {
+        await auth.currentUser.reload()
+        user.value = auth.currentUser
+        return auth.currentUser.emailVerified
+      }
+      return false
+    } catch (error) {
+      console.error('Failed to refresh user:', error)
+      throw error
+    }
+  }
+
   // Helper function to get user-friendly error messages
   const getAuthErrorMessage = error => {
     switch (error.code || error.message) {
@@ -217,6 +275,9 @@ export const useAuthStore = defineStore('auth', () => {
       case 'UNAUTHORIZED_EMAIL': {
         return 'This email address is not authorized to create an account. Only registered parents and staff can create accounts.'
       }
+      case 'EMAIL_NOT_VERIFIED': {
+        return 'Please verify your email address before signing in. Check your inbox for a verification link.'
+      }
       default: {
         return error.message || 'An unexpected error occurred.'
       }
@@ -232,6 +293,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Getters
     isAuthenticated,
+    isEmailVerified,
     userDisplayName,
     userEmail,
 
@@ -241,6 +303,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     resetPassword,
+    sendVerificationEmail,
+    refreshUser,
     validateEmailExists,
     getUserInfo,
     clearError,
