@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Determine the correct function URL based on environment
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/validateEmail`, {
+      const response = await fetch(`${baseUrl}/validateEmailV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,10 +59,10 @@ export const useAuthStore = defineStore('auth', () => {
   const getUserInfo = async email => {
     try {
       const baseUrl = import.meta.env.DEV
-        ? 'http://localhost:5001/bottin2-3b41d/us-central1'
+        ? 'http://localhost:5001/bottin2-3b41d/northamerica-northeast1'
         : 'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net'
 
-      const response = await fetch(`${baseUrl}/validateEmail`, {
+      const response = await fetch(`${baseUrl}/validateEmailV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

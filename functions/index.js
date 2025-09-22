@@ -6,13 +6,14 @@ admin.initializeApp()
 const { setAdminClaim, getAdminStatus, listAdmins } = require('./adminManagement')
 const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
-const { validateEmail } = require('./auth')
+const { validateEmail, validateEmailV2 } = require('./auth')
 const { sendUpdateEmailsToSelected } = require('./email')
 const { validateUpdateToken, processParentUpdate, processParentOptOut } = require('./parentUpdate')
 const { healthCheck } = require('./utils')
 
 // Export all functions
 exports.validateEmail = validateEmail
+exports.validateEmailV2 = validateEmailV2
 exports.startAnnualUpdate = startAnnualUpdate
 exports.getWorkflowStatus = getWorkflowStatus
 exports.sendUpdateEmailsToSelected = sendUpdateEmailsToSelected
