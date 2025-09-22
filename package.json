@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "deploy": "npm run build:prod && firebase deploy --only hosting",
+    "deploy:all": "npm run build:prod && firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:preview": "npm run build:prod && firebase hosting:channel:deploy preview",
     "sync:dev": "NODE_ENV=development node scripts/sheets-sync.js",
