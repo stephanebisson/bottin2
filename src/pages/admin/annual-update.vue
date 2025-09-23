@@ -22,6 +22,13 @@
       </v-card-title>
 
       <v-card-text>
+        <!-- Debug info -->
+        <div class="mb-2 pa-2 bg-grey-lighten-4">
+          <small>Debug: currentWorkflow is {{ currentWorkflow ? 'truthy' : 'falsy' }}</small>
+          <br>
+          <small v-if="currentWorkflow">Status: {{ currentWorkflow.status }}</small>
+        </div>
+
         <!-- Current Workflow Status -->
         <div v-if="currentWorkflow" class="mb-4">
           <v-alert
@@ -36,7 +43,7 @@
               <v-card variant="outlined">
                 <v-card-text class="text-center">
                   <div class="text-h4 font-weight-bold text-primary">
-                    {{ currentWorkflow.stats.totalParents }}
+                    {{ currentWorkflow.stats?.totalParents || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
                     {{ $t('admin.totalParents') }}
@@ -49,7 +56,7 @@
               <v-card variant="outlined">
                 <v-card-text class="text-center">
                   <div class="text-h4 font-weight-bold text-info">
-                    {{ currentWorkflow.stats.emailsSent }}
+                    {{ currentWorkflow.stats?.emailsSent || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
                     {{ $t('admin.emailsSent') }}
@@ -62,7 +69,7 @@
               <v-card variant="outlined">
                 <v-card-text class="text-center">
                   <div class="text-h4 font-weight-bold text-success">
-                    {{ currentWorkflow.stats.formsSubmitted }}
+                    {{ currentWorkflow.stats?.formsSubmitted || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
                     {{ $t('admin.formsSubmitted') }}
@@ -75,7 +82,7 @@
               <v-card variant="outlined">
                 <v-card-text class="text-center">
                   <div class="text-h4 font-weight-bold text-warning">
-                    {{ currentWorkflow.stats.optedOut }}
+                    {{ currentWorkflow.stats?.optedOut || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
                     {{ $t('admin.optedOut') }}
@@ -378,7 +385,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { useI18n } from '@/composables/useI18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
@@ -396,6 +403,11 @@
   const confirmationText = ref('')
   const currentWorkflow = ref(null)
   const workflowHistory = ref([])
+
+  // Watch for changes in currentWorkflow to debug the issue
+  watch(currentWorkflow, (newValue, oldValue) => {
+    console.log('currentWorkflow changed:', { oldValue, newValue })
+  }, { immediate: true, deep: true })
 
   // Parent management state
   const parents = ref([])
@@ -773,8 +785,15 @@
       }
 
       const data = await response.json()
+      console.log('getWorkflowStatusV2 response:', data)
+      console.log('Setting currentWorkflow to:', data.current)
       currentWorkflow.value = data.current
       workflowHistory.value = data.history || []
+
+      // Add a small delay to check if the data persists
+      setTimeout(() => {
+        console.log('currentWorkflow after 100ms:', currentWorkflow.value)
+      }, 100)
     } catch (error_) {
       console.error('Failed to load workflow data:', error_)
     }
