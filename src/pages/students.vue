@@ -93,10 +93,10 @@
                     {{ getParentCommittees(group.parent1.email).join(', ') }}
                   </div>
                   <div v-if="group.parent1.email" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.email') }}:</strong> {{ group.parent1.email }}
+                    <strong>{{ $t('common.email') }}:</strong> <a :href="`mailto:${group.parent1.email}`">{{ group.parent1.email }}</a>
                   </div>
                   <div v-if="group.parent1.phone" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(group.parent1.phone) }}
+                    <strong>{{ $t('common.phone') }}:</strong> <a :href="`tel:${group.parent1.phone}`">{{ formatPhone(group.parent1.phone) }}</a>
                   </div>
                   <div v-if="formatAddress(group.parent1)" class="text-body-2 mb-1">
                     <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent1) }}
@@ -120,10 +120,10 @@
                     {{ getParentCommittees(group.parent2.email).join(', ') }}
                   </div>
                   <div v-if="group.parent2.email" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.email') }}:</strong> {{ group.parent2.email }}
+                    <strong>{{ $t('common.email') }}:</strong> <a :href="`mailto:${group.parent2.email}`">{{ group.parent2.email }}</a>
                   </div>
                   <div v-if="group.parent2.phone" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(group.parent2.phone) }}
+                    <strong>{{ $t('common.phone') }}:</strong> <a :href="`tel:${group.parent2.phone}`">{{ formatPhone(group.parent2.phone) }}</a>
                   </div>
                   <div v-if="formatAddress(group.parent2)" class="text-body-2 mb-1">
                     <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent2) }}
