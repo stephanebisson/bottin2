@@ -63,12 +63,12 @@
             >
               <!-- Parent Column -->
               <td class="py-3">
-                <div class="text-subtitle-1 font-weight-bold">
-                  <HighlightedText
-                    :query="searchQuery"
-                    :text="`${parentData.parent.last_name}, ${parentData.parent.first_name}`"
-                  />
-                </div>
+                <ParentInfo
+                  :parent="{ ...parentData.parent, fullName: `${parentData.parent.last_name}, ${parentData.parent.first_name}` }"
+                  :search-query="searchQuery"
+                  show-contact
+                  variant="minimal"
+                />
               </td>
 
               <!-- Children Column -->
@@ -114,6 +114,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import ParentInfo from '@/components/ParentInfo.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
 

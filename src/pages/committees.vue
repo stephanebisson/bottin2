@@ -79,50 +79,20 @@
                 {{ $t('committees.membersHeader') }}
               </div>
               <div v-if="committee.enrichedMembers.length > 0">
-                <div
+                <ParentInfo
                   v-for="member in committee.enrichedMembers"
                   :key="member.email"
-                  class="member-item-compact mb-2 pa-3 rounded"
+                  class="member-item-compact mb-2 rounded"
                   :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : 'bg-grey-lighten-4'"
-                >
-                  <div class="d-flex justify-space-between align-start mb-2">
-                    <div class="d-flex align-center flex-wrap">
-                      <div class="text-body-2 font-weight-medium me-2">
-                        <HighlightedText :query="searchQuery" :text="member.fullName" />
-                      </div>
-                      <v-chip
-                        v-if="member.role && member.role !== 'Member'"
-                        class="me-2"
-                        color="primary"
-                        size="x-small"
-                        variant="text"
-                      >
-                        {{ member.role }}
-                      </v-chip>
-                    </div>
-                    <v-chip
-                      :color="member.memberType === 'staff' ? 'blue' : 'grey'"
-                      size="x-small"
-                      variant="outlined"
-                    >
-                      {{ member.memberType === 'staff' ? $t('committees.staff') : $t('committees.parent') }}
-                    </v-chip>
-                  </div>
-                  <div class="text-caption d-flex flex-column gap-1">
-                    <div>
-                      <v-icon class="me-1" size="12">mdi-email</v-icon>
-                      <a class="text-decoration-none" :href="`mailto:${member.email}`">
-                        {{ member.email }}
-                      </a>
-                    </div>
-                    <div v-if="member.phone">
-                      <v-icon class="me-1" size="12">mdi-phone</v-icon>
-                      <a class="text-decoration-none" :href="`tel:${member.phone}`">
-                        {{ formatPhone(member.phone) }}
-                      </a>
-                    </div>
-                  </div>
-                </div>
+                  :member-type="member.memberType"
+                  :parent="member"
+                  :role="member.role"
+                  :search-query="searchQuery"
+                  show-contact
+                  show-member-type
+                  show-role
+                  variant="compact"
+                />
               </div>
               <div v-else class="text-center py-2 text-grey-darken-1 text-caption">
                 {{ $t('committees.noMembersFound') }}
@@ -138,6 +108,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import ParentInfo from '@/components/ParentInfo.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
 
@@ -196,18 +167,6 @@
     })
   })
 
-  const formatPhone = phone => {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
-
   onMounted(() => {
     firebaseStore.loadAllData()
   })
@@ -224,15 +183,14 @@
 }
 
 .member-item-compact {
-  border-left: 3px solid;
-  border: 1px solid rgba(0,0,0,0.12);
+  padding: 12px;
 }
 
-.member-item-compact.bg-blue-lighten-5 {
+.member-item-compact.bg-blue-lighten-5 .parent-info {
   border-left-color: rgb(var(--v-theme-blue));
 }
 
-.member-item-compact.bg-grey-lighten-4 {
+.member-item-compact.bg-grey-lighten-4 .parent-info {
   border-left-color: rgb(var(--v-theme-grey));
 }
 

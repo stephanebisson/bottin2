@@ -82,56 +82,32 @@
             <v-row v-if="group.parent1 || group.parent2">
               <!-- Parent 1 Column -->
               <v-col cols="6">
-                <div v-if="group.parent1" class="parent-info">
-                  <div class="text-subtitle-2 font-weight-bold mb-1">
-                    <HighlightedText
-                      :query="searchQuery"
-                      :text="`${group.parent1.first_name} ${group.parent1.last_name}`"
-                    />
-                  </div>
-                  <div v-if="getParentCommittees(group.parent1.email).length > 0" class="text-caption mb-1 text-primary font-italic">
-                    {{ getParentCommittees(group.parent1.email).join(', ') }}
-                  </div>
-                  <div v-if="group.parent1.email" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.email') }}:</strong> <a :href="`mailto:${group.parent1.email}`">{{ group.parent1.email }}</a>
-                  </div>
-                  <div v-if="group.parent1.phone" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.phone') }}:</strong> <a :href="`tel:${group.parent1.phone}`">{{ formatPhone(group.parent1.phone) }}</a>
-                  </div>
-                  <div v-if="formatAddress(group.parent1)" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent1) }}
-                  </div>
-                  <div v-if="group.parent1.interests && group.parent1.interests.length > 0" class="text-body-2">
-                    <strong>{{ $t('common.interests') }}:</strong> {{ group.parent1.interests.join(', ') }}
-                  </div>
-                </div>
+                <ParentInfo
+                  v-if="group.parent1"
+                  :committees="getParentCommittees(group.parent1.email)"
+                  :parent="group.parent1"
+                  :search-query="searchQuery"
+                  show-address
+                  show-committees
+                  show-contact
+                  show-interests
+                  variant="detailed"
+                />
               </v-col>
 
               <!-- Parent 2 Column -->
               <v-col cols="6">
-                <div v-if="group.parent2" class="parent-info">
-                  <div class="text-subtitle-2 font-weight-bold mb-1">
-                    <HighlightedText
-                      :query="searchQuery"
-                      :text="`${group.parent2.first_name} ${group.parent2.last_name}`"
-                    />
-                  </div>
-                  <div v-if="getParentCommittees(group.parent2.email).length > 0" class="text-caption mb-1 text-primary font-italic">
-                    {{ getParentCommittees(group.parent2.email).join(', ') }}
-                  </div>
-                  <div v-if="group.parent2.email" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.email') }}:</strong> <a :href="`mailto:${group.parent2.email}`">{{ group.parent2.email }}</a>
-                  </div>
-                  <div v-if="group.parent2.phone" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.phone') }}:</strong> <a :href="`tel:${group.parent2.phone}`">{{ formatPhone(group.parent2.phone) }}</a>
-                  </div>
-                  <div v-if="formatAddress(group.parent2)" class="text-body-2 mb-1">
-                    <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent2) }}
-                  </div>
-                  <div v-if="group.parent2.interests && group.parent2.interests.length > 0" class="text-body-2">
-                    <strong>{{ $t('common.interests') }}:</strong> {{ group.parent2.interests.join(', ') }}
-                  </div>
-                </div>
+                <ParentInfo
+                  v-if="group.parent2"
+                  :committees="getParentCommittees(group.parent2.email)"
+                  :parent="group.parent2"
+                  :search-query="searchQuery"
+                  show-address
+                  show-committees
+                  show-contact
+                  show-interests
+                  variant="detailed"
+                />
               </v-col>
             </v-row>
 
@@ -149,6 +125,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import ParentInfo from '@/components/ParentInfo.vue'
   import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
@@ -251,30 +228,6 @@
     return teacher ? teacher.first_name : null
   }
 
-  const formatAddress = parent => {
-    if (!parent) return ''
-
-    const addressParts = []
-
-    if (parent.address) addressParts.push(parent.address)
-    if (parent.city) addressParts.push(parent.city)
-    if (parent.postal_code) addressParts.push(parent.postal_code)
-
-    return addressParts.length > 0 ? addressParts.join(', ') : ''
-  }
-
-  const formatPhone = phone => {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
-
   const getParentCommittees = parentEmail => {
     if (!parentEmail) return []
 
@@ -300,10 +253,4 @@
   border-bottom: none !important;
 }
 
-.parent-info {
-  padding: 8px;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 4px;
-  height: 100%;
-}
 </style>
