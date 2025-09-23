@@ -9,9 +9,9 @@ import {
 } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { getFunctionsBaseUrl } from '@/config/functions'
 import { auth } from '@/firebase'
-import { useI18n } from '@/composables/useI18n'
 
 export const useAuthStore = defineStore('auth', () => {
   // Get i18n instance for language detection

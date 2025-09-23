@@ -62,10 +62,10 @@
                   <HighlightedText :query="searchQuery" :text="committee.name" />
                 </div>
                 <v-chip
+                  class="flex-shrink-0 mt-1"
                   color="white"
                   size="small"
                   text-color="primary"
-                  class="flex-shrink-0 mt-1"
                 >
                   {{ committee.enrichedMembers.length === 1 ? $t('committees.memberCount', { count: committee.enrichedMembers.length }) : $t('committees.memberCountPlural', { count: committee.enrichedMembers.length }) }}
                 </v-chip>
@@ -92,10 +92,10 @@
                       </div>
                       <v-chip
                         v-if="member.role && member.role !== 'Member'"
+                        class="me-2"
                         color="primary"
                         size="x-small"
                         variant="text"
-                        class="me-2"
                       >
                         {{ member.role }}
                       </v-chip>
@@ -110,13 +110,13 @@
                   </div>
                   <div class="text-caption d-flex flex-column gap-1">
                     <div>
-                      <v-icon size="12" class="me-1">mdi-email</v-icon>
+                      <v-icon class="me-1" size="12">mdi-email</v-icon>
                       <a class="text-decoration-none" :href="`mailto:${member.email}`">
                         {{ member.email }}
                       </a>
                     </div>
                     <div v-if="member.phone">
-                      <v-icon size="12" class="me-1">mdi-phone</v-icon>
+                      <v-icon class="me-1" size="12">mdi-phone</v-icon>
                       <a class="text-decoration-none" :href="`tel:${member.phone}`">
                         {{ formatPhone(member.phone) }}
                       </a>

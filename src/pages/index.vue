@@ -41,10 +41,10 @@
         <v-col
           v-for="navItem in navigationItems"
           :key="navItem.route"
+          class="d-flex"
           cols="12"
           md="4"
           sm="6"
-          class="d-flex"
         >
           <v-card
             class="navigation-card pa-6 text-center d-flex flex-column"

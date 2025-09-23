@@ -5,7 +5,7 @@
     height="60"
   >
     <div class="text-caption text-disabled">
-      <div v-html="$t('footer.copyright')"></div>
+      <div v-html="$t('footer.copyright')" />
       <a
         class="text-decoration-none text-disabled d-flex align-center"
         href="mailto:bottin.etoile.filante@gmail.com"

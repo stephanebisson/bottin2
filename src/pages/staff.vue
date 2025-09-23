@@ -160,9 +160,9 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
-  import { useI18n } from '@/composables/useI18n'
 
   const searchQuery = ref('')
   const { t } = useI18n()
