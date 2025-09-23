@@ -118,7 +118,7 @@ function getEmailService () {
   }
 }
 
-function getEmailTemplate (parentName, updateUrl, schoolYear, language = 'en') {
+function getEmailTemplate (parentName, updateUrl, schoolYear, language = 'fr') {
   const messages = EMAIL_MESSAGES[language] || EMAIL_MESSAGES.en
   const currentYear = new Date().getFullYear()
 
@@ -306,8 +306,8 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       const updateUrl = `${baseUrl}/update/${parent.updateToken}`
       console.log('Update URL:', updateUrl)
 
-      // Determine language (assume 'en' for now, could be based on parent preference)
-      const language = parent.preferredLanguage || 'en'
+      // Determine language (assume 'fr' for now, could be based on parent preference)
+      const language = parent.preferredLanguage || 'fr'
       const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, language)
 
       try {
