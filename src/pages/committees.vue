@@ -56,81 +56,77 @@
         >
           <v-card height="100%">
             <!-- Committee Header -->
-            <v-card-title class="bg-primary text-white">
-              <div class="d-flex justify-space-between align-center w-100">
-                <HighlightedText :query="searchQuery" :text="committee.name" />
+            <div class="bg-primary text-white pa-4">
+              <div class="d-flex align-start gap-3">
+                <div class="committee-name text-h6 font-weight-bold">
+                  <HighlightedText :query="searchQuery" :text="committee.name" />
+                </div>
                 <v-chip
                   color="white"
                   size="small"
                   text-color="primary"
+                  class="flex-shrink-0 mt-1"
                 >
                   {{ committee.enrichedMembers.length }} member{{ committee.enrichedMembers.length !== 1 ? 's' : '' }}
                 </v-chip>
               </div>
-            </v-card-title>
+            </div>
 
             <!-- Committee Members -->
-            <v-card-text class="pa-0">
-              <v-expansion-panels variant="accordion">
-                <v-expansion-panel>
-                  <v-expansion-panel-title class="text-subtitle-1 font-weight-medium">
-                    <v-icon class="me-2" color="primary">mdi-account-group</v-icon>
-                    View Members
-                  </v-expansion-panel-title>
-                  <v-expansion-panel-text>
-                    <div v-if="committee.enrichedMembers.length > 0" class="py-2">
-                      <div
-                        v-for="member in committee.enrichedMembers"
-                        :key="member.email"
-                        class="member-item mb-3 pa-3 rounded"
-                        :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : 'bg-green-lighten-5'"
-                      >
-                        <!-- Member Header -->
-                        <div class="d-flex justify-space-between align-center mb-2">
-                          <div class="text-subtitle-1 font-weight-bold">
-                            <HighlightedText :query="searchQuery" :text="member.fullName" />
-                          </div>
-                          <v-chip
-                            :color="member.memberType === 'staff' ? 'blue' : 'green'"
-                            size="small"
-                            variant="outlined"
-                          >
-                            {{ member.memberType === 'staff' ? 'Staff' : 'Parent' }}
-                          </v-chip>
-                        </div>
-
-                        <!-- Member Contact Info -->
-                        <div class="text-body-2">
-                          <div class="mb-1">
-                            <v-icon class="me-2" size="small">mdi-email</v-icon>
-                            <a class="text-decoration-none" :href="`mailto:${member.email}`">
-                              {{ member.email }}
-                            </a>
-                          </div>
-                          <div v-if="member.phone" class="mb-1">
-                            <v-icon class="me-2" size="small">mdi-phone</v-icon>
-                            <a class="text-decoration-none" :href="`tel:${member.phone}`">
-                              {{ formatPhone(member.phone) }}
-                            </a>
-                          </div>
-                          <div v-if="member.role && member.role !== 'Member'" class="mt-2">
-                            <v-chip
-                              color="primary"
-                              size="x-small"
-                              variant="text"
-                            >
-                              {{ member.role }}
-                            </v-chip>
-                          </div>
-                        </div>
+            <v-card-text class="pa-3">
+              <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
+                <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
+                Members
+              </div>
+              <div v-if="committee.enrichedMembers.length > 0">
+                <div
+                  v-for="member in committee.enrichedMembers"
+                  :key="member.email"
+                  class="member-item-compact mb-2 pa-3 rounded"
+                  :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : 'bg-grey-lighten-4'"
+                >
+                  <div class="d-flex justify-space-between align-start mb-2">
+                    <div class="d-flex align-center flex-wrap">
+                      <div class="text-body-2 font-weight-medium me-2">
+                        <HighlightedText :query="searchQuery" :text="member.fullName" />
                       </div>
+                      <v-chip
+                        v-if="member.role && member.role !== 'Member'"
+                        color="primary"
+                        size="x-small"
+                        variant="text"
+                        class="me-2"
+                      >
+                        {{ member.role }}
+                      </v-chip>
                     </div>
-                    <div v-else class="text-center py-4 text-grey-darken-1">
-                      No members found for this committee
+                    <v-chip
+                      :color="member.memberType === 'staff' ? 'blue' : 'grey'"
+                      size="x-small"
+                      variant="outlined"
+                    >
+                      {{ member.memberType === 'staff' ? 'Staff' : 'Parent' }}
+                    </v-chip>
+                  </div>
+                  <div class="text-caption d-flex flex-column gap-1">
+                    <div>
+                      <v-icon size="12" class="me-1">mdi-email</v-icon>
+                      <a class="text-decoration-none" :href="`mailto:${member.email}`">
+                        {{ member.email }}
+                      </a>
                     </div>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels>
+                    <div v-if="member.phone">
+                      <v-icon size="12" class="me-1">mdi-phone</v-icon>
+                      <a class="text-decoration-none" :href="`tel:${member.phone}`">
+                        {{ formatPhone(member.phone) }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-center py-2 text-grey-darken-1 text-caption">
+                No members found for this committee
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -218,16 +214,26 @@
 </script>
 
 <style scoped>
-.member-item {
-  border-left: 4px solid;
+.committee-name {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
 }
 
-.member-item.bg-blue-lighten-5 {
+.member-item-compact {
+  border-left: 3px solid;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+.member-item-compact.bg-blue-lighten-5 {
   border-left-color: rgb(var(--v-theme-blue));
 }
 
-.member-item.bg-green-lighten-5 {
-  border-left-color: rgb(var(--v-theme-green));
+.member-item-compact.bg-grey-lighten-4 {
+  border-left-color: rgb(var(--v-theme-grey));
 }
 
 a {
