@@ -52,6 +52,14 @@ exports.validateUpdateTokenV2 = onRequest({
 
     console.log(`Found ${activeWorkflowsSnapshot.size} active workflows`)
 
+    if (activeWorkflowsSnapshot.empty) {
+      console.log('✗ No active workflows found in database')
+      return res.status(404).json({
+        valid: false,
+        error: 'No active workflows found.',
+      })
+    }
+
     let parentData = null
     let parentDoc = null
     let tokenFound = false
