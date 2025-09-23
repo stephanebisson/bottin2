@@ -103,7 +103,10 @@
     "viewMembers": "View Members",
     "noMembersFound": "No members found for this committee",
     "parent": "Parent",
-    "staff": "Staff"
+    "staff": "Staff",
+    "memberCount": "{count} member",
+    "memberCountPlural": "{count} members",
+    "membersHeader": "Members"
   },
   "themes": {
     "chooseTheme": "Choose Your Theme",

@@ -67,7 +67,7 @@
                   text-color="primary"
                   class="flex-shrink-0 mt-1"
                 >
-                  {{ committee.enrichedMembers.length }} member{{ committee.enrichedMembers.length !== 1 ? 's' : '' }}
+                  {{ committee.enrichedMembers.length === 1 ? $t('committees.memberCount', { count: committee.enrichedMembers.length }) : $t('committees.memberCountPlural', { count: committee.enrichedMembers.length }) }}
                 </v-chip>
               </div>
             </div>
@@ -76,7 +76,7 @@
             <v-card-text class="pa-3">
               <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
                 <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
-                Members
+                {{ $t('committees.membersHeader') }}
               </div>
               <div v-if="committee.enrichedMembers.length > 0">
                 <div
@@ -105,7 +105,7 @@
                       size="x-small"
                       variant="outlined"
                     >
-                      {{ member.memberType === 'staff' ? 'Staff' : 'Parent' }}
+                      {{ member.memberType === 'staff' ? $t('committees.staff') : $t('committees.parent') }}
                     </v-chip>
                   </div>
                   <div class="text-caption d-flex flex-column gap-1">
@@ -125,7 +125,7 @@
                 </div>
               </div>
               <div v-else class="text-center py-2 text-grey-darken-1 text-caption">
-                No members found for this committee
+                {{ $t('committees.noMembersFound') }}
               </div>
             </v-card-text>
           </v-card>

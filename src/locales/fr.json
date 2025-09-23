@@ -104,7 +104,10 @@
     "viewMembers": "Voir les Membres",
     "noMembersFound": "Aucun membre trouvé pour ce comité",
     "parent": "Parent",
-    "staff": "Personnel"
+    "staff": "Personnel",
+    "memberCount": "{count} membre",
+    "memberCountPlural": "{count} membres",
+    "membersHeader": "Membres"
   },
   "themes": {
     "chooseTheme": "Choisissez Votre Thème",
