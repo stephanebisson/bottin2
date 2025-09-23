@@ -157,7 +157,7 @@
     try {
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/getWorkflowStatus`, {
+      const response = await fetch(`${baseUrl}/getWorkflowStatusV2`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${await authStore.user.getIdToken()}`,

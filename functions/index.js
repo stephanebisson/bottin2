@@ -4,7 +4,7 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 const { setAdminClaim, getAdminStatus, listAdmins } = require('./adminManagement')
-const { startAnnualUpdate, getWorkflowStatus } = require('./annualUpdateWorkflow')
+const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2 } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmail, validateEmailV2 } = require('./auth')
 const { sendUpdateEmailsToSelected } = require('./email')
@@ -16,6 +16,8 @@ exports.validateEmail = validateEmail
 exports.validateEmailV2 = validateEmailV2
 exports.startAnnualUpdate = startAnnualUpdate
 exports.getWorkflowStatus = getWorkflowStatus
+exports.startAnnualUpdateV2 = startAnnualUpdateV2
+exports.getWorkflowStatusV2 = getWorkflowStatusV2
 exports.sendUpdateEmailsToSelected = sendUpdateEmailsToSelected
 exports.validateUpdateToken = validateUpdateToken
 exports.processParentUpdate = processParentUpdate

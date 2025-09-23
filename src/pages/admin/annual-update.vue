@@ -703,7 +703,7 @@
       // Call Firebase Function to start the workflow
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/startAnnualUpdate`, {
+      const response = await fetch(`${baseUrl}/startAnnualUpdateV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -761,7 +761,7 @@
     try {
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/getWorkflowStatus`, {
+      const response = await fetch(`${baseUrl}/getWorkflowStatusV2`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${await authStore.user.getIdToken()}`,
