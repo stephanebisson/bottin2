@@ -125,7 +125,10 @@
     "staff": "Personnel",
     "memberCount": "{count} membre",
     "memberCountPlural": "{count} membres",
-    "membersHeader": "Membres"
+    "membersHeader": "Membres",
+    "parentMembers": "Membres Parents",
+    "staffMembers": "Membres du Personnel",
+    "unknownMembers": "Autres Membres"
   },
   "themes": {
     "chooseTheme": "Choisissez Votre Thème",

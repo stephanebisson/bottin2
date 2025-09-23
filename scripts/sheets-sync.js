@@ -573,9 +573,7 @@ function transformCECommittees (rows) {
   // Create email-based lookup maps
   const parentsLookup = new Map(parentsData.map(p => [p.email, p]))
 
-  const committees = []
-  let currentCommittee = null
-  let currentMembers = []
+  const allMembers = []
   let isStaffCommittee = false
 
   for (const row of rows) {
@@ -585,19 +583,8 @@ function transformCECommittees (rows) {
 
     const firstCell = row[0]?.toString().trim()
 
-    // Check for committee headers
+    // Check for committee headers to determine member type
     if (firstCell && firstCell.includes('Comité d\'Établissement')) {
-      // Save previous committee if exists
-      if (currentCommittee && currentMembers.length > 0) {
-        committees.push({
-          name: currentCommittee,
-          members: currentMembers,
-        })
-      }
-
-      // Start new committee
-      currentCommittee = firstCell
-      currentMembers = []
       isStaffCommittee = firstCell.toLowerCase().includes('enseignant') || firstCell.toLowerCase().includes('équipe enseignants')
       continue
     }
@@ -613,14 +600,14 @@ function transformCECommittees (rows) {
     }
 
     // Process member rows - role is in first column
-    if (currentCommittee && firstCell) {
+    if (firstCell) {
       const role = firstCell
       const name = row[1]?.toString().trim()
       const email = row[3]?.toString().trim()
 
       if (name && email) {
         if (isStaffCommittee) {
-          currentMembers.push({
+          allMembers.push({
             email,
             role,
             member_type: 'staff',
@@ -631,7 +618,7 @@ function transformCECommittees (rows) {
           const parentData = parentsLookup.get(email)
           const parentEmail = parentData?.email || email
 
-          currentMembers.push({
+          allMembers.push({
             email: parentEmail,
             role,
             member_type: 'parent',
@@ -642,20 +629,17 @@ function transformCECommittees (rows) {
     }
   }
 
-  // Save the last committee
-  if (currentCommittee && currentMembers.length > 0) {
-    committees.push({
-      name: currentCommittee,
-      members: currentMembers,
-    })
+  // Return single combined committee
+  const committee = {
+    name: 'Conseil d\'établissement',
+    members: allMembers,
   }
 
-  console.log(`🔄 Found ${committees.length} CE committees`)
-  for (const committee of committees) {
-    console.log(`  - ${committee.name}: ${committee.members.length} members`)
-  }
+  console.log(`🔄 Found single CE committee: ${committee.name} with ${committee.members.length} members`)
+  console.log(`  - Staff members: ${allMembers.filter(m => m.member_type === 'staff').length}`)
+  console.log(`  - Parent members: ${allMembers.filter(m => m.member_type === 'parent').length}`)
 
-  return committees
+  return [committee]
 }
 
 // Transform function for Fondation committee

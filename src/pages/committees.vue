@@ -74,28 +74,104 @@
 
             <!-- Committee Members -->
             <v-card-text class="pa-3">
-              <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
-                <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
-                {{ $t('committees.membersHeader') }}
-              </div>
               <div v-if="committee.enrichedMembers.length > 0">
-                <ParentInfo
-                  v-for="member in committee.enrichedMembers"
-                  :key="member.email"
-                  class="member-item-compact mb-2 rounded"
-                  :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : 'bg-grey-lighten-4'"
-                  :member-type="member.memberType"
-                  :parent="member"
-                  :role="member.role"
-                  :search-query="searchQuery"
-                  show-contact
-                  show-member-type
-                  show-role
-                  variant="compact"
-                />
+                <!-- Parent Members Section -->
+                <div v-if="committee.parentMembers.length > 0">
+                  <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
+                    <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
+                    {{ committee.hasMixedMemberTypes ? $t('committees.parentMembers') : $t('committees.membersHeader') }}
+                  </div>
+                  <ParentInfo
+                    v-for="member in committee.parentMembers"
+                    :key="member.email"
+                    class="member-item-compact mb-2 rounded"
+                    :class="'bg-grey-lighten-4'"
+                    :member-type="member.memberType"
+                    :parent="member"
+                    :role="member.role"
+                    :search-query="searchQuery"
+                    show-contact
+                    show-member-type
+                    show-role
+                    variant="compact"
+                  />
+                </div>
+
+                <!-- Staff Members Section -->
+                <div v-if="committee.staffMembers.length > 0">
+                  <div
+                    class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center"
+                    :class="{ 'mt-4': committee.parentMembers.length > 0 }"
+                  >
+                    <v-icon class="me-2" color="primary" size="small">mdi-school</v-icon>
+                    {{ $t('committees.staffMembers') }}
+                  </div>
+                  <ParentInfo
+                    v-for="member in committee.staffMembers"
+                    :key="member.email"
+                    class="member-item-compact mb-2 rounded"
+                    :class="'bg-blue-lighten-5'"
+                    :member-type="member.memberType"
+                    :parent="member"
+                    :role="member.role"
+                    :search-query="searchQuery"
+                    show-contact
+                    show-member-type
+                    show-role
+                    variant="compact"
+                  />
+                </div>
+
+                <!-- Unknown Members Section (if any) -->
+                <div v-if="committee.unknownMembers.length > 0">
+                  <div
+                    class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center"
+                    :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
+                  >
+                    <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
+                    {{ $t('committees.unknownMembers') }}
+                  </div>
+                  <ParentInfo
+                    v-for="member in committee.unknownMembers"
+                    :key="member.email"
+                    class="member-item-compact mb-2 rounded"
+                    :class="'bg-orange-lighten-5'"
+                    :member-type="member.memberType"
+                    :parent="member"
+                    :role="member.role"
+                    :search-query="searchQuery"
+                    show-contact
+                    show-member-type
+                    show-role
+                    variant="compact"
+                  />
+                </div>
+
+                <!-- Single group fallback (committees with only one member type) -->
+                <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.unknownMembers.length === 0">
+                  <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
+                    <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
+                    {{ $t('committees.membersHeader') }}
+                  </div>
+                  <ParentInfo
+                    v-for="member in committee.enrichedMembers"
+                    :key="member.email"
+                    class="member-item-compact mb-2 rounded"
+                    :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-grey-lighten-4'"
+                    :member-type="member.memberType"
+                    :parent="member"
+                    :role="member.role"
+                    :search-query="searchQuery"
+                    show-contact
+                    show-member-type
+                    show-role
+                    variant="compact"
+                  />
+                </div>
               </div>
-              <div v-else class="text-center py-2 text-grey-darken-1 text-caption">
-                {{ $t('committees.noMembersFound') }}
+              <div v-else class="text-center py-4 text-grey-darken-1 text-caption">
+                <v-icon class="mb-2" color="grey-darken-2" size="24">mdi-account-group-outline</v-icon>
+                <div>{{ $t('committees.noMembersFound') }}</div>
               </div>
             </v-card-text>
           </v-card>
@@ -150,12 +226,32 @@
             phone: null,
             memberType: 'unknown',
           }
-        }).sort((a, b) => a.fullName.localeCompare(b.fullName))
+        }).sort((a, b) => {
+          // First sort by member type (parents first, then staff)
+          if (a.memberType !== b.memberType) {
+            if (a.memberType === 'parent' && b.memberType === 'staff') return -1
+            if (a.memberType === 'staff' && b.memberType === 'parent') return 1
+            // For 'unknown' type, place it last
+            if (a.memberType === 'unknown') return 1
+            if (b.memberType === 'unknown') return -1
+          }
+          // Then sort by name within the same member type
+          return a.fullName.localeCompare(b.fullName)
+        })
         : []
+
+      // Separate members by type for grouped display
+      const parentMembers = enrichedMembers.filter(member => member.memberType === 'parent')
+      const staffMembers = enrichedMembers.filter(member => member.memberType === 'staff')
+      const unknownMembers = enrichedMembers.filter(member => member.memberType === 'unknown')
 
       return {
         ...committee,
         enrichedMembers,
+        parentMembers,
+        staffMembers,
+        unknownMembers,
+        hasMixedMemberTypes: parentMembers.length > 0 && staffMembers.length > 0,
       }
     }).sort((a, b) => a.name.localeCompare(b.name))
   })
@@ -192,6 +288,10 @@
 
 .member-item-compact.bg-grey-lighten-4 .parent-info {
   border-left-color: rgb(var(--v-theme-grey));
+}
+
+.member-item-compact.bg-orange-lighten-5 .parent-info {
+  border-left-color: rgb(var(--v-theme-orange));
 }
 
 a {
