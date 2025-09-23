@@ -12,7 +12,7 @@ const db = admin.firestore()
  */
 exports.setAdminClaimV2 = onCall({
   region: FUNCTIONS_REGION,
-}, async (request) => {
+}, async request => {
   try {
     // Verify the request is authenticated
     if (!request.auth) {
@@ -82,7 +82,7 @@ exports.setAdminClaimV2 = onCall({
  */
 exports.getAdminStatusV2 = onCall({
   region: FUNCTIONS_REGION,
-}, async (request) => {
+}, async request => {
   try {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'User must be authenticated')
@@ -109,7 +109,7 @@ exports.getAdminStatusV2 = onCall({
  */
 exports.listAdminsV2 = onCall({
   region: FUNCTIONS_REGION,
-}, async (request) => {
+}, async request => {
   try {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'User must be authenticated')
