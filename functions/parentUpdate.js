@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
-const functions = require('firebase-functions/v1')
+const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
@@ -9,17 +9,19 @@ const db = admin.firestore()
 /**
  * Validate update token and return parent information
  */
-exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
-  // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*')
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.set('Access-Control-Allow-Headers', 'Content-Type')
-
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).send()
-  }
-
+exports.validateUpdateTokenV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
+}, async (req, res) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -146,17 +148,19 @@ exports.validateUpdateToken = functions.region(FUNCTIONS_REGION).https.onRequest
 /**
  * Process parent information update from the public form
  */
-exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
-  // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*')
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.set('Access-Control-Allow-Headers', 'Content-Type')
-
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).send()
-  }
-
+exports.processParentUpdateV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
+}, async (req, res) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -375,17 +379,19 @@ exports.processParentUpdate = functions.region(FUNCTIONS_REGION).https.onRequest
 /**
  * Process parent opt-out request - removes all personal data except name and email
  */
-exports.processParentOptOut = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
-  // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*')
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.set('Access-Control-Allow-Headers', 'Content-Type')
-
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).send()
-  }
-
+exports.processParentOptOutV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
+}, async (req, res) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({

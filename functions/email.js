@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
-const functions = require('firebase-functions/v1')
+const { onRequest } = require('firebase-functions/v2/https')
 const nodemailer = require('nodemailer')
 const { FUNCTIONS_REGION } = require('./config')
 
@@ -84,7 +84,7 @@ function getEmailService () {
     .filter(email => email.length > 0)
 
   // Create nodemailer transporter for Gmail
-  const transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransporter({
     service: 'gmail',
     auth: {
       user: gmailUser,
@@ -191,22 +191,21 @@ function getEmailTemplate (parentName, updateUrl, schoolYear, deadline, language
 }
 
 /**
- * Send email notifications to parents for annual update
- */
-/**
  * Send email notifications to selected parents for annual update
  */
-exports.sendUpdateEmailsToSelected = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
-  // Set CORS headers
-  res.set('Access-Control-Allow-Origin', '*')
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).send()
-  }
-
+exports.sendUpdateEmailsToSelectedV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  },
+}, async (req, res) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({

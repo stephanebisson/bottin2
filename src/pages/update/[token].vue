@@ -420,7 +420,7 @@
 
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/validateUpdateToken`, {
+      const response = await fetch(`${baseUrl}/validateUpdateTokenV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -478,7 +478,7 @@
 
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/processParentOptOut`, {
+      const response = await fetch(`${baseUrl}/processParentOptOutV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -523,7 +523,7 @@
 
       const baseUrl = getFunctionsBaseUrl()
 
-      const response = await fetch(`${baseUrl}/processParentUpdate`, {
+      const response = await fetch(`${baseUrl}/processParentUpdateV2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

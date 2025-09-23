@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
-const functions = require('firebase-functions/v1')
+const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
@@ -10,24 +10,26 @@ const db = admin.firestore()
  * Set admin custom claim for a user
  * Can only be called by existing admins or during initial setup
  */
-exports.setAdminClaim = functions.region(FUNCTIONS_REGION).https.onCall(async (data, context) => {
+exports.setAdminClaimV2 = onCall({
+  region: FUNCTIONS_REGION,
+}, async (request) => {
   try {
     // Verify the request is authenticated
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated')
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'User must be authenticated')
     }
 
-    const { uid, isAdmin = true } = data
+    const { uid, isAdmin = true } = request.data
 
     if (!uid) {
-      throw new functions.https.HttpsError('invalid-argument', 'User UID is required')
+      throw new HttpsError('invalid-argument', 'User UID is required')
     }
 
     // Check if caller is already an admin (except during initial setup)
     const isInitialSetup = await checkInitialSetup()
 
-    if (!isInitialSetup && !context.auth.token.admin) {
-      throw new functions.https.HttpsError(
+    if (!isInitialSetup && !request.auth.token.admin) {
+      throw new HttpsError(
         'permission-denied',
         'Only admins can set admin claims',
       )
@@ -38,14 +40,14 @@ exports.setAdminClaim = functions.region(FUNCTIONS_REGION).https.onCall(async (d
     try {
       targetUser = await admin.auth().getUser(uid)
     } catch {
-      throw new functions.https.HttpsError('not-found', 'User not found')
+      throw new HttpsError('not-found', 'User not found')
     }
 
     // Set the admin custom claim
     await admin.auth().setCustomUserClaims(uid, {
       admin: isAdmin,
       adminSetAt: new Date().toISOString(),
-      adminSetBy: context.auth.uid,
+      adminSetBy: request.auth.uid,
     })
 
     // Log the admin change
@@ -53,12 +55,12 @@ exports.setAdminClaim = functions.region(FUNCTIONS_REGION).https.onCall(async (d
       targetUid: uid,
       targetEmail: targetUser.email,
       action: isAdmin ? 'ADMIN_GRANTED' : 'ADMIN_REVOKED',
-      performedBy: context.auth.uid,
-      performedByEmail: context.auth.token.email,
+      performedBy: request.auth.uid,
+      performedByEmail: request.auth.token.email,
       timestamp: FieldValue.serverTimestamp(),
     })
 
-    console.log(`Admin claim ${isAdmin ? 'granted to' : 'revoked from'} ${targetUser.email} by ${context.auth.token.email}`)
+    console.log(`Admin claim ${isAdmin ? 'granted to' : 'revoked from'} ${targetUser.email} by ${request.auth.token.email}`)
 
     return {
       success: true,
@@ -78,39 +80,43 @@ exports.setAdminClaim = functions.region(FUNCTIONS_REGION).https.onCall(async (d
 /**
  * Get admin status for current user
  */
-exports.getAdminStatus = functions.region(FUNCTIONS_REGION).https.onCall(async (data, context) => {
+exports.getAdminStatusV2 = onCall({
+  region: FUNCTIONS_REGION,
+}, async (request) => {
   try {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated')
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'User must be authenticated')
     }
 
     // Force token refresh to get latest claims
-    const user = await admin.auth().getUser(context.auth.uid)
+    const user = await admin.auth().getUser(request.auth.uid)
     const customClaims = user.customClaims || {}
 
     return {
       isAdmin: !!customClaims.admin,
       claims: customClaims,
-      uid: context.auth.uid,
-      email: context.auth.token.email,
+      uid: request.auth.uid,
+      email: request.auth.token.email,
     }
   } catch (error) {
     console.error('Get admin status error:', error)
-    throw new functions.https.HttpsError('internal', 'Failed to get admin status')
+    throw new HttpsError('internal', 'Failed to get admin status')
   }
 })
 
 /**
  * List all admin users (admin only)
  */
-exports.listAdmins = functions.region(FUNCTIONS_REGION).https.onCall(async (data, context) => {
+exports.listAdminsV2 = onCall({
+  region: FUNCTIONS_REGION,
+}, async (request) => {
   try {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated')
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'User must be authenticated')
     }
 
-    if (!context.auth.token.admin) {
-      throw new functions.https.HttpsError('permission-denied', 'Admin access required')
+    if (!request.auth.token.admin) {
+      throw new HttpsError('permission-denied', 'Admin access required')
     }
 
     const admins = []
@@ -138,7 +144,7 @@ exports.listAdmins = functions.region(FUNCTIONS_REGION).https.onCall(async (data
     return { admins }
   } catch (error) {
     console.error('List admins error:', error)
-    throw new functions.https.HttpsError('internal', 'Failed to list admins')
+    throw new HttpsError('internal', 'Failed to list admins')
   }
 })
 

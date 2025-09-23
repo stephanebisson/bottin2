@@ -666,7 +666,7 @@
   const sendEmailsToParents = async emailList => {
     const baseUrl = getFunctionsBaseUrl()
 
-    const response = await fetch(`${baseUrl}/sendUpdateEmailsToSelected`, {
+    const response = await fetch(`${baseUrl}/sendUpdateEmailsToSelectedV2`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
