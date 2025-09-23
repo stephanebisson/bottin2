@@ -44,7 +44,7 @@
             @input="onSearchInput"
           />
           <div v-if="searchQuery" class="text-caption mt-2 text-grey-darken-1">
-            {{ filteredGroups.length }} of {{ groupedStudents.length }} families shown
+            {{ $t('students.familiesShown', { filtered: filteredGroups.length, total: groupedStudents.length }) }}
           </div>
         </v-card-text>
       </v-card>
@@ -93,16 +93,16 @@
                     {{ getParentCommittees(group.parent1.email).join(', ') }}
                   </div>
                   <div v-if="group.parent1.email" class="text-body-2 mb-1">
-                    <strong>Email:</strong> {{ group.parent1.email }}
+                    <strong>{{ $t('common.email') }}:</strong> {{ group.parent1.email }}
                   </div>
                   <div v-if="group.parent1.phone" class="text-body-2 mb-1">
-                    <strong>Phone:</strong> {{ formatPhone(group.parent1.phone) }}
+                    <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(group.parent1.phone) }}
                   </div>
                   <div v-if="formatAddress(group.parent1)" class="text-body-2 mb-1">
-                    <strong>Address:</strong> {{ formatAddress(group.parent1) }}
+                    <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent1) }}
                   </div>
                   <div v-if="group.parent1.interests && group.parent1.interests.length > 0" class="text-body-2">
-                    <strong>Interests:</strong> {{ group.parent1.interests.join(', ') }}
+                    <strong>{{ $t('common.interests') }}:</strong> {{ group.parent1.interests.join(', ') }}
                   </div>
                 </div>
               </v-col>
@@ -120,16 +120,16 @@
                     {{ getParentCommittees(group.parent2.email).join(', ') }}
                   </div>
                   <div v-if="group.parent2.email" class="text-body-2 mb-1">
-                    <strong>Email:</strong> {{ group.parent2.email }}
+                    <strong>{{ $t('common.email') }}:</strong> {{ group.parent2.email }}
                   </div>
                   <div v-if="group.parent2.phone" class="text-body-2 mb-1">
-                    <strong>Phone:</strong> {{ formatPhone(group.parent2.phone) }}
+                    <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(group.parent2.phone) }}
                   </div>
                   <div v-if="formatAddress(group.parent2)" class="text-body-2 mb-1">
-                    <strong>Address:</strong> {{ formatAddress(group.parent2) }}
+                    <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(group.parent2) }}
                   </div>
                   <div v-if="group.parent2.interests && group.parent2.interests.length > 0" class="text-body-2">
-                    <strong>Interests:</strong> {{ group.parent2.interests.join(', ') }}
+                    <strong>{{ $t('common.interests') }}:</strong> {{ group.parent2.interests.join(', ') }}
                   </div>
                 </div>
               </v-col>
@@ -137,7 +137,7 @@
 
             <!-- No parents message -->
             <div v-else class="text-body-2 text-grey-darken-1">
-              No parent information available
+              {{ $t('students.noParentInfoAvailable') }}
             </div>
           </div>
         </v-card-text>

@@ -52,7 +52,21 @@
     "children": "Children",
     "noStudentsFound": "No students found",
     "noParentInformation": "No parent information found",
-    "noSiblingsFound": "No siblings found"
+    "noSiblingsFound": "No siblings found",
+    "teacherTitle": "Title",
+    "directory": "Directory",
+    "ceRole": "CE Role",
+    "ceHierarchy": "CE Hierarchy",
+    "noStaffInfo": "No staff information found for: {teacher}",
+    "contactInformation": "📞 Contact Information",
+    "interests": "🎯 Interests",
+    "class": "Class",
+    "noChildrenFound": "No children found in the school",
+    "noParentInfo": "No parent information found for: {parent}",
+    "studentCount": "({count} student)",
+    "studentCountPlural": "({count} students)",
+    "representative": "(R)",
+    "noParentInfoFound": "No parent information found"
   },
   "students": {
     "title": "Students",
@@ -62,7 +76,9 @@
     "loadingStudents": "Loading students data...",
     "searchStudentsChildren": "Search parents and children...",
     "noParentInformation": "No parent information available",
-    "committees": "Committees"
+    "committees": "Committees",
+    "familiesShown": "{filtered} of {total} families shown",
+    "noParentInfoAvailable": "No parent information available"
   },
   "parents": {
     "title": "Parents",
@@ -90,7 +106,10 @@
     "ceHierarchy": "CE Hierarchy", 
     "classesTaught": "Classes Taught",
     "department": "Department",
-    "otherStaff": "Other Staff"
+    "otherStaff": "Other Staff",
+    "memberCount": "{count} member",
+    "role": "Role",
+    "hierarchy": "Hierarchy"
   },
   "committees": {
     "title": "Committees",
@@ -223,7 +242,9 @@
     "noChildrenFound": "No children found",
     "noCommitteesFound": "No committee memberships",
     "noProfileFound": "Profile Not Found",
-    "contactAdmin": "Please contact the school administrator if you believe this is an error."
+    "contactAdmin": "Please contact the school administrator if you believe this is an error.",
+    "staffNotAvailable": "Staff profiles are not available. This page is for parents only.",
+    "noProfileFoundMessage": "No parent profile found for your account."
   },
   "admin": {
     "title": "Administration",
@@ -278,7 +299,25 @@
     "selectAllVisible": "Select All Visible",
     "clearSelection": "Clear Selection",
     "pending": "Pending",
-    "overallStatus": "Overall Status"
+    "overallStatus": "Overall Status",
+    "refreshPermissionsInstructions": "Just granted admin access? Try refreshing your permissions:",
+    "refreshAdminStatus": "Refresh Admin Status",
+    "welcomeTitle": "Welcome to Admin Dashboard",
+    "welcomeDescription": "Manage your school directory system and administrative tasks.",
+    "annualUpdateDescription": "Manage the annual parent information update process, send notifications, and track responses.",
+    "workflowCompleted": "{completed}/{total} completed",
+    "userManagement": "User Management",
+    "userManagementDescription": "Manage user accounts, permissions, and admin privileges for the system.",
+    "comingSoon": "Coming Soon",
+    "directoryManagement": "Directory Management",
+    "directoryManagementDescription": "Manage the school directory content, export data, and configure display settings.",
+    "googleSheetsSync": "Google Sheets Sync",
+    "googleSheetsSyncDescription": "Synchronize data with Google Sheets for external data management and backup.",
+    "systemSettings": "System Settings",
+    "systemSettingsDescription": "Configure system-wide settings, email templates, and application preferences.",
+    "auditLogs": "Audit Logs",
+    "auditLogsDescription": "View system activity logs, admin actions, and security events for compliance.",
+    "backToAdminDashboard": "Back to Admin Dashboard"
   },
   "updateForm": {
     "title": "My Profile",
@@ -337,5 +376,39 @@
     "step3": "The updated directory will be available to all families soon",
     "questions": "Questions? Contact the school office for assistance.",
     "backHome": "Back to Home Page"
+  },
+  "footer": {
+    "copyright": "&copy; 2025 Comité Bottin",
+    "organizationName": "Bottin Étoile Filante",
+    "switchLanguage": "Switch to {language}"
+  },
+  "languageSelector": {
+    "french": "Français",
+    "frenchNative": "French",
+    "english": "English", 
+    "englishNative": "Anglais",
+    "unknown": "Unknown"
+  },
+  "registerForm": {
+    "welcome": "Welcome ",
+    "parent": "Parent",
+    "staff": "Staff",
+    "debugInfo": "🔧 Debug Info",
+    "network": "Network:",
+    "online": "✅ Online",
+    "offline": "❌ Offline",
+    "firebase": "Firebase:",
+    "reachable": "✅ Reachable",
+    "unreachable": "❌ Unreachable",
+    "lastCheck": "Last Check:",
+    "never": "Never",
+    "emailStatus": "Email Status:",
+    "notChecked": "Not checked",
+    "authorized": "✅ Authorized",
+    "notAuthorized": "❌ Not authorized"
+  },
+  "themeSelector": {
+    "currentTheme": "Current theme: {theme}",
+    "custom": "Custom"
   }
 }

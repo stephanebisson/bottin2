@@ -4,7 +4,7 @@
       <v-btn
         v-bind="props"
         icon
-        :title="`Current theme: ${currentThemeDisplay}`"
+        :title="t('themeSelector.currentTheme', { theme: currentThemeDisplay })"
         variant="text"
       >
         <v-icon>{{ currentThemeIcon }}</v-icon>
@@ -94,7 +94,7 @@
 
   const currentThemeDisplay = computed(() => {
     const themeData = lightThemes.value.find(th => th.value === currentTheme.value)
-    return themeData ? themeData.name : 'Custom'
+    return themeData ? themeData.name : t('themeSelector.custom')
   })
 
   const currentThemeIcon = computed(() => {

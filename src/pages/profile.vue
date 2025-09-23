@@ -335,7 +335,7 @@
           staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
         )
 
-        error.value = isStaff ? 'Staff profiles are not available. This page is for parents only.' : 'No parent profile found for your account.'
+        error.value = isStaff ? t('profile.staffNotAvailable') : t('profile.noProfileFoundMessage')
       }
     } catch (error_) {
       error.value = error_.message || 'Failed to load profile data'

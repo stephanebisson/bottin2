@@ -5,20 +5,20 @@
     height="60"
   >
     <div class="text-caption text-disabled">
-      <div>&copy; 2025 Comité Bottin</div>
+      <div v-html="$t('footer.copyright')"></div>
       <a
         class="text-decoration-none text-disabled d-flex align-center"
         href="mailto:bottin.etoile.filante@gmail.com"
         style="font-size: 0.7rem;"
       >
         <v-icon class="me-1" size="12">mdi-email</v-icon>
-        Bottin Étoile Filante
+        {{ $t('footer.organizationName') }}
       </a>
     </div>
 
     <v-btn
       size="small"
-      :title="`Switch to ${otherLanguage.name}`"
+      :title="$t('footer.switchLanguage', { language: otherLanguage.name })"
       variant="text"
       @click="toggleLanguage"
     >
@@ -32,15 +32,16 @@
   import { computed } from 'vue'
   import { useI18n } from '@/composables/useI18n'
 
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   const languages = [
-    { code: 'fr', name: 'Français' },
-    { code: 'en', name: 'English' },
+    { code: 'fr', name: () => t('languageSelector.french') },
+    { code: 'en', name: () => t('languageSelector.english') },
   ]
 
   const otherLanguage = computed(() => {
-    return languages.find(lang => lang.code !== locale.value)
+    const lang = languages.find(lang => lang.code !== locale.value)
+    return { ...lang, name: lang.name() }
   })
 
   const toggleLanguage = () => {

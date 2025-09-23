@@ -37,8 +37,8 @@
         >
           <v-icon class="me-1" size="small">mdi-check-circle</v-icon>
           <span v-if="userInfo.displayName">
-            Welcome {{ userInfo.displayName }}!
-            <span class="text-caption">({{ userInfo.userType === 'parent' ? 'Parent' : 'Staff' }})</span>
+            {{ $t('registerForm.welcome') }}{{ userInfo.displayName }}!
+            <span class="text-caption">({{ userInfo.userType === 'parent' ? $t('registerForm.parent') : $t('registerForm.staff') }})</span>
           </span>
           <span v-else>
             {{ $t('validation.emailAuthorized') }}
@@ -141,14 +141,14 @@
       <v-expansion-panels class="w-100" variant="accordion">
         <v-expansion-panel>
           <v-expansion-panel-title class="text-caption">
-            🔧 Debug Info
+            {{ $t('registerForm.debugInfo') }}
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="text-caption">
-              <div><strong>Network:</strong> {{ authStore.serviceHealth.isOnline ? '✅ Online' : '❌ Offline' }}</div>
-              <div><strong>Firebase:</strong> {{ authStore.serviceHealth.firebaseReachable ? '✅ Reachable' : '❌ Unreachable' }}</div>
-              <div><strong>Last Check:</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : 'Never' }}</div>
-              <div><strong>Email Status:</strong> {{ emailAuthorized === null ? 'Not checked' : emailAuthorized ? '✅ Authorized' : '❌ Not authorized' }}</div>
+              <div><strong>{{ $t('registerForm.network') }}</strong> {{ authStore.serviceHealth.isOnline ? $t('registerForm.online') : $t('registerForm.offline') }}</div>
+              <div><strong>{{ $t('registerForm.firebase') }}</strong> {{ authStore.serviceHealth.firebaseReachable ? $t('registerForm.reachable') : $t('registerForm.unreachable') }}</div>
+              <div><strong>{{ $t('registerForm.lastCheck') }}</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : $t('registerForm.never') }}</div>
+              <div><strong>{{ $t('registerForm.emailStatus') }}</strong> {{ emailAuthorized === null ? $t('registerForm.notChecked') : emailAuthorized ? $t('registerForm.authorized') : $t('registerForm.notAuthorized') }}</div>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>

@@ -15,7 +15,7 @@
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
         <p class="text-body-2 text-grey-darken-1 mb-4">
-          Just granted admin access? Try refreshing your permissions:
+          {{ $t('admin.refreshPermissionsInstructions') }}
         </p>
         <v-btn
           color="primary"
@@ -23,7 +23,7 @@
           prepend-icon="mdi-refresh"
           @click="checkAdminStatus"
         >
-          Refresh Admin Status
+          {{ $t('admin.refreshAdminStatus') }}
         </v-btn>
       </div>
     </div>
@@ -36,9 +36,9 @@
           <div class="d-flex align-center">
             <v-icon class="mr-4" size="48">mdi-shield-account</v-icon>
             <div>
-              <h2 class="text-h5 font-weight-bold">Welcome to Admin Dashboard</h2>
+              <h2 class="text-h5 font-weight-bold">{{ $t('admin.welcomeTitle') }}</h2>
               <p class="text-body-1 mt-2">
-                Manage your school directory system and administrative tasks.
+                {{ $t('admin.welcomeDescription') }}
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@
               <v-icon class="mb-4" color="primary" size="64">mdi-calendar-sync</v-icon>
               <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.annualUpdateWorkflow') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                Manage the annual parent information update process, send notifications, and track responses.
+                {{ $t('admin.annualUpdateDescription') }}
               </p>
 
               <!-- Quick Status -->
@@ -71,12 +71,12 @@
                   {{ $t(`admin.status.${currentWorkflow.status}`) }}
                 </v-chip>
                 <div class="text-body-2 mt-2">
-                  {{ currentWorkflow.stats.formsSubmitted }}/{{ currentWorkflow.stats.totalParents }} completed
+                  {{ $t('admin.workflowCompleted', { completed: currentWorkflow.stats.formsSubmitted, total: currentWorkflow.stats.totalParents }) }}
                 </div>
               </div>
               <div v-else class="mt-4">
                 <v-chip color="grey" size="small" variant="tonal">
-                  No active workflow
+                  {{ $t('admin.noActiveWorkflow') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -92,15 +92,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="secondary" size="64">mdi-account-group</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">User Management</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.userManagement') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                Manage user accounts, permissions, and admin privileges for the system.
+                {{ $t('admin.userManagementDescription') }}
               </p>
 
               <!-- Quick Status -->
               <div class="mt-4">
                 <v-chip color="info" size="small" variant="tonal">
-                  Coming Soon
+                  {{ $t('admin.comingSoon') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -116,15 +116,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="success" size="64">mdi-book-account</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">Directory Management</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.directoryManagement') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                Manage the school directory content, export data, and configure display settings.
+                {{ $t('admin.directoryManagementDescription') }}
               </p>
 
               <!-- Quick Status -->
               <div class="mt-4">
                 <v-chip color="info" size="small" variant="tonal">
-                  Coming Soon
+                  {{ $t('admin.comingSoon') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -140,15 +140,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="warning" size="64">mdi-google-spreadsheet</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">Google Sheets Sync</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.googleSheetsSync') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                Synchronize data with Google Sheets for external data management and backup.
+                {{ $t('admin.googleSheetsSyncDescription') }}
               </p>
 
               <!-- Quick Status -->
               <div class="mt-4">
                 <v-chip color="info" size="small" variant="tonal">
-                  Coming Soon
+                  {{ $t('admin.comingSoon') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -164,15 +164,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="error" size="64">mdi-cog</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">System Settings</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.systemSettings') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                Configure system-wide settings, email templates, and application preferences.
+                {{ $t('admin.systemSettingsDescription') }}
               </p>
 
               <!-- Quick Status -->
               <div class="mt-4">
                 <v-chip color="info" size="small" variant="tonal">
-                  Coming Soon
+                  {{ $t('admin.comingSoon') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -188,15 +188,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="info" size="64">mdi-file-document-outline</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">Audit Logs</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.auditLogs') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                View system activity logs, admin actions, and security events for compliance.
+                {{ $t('admin.auditLogsDescription') }}
               </p>
 
               <!-- Quick Status -->
               <div class="mt-4">
                 <v-chip color="info" size="small" variant="tonal">
-                  Coming Soon
+                  {{ $t('admin.comingSoon') }}
                 </v-chip>
               </div>
             </v-card-text>

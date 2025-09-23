@@ -57,7 +57,7 @@
               {{ group.name }}
             </h2>
             <p class="text-body-2 text-grey-darken-1 ma-0">
-              {{ group.members.length }} member{{ group.members.length !== 1 ? 's' : '' }}
+              {{ $t('staff.memberCount', { count: group.members.length }) }}
             </p>
           </div>
         </div>
@@ -117,15 +117,15 @@
                   <v-divider class="mb-2" />
                   <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
                     <v-icon class="me-1" size="small">mdi-sitemap</v-icon>
-                    CE Information
+                    {{ $t('staff.ceInformation') }}
                   </div>
 
                   <div v-if="member.ce_role" class="text-body-2 mb-1">
-                    <strong>Role:</strong> {{ member.ce_role }}
+                    <strong>{{ $t('staff.role') }}:</strong> {{ member.ce_role }}
                   </div>
 
                   <div v-if="member.ce_hierarchy" class="text-body-2">
-                    <strong>Hierarchy:</strong> {{ member.ce_hierarchy }}
+                    <strong>{{ $t('staff.hierarchy') }}:</strong> {{ member.ce_hierarchy }}
                   </div>
                 </div>
 
@@ -134,7 +134,7 @@
                   <v-divider class="mb-2" />
                   <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
                     <v-icon class="me-1" size="small">mdi-school</v-icon>
-                    Classes Taught
+                    {{ $t('staff.classesTaught') }}
                   </div>
                   <div class="d-flex flex-wrap gap-1">
                     <v-chip
@@ -162,8 +162,10 @@
   import HighlightedText from '@/components/HighlightedText.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
+  import { useI18n } from '@/composables/useI18n'
 
   const searchQuery = ref('')
+  const { t } = useI18n()
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
@@ -173,7 +175,7 @@
     const groups = {}
 
     for (const member of firebaseStore.staff) {
-      const groupName = member.directory_table || 'Other Staff'
+      const groupName = member.directory_table || t('staff.otherStaff')
 
       if (!groups[groupName]) {
         groups[groupName] = []

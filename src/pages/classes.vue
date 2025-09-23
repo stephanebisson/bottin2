@@ -59,7 +59,7 @@
               <div v-if="classItem.teacher" class="mb-3 mt-3">
                 <div class="d-flex align-center mb-1">
                   <v-icon class="me-2" color="primary">mdi-account-tie</v-icon>
-                  <span class="font-weight-medium">Teacher</span>
+                  <span class="font-weight-medium">{{ $t('classes.teacher') }}</span>
                 </div>
                 <div class="ms-6 text-body-2">
                   <v-tooltip
@@ -84,32 +84,32 @@
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).title" class="mb-1">
-                            <strong>Title:</strong> {{ getTeacherInfo(classItem.teacher).title }}
+                            <strong>{{ $t('classes.teacherTitle') }}:</strong> {{ getTeacherInfo(classItem.teacher).title }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).email" class="mb-1">
-                            <strong>Email:</strong> {{ getTeacherInfo(classItem.teacher).email }}
+                            <strong>{{ $t('common.email') }}:</strong> {{ getTeacherInfo(classItem.teacher).email }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).phone" class="mb-1">
-                            <strong>Phone:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
+                            <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).directory_table" class="mb-1">
-                            <strong>Directory:</strong> {{ getTeacherInfo(classItem.teacher).directory_table }}
+                            <strong>{{ $t('classes.directory') }}:</strong> {{ getTeacherInfo(classItem.teacher).directory_table }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).ce_role" class="mb-1">
-                            <strong>CE Role:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
+                            <strong>{{ $t('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).ce_hierarchy" class="mb-1">
-                            <strong>CE Hierarchy:</strong> {{ getTeacherInfo(classItem.teacher).ce_hierarchy }}
+                            <strong>{{ $t('classes.ceHierarchy') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_hierarchy }}
                           </div>
                         </div>
 
                         <div v-else class="text-caption">
-                          No staff information found for: {{ classItem.teacher }}
+                          {{ $t('classes.noStaffInfo', { teacher: classItem.teacher }) }}
                         </div>
                       </div>
                     </template>
@@ -124,7 +124,7 @@
               <div v-if="classItem.parent_rep" class="mb-3">
                 <div class="d-flex align-center mb-1">
                   <v-icon class="me-2" color="primary">mdi-account-supervisor</v-icon>
-                  <span class="font-weight-medium">Parent Representative</span>
+                  <span class="font-weight-medium">{{ $t('classes.parentRepresentative') }}</span>
                 </div>
                 <div class="ms-6 text-body-2">
                   <v-tooltip
@@ -147,29 +147,29 @@
                           <div class="text-h6 mb-3 text-white">
                             {{ getParentData(classItem.parent_rep).first_name }} {{ getParentData(classItem.parent_rep).last_name }}
                             <br>
-                            <span class="text-body-2">Parent Representative</span>
+                            <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
                           </div>
 
                           <!-- Contact Information -->
                           <div class="mb-3">
-                            <div class="text-subtitle-2 mb-2 text-white">📞 Contact Information</div>
+                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
 
                             <div class="mb-1">
-                              <strong>Email:</strong> {{ getParentData(classItem.parent_rep).email }}
+                              <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep).email }}
                             </div>
 
                             <div v-if="getParentData(classItem.parent_rep).phone" class="mb-1">
-                              <strong>Phone:</strong> {{ formatPhone(getParentData(classItem.parent_rep).phone) }}
+                              <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep).phone) }}
                             </div>
 
                             <div v-if="formatAddress(getParentData(classItem.parent_rep))" class="mb-1">
-                              <strong>Address:</strong> {{ formatAddress(getParentData(classItem.parent_rep)) }}
+                              <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep)) }}
                             </div>
                           </div>
 
                           <!-- Interests Section -->
                           <div v-if="getParentData(classItem.parent_rep).interests && getParentData(classItem.parent_rep).interests.length > 0" class="mb-3">
-                            <div class="text-subtitle-2 mb-2 text-white">🎯 Interests</div>
+                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
                             <div class="text-body-2">
                               {{ getParentData(classItem.parent_rep).interests.join(', ') }}
                             </div>
@@ -177,7 +177,7 @@
 
                           <!-- Children Section -->
                           <div class="mb-2">
-                            <div class="text-subtitle-2 mb-2 text-white">👨‍👩‍👧‍👦 Children</div>
+                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
 
                             <div v-if="getParentChildren(classItem.parent_rep).length > 0">
                               <div
@@ -187,23 +187,23 @@
                               >
                                 <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                 <div class="text-caption">
-                                  Class: {{ child.className }}
-                                  <span v-if="child.level"> - Level {{ child.level }}</span>
+                                  {{ $t('classes.class') }}: {{ child.className }}
+                                  <span v-if="child.level"> - {{ $t('classes.level') }} {{ child.level }}</span>
                                   <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                    - Teacher: {{ getTeacherName(getClassTeacher(child.className)) }}
+                                    - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                   </span>
                                 </div>
                               </div>
                             </div>
 
                             <div v-else class="text-caption text-grey">
-                              No children found in the school
+                              {{ $t('classes.noChildrenFound') }}
                             </div>
                           </div>
                         </div>
 
                         <div v-else class="text-caption">
-                          No parent information found for: {{ classItem.parent_rep }}
+                          {{ $t('classes.noParentInfo', { parent: classItem.parent_rep }) }}
                         </div>
                       </div>
                     </template>
@@ -219,7 +219,7 @@
                 <div class="d-flex align-center mb-2">
                   <v-icon class="me-2" color="primary">mdi-account-multiple</v-icon>
                   <span class="font-weight-medium">
-                    Students ({{ getClassStudents(classItem.classLetter).length }})
+                    {{ $t('classes.students') }} ({{ getClassStudents(classItem.classLetter).length }})
                   </span>
                 </div>
 
@@ -241,10 +241,10 @@
                               size="small"
                               variant="outlined"
                             >
-                              Level {{ levelData.level }}
+                              {{ $t('classes.level') }} {{ levelData.level }}
                             </v-chip>
                             <span class="text-caption text-grey">
-                              ({{ levelData.students.length }} student{{ levelData.students.length !== 1 ? 's' : '' }})
+                              {{ $t(levelData.students.length === 1 ? 'classes.studentCount' : 'classes.studentCountPlural', { count: levelData.students.length }) }}
                             </span>
                           </div>
 
@@ -268,31 +268,31 @@
                                     style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
                                   >
                                     {{ student.first_name }} {{ student.last_name }}
-                                    <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">(R)</span>
+                                    <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $t('classes.representative') }}</span>
                                   </span>
                                 </template>
                                 <template #default>
                                   <div class="pa-3" style="min-width: 350px;">
                                     <div class="text-h6 mb-3 text-white">
                                       {{ student.first_name }} {{ student.last_name }}
-                                      <span v-if="student.level" class="text-caption ml-2">(Level {{ student.level }})</span>
+                                      <span v-if="student.level" class="text-caption ml-2">({{ $t('classes.level') }} {{ student.level }})</span>
                                       <br>
                                       <span class="text-body-2">{{ student.className }}</span>
                                     </div>
 
                                     <!-- Parents Section -->
                                     <div class="mb-3">
-                                      <div class="text-subtitle-2 mb-2 text-white">👨‍👩‍👧‍👦 Parents</div>
+                                      <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.parents') }}</div>
 
                                       <div v-if="getStudentParent(student, 1)" class="mb-2">
                                         <div class="font-weight-bold">{{ getStudentParent(student, 1).first_name }} {{ getStudentParent(student, 1).last_name }}</div>
                                         <div class="text-caption">{{ getStudentParent(student, 1).email }}</div>
                                         <div v-if="getStudentParent(student, 1).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 1).phone) }}</div>
                                         <div v-if="formatAddress(getStudentParent(student, 1))" class="text-caption">
-                                          <strong>Address:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
+                                          <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
                                         </div>
                                         <div v-if="getStudentParent(student, 1).interests && getStudentParent(student, 1).interests.length > 0" class="text-caption mt-1">
-                                          <strong>Interests:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
+                                          <strong>{{ $t('common.interests') }}:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
                                         </div>
                                       </div>
 
@@ -301,21 +301,21 @@
                                         <div class="text-caption">{{ getStudentParent(student, 2).email }}</div>
                                         <div v-if="getStudentParent(student, 2).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 2).phone) }}</div>
                                         <div v-if="formatAddress(getStudentParent(student, 2))" class="text-caption">
-                                          <strong>Address:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
+                                          <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
                                         </div>
                                         <div v-if="getStudentParent(student, 2).interests && getStudentParent(student, 2).interests.length > 0" class="text-caption mt-1">
-                                          <strong>Interests:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
+                                          <strong>{{ $t('common.interests') }}:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
                                         </div>
                                       </div>
 
                                       <div v-if="!getStudentParent(student, 1) && !getStudentParent(student, 2)" class="text-caption text-grey">
-                                        No parent information found
+                                        {{ $t('classes.noParentInfoFound') }}
                                       </div>
                                     </div>
 
                                     <!-- Siblings Section -->
                                     <div class="mb-2">
-                                      <div class="text-subtitle-2 mb-2 text-white">👫 Siblings</div>
+                                      <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.siblings') }}</div>
 
                                       <div v-if="getStudentSiblings(student).length > 0">
                                         <div
@@ -325,16 +325,16 @@
                                         >
                                           <div class="font-weight-bold">{{ sibling.first_name }} {{ sibling.last_name }}</div>
                                           <div class="text-caption">
-                                            Class: {{ sibling.className }}
+                                            {{ $t('classes.class') }}: {{ sibling.className }}
                                             <span v-if="getTeacherName(getClassTeacher(sibling.className))">
-                                              - Teacher: {{ getTeacherName(getClassTeacher(sibling.className)) }}
+                                              - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(sibling.className)) }}
                                             </span>
                                           </div>
                                         </div>
                                       </div>
 
                                       <div v-else class="text-caption text-grey">
-                                        No siblings found
+                                        {{ $t('classes.noSiblingsFound') }}
                                       </div>
                                     </div>
                                   </div>
@@ -356,7 +356,7 @@
                   </template>
 
                   <div v-else class="text-body-2 text-grey">
-                    No students found
+                    {{ $t('classes.noStudentsFound') }}
                   </div>
                 </div>
               </div>

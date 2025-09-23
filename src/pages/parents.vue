@@ -86,7 +86,7 @@
                   </div>
                 </div>
                 <div v-else class="text-grey-darken-1">
-                  No children found
+                  {{ $t('parents.noChildrenFound') }}
                 </div>
               </td>
 

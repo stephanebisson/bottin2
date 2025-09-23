@@ -52,7 +52,21 @@
     "children": "Enfants",
     "noStudentsFound": "Aucun élève trouvé",
     "noParentInformation": "Aucune information parent trouvée",
-    "noSiblingsFound": "Aucune fratrie trouvée"
+    "noSiblingsFound": "Aucune fratrie trouvée",
+    "teacherTitle": "Titre",
+    "directory": "Répertoire",
+    "ceRole": "Rôle CE",
+    "ceHierarchy": "Hiérarchie CE",
+    "noStaffInfo": "Aucune information personnel trouvée pour: {teacher}",
+    "contactInformation": "📞 Informations de Contact",
+    "interests": "🎯 Intérêts",
+    "class": "Classe",
+    "noChildrenFound": "Aucun enfant trouvé à l'école",
+    "noParentInfo": "Aucune information parent trouvée pour: {parent}",
+    "studentCount": "({count} élève)",
+    "studentCountPlural": "({count} élèves)",
+    "representative": "(R)",
+    "noParentInfoFound": "Aucune information parent trouvée"
   },
   "students": {
     "title": "Élèves",
@@ -62,7 +76,9 @@
     "loadingStudents": "Chargement des données des élèves...",
     "searchStudentsChildren": "Rechercher parents et enfants...",
     "noParentInformation": "Aucune information parent disponible",
-    "committees": "Comités"
+    "committees": "Comités",
+    "familiesShown": "{filtered} sur {total} familles affichées",
+    "noParentInfoAvailable": "Aucune information parent disponible"
   },
   "parents": {
     "title": "Parents",
@@ -89,9 +105,11 @@
     "ceRole": "Rôle CE",
     "ceHierarchy": "Hiérarchie CE", 
     "classesTaught": "Classes Enseignées",
-    "title": "Titre",
     "department": "Département",
-    "otherStaff": "Autre Personnel"
+    "otherStaff": "Autre Personnel",
+    "memberCount": "{count} membre",
+    "role": "Rôle",
+    "hierarchy": "Hiérarchie"
   },
   "committees": {
     "title": "Comités",
@@ -232,7 +250,9 @@
     "noChildrenFound": "Aucun enfant trouvé",
     "noCommitteesFound": "Aucune adhésion aux comités",
     "noProfileFound": "Profil Introuvable",
-    "contactAdmin": "Veuillez contacter l'administrateur de l'école si vous pensez qu'il s'agit d'une erreur."
+    "contactAdmin": "Veuillez contacter l'administrateur de l'école si vous pensez qu'il s'agit d'une erreur.",
+    "staffNotAvailable": "Les profils du personnel ne sont pas disponibles. Cette page est réservée aux parents seulement.",
+    "noProfileFoundMessage": "Aucun profil parent trouvé pour votre compte."
   },
   "admin": {
     "title": "Administration",
@@ -287,7 +307,25 @@
     "selectAllVisible": "Sélectionner Tous Visibles",
     "clearSelection": "Effacer la Sélection",
     "pending": "En Attente",
-    "overallStatus": "État Global"
+    "overallStatus": "État Global",
+    "refreshPermissionsInstructions": "Vous venez d'obtenir l'accès administrateur? Essayez de rafraîchir vos permissions:",
+    "refreshAdminStatus": "Rafraîchir le Statut Administrateur",
+    "welcomeTitle": "Bienvenue au Tableau de Bord Administrateur",
+    "welcomeDescription": "Gérez votre système de bottin scolaire et les tâches administratives.",
+    "annualUpdateDescription": "Gérez le processus de mise à jour annuelle des informations parents, envoyez des notifications, et suivez les réponses.",
+    "workflowCompleted": "{completed}/{total} complétés",
+    "userManagement": "Gestion des Utilisateurs",
+    "userManagementDescription": "Gérez les comptes d'utilisateur, les permissions, et les privilèges d'administrateur pour le système.",
+    "comingSoon": "Bientôt Disponible",
+    "directoryManagement": "Gestion du Répertoire",
+    "directoryManagementDescription": "Gérez le contenu du bottin scolaire, exportez les données, et configurez les paramètres d'affichage.",
+    "googleSheetsSync": "Synchronisation Google Sheets",
+    "googleSheetsSyncDescription": "Synchronisez les données avec Google Sheets pour la gestion externe des données et la sauvegarde.",
+    "systemSettings": "Paramètres Système",
+    "systemSettingsDescription": "Configurez les paramètres à l'échelle du système, les modèles de courriel, et les préférences d'application.",
+    "auditLogs": "Journaux d'Audit",
+    "auditLogsDescription": "Consultez les journaux d'activité du système, les actions d'administrateur, et les événements de sécurité pour la conformité.",
+    "backToAdminDashboard": "Retour au Tableau de Bord Administrateur"
   },
   "updateForm": {
     "title": "Mon Profil",
@@ -346,5 +384,39 @@
     "step3": "Le bottin mis à jour sera bientôt disponible pour toutes les familles",
     "questions": "Des questions ? Contactez le bureau de l'école pour assistance.",
     "backHome": "Retour à la Page d'Accueil"
+  },
+  "footer": {
+    "copyright": "&copy; 2025 Comité Bottin",
+    "organizationName": "Bottin Étoile Filante",
+    "switchLanguage": "Basculer vers {language}"
+  },
+  "languageSelector": {
+    "french": "Français",
+    "frenchNative": "French",
+    "english": "English",
+    "englishNative": "Anglais",
+    "unknown": "Inconnu"
+  },
+  "registerForm": {
+    "welcome": "Bienvenue ",
+    "parent": "Parent",
+    "staff": "Personnel",
+    "debugInfo": "🔧 Info de Débogage",
+    "network": "Réseau:",
+    "online": "✅ En ligne",
+    "offline": "❌ Hors ligne",
+    "firebase": "Firebase:",
+    "reachable": "✅ Accessible",
+    "unreachable": "❌ Inaccessible",
+    "lastCheck": "Dernière Vérification:",
+    "never": "Jamais",
+    "emailStatus": "État du Courriel:",
+    "notChecked": "Pas vérifié",
+    "authorized": "✅ Autorisé",
+    "notAuthorized": "❌ Non autorisé"
+  },
+  "themeSelector": {
+    "currentTheme": "Thème actuel: {theme}",
+    "custom": "Personnalisé"
   }
 }

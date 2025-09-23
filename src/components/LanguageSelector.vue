@@ -25,8 +25,8 @@
         <template #prepend>
           <v-icon :color="language.color">{{ language.icon }}</v-icon>
         </template>
-        <v-list-item-title>{{ language.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ language.nativeName }}</v-list-item-subtitle>
+        <v-list-item-title>{{ language.name() }}</v-list-item-title>
+        <v-list-item-subtitle>{{ language.nativeName() }}</v-list-item-subtitle>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -36,20 +36,20 @@
   import { computed } from 'vue'
   import { useI18n } from '@/composables/useI18n'
 
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   const languages = [
     {
       code: 'fr',
-      name: 'Français',
-      nativeName: 'French',
+      name: () => t('languageSelector.french'),
+      nativeName: () => t('languageSelector.frenchNative'),
       icon: 'mdi-alpha-f-circle',
       color: '#0055A4',
     },
     {
       code: 'en',
-      name: 'English',
-      nativeName: 'Anglais',
+      name: () => t('languageSelector.english'),
+      nativeName: () => t('languageSelector.englishNative'),
       icon: 'mdi-alpha-e-circle',
       color: '#CF142B',
     },
@@ -57,7 +57,7 @@
 
   const currentLanguageDisplay = computed(() => {
     const lang = languages.find(l => l.code === locale.value)
-    return lang ? lang.name : 'Unknown'
+    return lang ? lang.name() : t('languageSelector.unknown')
   })
 
   const currentLanguageIcon = computed(() => {

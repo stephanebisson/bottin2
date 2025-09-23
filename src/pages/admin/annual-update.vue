@@ -8,7 +8,7 @@
           variant="text"
           @click="$router.push('/admin')"
         >
-          Back to Admin Dashboard
+          {{ $t('admin.backToAdminDashboard') }}
         </v-btn>
         <h1 class="text-h3 font-weight-bold">{{ $t('admin.annualUpdateWorkflow') }}</h1>
       </div>
