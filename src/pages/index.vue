@@ -44,20 +44,25 @@
           cols="12"
           md="4"
           sm="6"
+          class="d-flex"
         >
           <v-card
-            class="navigation-card pa-6 text-center"
+            class="navigation-card pa-6 text-center d-flex flex-column"
             elevation="2"
             hover
-            style="cursor: pointer;"
+            style="cursor: pointer; height: 100%;"
             @click="navigateTo(navItem.route)"
           >
-            <v-icon class="mb-4" :color="navItem.color" size="64">{{ navItem.icon }}</v-icon>
-            <h3 class="text-h5 font-weight-bold mb-2">{{ navItem.title }}</h3>
-            <p class="text-body-2 text-grey-darken-1 mb-3">{{ navItem.description }}</p>
-            <v-chip :color="navItem.color" size="small" variant="outlined">
-              {{ navItem.count }} {{ navItem.countLabel }}
-            </v-chip>
+            <div class="d-flex flex-column align-center flex-grow-1">
+              <v-icon class="mb-4" :color="navItem.color" size="64">{{ navItem.icon }}</v-icon>
+              <h3 class="text-h5 font-weight-bold mb-2">{{ navItem.title }}</h3>
+              <p class="text-body-2 text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
+            </div>
+            <div class="d-flex justify-center">
+              <v-chip :color="navItem.color" size="small" variant="outlined">
+                {{ navItem.count }} {{ navItem.countLabel }}
+              </v-chip>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -150,6 +155,10 @@
 </script>
 
 <style scoped>
+.navigation-card {
+  min-height: 280px;
+}
+
 .navigation-card:hover {
   transform: translateY(-4px);
   transition: transform 0.3s ease;
