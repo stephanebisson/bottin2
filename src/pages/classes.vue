@@ -42,14 +42,16 @@
         >
           <v-card class="d-flex flex-column" height="100%">
             <!-- Class Header -->
-            <v-card-title class="d-flex justify-space-between align-center bg-primary">
-              <div>
-                <h5 class="text-white">
+            <v-card-title class="d-flex justify-space-between align-start bg-primary pa-3">
+              <div class="flex-grow-1 overflow-hidden">
+                <h5 class="text-white text-wrap" style="word-break: break-word; line-height: 1.3; margin-bottom: 0;">
                   {{ classItem.className }}
-                  <span class="text-body-2 ml-2">
-                    ({{ classItem.classCode }})
-                  </span>
                 </h5>
+              </div>
+              <div class="flex-shrink-0 ml-3">
+                <span class="text-white text-body-2" style="white-space: nowrap;">
+                  ({{ classItem.classCode }})
+                </span>
               </div>
             </v-card-title>
 
@@ -366,19 +368,6 @@
       </v-row>
     </div>
 
-    <!-- Debug Info -->
-    <v-expansion-panels v-if="!firebaseStore.loading && (firebaseStore.classes.length > 0 || firebaseStore.students.length > 0 || firebaseStore.parents.length > 0)" class="mt-6">
-      <v-expansion-panel :text="$t('debug.viewRawDataCounts')" :title="$t('debug.title')">
-        <v-expansion-panel-text>
-          <div class="text-body-2">
-            <p><strong>{{ $t('nav.classes') }}:</strong> {{ firebaseStore.classes.length }}</p>
-            <p><strong>{{ $t('nav.students') }}:</strong> {{ firebaseStore.students.length }}</p>
-            <p><strong>{{ $t('nav.parents') }}:</strong> {{ firebaseStore.parents.length }}</p>
-            <p><strong>{{ $t('nav.staff') }}:</strong> {{ firebaseStore.staff.length }}</p>
-          </div>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
   </v-container>
 </template>
 
