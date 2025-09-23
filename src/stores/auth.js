@@ -11,8 +11,12 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { getFunctionsBaseUrl } from '@/config/functions'
 import { auth } from '@/firebase'
+import { useI18n } from '@/composables/useI18n'
 
 export const useAuthStore = defineStore('auth', () => {
+  // Get i18n instance for language detection
+  const { locale } = useI18n()
+
   // State
   const user = ref(null)
   const loading = ref(false)
@@ -27,6 +31,12 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   const clearError = () => {
     error.value = null
+  }
+
+  // Set Firebase auth language based on current UI locale
+  const setFirebaseLanguage = () => {
+    auth.languageCode = locale.value
+    console.log(`🌐 Firebase auth language set to: ${locale.value}`)
   }
 
   // Email validation cache to reduce API calls
@@ -236,7 +246,8 @@ export const useAuthStore = defineStore('auth', () => {
         })
       }
 
-      // Send email verification
+      // Set language for verification email and send it
+      setFirebaseLanguage()
       await sendEmailVerification(userCredential.user)
 
       user.value = userCredential.user
@@ -301,6 +312,8 @@ export const useAuthStore = defineStore('auth', () => {
       setLoading(true)
       clearError()
 
+      // Set language for password reset email
+      setFirebaseLanguage()
       await sendPasswordResetEmail(auth, email)
     } catch (error_) {
       setError(getAuthErrorMessage(error_))
@@ -343,7 +356,8 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('No user is currently signed in')
       }
 
-      // Use retry logic for email verification
+      // Set language and use retry logic for email verification
+      setFirebaseLanguage()
       await retryWithBackoff(async () => {
         await sendEmailVerification(user.value)
       }, 3, 1000)
