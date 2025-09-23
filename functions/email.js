@@ -1,7 +1,7 @@
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const functions = require('firebase-functions/v1')
-const { MailerSend, EmailParams, Sender, Recipient } = require('mailersend')
+const nodemailer = require('nodemailer')
 const { FUNCTIONS_REGION } = require('./config')
 
 // Email configuration constants
@@ -68,10 +68,12 @@ const db = admin.firestore()
  * Email configuration and templates
  */
 function getEmailService () {
-  // Use MailerSend for all environments
-  const apiKey = process.env.BOTTIN2_MAILERSEND_API_KEY
-  if (!apiKey) {
-    throw new Error('MailerSend API key not found. Please set BOTTIN2_MAILERSEND_API_KEY in .env file')
+  // Use Gmail SMTP with nodemailer
+  const gmailUser = process.env.GMAIL_USER
+  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD
+
+  if (!gmailUser || !gmailAppPassword) {
+    throw new Error('Gmail credentials not found. Please set GMAIL_USER and GMAIL_APP_PASSWORD in .env file')
   }
 
   // Parse email allow list from environment variable
@@ -81,8 +83,13 @@ function getEmailService () {
     .map(email => email.trim().toLowerCase())
     .filter(email => email.length > 0)
 
-  const mailerSend = new MailerSend({
-    apiKey,
+  // Create nodemailer transporter for Gmail
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: gmailUser,
+      pass: gmailAppPassword,
+    },
   })
 
   return {
@@ -101,14 +108,14 @@ function getEmailService () {
         }
       }
 
-      const emailParams = new EmailParams()
-        .setFrom(new Sender(from.email, from.name))
-        // .setReplyTo('')
-        .setTo([new Recipient(to)])
-        .setSubject(subject)
-        .setHtml(html)
+      const mailOptions = {
+        from: `"${from.name}" <${from.email}>`,
+        to,
+        subject,
+        html,
+      }
 
-      return await mailerSend.email.send(emailParams)
+      return await transporter.sendMail(mailOptions)
     },
   }
 }
