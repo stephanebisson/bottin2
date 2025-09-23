@@ -1,5 +1,6 @@
 const crypto = require('node:crypto')
 const admin = require('firebase-admin')
+const { FieldValue } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 
@@ -85,27 +86,7 @@ exports.startAnnualUpdateV2 = onRequest({
 
     // Create a new workflow session
     const workflowId = `workflow_${Date.now()}`
-    const startedAt = admin.firestore.FieldValue.serverTimestamp()
-
-    // Initialize workflow document
-    await db.collection('updateSessions').doc(workflowId).set({
-      id: workflowId,
-      schoolYear,
-      status: 'active',
-      startedAt,
-      adminEmail,
-      tokensGenerated: 0,
-      emailsSent: 0,
-      responsesReceived: 0,
-      phase: 'initializing',
-      stats: {
-        totalParents: 0, // Will be updated after getting parents
-        emailsSent: 0,
-        formsSubmitted: 0,
-        accountsCreated: 0,
-        optedOut: 0,
-      },
-    })
+    const startedAt = FieldValue.serverTimestamp()
 
     // Get all parents for token generation
     const parentsSnapshot = await db.collection('parents').get()
@@ -121,39 +102,51 @@ exports.startAnnualUpdateV2 = onRequest({
 
     console.log(`Found ${parents.length} parents for workflow ${workflowId}`)
 
-    // Generate tokens for all parents
-    const tokenPromises = parents.map(async parent => {
+    // Generate tokens for all parents and store them in the workflow participants object
+    const participants = {}
+    for (const parent of parents) {
       const token = generateUpdateToken()
-      const tokenDoc = {
+      participants[parent.email] = {
         parentId: parent.id,
-        workflowId,
+        parentName: `${parent.firstName || parent.first_name || ''} ${parent.lastName || parent.last_name || ''}`.trim() || parent.email,
         token,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        used: false,
-        parentEmail: parent.email,
-        parentName: `${parent.firstName} ${parent.lastName}`,
+        tokenCreatedAt: FieldValue.serverTimestamp(),
+        emailSent: false,
+        emailSentAt: null,
+        formSubmitted: false,
+        submittedAt: null,
+        optedOut: false,
       }
+    }
 
-      await db.collection('updateTokens').doc(token).set(tokenDoc)
-      return tokenDoc
+    // Initialize workflow document with all data including participants
+    await db.collection('updateSessions').doc(workflowId).set({
+      id: workflowId,
+      schoolYear,
+      status: 'active',
+      startedAt,
+      adminEmail,
+      participants,
+      tokensGenerated: parents.length,
+      emailsSent: 0,
+      responsesReceived: 0,
+      phase: 'tokens_generated',
+      stats: {
+        totalParents: parents.length,
+        emailsSent: 0,
+        formsSubmitted: 0,
+        accountsCreated: 0,
+        optedOut: 0,
+      },
+      updatedAt: FieldValue.serverTimestamp(),
     })
 
-    const tokens = await Promise.all(tokenPromises)
-
-    // Update workflow with token generation stats
-    await db.collection('updateSessions').doc(workflowId).update({
-      'tokensGenerated': tokens.length,
-      'phase': 'tokens_generated',
-      'stats.totalParents': parents.length,
-      'updatedAt': admin.firestore.FieldValue.serverTimestamp(),
-    })
-
-    console.log(`Generated ${tokens.length} tokens for workflow ${workflowId}`)
+    console.log(`Generated ${parents.length} tokens for workflow ${workflowId}`)
 
     res.status(200).json({
       message: 'Annual update workflow started successfully',
       workflowId,
-      tokensGenerated: tokens.length,
+      tokensGenerated: parents.length,
       parents: parents.length,
     })
   } catch (error_) {

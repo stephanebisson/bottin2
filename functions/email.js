@@ -21,7 +21,6 @@ const EMAIL_MESSAGES = {
     intro: (schoolYear, systemName) => `As we begin the <strong>${schoolYear}</strong> school year, we need to update and verify the information in our ${systemName.toLowerCase()}.`,
     instruction: 'Please take a few minutes to review and update your family\'s information by clicking the button below:',
     buttonText: 'Update My Information',
-    warningText: deadline => `<strong>⏰ Important:</strong> Please complete this update by <strong>${deadline}</strong>. This link is unique to your family and expires after 30 days.`,
     updateListTitle: 'You will be able to update:',
     updateItems: [
       'Contact information (phone, address)',
@@ -43,7 +42,6 @@ const EMAIL_MESSAGES = {
     intro: schoolYear => `Alors que nous commençons l'année scolaire <strong>${schoolYear}</strong>, nous devons mettre à jour et vérifier les informations dans notre bottin scolaire.`,
     instruction: 'Veuillez prendre quelques minutes pour réviser et mettre à jour les informations de votre famille en cliquant sur le bouton ci-dessous :',
     buttonText: 'Mettre à Jour Mes Informations',
-    warningText: deadline => `<strong>⏰ Important :</strong> Veuillez compléter cette mise à jour avant le <strong>${deadline}</strong>. Ce lien est unique à votre famille et expire après 30 jours.`,
     updateListTitle: 'Vous pourrez mettre à jour :',
     updateItems: [
       'Informations de contact (téléphone, adresse)',
@@ -84,7 +82,7 @@ function getEmailService () {
     .filter(email => email.length > 0)
 
   // Create nodemailer transporter for Gmail
-  const transporter = nodemailer.createTransporter({
+  const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: gmailUser,
@@ -120,7 +118,7 @@ function getEmailService () {
   }
 }
 
-function getEmailTemplate (parentName, updateUrl, schoolYear, deadline, language = 'en') {
+function getEmailTemplate (parentName, updateUrl, schoolYear, language = 'en') {
   const messages = EMAIL_MESSAGES[language] || EMAIL_MESSAGES.en
   const currentYear = new Date().getFullYear()
 
@@ -142,7 +140,7 @@ function getEmailTemplate (parentName, updateUrl, schoolYear, deadline, language
           .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
           .button { display: inline-block; background-color: #1976d2; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
           .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
-          .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+          .info { background-color: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 5px; margin: 20px 0; }
         </style>
       </head>
       <body>
@@ -162,8 +160,8 @@ function getEmailTemplate (parentName, updateUrl, schoolYear, deadline, language
               <a href="${updateUrl}" class="button">${messages.buttonText}</a>
             </p>
             
-            <div class="warning">
-              ${messages.warningText(deadline)}
+            <div class="info">
+              <strong>📝 Important:</strong> This link is unique to your family and will remain active throughout the school year.
             </div>
             
             <p>${messages.updateListTitle}</p>
@@ -259,25 +257,33 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       })
     }
 
-    // Get selected parents with update tokens
-    const parentsSnapshot = await db.collection('parents')
-      .where('updateToken', '!=', null)
-      .get()
-
+    // Get selected parents from workflow participants
+    const participants = workflowData.participants || {}
     const selectedParents = []
-    for (const doc of parentsSnapshot.docs) {
-      const parentData = doc.data()
-      if (parentEmails.includes(parentData.email)) {
+
+    for (const email of parentEmails) {
+      if (participants[email]) {
+        // Get parent info from parents collection for additional details
+        const parentQuery = await db.collection('parents')
+          .where('email', '==', email)
+          .limit(1)
+          .get()
+
+        const parentData = parentQuery.empty ? {} : parentQuery.docs[0].data()
+
         selectedParents.push({
-          id: doc.id,
-          ...parentData,
+          email,
+          updateToken: participants[email].token,
+          first_name: parentData.first_name || '',
+          last_name: parentData.last_name || '',
+          preferredLanguage: parentData.preferredLanguage || 'en',
         })
       }
     }
 
     if (selectedParents.length === 0) {
       return res.status(400).json({
-        error: 'No selected parents found with update tokens',
+        error: 'No selected parents found in workflow participants',
       })
     }
 
@@ -286,24 +292,23 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
     const emailResults = []
     const batch = db.batch()
 
-    // Format deadline for email
-    const deadline = workflowData.deadline.toDate().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-
     // Send emails to selected parents only
     for (const parent of selectedParents) {
       const parentName = `${parent.first_name || ''} ${parent.last_name || ''}`.trim() || 'Parent'
 
+      console.log('=== Sending email ===')
+      console.log('Parent email:', parent.email)
+      console.log('Parent token:', parent.updateToken)
+      console.log('Token length:', parent.updateToken?.length)
+
       // Construct update URL
       const baseUrl = EMAIL_CONFIG.APP_URL
       const updateUrl = `${baseUrl}/update/${parent.updateToken}`
+      console.log('Update URL:', updateUrl)
 
       // Determine language (assume 'en' for now, could be based on parent preference)
       const language = parent.preferredLanguage || 'en'
-      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, deadline, language)
+      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, language)
 
       try {
         const fromEmail = EMAIL_CONFIG.FROM_EMAIL

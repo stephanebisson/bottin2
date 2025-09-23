@@ -32,36 +32,87 @@ exports.validateUpdateTokenV2 = onRequest({
   try {
     const { token } = req.body
 
+    console.log('=== validateUpdateTokenV2 ===')
+    console.log('Received token:', token)
+    console.log('Token type:', typeof token)
+    console.log('Token length:', token?.length)
+
     if (!token || typeof token !== 'string') {
+      console.log('Token validation failed: invalid token format')
       return res.status(400).json({
         valid: false,
         error: 'Token is required and must be a string.',
       })
     }
 
-    // Find parent with this token
-    const parentsQuery = await db.collection('parents')
-      .where('updateToken', '==', token)
-      .limit(1)
+    // Find the token in active workflows
+    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+      .where('status', '==', 'active')
       .get()
 
-    if (parentsQuery.empty) {
+    console.log(`Found ${activeWorkflowsSnapshot.size} active workflows`)
+
+    let parentData = null
+    let parentDoc = null
+    let tokenFound = false
+
+    // Search through active workflows for this token
+    for (const workflowDoc of activeWorkflowsSnapshot.docs) {
+      const workflow = workflowDoc.data()
+      console.log(`Checking workflow ${workflowDoc.id}`)
+      console.log('Workflow status:', workflow.status)
+      console.log('Has participants:', !!workflow.participants)
+
+      if (workflow.participants) {
+        const participantCount = Object.keys(workflow.participants).length
+        console.log(`Participant count: ${participantCount}`)
+
+        // Log first few tokens for comparison
+        const tokens = Object.values(workflow.participants).map(p => p.token).slice(0, 3)
+        console.log('Sample tokens:', tokens)
+
+        for (const [email, participant] of Object.entries(workflow.participants)) {
+          if (participant.token === token) {
+            console.log(`✓ Token found for email: ${email}`)
+            tokenFound = true
+
+            // Get parent data from parents collection
+            const parentQuery = await db.collection('parents')
+              .where('email', '==', email)
+              .limit(1)
+              .get()
+
+            if (parentQuery.empty) {
+              console.log(`✗ No parent document found for email: ${email}`)
+            } else {
+              parentDoc = parentQuery.docs[0]
+              parentData = parentQuery.docs[0].data()
+              console.log(`✓ Parent data found for ${email}`)
+            }
+            break
+          }
+        }
+        if (parentData) {
+          break
+        }
+      } else {
+        console.log('No participants in this workflow')
+      }
+    }
+
+    if (!tokenFound) {
+      console.log(`✗ Token not found in any active workflows: ${token}`)
+    }
+
+    if (!parentData) {
+      console.log('✗ Token validation failed - returning 404')
       return res.status(404).json({
         valid: false,
         error: 'Invalid or expired token.',
       })
     }
 
-    const parentDoc = parentsQuery.docs[0]
-    const parentData = parentDoc.data()
-
-    // Check if token has expired
-    if (parentData.tokenExpiry && parentData.tokenExpiry.toDate() < new Date()) {
-      return res.status(410).json({
-        valid: false,
-        error: 'Token has expired.',
-      })
-    }
+    console.log('✓ Token validation successful')
 
     // Check if there's another parent with the same address (for shared address feature)
     let otherParentHasAddress = false
@@ -183,38 +234,45 @@ exports.processParentUpdateV2 = onRequest({
       committeeRoles: parentData.committeeRoles || {},
     })
 
-    // Find parent with this token
-    const parentsQuery = await db.collection('parents')
-      .where('updateToken', '==', token)
-      .limit(1)
+    // Find the token in active workflows
+    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+      .where('status', '==', 'active')
       .get()
 
-    if (parentsQuery.empty) {
+    let parentDoc = null
+    let existingParentData = null
+    let workflowDoc = null
+
+    // Search through active workflows for this token
+    for (const wDoc of activeWorkflowsSnapshot.docs) {
+      const workflow = wDoc.data()
+      if (workflow.participants) {
+        for (const [email, participant] of Object.entries(workflow.participants)) {
+          if (participant.token === token) {
+            workflowDoc = wDoc
+            // Get parent data from parents collection
+            const parentQuery = await db.collection('parents')
+              .where('email', '==', email)
+              .limit(1)
+              .get()
+
+            if (!parentQuery.empty) {
+              parentDoc = parentQuery.docs[0]
+              existingParentData = parentQuery.docs[0].data()
+            }
+            break
+          }
+        }
+        if (existingParentData) {
+          break
+        }
+      }
+    }
+
+    if (!existingParentData) {
       return res.status(404).json({
         error: 'Invalid or expired token.',
       })
-    }
-
-    const parentDoc = parentsQuery.docs[0]
-    const existingParentData = parentDoc.data()
-
-    // Check if token has expired
-    if (existingParentData.tokenExpiry && existingParentData.tokenExpiry.toDate() < new Date()) {
-      return res.status(410).json({
-        error: 'Token has expired.',
-      })
-    }
-
-    // Additional security: Check if form was already submitted recently (prevent duplicate submissions)
-    if (existingParentData.lastUpdated) {
-      const lastUpdate = existingParentData.lastUpdated.toDate()
-      const oneMinuteAgo = new Date(Date.now() - 60 * 1000) // 1 minute cooldown
-
-      if (lastUpdate > oneMinuteAgo) {
-        return res.status(429).json({
-          error: 'Form was recently submitted. Please wait before submitting again.',
-        })
-      }
     }
 
     const batch = db.batch()
@@ -319,20 +377,10 @@ exports.processParentUpdateV2 = onRequest({
       )
     }
 
-    // Find the current active workflow and update participation
-    const currentYear = new Date().getFullYear()
-    const currentMonth = new Date().getMonth()
-    const schoolYear = currentMonth >= 8
-      ? `${currentYear}-${currentYear + 1}`
-      : `${currentYear - 1}-${currentYear}`
-
-    const workflowId = `${schoolYear.split('-')[0]}-annual-update`
-    const workflowRef = db.collection('updateSessions').doc(workflowId)
-    const workflowDoc = await workflowRef.get()
-
-    if (workflowDoc.exists) {
+    // Update workflow participation
+    if (workflowDoc) {
       const participantPath = `participants.${existingParentData.email}`
-      batch.update(workflowRef, {
+      batch.update(workflowDoc.ref, {
         [`${participantPath}.formSubmitted`]: true,
         [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
         [`${participantPath}.optedOut`]: false,
@@ -341,7 +389,7 @@ exports.processParentUpdateV2 = onRequest({
 
       // If parent was previously opted out, decrement the opted out count
       if (existingParentData.optedOut) {
-        batch.update(workflowRef, {
+        batch.update(workflowDoc.ref, {
           'stats.optedOut': FieldValue.increment(-1),
         })
         console.log(`Parent ${existingParentData.email} re-opted in - decremented opt-out stats`)
@@ -410,25 +458,44 @@ exports.processParentOptOutV2 = onRequest({
 
     console.log('Processing parent opt-out for token:', token)
 
-    // Find parent with this token
-    const parentsQuery = await db.collection('parents')
-      .where('updateToken', '==', token)
-      .limit(1)
+    // Find the token in active workflows
+    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+      .where('status', '==', 'active')
       .get()
 
-    if (parentsQuery.empty) {
-      return res.status(404).json({
-        error: 'Invalid or expired token.',
-      })
+    let parentDoc = null
+    let existingParentData = null
+    let workflowDocRef = null
+
+    // Search through active workflows for this token
+    for (const wDoc of activeWorkflowsSnapshot.docs) {
+      const workflow = wDoc.data()
+      if (workflow.participants) {
+        for (const [email, participant] of Object.entries(workflow.participants)) {
+          if (participant.token === token) {
+            workflowDocRef = wDoc
+            // Get parent data from parents collection
+            const parentQuery = await db.collection('parents')
+              .where('email', '==', email)
+              .limit(1)
+              .get()
+
+            if (!parentQuery.empty) {
+              parentDoc = parentQuery.docs[0]
+              existingParentData = parentQuery.docs[0].data()
+            }
+            break
+          }
+        }
+        if (existingParentData) {
+          break
+        }
+      }
     }
 
-    const parentDoc = parentsQuery.docs[0]
-    const existingParentData = parentDoc.data()
-
-    // Check if token has expired
-    if (existingParentData.tokenExpiry && existingParentData.tokenExpiry.toDate() < new Date()) {
-      return res.status(410).json({
-        error: 'Token has expired.',
+    if (!existingParentData) {
+      return res.status(404).json({
+        error: 'Invalid or expired token.',
       })
     }
 
@@ -451,9 +518,6 @@ exports.processParentOptOutV2 = onRequest({
       lastUpdated: FieldValue.serverTimestamp(),
       // Keep children data intact for school records
       children: existingParentData.children || null,
-      // Keep token fields so parent can re-opt-in later
-      updateToken: existingParentData.updateToken || null,
-      tokenExpiry: existingParentData.tokenExpiry || null,
     }
 
     // Update parent document with minimal data
@@ -476,19 +540,9 @@ exports.processParentOptOutV2 = onRequest({
     }
 
     // Update workflow participation to indicate opt-out
-    const currentYear = new Date().getFullYear()
-    const currentMonth = new Date().getMonth()
-    const schoolYear = currentMonth >= 8
-      ? `${currentYear}-${currentYear + 1}`
-      : `${currentYear - 1}-${currentYear}`
-
-    const workflowId = `${schoolYear.split('-')[0]}-annual-update`
-    const workflowRef = db.collection('updateSessions').doc(workflowId)
-    const workflowDoc = await workflowRef.get()
-
-    if (workflowDoc.exists) {
+    if (workflowDocRef) {
       const participantPath = `participants.${parentEmail}`
-      batch.update(workflowRef, {
+      batch.update(workflowDocRef.ref, {
         [`${participantPath}.formSubmitted`]: true,
         [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
         [`${participantPath}.optedOut`]: true,
