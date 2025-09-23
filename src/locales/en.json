@@ -309,17 +309,6 @@
     "welcomeDescription": "Manage your school directory system and administrative tasks.",
     "annualUpdateDescription": "Manage the annual parent information update process, send notifications, and track responses.",
     "workflowCompleted": "{completed}/{total} completed",
-    "userManagement": "User Management",
-    "userManagementDescription": "Manage user accounts, permissions, and admin privileges for the system.",
-    "comingSoon": "Coming Soon",
-    "directoryManagement": "Directory Management",
-    "directoryManagementDescription": "Manage the school directory content, export data, and configure display settings.",
-    "googleSheetsSync": "Google Sheets Sync",
-    "googleSheetsSyncDescription": "Synchronize data with Google Sheets for external data management and backup.",
-    "systemSettings": "System Settings",
-    "systemSettingsDescription": "Configure system-wide settings, email templates, and application preferences.",
-    "auditLogs": "Audit Logs",
-    "auditLogsDescription": "View system activity logs, admin actions, and security events for compliance.",
     "backToAdminDashboard": "Back to Admin Dashboard"
   },
   "updateForm": {

@@ -317,17 +317,6 @@
     "welcomeDescription": "Gérez votre système de bottin scolaire et les tâches administratives.",
     "annualUpdateDescription": "Gérez le processus de mise à jour annuelle des informations parents, envoyez des notifications, et suivez les réponses.",
     "workflowCompleted": "{completed}/{total} complétés",
-    "userManagement": "Gestion des Utilisateurs",
-    "userManagementDescription": "Gérez les comptes d'utilisateur, les permissions, et les privilèges d'administrateur pour le système.",
-    "comingSoon": "Bientôt Disponible",
-    "directoryManagement": "Gestion du Répertoire",
-    "directoryManagementDescription": "Gérez le contenu du bottin scolaire, exportez les données, et configurez les paramètres d'affichage.",
-    "googleSheetsSync": "Synchronisation Google Sheets",
-    "googleSheetsSyncDescription": "Synchronisez les données avec Google Sheets pour la gestion externe des données et la sauvegarde.",
-    "systemSettings": "Paramètres Système",
-    "systemSettingsDescription": "Configurez les paramètres à l'échelle du système, les modèles de courriel, et les préférences d'application.",
-    "auditLogs": "Journaux d'Audit",
-    "auditLogsDescription": "Consultez les journaux d'activité du système, les actions d'administrateur, et les événements de sécurité pour la conformité.",
     "backToAdminDashboard": "Retour au Tableau de Bord Administrateur"
   },
   "updateForm": {
