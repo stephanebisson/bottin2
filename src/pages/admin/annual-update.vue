@@ -22,13 +22,6 @@
       </v-card-title>
 
       <v-card-text>
-        <!-- Debug info -->
-        <div class="mb-2 pa-2 bg-grey-lighten-4">
-          <small>Debug: currentWorkflow is {{ currentWorkflow ? 'truthy' : 'falsy' }}</small>
-          <br>
-          <small v-if="currentWorkflow">Status: {{ currentWorkflow.status }}</small>
-        </div>
-
         <!-- Current Workflow Status -->
         <div v-if="currentWorkflow" class="mb-4">
           <v-alert
@@ -295,7 +288,7 @@
 
             <v-list-item-subtitle>
               {{ formatDate(workflow.startedAt) }} -
-              {{ workflow.stats.formsSubmitted }}/{{ workflow.stats.totalParents }} completed
+              {{ workflow.stats?.formsSubmitted || 0 }}/{{ workflow.stats?.totalParents || 0 }} completed
             </v-list-item-subtitle>
 
             <template #append>
@@ -404,11 +397,6 @@
   const currentWorkflow = ref(null)
   const workflowHistory = ref([])
 
-  // Watch for changes in currentWorkflow to debug the issue
-  watch(currentWorkflow, (newValue, oldValue) => {
-    console.log('currentWorkflow changed:', { oldValue, newValue })
-  }, { immediate: true, deep: true })
-
   // Parent management state
   const parents = ref([])
   const selectedParentRows = ref([])
@@ -476,14 +464,16 @@
   }
 
   const getWorkflowStatusMessage = workflow => {
-    const completionRate = workflow.stats.totalParents > 0
-      ? Math.round((workflow.stats.formsSubmitted / workflow.stats.totalParents) * 100)
+    const totalParents = workflow.stats?.totalParents || 0
+    const formsSubmitted = workflow.stats?.formsSubmitted || 0
+    const completionRate = totalParents > 0
+      ? Math.round((formsSubmitted / totalParents) * 100)
       : 0
 
     return t('admin.workflowProgress', {
       schoolYear: workflow.schoolYear,
-      completed: workflow.stats.formsSubmitted,
-      total: workflow.stats.totalParents,
+      completed: formsSubmitted,
+      total: totalParents,
       percentage: completionRate,
     })
   }
@@ -785,15 +775,36 @@
       }
 
       const data = await response.json()
-      console.log('getWorkflowStatusV2 response:', data)
-      console.log('Setting currentWorkflow to:', data.current)
+      console.log('Full API response:', data)
+      console.log('Current workflow:', data.current)
+      console.log('Current workflow stats:', data.current?.stats)
+
+      // Ensure stats exist with default values for current workflow
+      if (data.current) {
+        data.current.stats = data.current.stats || {
+          totalParents: 0,
+          emailsSent: 0,
+          formsSubmitted: 0,
+          accountsCreated: 0,
+          optedOut: 0,
+        }
+      }
+
+      // Ensure stats exist for all history items
+      if (data.history && Array.isArray(data.history)) {
+        for (const workflow of data.history) {
+          workflow.stats = workflow.stats || {
+            totalParents: 0,
+            emailsSent: 0,
+            formsSubmitted: 0,
+            accountsCreated: 0,
+            optedOut: 0,
+          }
+        }
+      }
+
       currentWorkflow.value = data.current
       workflowHistory.value = data.history || []
-
-      // Add a small delay to check if the data persists
-      setTimeout(() => {
-        console.log('currentWorkflow after 100ms:', currentWorkflow.value)
-      }, 100)
     } catch (error_) {
       console.error('Failed to load workflow data:', error_)
     }

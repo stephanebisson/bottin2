@@ -71,7 +71,7 @@
                   {{ $t(`admin.status.${currentWorkflow.status}`) }}
                 </v-chip>
                 <div class="text-body-2 mt-2">
-                  {{ $t('admin.workflowCompleted', { completed: currentWorkflow.stats.formsSubmitted, total: currentWorkflow.stats.totalParents }) }}
+                  {{ $t('admin.workflowCompleted', { completed: currentWorkflow.formsSubmitted || 0, total: currentWorkflow.totalParents || 0 }) }}
                 </div>
               </div>
               <div v-else class="mt-4">
