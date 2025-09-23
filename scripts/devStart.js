@@ -48,7 +48,7 @@ async function startDevelopment () {
     console.log('1️⃣  Starting Firebase emulator with data import...')
     emulatorProcess = spawn('firebase', [
       'emulators:start',
-      '--import=./backups/2025-09-18-175305-emulator-backup',
+      '--import=./backups/2025-09-22-215703-emulator-backup',
     ], {
       stdio: 'inherit',
       shell: true,
