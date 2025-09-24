@@ -146,14 +146,14 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
               </div>
             </div>
           </template>
 
           <template #item.newLevel="{ item }">
             <v-chip color="primary" size="small" variant="tonal">
-              {{ $t('admin.level') }} {{ item.newLevel }}
+              {{ formatGradeLevel(item.newLevel) }}
             </v-chip>
           </template>
 
@@ -197,14 +197,14 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
               </div>
             </div>
           </template>
 
           <template #item.newLevel="{ item }">
             <v-chip color="primary" size="small" variant="tonal">
-              {{ $t('admin.level') }} {{ item.newLevel }}
+              {{ formatGradeLevel(item.newLevel) }}
             </v-chip>
           </template>
 
@@ -255,7 +255,7 @@
             <div>
               <div class="font-weight-medium">{{ item.student.first_name }} {{ item.student.last_name }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.class') }}: {{ item.student.className }} ({{ $t('admin.level') }} 1)
+                {{ $t('admin.class') }}: {{ item.student.className }} ({{ formatGradeLevel(1) }})
               </div>
             </div>
           </template>
@@ -353,7 +353,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
               </div>
             </div>
           </template>
@@ -416,7 +416,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
               </div>
             </div>
           </template>
@@ -753,7 +753,7 @@
                 <div class="font-weight-medium">{{ item.studentName }}</div>
                 <div class="text-caption text-grey-darken-1">
                   {{ $t('admin.class') }}: {{ item.currentClass }} |
-                  {{ $t('admin.level') }}: {{ item.currentLevel }}
+                  {{ formatGradeLevel(item.currentLevel) }}
                 </div>
               </div>
             </template>
@@ -1175,6 +1175,47 @@
       .toLowerCase()
       .normalize('NFD') // Decompose accented characters
       .replace(/[\u0300-\u036F]/g, '') // Remove accent marks
+  }
+
+  const formatGradeLevel = level => {
+    const { locale } = useI18n()
+    const currentLocale = locale.value || 'en'
+
+    if (currentLocale === 'fr') {
+      switch (level) {
+        case 1: { return '1ère année'
+        }
+        case 2: { return '2ème année'
+        }
+        case 3: { return '3ème année'
+        }
+        case 4: { return '4ème année'
+        }
+        case 5: { return '5ème année'
+        }
+        case 6: { return '6ème année'
+        }
+        default: { return `${level}ème année`
+        }
+      }
+    } else {
+      switch (level) {
+        case 1: { return '1st grade'
+        }
+        case 2: { return '2nd grade'
+        }
+        case 3: { return '3rd grade'
+        }
+        case 4: { return '4th grade'
+        }
+        case 5: { return '5th grade'
+        }
+        case 6: { return '6th grade'
+        }
+        default: { return `${level}th grade`
+        }
+      }
+    }
   }
 
   const getWorkflowStatusType = status => {

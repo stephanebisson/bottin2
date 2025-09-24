@@ -190,7 +190,7 @@
                                 <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                 <div class="text-caption">
                                   {{ $t('classes.class') }}: {{ child.className }}
-                                  <span v-if="child.level"> - {{ $t('classes.level') }} {{ child.level }}</span>
+                                  <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
                                   <span v-if="getTeacherName(getClassTeacher(child.className))">
                                     - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                   </span>
@@ -243,7 +243,7 @@
                               size="small"
                               variant="outlined"
                             >
-                              {{ $t('classes.level') }} {{ levelData.level }}
+                              {{ formatGradeLevel(levelData.level) }}
                             </v-chip>
                             <span class="text-caption text-grey">
                               {{ $t(levelData.students.length === 1 ? 'classes.studentCount' : 'classes.studentCountPlural', { count: levelData.students.length }) }}
@@ -277,7 +277,7 @@
                                   <div class="pa-3" style="min-width: 350px;">
                                     <div class="text-h6 mb-3 text-white">
                                       {{ student.first_name }} {{ student.last_name }}
-                                      <span v-if="student.level" class="text-caption ml-2">({{ $t('classes.level') }} {{ student.level }})</span>
+                                      <span v-if="student.level" class="text-caption ml-2">({{ formatGradeLevel(student.level) }})</span>
                                       <br>
                                       <span class="text-body-2">{{ student.className }}</span>
                                     </div>
@@ -373,6 +373,7 @@
 
 <script setup>
   import { onMounted, ref } from 'vue'
+  import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   // Feature flags
@@ -380,8 +381,53 @@
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
+  const { locale } = useI18n()
 
   // Helper functions
+  const formatGradeLevel = level => {
+    // Handle special cases
+    if (!level || level === 'Unknown') return level
+
+    const currentLocale = locale.value || 'en'
+    const numLevel = Number(level)
+
+    if (currentLocale === 'fr') {
+      switch (numLevel) {
+        case 1: { return '1ère année'
+        }
+        case 2: { return '2ème année'
+        }
+        case 3: { return '3ème année'
+        }
+        case 4: { return '4ème année'
+        }
+        case 5: { return '5ème année'
+        }
+        case 6: { return '6ème année'
+        }
+        default: { return `${level}ème année`
+        }
+      }
+    } else {
+      switch (numLevel) {
+        case 1: { return '1st grade'
+        }
+        case 2: { return '2nd grade'
+        }
+        case 3: { return '3rd grade'
+        }
+        case 4: { return '4th grade'
+        }
+        case 5: { return '5th grade'
+        }
+        case 6: { return '6th grade'
+        }
+        default: { return `${level}th grade`
+        }
+      }
+    }
+  }
+
   const getStudentName = studentId => {
     const student = firebaseStore.students.find(s => s.id === studentId)
     return student ? `${student.first_name} ${student.last_name}` : studentId
