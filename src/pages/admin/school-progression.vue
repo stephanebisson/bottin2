@@ -146,7 +146,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.currentClass') }}: {{ item.currentClass }} ({{ $t('admin.level') }} {{ item.currentLevel }})
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
               </div>
             </div>
           </template>
@@ -197,7 +197,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.currentClass') }}: {{ item.currentClass }} ({{ $t('admin.level') }} {{ item.currentLevel }})
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
               </div>
             </div>
           </template>
@@ -210,7 +210,7 @@
 
           <template #item.assignedClass="{ item }">
             <v-chip color="success" size="small">
-              {{ item.assignedClass }}
+              {{ getFormattedClassName(item.assignedClass) }}
             </v-chip>
           </template>
         </v-data-table>
@@ -353,7 +353,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.currentClass') }}: {{ item.currentClass }} ({{ $t('admin.level') }} {{ item.currentLevel }})
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
               </div>
             </div>
           </template>
@@ -416,7 +416,7 @@
             <div>
               <div class="font-weight-medium">{{ item.studentName }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.currentClass') }}: {{ item.currentClass }} ({{ $t('admin.level') }} {{ item.currentLevel }})
+                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ $t('admin.level') }} {{ item.currentLevel }}
               </div>
             </div>
           </template>
@@ -953,16 +953,48 @@
   // Computed properties
   const pendingAssignments = computed(() => {
     if (!currentWorkflow.value?.assignments) return []
-    return currentWorkflow.value.assignments.filter(assignment => !assignment.assigned)
+
+    // Get list of departing student IDs
+    const departingStudentIds = new Set(departingStudentsData.value.map(s => s.studentId))
+
+    return currentWorkflow.value.assignments
+      .filter(assignment =>
+        !assignment.assigned
+        && !departingStudentIds.has(assignment.studentId),
+      )
       .map(assignment => ({
         ...assignment,
         selectedClass: null,
       }))
+      .sort((a, b) => {
+        // First sort by new level (ascending)
+        if (a.newLevel !== b.newLevel) {
+          return a.newLevel - b.newLevel
+        }
+        // Then sort by student name (ascending)
+        return a.studentName.localeCompare(b.studentName)
+      })
   })
 
   const completedAssignments = computed(() => {
     if (!currentWorkflow.value?.assignments) return []
-    return currentWorkflow.value.assignments.filter(assignment => assignment.assigned)
+
+    // Get list of departing student IDs
+    const departingStudentIds = new Set(departingStudentsData.value.map(s => s.studentId))
+
+    return currentWorkflow.value.assignments
+      .filter(assignment =>
+        assignment.assigned
+        && !departingStudentIds.has(assignment.studentId),
+      )
+      .sort((a, b) => {
+        // First sort by new level (ascending)
+        if (a.newLevel !== b.newLevel) {
+          return a.newLevel - b.newLevel
+        }
+        // Then sort by student name (ascending)
+        return a.studentName.localeCompare(b.studentName)
+      })
   })
 
   const newStudents = computed(() => {
@@ -1165,6 +1197,26 @@
     })
   }
 
+  const getFormattedClassName = classLetter => {
+    if (!classLetter || !firebaseStore.classes || !firebaseStore.staff) {
+      return null
+    }
+
+    const cls = firebaseStore.classes.find(c => c.classLetter === classLetter)
+    if (!cls) {
+      return null
+    }
+
+    // Find teacher in staff collection using teacher ID
+    const teacher = firebaseStore.staff.find(s => s.id === cls.teacher)
+
+    if (teacher && teacher.first_name && teacher.last_name) {
+      return `${teacher.first_name} ${teacher.last_name} (${classLetter})`
+    }
+
+    return null
+  }
+
   const getAvailableClasses = level => {
     if (!firebaseStore.classes) return []
 
@@ -1190,10 +1242,16 @@
 
         return true
       })
-      .map(cls => ({
-        title: `${cls.className} (${cls.classLetter})`,
-        value: cls.classLetter,
-      }))
+      .map(cls => {
+        // Find teacher in staff collection using teacher ID
+        const teacher = firebaseStore.staff?.find(s => s.id === cls.teacher)
+        const teacherName = teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : 'Teacher'
+
+        return {
+          title: `${teacherName} (${cls.classLetter})`,
+          value: cls.classLetter,
+        }
+      })
   }
 
   // API functions
