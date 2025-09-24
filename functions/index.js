@@ -9,6 +9,7 @@ const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowSt
 const { validateEmail, validateEmailV2 } = require('./auth')
 const { sendUpdateEmailsToSelectedV2 } = require('./email')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
+const { startSchoolProgressionV2, assignTransitionClassV2, addNewStudentV2, applyProgressionChangesV2, getProgressionStatusV2, markStudentsDepartingV2, removeDepartingStudentV2 } = require('./schoolProgression')
 const { healthCheckV2 } = require('./utils')
 
 // Export all functions
@@ -26,3 +27,10 @@ exports.setAdminClaimV2 = setAdminClaimV2
 exports.getAdminStatusV2 = getAdminStatusV2
 exports.listAdminsV2 = listAdminsV2
 exports.healthCheckV2 = healthCheckV2
+exports.startSchoolProgressionV2 = startSchoolProgressionV2
+exports.assignTransitionClassV2 = assignTransitionClassV2
+exports.addNewStudentV2 = addNewStudentV2
+exports.applyProgressionChangesV2 = applyProgressionChangesV2
+exports.getProgressionStatusV2 = getProgressionStatusV2
+exports.markStudentsDepartingV2 = markStudentsDepartingV2
+exports.removeDepartingStudentV2 = removeDepartingStudentV2
