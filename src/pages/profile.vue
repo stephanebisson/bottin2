@@ -179,7 +179,7 @@
           </v-card>
 
           <!-- Interests & Skills -->
-          <v-card v-if="parentProfile.interests && parentProfile.interests.length > 0">
+          <v-card v-if="displayedInterests.length > 0">
             <v-card-title class="d-flex align-center bg-info-lighten-5">
               <v-icon class="me-2" color="info">mdi-star</v-icon>
               {{ $t('profile.interests') }}
@@ -188,7 +188,7 @@
             <v-card-text class="pa-4">
               <div class="d-flex flex-wrap gap-2">
                 <v-chip
-                  v-for="interest in parentProfile.interests"
+                  v-for="interest in displayedInterests"
                   :key="interest"
                   color="info"
                   size="small"
@@ -217,6 +217,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from '@/composables/useI18n'
+  import { getInterestNames } from '@/config/interests'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -286,6 +287,11 @@
     if (parentProfile.value.postal_code) addressParts.push(parentProfile.value.postal_code)
 
     return addressParts.length > 0 ? addressParts.join(', ') : ''
+  })
+
+  const displayedInterests = computed(() => {
+    if (!parentProfile.value?.interests?.length) return []
+    return getInterestNames(parentProfile.value.interests)
   })
 
   // Utility functions

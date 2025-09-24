@@ -66,7 +66,7 @@
     <!-- Interests (if showInterests) -->
     <div v-if="showInterests && parent.interests?.length" class="text-body-2 d-flex align-center">
       <v-icon class="me-1" size="16">mdi-heart</v-icon>
-      <span>{{ parent.interests.join(', ') }}</span>
+      <span>{{ displayedInterests }}</span>
     </div>
 
   </div>
@@ -76,6 +76,7 @@
   import { computed } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import { useI18n } from '@/composables/useI18n'
+  import { getInterestNames } from '@/config/interests'
 
   const { t } = useI18n()
 
@@ -163,6 +164,11 @@
 
     return phone
   }
+
+  const displayedInterests = computed(() => {
+    if (!props.parent.interests?.length) return ''
+    return getInterestNames(props.parent.interests).join(', ')
+  })
 </script>
 
 <style scoped>
