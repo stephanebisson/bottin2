@@ -241,7 +241,7 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
     }
 
     // Get workflow document
-    const workflowDoc = await db.collection('updateSessions').doc(workflowId).get()
+    const workflowDoc = await db.collection('workflows').doc(workflowId).get()
 
     if (!workflowDoc.exists) {
       return res.status(404).json({
@@ -257,12 +257,17 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       })
     }
 
-    // Get selected parents from workflow participants
-    const participants = workflowData.participants || {}
+    // Get selected parents from workflow participants subcollection
     const selectedParents = []
 
     for (const email of parentEmails) {
-      if (participants[email]) {
+      // Get participant from subcollection
+      const participantDoc = await db.collection('workflows').doc(workflowId)
+        .collection('participants').doc(email).get()
+
+      if (participantDoc.exists) {
+        const participant = participantDoc.data()
+
         // Get parent info from parents collection for additional details
         const parentQuery = await db.collection('parents')
           .where('email', '==', email)
@@ -273,7 +278,8 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
 
         selectedParents.push({
           email,
-          updateToken: participants[email].token,
+          updateToken: participant.token,
+          participantDocRef: participantDoc.ref, // Store reference for easy updates
           first_name: parentData.first_name || '',
           last_name: parentData.last_name || '',
           preferredLanguage: parentData.preferredLanguage || 'en',
@@ -290,7 +296,6 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
     const emailService = getEmailService()
     let emailsSent = 0
     const emailResults = []
-    const batch = db.batch()
 
     // Send emails to selected parents only
     for (const parent of selectedParents) {
@@ -328,12 +333,20 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
           sentAt: new Date(),
         })
 
-        // Update participant status in workflow
-        const participantPath = `participants.${parent.email}`
-        batch.update(db.collection('updateSessions').doc(workflowId), {
-          [`${participantPath}.emailSent`]: true,
-          [`${participantPath}.emailSentAt`]: FieldValue.serverTimestamp(),
-        })
+        // Update participant status immediately after successful email send
+        try {
+          // Update participant document directly in subcollection
+          await parent.participantDocRef.update({
+            emailSent: true,
+            emailSentAt: FieldValue.serverTimestamp(),
+          })
+          console.log(`Database updated for ${parent.email}`)
+        } catch (dbError) {
+          console.error(`Failed to update database for ${parent.email}:`, dbError)
+          // Email was sent successfully, but database update failed
+          emailResults.at(-1).dbUpdateFailed = true
+          emailResults.at(-1).dbError = dbError.message
+        }
       } catch (emailError) {
         console.error(`Failed to send email to ${parent.email}:`, emailError)
         emailResults.push({
@@ -344,13 +357,7 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       }
     }
 
-    // Update workflow stats
-    const currentStats = workflowData.stats || {}
-    batch.update(db.collection('updateSessions').doc(workflowId), {
-      'stats.emailsSent': (currentStats.emailsSent || 0) + emailsSent,
-    })
-
-    await batch.commit()
+    // Stats are now calculated dynamically from subcollection, no manual update needed
 
     console.log(`Selected email sending completed: ${emailsSent} emails sent to selected parents`)
 

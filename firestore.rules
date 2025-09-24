@@ -22,8 +22,12 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.token.email_verified;
     }
 
-    match /updateSessions/{document} {
+    match /workflows/{document} {
       allow read, write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+      
+      match /participants/{participantId} {
+        allow read, write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+      }
     }
     
     // Deny all other access by default

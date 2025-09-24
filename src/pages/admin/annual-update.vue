@@ -484,21 +484,18 @@
     return date.toLocaleDateString()
   }
 
-  // Enhanced parent data with status information
+  // Enhanced parent data with status information from subcollection
   const enrichedParents = computed(() => {
-    if (!currentWorkflow.value?.participants) return []
+    // Now that participants are returned from the API, use them directly
+    if (!currentWorkflow.value?.participants || !Array.isArray(currentWorkflow.value.participants)) return []
 
-    // Base the table on workflow participants, not the parents collection
-    // This ensures consistency with the workflow stats
-    const participantEntries = Object.entries(currentWorkflow.value.participants)
-
-    return participantEntries.map(([email, participant]) => {
+    return currentWorkflow.value.participants.map(participant => {
       // Try to find the parent in the parents collection for additional info
-      const parentInfo = parents.value.find(p => p.email === email) || {}
+      const parentInfo = parents.value.find(p => p.email === participant.email) || {}
 
       return {
-        id: parentInfo.id || email, // Use email as fallback ID
-        email,
+        id: parentInfo.id || participant.email, // Use email as fallback ID
+        email: participant.email,
         firstName: parentInfo.firstName || parentInfo.first_name || '',
         lastName: parentInfo.lastName || parentInfo.last_name || '',
         emailSent: participant.emailSent || false,

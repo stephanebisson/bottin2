@@ -46,7 +46,7 @@ exports.validateUpdateTokenV2 = onRequest({
     }
 
     // Find the token in active workflows
-    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+    const activeWorkflowsSnapshot = await db.collection('workflows')
       .where('status', '==', 'active')
       .get()
 
@@ -69,42 +69,45 @@ exports.validateUpdateTokenV2 = onRequest({
       const workflow = workflowDoc.data()
       console.log(`Checking workflow ${workflowDoc.id}`)
       console.log('Workflow status:', workflow.status)
-      console.log('Has participants:', !!workflow.participants)
 
-      if (workflow.participants) {
-        const participantCount = Object.keys(workflow.participants).length
-        console.log(`Participant count: ${participantCount}`)
+      // Search participants subcollection for the token
+      const participantsSnapshot = await workflowDoc.ref.collection('participants').get()
+      console.log(`Participant count: ${participantsSnapshot.size}`)
 
-        // Log first few tokens for comparison
-        const tokens = Object.values(workflow.participants).map(p => p.token).slice(0, 3)
-        console.log('Sample tokens:', tokens)
-
-        for (const [email, participant] of Object.entries(workflow.participants)) {
-          if (participant.token === token) {
-            console.log(`✓ Token found for email: ${email}`)
-            tokenFound = true
-
-            // Get parent data from parents collection
-            const parentQuery = await db.collection('parents')
-              .where('email', '==', email)
-              .limit(1)
-              .get()
-
-            if (parentQuery.empty) {
-              console.log(`✗ No parent document found for email: ${email}`)
-            } else {
-              parentDoc = parentQuery.docs[0]
-              parentData = parentQuery.docs[0].data()
-              console.log(`✓ Parent data found for ${email}`)
-            }
-            break
-          }
+      // Log first few tokens for comparison
+      const tokens = []
+      for (const doc of participantsSnapshot) {
+        const participant = doc.data()
+        if (tokens.length < 3) {
+          tokens.push(participant.token)
         }
-        if (parentData) {
+      }
+      console.log('Sample tokens:', tokens)
+
+      for (const participantDoc of participantsSnapshot.docs) {
+        const participant = participantDoc.data()
+        if (participant.token === token) {
+          console.log(`✓ Token found for email: ${participant.email}`)
+          tokenFound = true
+
+          // Get parent data from parents collection
+          const parentQuery = await db.collection('parents')
+            .where('email', '==', participant.email)
+            .limit(1)
+            .get()
+
+          if (parentQuery.empty) {
+            console.log(`✗ No parent document found for email: ${participant.email}`)
+          } else {
+            parentDoc = parentQuery.docs[0]
+            parentData = parentQuery.docs[0].data()
+            console.log(`✓ Parent data found for ${participant.email}`)
+          }
           break
         }
-      } else {
-        console.log('No participants in this workflow')
+      }
+      if (parentData) {
+        break
       }
     }
 
@@ -243,37 +246,39 @@ exports.processParentUpdateV2 = onRequest({
     })
 
     // Find the token in active workflows
-    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+    const activeWorkflowsSnapshot = await db.collection('workflows')
       .where('status', '==', 'active')
       .get()
 
     let parentDoc = null
     let existingParentData = null
-    let workflowDoc = null
+    let participantDocRef = null
 
     // Search through active workflows for this token
     for (const wDoc of activeWorkflowsSnapshot.docs) {
-      const workflow = wDoc.data()
-      if (workflow.participants) {
-        for (const [email, participant] of Object.entries(workflow.participants)) {
-          if (participant.token === token) {
-            workflowDoc = wDoc
-            // Get parent data from parents collection
-            const parentQuery = await db.collection('parents')
-              .where('email', '==', email)
-              .limit(1)
-              .get()
+      // Search participants subcollection for the token
+      const participantsSnapshot = await wDoc.ref.collection('participants').get()
 
-            if (!parentQuery.empty) {
-              parentDoc = parentQuery.docs[0]
-              existingParentData = parentQuery.docs[0].data()
-            }
-            break
+      for (const participantDoc of participantsSnapshot.docs) {
+        const participant = participantDoc.data()
+        if (participant.token === token) {
+          participantDocRef = participantDoc.ref
+
+          // Get parent data from parents collection
+          const parentQuery = await db.collection('parents')
+            .where('email', '==', participant.email)
+            .limit(1)
+            .get()
+
+          if (!parentQuery.empty) {
+            parentDoc = parentQuery.docs[0]
+            existingParentData = parentQuery.docs[0].data()
           }
-        }
-        if (existingParentData) {
           break
         }
+      }
+      if (existingParentData) {
+        break
       }
     }
 
@@ -385,23 +390,14 @@ exports.processParentUpdateV2 = onRequest({
       )
     }
 
-    // Update workflow participation
-    if (workflowDoc) {
-      const participantPath = `participants.${existingParentData.email}`
-      batch.update(workflowDoc.ref, {
-        [`${participantPath}.formSubmitted`]: true,
-        [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
-        [`${participantPath}.optedOut`]: false,
-        'stats.formsSubmitted': FieldValue.increment(1),
+    // Update workflow participation in subcollection
+    if (participantDocRef) {
+      batch.update(participantDocRef, {
+        formSubmitted: true,
+        submittedAt: FieldValue.serverTimestamp(),
+        optedOut: false,
       })
-
-      // If parent was previously opted out, decrement the opted out count
-      if (existingParentData.optedOut) {
-        batch.update(workflowDoc.ref, {
-          'stats.optedOut': FieldValue.increment(-1),
-        })
-        console.log(`Parent ${existingParentData.email} re-opted in - decremented opt-out stats`)
-      }
+      console.log(`Updated participant status for ${existingParentData.email}`)
     }
 
     // Check if user already has an account
@@ -467,37 +463,39 @@ exports.processParentOptOutV2 = onRequest({
     console.log('Processing parent opt-out for token:', token)
 
     // Find the token in active workflows
-    const activeWorkflowsSnapshot = await db.collection('updateSessions')
+    const activeWorkflowsSnapshot = await db.collection('workflows')
       .where('status', '==', 'active')
       .get()
 
     let parentDoc = null
     let existingParentData = null
-    let workflowDocRef = null
+    let participantDocRef = null
 
     // Search through active workflows for this token
     for (const wDoc of activeWorkflowsSnapshot.docs) {
-      const workflow = wDoc.data()
-      if (workflow.participants) {
-        for (const [email, participant] of Object.entries(workflow.participants)) {
-          if (participant.token === token) {
-            workflowDocRef = wDoc
-            // Get parent data from parents collection
-            const parentQuery = await db.collection('parents')
-              .where('email', '==', email)
-              .limit(1)
-              .get()
+      // Search participants subcollection for the token
+      const participantsSnapshot = await wDoc.ref.collection('participants').get()
 
-            if (!parentQuery.empty) {
-              parentDoc = parentQuery.docs[0]
-              existingParentData = parentQuery.docs[0].data()
-            }
-            break
+      for (const participantDoc of participantsSnapshot.docs) {
+        const participant = participantDoc.data()
+        if (participant.token === token) {
+          participantDocRef = participantDoc.ref
+
+          // Get parent data from parents collection
+          const parentQuery = await db.collection('parents')
+            .where('email', '==', participant.email)
+            .limit(1)
+            .get()
+
+          if (!parentQuery.empty) {
+            parentDoc = parentQuery.docs[0]
+            existingParentData = parentQuery.docs[0].data()
           }
-        }
-        if (existingParentData) {
           break
         }
+      }
+      if (existingParentData) {
+        break
       }
     }
 
@@ -547,16 +545,14 @@ exports.processParentOptOutV2 = onRequest({
       }
     }
 
-    // Update workflow participation to indicate opt-out
-    if (workflowDocRef) {
-      const participantPath = `participants.${parentEmail}`
-      batch.update(workflowDocRef.ref, {
-        [`${participantPath}.formSubmitted`]: true,
-        [`${participantPath}.submittedAt`]: FieldValue.serverTimestamp(),
-        [`${participantPath}.optedOut`]: true,
-        'stats.formsSubmitted': FieldValue.increment(1),
-        'stats.optedOut': FieldValue.increment(1),
+    // Update workflow participation to indicate opt-out in subcollection
+    if (participantDocRef) {
+      batch.update(participantDocRef, {
+        formSubmitted: true,
+        submittedAt: FieldValue.serverTimestamp(),
+        optedOut: true,
       })
+      console.log(`Updated participant status for opt-out: ${parentEmail}`)
     }
 
     // Check if user has an account
