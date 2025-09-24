@@ -35,7 +35,7 @@ const EMAIL_MESSAGES = {
     automatedMessage: 'This is an automated message. Please do not reply to this email.',
   },
   fr: {
-    systemName: 'Système de Bottin Scolaire',
+    systemName: 'Bottin de l\'Étoile filante',
     subject: 'Mise à Jour Annuelle des Informations Requise',
     title: 'Mise à Jour Annuelle des Informations',
     greeting: 'Cher/Chère',
