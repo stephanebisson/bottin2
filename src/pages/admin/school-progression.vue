@@ -271,10 +271,7 @@
                 >
                   <div>
                     <div class="font-weight-medium">
-                      {{ item.parent1.isExisting ?
-                        (item.parent1.displayName || item.parent1.email || 'Unknown') :
-                        `${item.parent1.first_name} ${item.parent1.last_name}`
-                      }}
+                      {{ `${item.parent1.first_name} ${item.parent1.last_name}` }}
                     </div>
                     <div class="text-caption text-grey-darken-1">
                       {{ item.parent1.isExisting ? (item.parent1.email || 'Unknown') : item.parent1.email }}
@@ -295,10 +292,7 @@
                 >
                   <div>
                     <div class="font-weight-medium">
-                      {{ item.parent2.isExisting ?
-                        (item.parent2.displayName || item.parent2.email || 'Unknown') :
-                        `${item.parent2.first_name} ${item.parent2.last_name}`
-                      }}
+                      {{ `${item.parent2.first_name} ${item.parent2.last_name}` }}
                     </div>
                     <div class="text-caption text-grey-darken-1">
                       {{ item.parent2.isExisting ? (item.parent2.email || 'Unknown') : item.parent2.email }}
