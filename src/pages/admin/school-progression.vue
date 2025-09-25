@@ -188,36 +188,49 @@
                   </div>
                 </div>
 
-                <!-- Students by grade level -->
+                <!-- Students by grade level (two-column layout) -->
                 <div v-if="getProjectedClassStudents(classItem.classLetter).length > 0">
-                  <div v-for="levelData in getProjectedClassLevelData(classItem.classLetter)" :key="levelData.level" class="mb-2">
-                    <!-- Level header -->
-                    <div class="d-flex align-center mb-1">
-                      <v-chip
-                        color="secondary"
-                        size="x-small"
-                        variant="outlined"
+                  <template v-for="(levelPair, pairIndex) in getProjectedClassLevelPairs(classItem.classLetter)" :key="`pair-${pairIndex}`">
+                    <v-row class="mb-3">
+                      <v-col
+                        v-for="levelData in levelPair"
+                        :key="`level-${levelData.level}`"
+                        cols="6"
                       >
-                        {{ formatGradeLevel(levelData.level) }} ({{ levelData.students.length }})
-                      </v-chip>
-                    </div>
+                        <!-- Level header -->
+                        <div class="d-flex align-center mb-1">
+                          <v-chip
+                            color="secondary"
+                            size="x-small"
+                            variant="outlined"
+                          >
+                            {{ formatGradeLevel(levelData.level) }} ({{ levelData.students.length }})
+                          </v-chip>
+                        </div>
 
-                    <!-- Student names -->
-                    <div class="ml-2">
-                      <div
-                        v-for="student in levelData.students"
-                        :key="student.id"
-                        class="text-caption"
-                        :class="{
-                          'text-success font-weight-bold': student.isNew,
-                          'text-primary font-weight-medium': student.isProgressed || student.wasReassigned,
-                          'text-grey-darken-1': !student.isNew && !student.isProgressed && !student.wasReassigned
-                        }"
-                      >
-                        {{ student.firstName }} {{ student.lastName }}
-                      </div>
-                    </div>
-                  </div>
+                        <!-- Student names -->
+                        <div class="ml-2">
+                          <template v-if="levelData.students.length > 0">
+                            <div
+                              v-for="student in levelData.students"
+                              :key="student.id"
+                              class="text-caption"
+                              :class="{
+                                'text-success font-weight-bold': student.isNew,
+                                'text-primary font-weight-medium': student.isProgressed || student.wasReassigned,
+                                'text-grey-darken-1': !student.isNew && !student.isProgressed && !student.wasReassigned
+                              }"
+                            >
+                              {{ student.firstName }} {{ student.lastName }}
+                            </div>
+                          </template>
+                          <div v-else class="text-caption text-grey-lighten-1 font-italic">
+                            {{ $t('classes.noStudentsFound') }}
+                          </div>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </template>
                 </div>
 
                 <div v-else class="text-caption text-grey">
@@ -1598,6 +1611,63 @@
       .concat(
         levelGroups['Unknown'] ? [{ level: 'Unknown', students: levelGroups['Unknown'] }] : [],
       )
+  }
+
+  const getProjectedClassLevelPairs = classLetter => {
+    const levelData = getProjectedClassLevelData(classLetter)
+
+    // Determine which 2 consecutive levels this class should have
+    // Based on existing students in the current class
+    const currentClassStudents = getClassStudents(classLetter)
+    const currentLevels = [...new Set(currentClassStudents.map(s => Number(s.level)).filter(l => !Number.isNaN(l)))]
+      .sort((a, b) => a - b)
+
+    let expectedLevels = []
+    if (currentLevels.length > 0) {
+      // Use the range of existing levels, ensuring we have exactly 2 consecutive levels
+      const minLevel = currentLevels[0]
+      const maxLevel = currentLevels.at(-1)
+
+      if (minLevel <= 2) {
+        expectedLevels = [1, 2] // Levels 1-2 class
+      } else if (minLevel <= 4) {
+        expectedLevels = [3, 4] // Levels 3-4 class
+      } else {
+        expectedLevels = [5, 6] // Levels 5-6 class
+      }
+    } else {
+      // Default to levels 1-2 if no current students
+      expectedLevels = [1, 2]
+    }
+
+    // Create the 2 expected levels, with empty arrays if they don't exist
+    const classLevels = expectedLevels.map(level => {
+      const existingLevel = levelData.find(ld => ld.level === level)
+      return existingLevel || {
+        level,
+        students: [],
+      }
+    })
+
+    // Add any Unknown level if it exists
+    const unknownLevel = levelData.find(ld => ld.level === 'Unknown')
+    if (unknownLevel) {
+      classLevels.push(unknownLevel)
+    }
+
+    // Return as a single pair (2 columns)
+    const pairs = []
+    if (classLevels.length >= 2) {
+      pairs.push([classLevels[0], classLevels[1]])
+      // If there's an Unknown level, add it in a second row
+      if (classLevels.length > 2) {
+        pairs.push([classLevels[2]])
+      }
+    } else if (classLevels.length === 1) {
+      pairs.push([classLevels[0]])
+    }
+
+    return pairs
   }
 
   // API functions
