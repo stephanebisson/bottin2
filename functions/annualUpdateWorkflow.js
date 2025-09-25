@@ -31,7 +31,7 @@ async function calculateWorkflowStats (workflowId) {
     optedOut: 0,
   }
 
-  for (const doc of participantsSnapshot) {
+  for (const doc of participantsSnapshot.docs) {
     const participant = doc.data()
     stats.totalParents++
     if (participant.emailSent) {
@@ -271,7 +271,7 @@ exports.getWorkflowStatusV2 = onRequest({
         const participantsSnapshot = await doc.ref.collection('participants').get()
         const participants = []
 
-        for (const participantDoc of participantsSnapshot) {
+        for (const participantDoc of participantsSnapshot.docs) {
           const participant = participantDoc.data()
           participants.push({
             ...participant,

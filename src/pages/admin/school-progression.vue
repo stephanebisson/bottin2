@@ -1103,9 +1103,36 @@
   })
 
   const canApplyChanges = computed(() => {
-    return currentWorkflow.value
-      && currentWorkflow.value.status === 'active'
-      && pendingAssignments.value.length === 0
+    // Basic workflow validation
+    if (!currentWorkflow.value || currentWorkflow.value.status !== 'active') {
+      return false
+    }
+
+    // Ensure all manual assignments are completed
+    if (pendingAssignments.value.length > 0) {
+      return false
+    }
+
+    // Validate that we have both workflow changes and Firebase data loaded
+    if (!currentWorkflow.value.changes || !firebaseStore.students) {
+      return false
+    }
+
+    // Additional validation: check that all assigned students exist in Firebase data
+    const assignedStudentIds = (currentWorkflow.value.assignments || [])
+      .filter(assignment => assignment.assigned)
+      .map(assignment => assignment.studentId)
+
+    const missingStudents = assignedStudentIds.filter(studentId =>
+      !firebaseStore.students.some(s => s.id === studentId),
+    )
+
+    if (missingStudents.length > 0) {
+      console.warn('Cannot apply changes: some assigned students not found in Firebase data:', missingStudents)
+      return false
+    }
+
+    return true
   })
 
   const parentOptions = computed(() => {
@@ -1463,7 +1490,7 @@
     // A) Students who auto-progress and STAY in their current class (no reassignment needed)
     const autoProgressionStudents = (currentWorkflow.value.changes || [])
       .filter(change =>
-        change.changeType === 'level_progression'
+        change.changeType === 'auto_progression'
         && !removedStudentIds.has(change.studentId),
       )
 
@@ -1605,6 +1632,7 @@
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
       }
 
+      // Only workflow data changed, no need to refresh Firebase data
       await loadWorkflowData()
       showStartWorkflowDialog.value = false
       confirmationText.value = ''
@@ -1638,7 +1666,7 @@
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // Refresh data
+      // Only workflow data changed, no need to refresh Firebase data
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to assign class:', error_)
@@ -1687,7 +1715,7 @@
       resetAddStudentForm()
       showAddStudentDialog.value = false
 
-      // Refresh data
+      // Only workflow data changed, no need to refresh Firebase data
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to add new student:', error_)
@@ -1730,15 +1758,12 @@
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // Update local data
-      departingStudentsData.value = [...departingStudentsData.value, ...selectedDepartingStudents.value]
-
       // Reset dialog
       selectedDepartingStudents.value = []
       departingSearchQuery.value = ''
       showSelectDepartingDialog.value = false
 
-      // Refresh workflow data
+      // Refresh workflow data to get updated departing students and modified changes
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to mark students as departing:', error_)
@@ -1773,10 +1798,7 @@
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // Update local data
-      departingStudentsData.value = departingStudentsData.value.filter(s => s.studentId !== studentId)
-
-      // Refresh workflow data
+      // Refresh workflow data to get updated departing students and restored changes
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to remove departing student:', error_)
@@ -1810,9 +1832,9 @@
       showApplyChangesDialog.value = false
       applyConfirmationText.value = ''
 
-      // Refresh all data
-      await loadWorkflowData()
+      // Refresh all data - Firebase data first, then workflow data
       await firebaseStore.refreshData()
+      await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to apply changes:', error_)
       error.value = error_.message
@@ -1847,10 +1869,10 @@
   }
 
   onMounted(async () => {
-    await Promise.all([
-      loadWorkflowData(),
-      firebaseStore.loadAllData(),
-    ])
+    // Load Firebase data first to ensure computed properties have current student/parent data
+    await firebaseStore.loadAllData()
+    // Then load workflow data which depends on Firebase data for calculations
+    await loadWorkflowData()
   })
 </script>
 
