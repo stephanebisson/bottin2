@@ -156,9 +156,7 @@
             v-for="classItem in firebaseStore.classes"
             :key="classItem.id"
             cols="12"
-            lg="3"
-            md="4"
-            sm="6"
+            md="6"
           >
             <v-card class="h-100" variant="outlined">
               <v-card-title class="pa-3 bg-primary text-white">
