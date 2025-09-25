@@ -125,6 +125,113 @@
       </v-card-text>
     </v-card>
 
+    <!-- New Classes Composition -->
+    <v-card v-if="currentWorkflow && firebaseStore.classes.length > 0" class="mb-6">
+      <v-card-title class="d-flex align-center justify-space-between">
+        <div class="d-flex align-center">
+          <v-icon class="mr-2">mdi-view-grid</v-icon>
+          {{ $t('admin.newClassesComposition') }}
+        </div>
+
+        <!-- Legend -->
+        <div class="d-flex align-center gap-3">
+          <div class="d-flex align-center">
+            <div class="legend-dot text-success font-weight-bold">●</div>
+            <span class="text-caption ml-1">{{ $t('admin.newStudents') }}</span>
+          </div>
+          <div class="d-flex align-center">
+            <div class="legend-dot text-primary font-weight-medium">●</div>
+            <span class="text-caption ml-1">{{ $t('admin.progressedReassigned') }}</span>
+          </div>
+          <div class="d-flex align-center">
+            <div class="legend-dot text-grey-darken-1">●</div>
+            <span class="text-caption ml-1">{{ $t('admin.unchanged') }}</span>
+          </div>
+        </div>
+      </v-card-title>
+
+      <v-card-text>
+        <v-row>
+          <v-col
+            v-for="classItem in firebaseStore.classes"
+            :key="classItem.id"
+            cols="12"
+            lg="3"
+            md="4"
+            sm="6"
+          >
+            <v-card class="h-100" variant="outlined">
+              <v-card-title class="pa-3 bg-primary text-white">
+                <div class="text-truncate">
+                  {{ getTeacherName(classItem.teacher) }} ({{ classItem.classLetter }})
+                </div>
+              </v-card-title>
+
+              <v-card-text class="pa-3">
+                <!-- Teacher -->
+                <div v-if="classItem.teacher" class="mb-2">
+                  <div class="d-flex align-center">
+                    <v-icon class="me-1" color="primary" size="small">mdi-account-tie</v-icon>
+                    <span class="text-body-2">{{ getTeacherName(classItem.teacher) }}</span>
+                  </div>
+                </div>
+
+                <!-- Student count and levels -->
+                <div class="mb-2">
+                  <div class="d-flex align-center">
+                    <v-icon class="me-1" color="primary" size="small">mdi-account-multiple</v-icon>
+                    <span class="text-body-2">{{ getProjectedClassStudents(classItem.classLetter).length }} {{ $t('classes.students') }}</span>
+                    <span
+                      v-if="getProjectedClassStudents(classItem.classLetter).length !== getClassStudents(classItem.classLetter).length"
+                      class="text-caption text-primary ml-1"
+                    >
+                      ({{ getClassStudents(classItem.classLetter).length > getProjectedClassStudents(classItem.classLetter).length ? '-' : '+' }}{{ Math.abs(getProjectedClassStudents(classItem.classLetter).length - getClassStudents(classItem.classLetter).length) }})
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Students by grade level -->
+                <div v-if="getProjectedClassStudents(classItem.classLetter).length > 0">
+                  <div v-for="levelData in getProjectedClassLevelData(classItem.classLetter)" :key="levelData.level" class="mb-2">
+                    <!-- Level header -->
+                    <div class="d-flex align-center mb-1">
+                      <v-chip
+                        color="secondary"
+                        size="x-small"
+                        variant="outlined"
+                      >
+                        {{ formatGradeLevel(levelData.level) }} ({{ levelData.students.length }})
+                      </v-chip>
+                    </div>
+
+                    <!-- Student names -->
+                    <div class="ml-2">
+                      <div
+                        v-for="student in levelData.students"
+                        :key="student.id"
+                        class="text-caption"
+                        :class="{
+                          'text-success font-weight-bold': student.isNew,
+                          'text-primary font-weight-medium': student.isProgressed || student.wasReassigned,
+                          'text-grey-darken-1': !student.isNew && !student.isProgressed && !student.wasReassigned
+                        }"
+                      >
+                        {{ student.firstName }} {{ student.lastName }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else class="text-caption text-grey">
+                  {{ $t('classes.noStudentsFound') }}
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+
     <!-- Class Assignments Section -->
     <v-card v-if="currentWorkflow && pendingAssignments.length > 0" class="mb-6">
       <v-card-title class="d-flex align-center">
@@ -514,7 +621,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="newStudent.first_name"
-                  :label="$t('common.firstName')"
+                  :label="$t('admin.firstName')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
                   variant="outlined"
@@ -523,7 +630,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="newStudent.last_name"
-                  :label="$t('common.lastName')"
+                  :label="$t('admin.lastName')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
                   variant="outlined"
@@ -532,7 +639,7 @@
               <v-col cols="6">
                 <v-select
                   v-model="newStudent.className"
-                  :items="getAvailableClasses(1)"
+                  :items="getAllClasses()"
                   :label="$t('admin.class')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
@@ -578,7 +685,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="newParent1.first_name"
-                  :label="$t('common.firstName')"
+                  :label="$t('admin.firstName')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
                   variant="outlined"
@@ -587,7 +694,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="newParent1.last_name"
-                  :label="$t('common.lastName')"
+                  :label="$t('admin.lastName')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
                   variant="outlined"
@@ -657,14 +764,14 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="newParent2.first_name"
-                  :label="$t('common.firstName')"
+                  :label="$t('admin.firstName')"
                   variant="outlined"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="newParent2.last_name"
-                  :label="$t('common.lastName')"
+                  :label="$t('admin.lastName')"
                   variant="outlined"
                 />
               </v-col>
@@ -1287,6 +1394,185 @@
           value: cls.classLetter,
         }
       })
+  }
+
+  const getAllClasses = () => {
+    if (!firebaseStore.classes) return []
+
+    return firebaseStore.classes.map(cls => {
+      // Find teacher in staff collection using teacher ID
+      const teacher = firebaseStore.staff?.find(s => s.id === cls.teacher)
+      const teacherName = teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : 'Teacher'
+
+      return {
+        title: `${teacherName} (${cls.classLetter})`,
+        value: cls.classLetter,
+      }
+    }).sort((a, b) => a.value.localeCompare(b.value))
+  }
+
+  const getTeacherName = teacherId => {
+    if (!firebaseStore.staff || !teacherId) return 'Unknown Teacher'
+    const teacher = firebaseStore.staff.find(s => s.id === teacherId)
+    return teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : teacherId
+  }
+
+  const getClassStudents = classLetter => {
+    if (!firebaseStore.students) return []
+    return firebaseStore.students.filter(student => student.className === classLetter)
+  }
+
+  const getClassLevelData = classLetter => {
+    const classStudents = getClassStudents(classLetter)
+
+    // Group students by level and count them
+    const levelCounts = classStudents.reduce((acc, student) => {
+      const level = student.level ? String(student.level) : 'Unknown'
+      acc[level] = (acc[level] || 0) + 1
+      return acc
+    }, {})
+
+    // Convert to array and sort by level number
+    return Object.entries(levelCounts)
+      .filter(([level]) => level !== 'Unknown')
+      .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0]))
+      .map(([level, count]) => ({
+        level: Number.parseInt(level),
+        count,
+      }))
+      .concat(
+        levelCounts['Unknown'] ? [{ level: 'Unknown', count: levelCounts['Unknown'] }] : [],
+      )
+  }
+
+  const getProjectedClassStudents = classLetter => {
+    // If no workflow is active, return empty array (classes are being restructured)
+    if (!currentWorkflow.value) {
+      return []
+    }
+
+    const projectedStudents = []
+
+    // Get sets of students being removed from school entirely
+    const departingStudentIds = new Set(departingStudentsData.value?.map(s => s.studentId) || [])
+    const graduatingStudentIds = new Set(graduatingStudents.value?.map(s => s.studentId) || [])
+    const removedStudentIds = new Set([...departingStudentIds, ...graduatingStudentIds])
+
+    // 1. ONLY ADD students who will be in this specific class after ALL changes
+
+    // A) Students who auto-progress and STAY in their current class (no reassignment needed)
+    const autoProgressionStudents = (currentWorkflow.value.changes || [])
+      .filter(change =>
+        change.changeType === 'level_progression'
+        && !removedStudentIds.has(change.studentId),
+      )
+
+    for (const change of autoProgressionStudents) {
+      const student = firebaseStore.students.find(s => s.id === change.studentId)
+      if (!student) continue
+
+      // Check if this student has an assignment (meaning they need to move classes)
+      const assignment = (currentWorkflow.value.assignments || []).find(a => a.studentId === change.studentId)
+
+      if (assignment) {
+        // This student is handled in section B (assignments)
+        continue
+      }
+
+      // Student progresses but stays in current class - only add if they're currently in this class
+      if (student.className === classLetter) {
+        projectedStudents.push({
+          id: student.id,
+          firstName: student.first_name,
+          lastName: student.last_name,
+          level: change.newLevel, // Their NEW level after progression
+          className: classLetter,
+          isProgressed: true,
+          isNew: false,
+          wasReassigned: false,
+        })
+      }
+    }
+
+    // B) Students who are ASSIGNED to this class (either from other classes or progressed students needing new class)
+    const studentsAssignedHere = (currentWorkflow.value.assignments || [])
+      .filter(assignment =>
+        assignment.assigned
+        && assignment.assignedClass === classLetter
+        && !removedStudentIds.has(assignment.studentId),
+      )
+
+    for (const assignment of studentsAssignedHere) {
+      const student = firebaseStore.students.find(s => s.id === assignment.studentId)
+      if (student) {
+        projectedStudents.push({
+          id: student.id,
+          firstName: student.first_name,
+          lastName: student.last_name,
+          level: assignment.newLevel, // Their NEW level
+          className: classLetter,
+          isProgressed: true,
+          isNew: false,
+          wasReassigned: student.className !== classLetter, // True if coming from different class
+        })
+      }
+    }
+
+    // C) NEW students added to this class
+    const newStudentsInClass = (currentWorkflow.value.newStudents || [])
+      .filter(newStudent => newStudent.student.className === classLetter)
+
+    for (const newStudent of newStudentsInClass) {
+      projectedStudents.push({
+        id: `new-${newStudent.id || Math.random()}`,
+        firstName: newStudent.student.first_name,
+        lastName: newStudent.student.last_name,
+        level: 1, // New students always start at level 1
+        className: classLetter,
+        isProgressed: false,
+        isNew: true,
+        wasReassigned: false,
+      })
+    }
+
+    // No "held back" students - everyone either auto-progresses, graduates, departs, or is reassigned
+
+    return projectedStudents
+  }
+
+  const getProjectedClassLevelData = classLetter => {
+    const projectedStudents = getProjectedClassStudents(classLetter)
+
+    // Group students by level
+    const levelGroups = projectedStudents.reduce((acc, student) => {
+      const level = student.level ? String(student.level) : 'Unknown'
+      if (!acc[level]) {
+        acc[level] = []
+      }
+      acc[level].push(student)
+      return acc
+    }, {})
+
+    // Sort students within each level by name
+    for (const level of Object.keys(levelGroups)) {
+      levelGroups[level].sort((a, b) => {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
+        return nameA.localeCompare(nameB)
+      })
+    }
+
+    // Convert to array and sort by level number
+    return Object.entries(levelGroups)
+      .filter(([level]) => level !== 'Unknown')
+      .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0]))
+      .map(([level, students]) => ({
+        level: Number.parseInt(level),
+        students,
+      }))
+      .concat(
+        levelGroups['Unknown'] ? [{ level: 'Unknown', students: levelGroups['Unknown'] }] : [],
+      )
   }
 
   // API functions
