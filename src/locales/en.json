@@ -378,7 +378,13 @@
     "searchStudents": "Search students...",
     "departureReason": "Departure Reason",
     "departureReasonPlaceholder": "Optional reason for departure...",
-    "confirmDepartingStudents": "Confirm Departing Students"
+    "confirmDepartingStudents": "Confirm Departing Students",
+    "progressedReassigned": "Progressed/Reassigned",
+    "unchanged": "Unchanged",
+    "newClassesComposition": "New Classes Composition",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "noParentsFound": "No parents found"
   },
   "updateForm": {
     "title": "My Profile",

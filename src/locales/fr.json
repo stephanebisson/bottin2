@@ -386,7 +386,13 @@
     "searchStudents": "Rechercher des élèves...",
     "departureReason": "Raison du Départ",
     "departureReasonPlaceholder": "Raison optionnelle du départ...",
-    "confirmDepartingStudents": "Confirmer les Élèves Partants"
+    "confirmDepartingStudents": "Confirmer les Élèves Partants",
+    "progressedReassigned": "Progressés/Réassignés",
+    "unchanged": "Inchangés",
+    "newClassesComposition": "Composition des Nouvelles Classes",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "noParentsFound": "Aucun parent trouvé"
   },
   "updateForm": {
     "title": "Mon Profil",
