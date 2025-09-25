@@ -50,7 +50,7 @@
             class="navigation-card pa-6 text-center d-flex flex-column"
             elevation="2"
             hover
-            style="cursor: pointer; height: 100%;"
+            style="cursor: pointer; height: 100%; width: 100%;"
             @click="navigateTo(navItem.route)"
           >
             <div class="d-flex flex-column align-center flex-grow-1">
@@ -157,6 +157,7 @@
 <style scoped>
 .navigation-card {
   min-height: 280px;
+  flex: 1;
 }
 
 .navigation-card:hover {

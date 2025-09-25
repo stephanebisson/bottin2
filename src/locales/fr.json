@@ -159,7 +159,7 @@
     "committees": "comités",
     "classesDescription": "Parcourir toutes les classes avec les informations des enseignants et élèves",
     "studentsDescription": "Voir tous les élèves organisés par familles et niveaux",
-    "parentsDescription": "Accéder aux informations de contact des parents et détails des enfants",
+    "parentsDescription": "Accéder aux coordonnées des parents",
     "staffDescription": "Répertoire de tout le personnel enseignant et administratif",
     "committeesDescription": "Comités scolaires et informations de leurs membres",
     "errorLoadingData": "Erreur lors du chargement du tableau de bord"
