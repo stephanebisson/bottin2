@@ -37,8 +37,9 @@
           v-for="classItem in firebaseStore.classes"
           :key="classItem.id"
           cols="12"
-          lg="4"
+          lg="6"
           md="6"
+          sm="12"
         >
           <v-card class="d-flex flex-column" height="100%">
             <!-- Class Header -->
