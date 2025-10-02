@@ -21,8 +21,8 @@
             <div v-if="!hasAccount" class="mb-6">
               <v-alert
                 class="mb-4"
-                color="info"
-                icon="mdi-account-plus"
+                color="warning"
+                icon="mdi-account-clock"
                 variant="tonal"
               >
                 <div class="text-body-1 font-weight-medium mb-2">
@@ -35,9 +35,10 @@
 
               <v-btn
                 color="primary"
-                prepend-icon="mdi-account-plus"
+                disabled
+                prepend-icon="mdi-account-clock"
                 size="large"
-                @click="goToAccountCreation"
+                variant="outlined"
               >
                 {{ $t('updateSuccess.createAccount') }}
               </v-btn>

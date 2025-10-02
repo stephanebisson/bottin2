@@ -76,7 +76,7 @@ exports.validateUpdateTokenV2 = onRequest({
 
       // Log first few tokens for comparison
       const tokens = []
-      for (const doc of participantsSnapshot) {
+      for (const doc of participantsSnapshot.docs) {
         const participant = doc.data()
         if (tokens.length < 3) {
           tokens.push(participant.token)

@@ -740,16 +740,21 @@
   const loadParents = async () => {
     try {
       // Load parents from the store (it handles caching and loading from Firestore)
-      await firebaseStore.loadAllData()
+      await firebaseStore.loadParentsDTO()
 
       // Map the store data to our local format
-      parents.value = firebaseStore.parents.map(parent => ({
-        id: parent.id,
-        ...parent,
-        firstName: parent.first_name || '',
-        lastName: parent.last_name || '',
-        email: parent.email || '',
-      }))
+      if (firebaseStore.parentsDTO && Array.isArray(firebaseStore.parentsDTO)) {
+        parents.value = firebaseStore.parentsDTO.map(parent => ({
+          id: parent.id,
+          ...parent,
+          firstName: parent.first_name || '',
+          lastName: parent.last_name || '',
+          email: parent.email || '',
+        }))
+      } else {
+        console.warn('Parents data is not available or not an array:', firebaseStore.parentsDTO)
+        parents.value = []
+      }
     } catch (error_) {
       console.error('Failed to load parents:', error_)
     }

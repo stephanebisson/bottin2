@@ -5,6 +5,16 @@
     </v-card-title>
 
     <v-card-text>
+      <!-- Registration Disabled Alert -->
+      <v-alert
+        v-if="authStore.registrationDisabled"
+        class="mb-4"
+        icon="mdi-account-off"
+        :text="$t('auth.registrationDisabledMessage')"
+        :title="$t('auth.registrationDisabled')"
+        type="warning"
+      />
+
       <v-text-field
         v-model="email"
         :append-inner-icon="
@@ -14,6 +24,7 @@
         "
         autocomplete="email"
         :color="emailAuthorized === true ? 'success' : emailAuthorized === false ? 'error' : 'primary'"
+        :disabled="authStore.registrationDisabled"
         :label="$t('auth.email')"
         :loading="emailValidationLoading"
         prepend-inner-icon="mdi-email"
@@ -57,6 +68,7 @@
         v-model="password"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="new-password"
+        :disabled="authStore.registrationDisabled"
         :label="$t('auth.password')"
         prepend-inner-icon="mdi-lock"
         required
@@ -70,6 +82,7 @@
         v-model="confirmPassword"
         :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="new-password"
+        :disabled="authStore.registrationDisabled"
         :label="$t('auth.confirmPassword')"
         prepend-inner-icon="mdi-lock-check"
         required
@@ -111,6 +124,7 @@
       <v-checkbox
         v-model="agreeToTerms"
         color="primary"
+        :disabled="authStore.registrationDisabled"
         hide-details="auto"
         :rules="termsRules"
       >
@@ -126,7 +140,7 @@
       <v-btn
         block
         color="primary"
-        :disabled="!formValid || authStore.loading"
+        :disabled="!formValid || authStore.loading || authStore.registrationDisabled"
         :loading="authStore.loading"
         size="large"
         type="submit"

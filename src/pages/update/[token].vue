@@ -418,7 +418,18 @@
       loading.value = true
       error.value = null
 
+      // Validate token exists
+      if (!token.value) {
+        throw new Error(t('updateForm.invalidToken'))
+      }
+
       const baseUrl = getFunctionsBaseUrl()
+
+      console.log('Loading parent data with:', {
+        token: token.value,
+        tokenLength: token.value?.length,
+        baseUrl,
+      })
 
       const response = await fetch(`${baseUrl}/validateUpdateTokenV2`, {
         method: 'POST',
@@ -429,12 +440,32 @@
       })
 
       if (!response.ok) {
+        let errorMessage = t('updateForm.serverError')
+
+        try {
+          // Try to get detailed error message from server response
+          const errorData = await response.json()
+          console.error('Server error response:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData.error,
+            valid: errorData.valid,
+          })
+
+          if (errorData.error) {
+            errorMessage = errorData.error
+          }
+        } catch (jsonError) {
+          console.error('Could not parse server error response:', jsonError)
+          console.error('Response status:', response.status, response.statusText)
+        }
+
         if (response.status === 404) {
           throw new Error(t('updateForm.invalidToken'))
         } else if (response.status === 410) {
           throw new Error(t('updateForm.expiredToken'))
         } else {
-          throw new Error(t('updateForm.serverError'))
+          throw new Error(errorMessage)
         }
       }
 

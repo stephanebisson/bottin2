@@ -22,6 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref(null)
   const isInitialized = ref(false)
+  const registrationDisabled = ref(true) // Temporarily disable registration until site launch
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
@@ -227,6 +228,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       setLoading(true)
       clearError()
+
+      // Check if registration is temporarily disabled
+      if (registrationDisabled.value) {
+        throw new Error('REGISTRATION_DISABLED')
+      }
 
       // Get user info and validate authorization using new consolidated function
       const userInfo = await validateAndGetUserInfo(email)
@@ -472,6 +478,9 @@ export const useAuthStore = defineStore('auth', () => {
       case 'UNAUTHORIZED_EMAIL': {
         return 'This email address is not authorized to create an account. Only registered parents and staff can create accounts.'
       }
+      case 'REGISTRATION_DISABLED': {
+        return 'Account creation is temporarily disabled until the site is officially launched. Please check back later.'
+      }
       case 'EMAIL_NOT_VERIFIED': {
         return 'Please verify your email address before signing in. Check your inbox for a verification link.'
       }
@@ -517,6 +526,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isInitialized,
     serviceHealth,
+    registrationDisabled,
 
     // Getters
     isAuthenticated,
