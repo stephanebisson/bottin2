@@ -61,14 +61,26 @@
                 <div class="committee-name text-h6 font-weight-bold">
                   <HighlightedText :query="searchQuery" :text="committee.name" />
                 </div>
-                <v-chip
-                  class="flex-shrink-0 mt-1"
-                  color="white"
-                  size="small"
-                  text-color="primary"
-                >
-                  {{ committee.enrichedMembers.length === 1 ? $t('committees.memberCount', { count: committee.enrichedMembers.length }) : $t('committees.memberCountPlural', { count: committee.enrichedMembers.length }) }}
-                </v-chip>
+                <div class="d-flex align-center gap-2">
+                  <v-chip
+                    class="flex-shrink-0"
+                    color="white"
+                    size="small"
+                    text-color="primary"
+                  >
+                    {{ committee.enrichedMembers.length === 1 ? $t('committees.memberCount', { count: committee.enrichedMembers.length }) : $t('committees.memberCountPlural', { count: committee.enrichedMembers.length }) }}
+                  </v-chip>
+                  <v-btn
+                    v-if="isAdmin"
+                    class="flex-shrink-0"
+                    color="white"
+                    density="compact"
+                    icon="mdi-pencil"
+                    size="small"
+                    variant="text"
+                    @click="openEditDialog(committee)"
+                  />
+                </div>
               </div>
             </div>
 
@@ -178,20 +190,56 @@
         </v-col>
       </v-row>
     </div>
+
+    <!-- Edit Committee Members Dialog -->
+    <v-dialog
+      v-model="editDialogOpen"
+      max-width="800px"
+      persistent
+    >
+      <CommitteeEditDialog
+        v-if="selectedCommittee"
+        :committee="selectedCommittee"
+        @close="closeEditDialog"
+        @updated="handleCommitteeUpdated"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
+  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
 
   const searchQuery = ref('')
+  const editDialogOpen = ref(false)
+  const selectedCommittee = ref(null)
 
   // Use centralized data store
+  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
+
+  // Check if user is admin
+  const isAdmin = ref(false)
+  const checkAdminStatus = async () => {
+    if (!authStore.isAuthenticated || !authStore.user) {
+      isAdmin.value = false
+      return
+    }
+
+    try {
+      const idTokenResult = await authStore.user.getIdTokenResult(true)
+      isAdmin.value = !!idTokenResult.claims.admin
+    } catch (error) {
+      console.error('Failed to check admin status:', error)
+      isAdmin.value = false
+    }
+  }
 
   const enrichedCommittees = computed(() => {
     return firebaseStore.committees.map(committee => {
@@ -263,12 +311,32 @@
     })
   })
 
+  // Open edit dialog for committee
+  const openEditDialog = committee => {
+    selectedCommittee.value = committee
+    editDialogOpen.value = true
+  }
+
+  // Close edit dialog
+  const closeEditDialog = () => {
+    editDialogOpen.value = false
+    selectedCommittee.value = null
+  }
+
+  // Handle committee updated
+  const handleCommitteeUpdated = async () => {
+    // Refresh committee data to show updated members
+    await firebaseStore.refreshData()
+    closeEditDialog()
+  }
+
   onMounted(async () => {
     // Load DTO data in parallel
     await Promise.all([
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
       firebaseStore.loadAllData(), // Still need committees data
+      checkAdminStatus(),
     ])
   })
 </script>

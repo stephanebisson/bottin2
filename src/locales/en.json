@@ -33,7 +33,8 @@
     "close": "Close",
     "language": "Language",
     "chooseLanguage": "Choose Language",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "classes": {
     "title": "Classes",
@@ -128,7 +129,13 @@
     "membersHeader": "Members",
     "parentMembers": "Parent Members",
     "staffMembers": "Staff Members",
-    "unknownMembers": "Other Members"
+    "unknownMembers": "Other Members",
+    "loadingMembers": "Loading members...",
+    "currentMembers": "Current Members",
+    "addMember": "Add Member",
+    "addNewMember": "Add New Member",
+    "selectUser": "Select a user",
+    "noMembers": "No members"
   },
   "themes": {
     "chooseTheme": "Choose Your Theme",

@@ -7,6 +7,7 @@ const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminMana
 const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2 } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmail, validateEmailV2 } = require('./auth')
+const { updateCommitteeMembersV2 } = require('./committees')
 const { sendUpdateEmailsToSelectedV2 } = require('./email')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
 const { startSchoolProgressionV2, assignTransitionClassV2, addNewStudentV2, applyProgressionChangesV2, getProgressionStatusV2, markStudentsDepartingV2, removeDepartingStudentV2 } = require('./schoolProgression')
@@ -34,3 +35,4 @@ exports.applyProgressionChangesV2 = applyProgressionChangesV2
 exports.getProgressionStatusV2 = getProgressionStatusV2
 exports.markStudentsDepartingV2 = markStudentsDepartingV2
 exports.removeDepartingStudentV2 = removeDepartingStudentV2
+exports.updateCommitteeMembersV2 = updateCommitteeMembersV2
