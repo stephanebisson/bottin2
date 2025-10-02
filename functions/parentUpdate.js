@@ -127,6 +127,7 @@ exports.validateUpdateTokenV2 = onRequest({
 
     // Check if there's another parent with the same address (for shared address feature)
     let otherParentHasAddress = false
+    let otherParentInfo = null
 
     // Find students that belong to this parent
     const studentsSnapshot = await db.collection('students')
@@ -151,7 +152,7 @@ exports.validateUpdateTokenV2 = onRequest({
       }
     }
 
-    // Check if any other parent has an address
+    // Check if there are other parents and get their info
     for (const otherParentEmail of otherParentEmails) {
       const otherParentQuery = await db.collection('parents')
         .where('email', '==', otherParentEmail)
@@ -160,10 +161,13 @@ exports.validateUpdateTokenV2 = onRequest({
 
       if (!otherParentQuery.empty) {
         const otherParentData = otherParentQuery.docs[0].data()
-        if (otherParentData.address || otherParentData.city) {
-          otherParentHasAddress = true
-          break
+        // Show checkbox for any other parent, regardless of whether they have address info
+        otherParentHasAddress = true
+        otherParentInfo = {
+          email: otherParentData.email,
+          fullName: `${otherParentData.first_name || ''} ${otherParentData.last_name || ''}`.trim(),
         }
+        break // Take the first other parent found
       }
     }
 
@@ -196,6 +200,7 @@ exports.validateUpdateTokenV2 = onRequest({
         optedOut: parentData.optedOut || false,
       },
       otherParentHasAddress,
+      otherParentInfo,
       availableCommittees: committees,
     })
   } catch (error) {
@@ -302,7 +307,12 @@ exports.processParentUpdateV2 = onRequest({
       lastUpdated: FieldValue.serverTimestamp(),
     }
 
-    // Handle address logic
+    // Always use the provided address data
+    updatedData.address = parentData.address || ''
+    updatedData.city = parentData.city || ''
+    updatedData.postal_code = parentData.postal_code || ''
+
+    // If user confirms other parent lives at the same address, mark other parent as confirmed
     if (parentData.sameAddressAsOther) {
       // Find students that belong to this parent to get other parent emails
       const studentsSnapshot1 = await db.collection('students')
@@ -314,9 +324,9 @@ exports.processParentUpdateV2 = onRequest({
         .get()
 
       const allStudents = [...studentsSnapshot1.docs, ...studentsSnapshot2.docs]
-      let addressCopied = false
+      let confirmedParentEmail = null
 
-      // Find other parent emails and try to copy their address
+      // Find other parent emails
       for (const studentDoc of allStudents) {
         const student = studentDoc.data()
         const otherEmails = []
@@ -328,33 +338,51 @@ exports.processParentUpdateV2 = onRequest({
           otherEmails.push(student.parent2_email)
         }
 
-        // Try to get address from first other parent found
-        for (const otherParentEmail of otherEmails) {
-          const otherParentQuery = await db.collection('parents')
-            .where('email', '==', otherParentEmail)
-            .limit(1)
-            .get()
-
-          if (!otherParentQuery.empty) {
-            const otherParentData = otherParentQuery.docs[0].data()
-            if (otherParentData.address || otherParentData.city) {
-              updatedData.address = otherParentData.address || ''
-              updatedData.city = otherParentData.city || ''
-              updatedData.postal_code = otherParentData.postal_code || ''
-              addressCopied = true
-              break
-            }
-          }
-        }
-        if (addressCopied) {
+        // Find the first other parent (the one we're confirming)
+        if (otherEmails.length > 0) {
+          confirmedParentEmail = otherEmails[0]
           break
         }
       }
-    } else {
-      // Use provided address data
-      updatedData.address = parentData.address || ''
-      updatedData.city = parentData.city || ''
-      updatedData.postal_code = parentData.postal_code || ''
+
+      // Mark the other parent's address as confirmed by updating their workflow participant record
+      if (confirmedParentEmail) {
+        const activeWorkflowsSnapshot = await db.collection('workflows')
+          .where('status', '==', 'active')
+          .get()
+
+        for (const workflowDoc of activeWorkflowsSnapshot.docs) {
+          const otherParticipantRef = workflowDoc.ref.collection('participants').doc(confirmedParentEmail)
+          const otherParticipantDoc = await otherParticipantRef.get()
+
+          if (otherParticipantDoc.exists) {
+            batch.update(otherParticipantRef, {
+              formSubmitted: true,
+              submittedAt: FieldValue.serverTimestamp(),
+              confirmedByPartner: existingParentData.email,
+            })
+            console.log(`Marked ${confirmedParentEmail}'s address as confirmed by ${existingParentData.email}`)
+
+            // Also update the other parent's address to match the confirmed address
+            const otherParentQuery = await db.collection('parents')
+              .where('email', '==', confirmedParentEmail)
+              .limit(1)
+              .get()
+
+            if (!otherParentQuery.empty) {
+              const otherParentRef = db.collection('parents').doc(otherParentQuery.docs[0].id)
+              batch.update(otherParentRef, {
+                address: updatedData.address,
+                city: updatedData.city,
+                postal_code: updatedData.postal_code,
+                lastUpdated: FieldValue.serverTimestamp(),
+              })
+              console.log(`Updated ${confirmedParentEmail}'s address to match confirmed address`)
+            }
+            break
+          }
+        }
+      }
     }
 
     // Update parent document

@@ -408,6 +408,7 @@
     "phone": "Phone",
     "address": "Address Information",
     "sameAddressAsOther": "The other parent in our family has the same address",
+    "confirmOtherParentAddress": "I confirm that {fullName} also lives at this address",
     "streetAddress": "Street Address",
     "city": "City",
     "postalCode": "Postal Code",

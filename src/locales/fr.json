@@ -416,6 +416,7 @@
     "phone": "Téléphone", 
     "address": "Informations d'Adresse",
     "sameAddressAsOther": "L'autre parent de notre famille a la même adresse",
+    "confirmOtherParentAddress": "Je confirme que {fullName} habite aussi à cette adresse",
     "streetAddress": "Adresse Civique",
     "city": "Ville",
     "postalCode": "Code Postal",

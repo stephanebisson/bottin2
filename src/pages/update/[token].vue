@@ -129,21 +129,10 @@
                 </h3>
               </v-col>
 
-              <!-- Same Address Checkbox (only show if other parent has address) -->
-              <v-col v-if="otherParentHasAddress" cols="12">
-                <v-checkbox
-                  v-model="form.sameAddressAsOther"
-                  color="primary"
-                  :label="$t('updateForm.sameAddressAsOther')"
-                  @change="handleSameAddressToggle"
-                />
-              </v-col>
-
-              <!-- Address Fields (disabled if same as other parent) -->
+              <!-- Address Fields -->
               <v-col cols="12">
                 <v-text-field
                   v-model="form.address"
-                  :disabled="form.sameAddressAsOther"
                   :label="$t('updateForm.streetAddress')"
                   variant="outlined"
                 />
@@ -152,7 +141,6 @@
               <v-col cols="12" md="8">
                 <v-text-field
                   v-model="form.city"
-                  :disabled="form.sameAddressAsOther"
                   :label="$t('updateForm.city')"
                   variant="outlined"
                 />
@@ -161,10 +149,26 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="form.postal_code"
-                  :disabled="form.sameAddressAsOther"
                   :label="$t('updateForm.postalCode')"
                   variant="outlined"
                 />
+              </v-col>
+
+              <!-- Same Address Checkbox (only show if other parent exists) -->
+              <v-col v-if="otherParentInfo" cols="12">
+                <v-checkbox
+                  v-model="form.sameAddressAsOther"
+                  color="primary"
+                  @change="handleSameAddressToggle"
+                >
+                  <template #label>
+                    <span
+                      v-html="$t('updateForm.confirmOtherParentAddress', {
+                        fullName: `<strong>${otherParentInfo.fullName}</strong>`
+                      })"
+                    />
+                  </template>
+                </v-checkbox>
               </v-col>
 
               <!-- Committee Memberships Section -->
@@ -328,6 +332,7 @@
   const availableCommittees = ref([])
   const availableInterests = ref([])
   const otherParentHasAddress = ref(false)
+  const otherParentInfo = ref(null)
   const formRef = ref(null)
   const showOptOutDialog = ref(false)
   const optingOut = ref(false)
@@ -356,12 +361,9 @@
 
   // Handle same address toggle
   const handleSameAddressToggle = () => {
-    if (form.value.sameAddressAsOther) {
-      // Clear address fields when selecting same address
-      form.value.address = ''
-      form.value.city = ''
-      form.value.postal_code = ''
-    }
+    // Don't clear address fields - they should remain populated for user reference
+    // The actual address saving logic is handled in submitForm where empty values
+    // are sent when sameAddressAsOther is true
   }
 
   // Helper function to get committee IDs and roles that the parent belongs to
@@ -480,6 +482,7 @@
       availableCommittees.value = data.availableCommittees || []
       availableInterests.value = getAvailableInterests()
       otherParentHasAddress.value = data.otherParentHasAddress || false
+      otherParentInfo.value = data.otherParentInfo || null
 
       // Pre-fill form with existing data
       form.value = {
@@ -565,9 +568,9 @@
             first_name: form.value.first_name,
             last_name: form.value.last_name,
             phone: form.value.phone,
-            address: form.value.sameAddressAsOther ? '' : form.value.address,
-            city: form.value.sameAddressAsOther ? '' : form.value.city,
-            postal_code: form.value.sameAddressAsOther ? '' : form.value.postal_code,
+            address: form.value.address,
+            city: form.value.city,
+            postal_code: form.value.postal_code,
             sameAddressAsOther: form.value.sameAddressAsOther,
             committees: form.value.committees,
             committeeRoles: form.value.committeeRoles,
