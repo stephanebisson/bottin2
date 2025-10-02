@@ -95,6 +95,25 @@
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
 
+  // Initialize DTO data alongside legacy data for gradual migration
+  onMounted(async () => {
+    try {
+      // Load legacy data (existing behavior)
+      if (!firebaseStore.hasData || firebaseStore.isDataStale) {
+        firebaseStore.loadAllData()
+      }
+
+      // Load DTO data (new behavior) - load in background, don't wait
+      if (!firebaseStore.hasStudentsDTO || firebaseStore.isStudentsDTOStale) {
+        firebaseStore.loadStudentsDTO().catch(error => {
+          console.log('DTO loading failed, using legacy data:', error.message)
+        })
+      }
+    } catch (error) {
+      console.error('Error during dashboard initialization:', error)
+    }
+  })
+
   // Navigation items for the grid
   const navigationItems = computed(() => [
     {
@@ -112,7 +131,7 @@
       icon: 'mdi-account-multiple',
       color: 'secondary',
       route: '/students',
-      count: firebaseStore.students.length,
+      count: firebaseStore.hasStudentsDTO ? firebaseStore.studentsDTO.length : firebaseStore.students.length,
       countLabel: t('dashboard.students').toLowerCase(),
     },
     {

@@ -935,8 +935,11 @@ exports.applyProgressionChangesV2 = onRequest({
     const graduatingStudents = changesSnapshot.docs
       .filter(doc => doc.data().changeType === 'graduating')
       .map(doc => doc.data().studentId)
+      .filter(id => id && typeof id === 'string') // Filter out invalid/undefined IDs
 
     if (graduatingStudents.length > 0) {
+      console.log(`Processing ${graduatingStudents.length} graduating students for orphaned parent check`)
+
       // Get all students to check for orphaned parents
       const allStudentsSnapshot = await db.collection('students').get()
       const remainingStudents = allStudentsSnapshot.docs
@@ -955,18 +958,33 @@ exports.applyProgressionChangesV2 = onRequest({
       }
 
       // Get graduating students' parent emails
-      const graduatingStudentsSnapshot = await db.collection('students')
-        .where(admin.firestore.FieldPath.documentId(), 'in', graduatingStudents)
-        .get()
-
+      // Handle Firestore 'in' query limitations (max 10 items per query)
       const orphanedParentEmails = new Set()
-      for (const doc of graduatingStudentsSnapshot.docs) {
-        const student = doc.data()
-        if (student.parent1_email && !remainingParentEmails.has(student.parent1_email)) {
-          orphanedParentEmails.add(student.parent1_email)
-        }
-        if (student.parent2_email && !remainingParentEmails.has(student.parent2_email)) {
-          orphanedParentEmails.add(student.parent2_email)
+
+      if (graduatingStudents.length > 0) {
+        // Process in batches of 10 (Firestore 'in' limit)
+        for (let i = 0; i < graduatingStudents.length; i += 10) {
+          const batch = graduatingStudents.slice(i, i + 10)
+
+          try {
+            const graduatingStudentsSnapshot = await db.collection('students')
+              .where(admin.firestore.FieldPath.documentId(), 'in', batch)
+              .get()
+
+            for (const doc of graduatingStudentsSnapshot.docs) {
+              const student = doc.data()
+              if (student.parent1_email && !remainingParentEmails.has(student.parent1_email)) {
+                orphanedParentEmails.add(student.parent1_email)
+              }
+              if (student.parent2_email && !remainingParentEmails.has(student.parent2_email)) {
+                orphanedParentEmails.add(student.parent2_email)
+              }
+            }
+          } catch (error) {
+            console.error(`Error querying graduating students batch ${i / 10 + 1}:`, error)
+            console.error('Batch contents:', batch)
+            // Continue with next batch rather than failing completely
+          }
         }
       }
 

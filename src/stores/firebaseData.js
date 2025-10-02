@@ -2,9 +2,12 @@ import { collection, getDocs } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { db } from '@/firebase'
+import { ParentRepository } from '@/repositories/ParentRepository.js'
+import { StaffRepository } from '@/repositories/StaffRepository.js'
+import { StudentRepository } from '@/repositories/StudentRepository.js'
 
 export const useFirebaseDataStore = defineStore('firebaseData', () => {
-  // State
+  // ===== EXISTING STATE (unchanged) =====
   const students = ref([])
   const parents = ref([])
   const staff = ref([])
@@ -18,7 +21,28 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   // Cache settings (5 minutes)
   const CACHE_DURATION = 5 * 60 * 1000
 
-  // Getters
+  // ===== NEW DTO STATE (for gradual migration) =====
+  const studentsDTO = ref([])
+  const studentsLoadingDTO = ref(false)
+  const studentsErrorDTO = ref(null)
+  const studentsLastUpdatedDTO = ref(null)
+
+  const parentsDTO = ref([])
+  const parentsLoadingDTO = ref(false)
+  const parentsErrorDTO = ref(null)
+  const parentsLastUpdatedDTO = ref(null)
+
+  const staffDTO = ref([])
+  const staffLoadingDTO = ref(false)
+  const staffErrorDTO = ref(null)
+  const staffLastUpdatedDTO = ref(null)
+
+  // Repository instances
+  const studentRepository = new StudentRepository()
+  const parentRepository = new ParentRepository()
+  const staffRepository = new StaffRepository()
+
+  // ===== EXISTING GETTERS (unchanged) =====
   const isDataStale = computed(() => {
     if (!lastUpdated.value) {
       return true
@@ -42,6 +66,72 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     committees: committees.value.length,
     lastUpdated: lastUpdated.value,
     isStale: isDataStale.value,
+  }))
+
+  // ===== NEW DTO GETTERS =====
+  const isStudentsDTOStale = computed(() => {
+    if (!studentsLastUpdatedDTO.value) {
+      return true
+    }
+    return Date.now() - studentsLastUpdatedDTO.value > CACHE_DURATION
+  })
+
+  const hasStudentsDTO = computed(() => {
+    return studentsDTO.value.length > 0
+  })
+
+  const studentsDTOStats = computed(() => ({
+    count: studentsDTO.value.length,
+    loading: studentsLoadingDTO.value,
+    error: studentsErrorDTO.value,
+    lastUpdated: studentsLastUpdatedDTO.value,
+    isStale: isStudentsDTOStale.value,
+    withParentContacts: studentsDTO.value.filter(s => s.hasParentContacts).length,
+    withoutParentContacts: studentsDTO.value.filter(s => !s.hasParentContacts).length,
+  }))
+
+  // ===== NEW PARENT DTO GETTERS =====
+  const isParentsDTOStale = computed(() => {
+    if (!parentsLastUpdatedDTO.value) {
+      return true
+    }
+    return Date.now() - parentsLastUpdatedDTO.value > CACHE_DURATION
+  })
+
+  const hasParentsDTO = computed(() => {
+    return parentsDTO.value.length > 0
+  })
+
+  const parentsDTOStats = computed(() => ({
+    count: parentsDTO.value.length,
+    loading: parentsLoadingDTO.value,
+    error: parentsErrorDTO.value,
+    lastUpdated: parentsLastUpdatedDTO.value,
+    isStale: isParentsDTOStale.value,
+    withInterests: parentsDTO.value.filter(p => p.hasInterests).length,
+    withoutInterests: parentsDTO.value.filter(p => !p.hasInterests).length,
+  }))
+
+  // ===== NEW STAFF DTO GETTERS =====
+  const isStaffDTOStale = computed(() => {
+    if (!staffLastUpdatedDTO.value) {
+      return true
+    }
+    return Date.now() - staffLastUpdatedDTO.value > CACHE_DURATION
+  })
+
+  const hasStaffDTO = computed(() => {
+    return staffDTO.value.length > 0
+  })
+
+  const staffDTOStats = computed(() => ({
+    count: staffDTO.value.length,
+    loading: staffLoadingDTO.value,
+    error: staffErrorDTO.value,
+    lastUpdated: staffLastUpdatedDTO.value,
+    isStale: isStaffDTOStale.value,
+    withCERoles: staffDTO.value.filter(s => s.hasCERole).length,
+    inDirectory: staffDTO.value.filter(s => s.inDirectory).length,
   }))
 
   // Actions
@@ -103,7 +193,207 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     error.value = null
   }
 
+  // ===== NEW DTO ACTIONS =====
+  const loadStudentsDTO = async (forceRefresh = false) => {
+    // Skip loading if we have fresh data and not forcing refresh
+    if (hasStudentsDTO.value && !isStudentsDTOStale.value && !forceRefresh) {
+      console.log('Using cached DTO students data')
+      return studentsDTO.value
+    }
+
+    try {
+      studentsLoadingDTO.value = true
+      studentsErrorDTO.value = null
+
+      console.log('Loading students via DTO repository...')
+
+      const loadedStudents = await studentRepository.getAll()
+      studentsDTO.value = loadedStudents
+      studentsLastUpdatedDTO.value = Date.now()
+
+      console.log(`DTO students loaded: ${loadedStudents.length} valid students`)
+      return loadedStudents
+    } catch (error_) {
+      console.error('Error loading DTO students:', error_)
+      studentsErrorDTO.value = error_.message || 'Failed to load students'
+      throw error_
+    } finally {
+      studentsLoadingDTO.value = false
+    }
+  }
+
+  const loadActiveStudentsDTO = async () => {
+    try {
+      studentsLoadingDTO.value = true
+      studentsErrorDTO.value = null
+
+      console.log('Loading active students via DTO repository...')
+
+      const activeStudents = await studentRepository.getActive()
+      studentsDTO.value = activeStudents
+      studentsLastUpdatedDTO.value = Date.now()
+
+      console.log(`Active DTO students loaded: ${activeStudents.length} students`)
+      return activeStudents
+    } catch (error_) {
+      console.error('Error loading active DTO students:', error_)
+      studentsErrorDTO.value = error_.message || 'Failed to load active students'
+      throw error_
+    } finally {
+      studentsLoadingDTO.value = false
+    }
+  }
+
+  const refreshStudentsDTO = async () => {
+    return await loadStudentsDTO(true)
+  }
+
+  const clearStudentsDTO = () => {
+    studentsDTO.value = []
+    studentsLastUpdatedDTO.value = null
+    studentsErrorDTO.value = null
+  }
+
+  const searchStudentsDTO = async searchText => {
+    try {
+      console.log(`Searching students for: "${searchText}"`)
+      return await studentRepository.search(searchText)
+    } catch (error_) {
+      console.error('Error searching DTO students:', error_)
+      studentsErrorDTO.value = error_.message || 'Failed to search students'
+      throw error_
+    }
+  }
+
+  const getStudentsDTOStats = async () => {
+    try {
+      return await studentRepository.getStats()
+    } catch (error_) {
+      console.error('Error getting DTO students stats:', error_)
+      throw error_
+    }
+  }
+
+  // ===== NEW PARENT DTO ACTIONS =====
+  const loadParentsDTO = async (forceRefresh = false) => {
+    // Skip loading if we have fresh data and not forcing refresh
+    if (hasParentsDTO.value && !isParentsDTOStale.value && !forceRefresh) {
+      console.log('Using cached DTO parents data')
+      return parentsDTO.value
+    }
+
+    try {
+      parentsLoadingDTO.value = true
+      parentsErrorDTO.value = null
+
+      console.log('Loading parents via DTO repository...')
+
+      const loadedParents = await parentRepository.getAll()
+      parentsDTO.value = loadedParents
+      parentsLastUpdatedDTO.value = Date.now()
+
+      console.log(`DTO parents loaded: ${loadedParents.length} valid parents`)
+      return loadedParents
+    } catch (error_) {
+      console.error('Error loading DTO parents:', error_)
+      parentsErrorDTO.value = error_.message || 'Failed to load parents'
+      throw error_
+    } finally {
+      parentsLoadingDTO.value = false
+    }
+  }
+
+  const refreshParentsDTO = async () => {
+    return await loadParentsDTO(true)
+  }
+
+  const clearParentsDTO = () => {
+    parentsDTO.value = []
+    parentsLastUpdatedDTO.value = null
+    parentsErrorDTO.value = null
+  }
+
+  const searchParentsDTO = async searchText => {
+    try {
+      console.log(`Searching parents for: "${searchText}"`)
+      return await parentRepository.search(searchText)
+    } catch (error_) {
+      console.error('Error searching DTO parents:', error_)
+      parentsErrorDTO.value = error_.message || 'Failed to search parents'
+      throw error_
+    }
+  }
+
+  const getParentsDTOStats = async () => {
+    try {
+      return await parentRepository.getStats()
+    } catch (error_) {
+      console.error('Error getting DTO parents stats:', error_)
+      throw error_
+    }
+  }
+
+  // ===== NEW STAFF DTO ACTIONS =====
+  const loadStaffDTO = async (forceRefresh = false) => {
+    // Skip loading if we have fresh data and not forcing refresh
+    if (hasStaffDTO.value && !isStaffDTOStale.value && !forceRefresh) {
+      console.log('Using cached DTO staff data')
+      return staffDTO.value
+    }
+
+    try {
+      staffLoadingDTO.value = true
+      staffErrorDTO.value = null
+
+      console.log('Loading staff via DTO repository...')
+
+      const loadedStaff = await staffRepository.getAll()
+      staffDTO.value = loadedStaff
+      staffLastUpdatedDTO.value = Date.now()
+
+      console.log(`DTO staff loaded: ${loadedStaff.length} valid staff members`)
+      return loadedStaff
+    } catch (error_) {
+      console.error('Error loading DTO staff:', error_)
+      staffErrorDTO.value = error_.message || 'Failed to load staff'
+      throw error_
+    } finally {
+      staffLoadingDTO.value = false
+    }
+  }
+
+  const refreshStaffDTO = async () => {
+    return await loadStaffDTO(true)
+  }
+
+  const clearStaffDTO = () => {
+    staffDTO.value = []
+    staffLastUpdatedDTO.value = null
+    staffErrorDTO.value = null
+  }
+
+  const searchStaffDTO = async searchText => {
+    try {
+      console.log(`Searching staff for: "${searchText}"`)
+      return await staffRepository.search(searchText)
+    } catch (error_) {
+      console.error('Error searching DTO staff:', error_)
+      staffErrorDTO.value = error_.message || 'Failed to search staff'
+      throw error_
+    }
+  }
+
+  const getStaffDTOStats = async () => {
+    try {
+      return await staffRepository.getStats()
+    } catch (error_) {
+      console.error('Error getting DTO staff stats:', error_)
+      throw error_
+    }
+  }
+
   return {
+    // ===== EXISTING API (unchanged) =====
     // State - direct refs for reactive access
     students,
     parents,
@@ -123,5 +413,66 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     loadAllData,
     refreshData,
     clearData,
+
+    // ===== NEW DTO API (for gradual migration) =====
+    // Student DTO State
+    studentsDTO,
+    studentsLoadingDTO,
+    studentsErrorDTO,
+    studentsLastUpdatedDTO,
+
+    // Student DTO Getters
+    isStudentsDTOStale,
+    hasStudentsDTO,
+    studentsDTOStats,
+
+    // Student DTO Actions
+    loadStudentsDTO,
+    loadActiveStudentsDTO,
+    refreshStudentsDTO,
+    clearStudentsDTO,
+    searchStudentsDTO,
+    getStudentsDTOStats,
+
+    // Parent DTO State
+    parentsDTO,
+    parentsLoadingDTO,
+    parentsErrorDTO,
+    parentsLastUpdatedDTO,
+
+    // Parent DTO Getters
+    isParentsDTOStale,
+    hasParentsDTO,
+    parentsDTOStats,
+
+    // Parent DTO Actions
+    loadParentsDTO,
+    refreshParentsDTO,
+    clearParentsDTO,
+    searchParentsDTO,
+    getParentsDTOStats,
+
+    // Staff DTO State
+    staffDTO,
+    staffLoadingDTO,
+    staffErrorDTO,
+    staffLastUpdatedDTO,
+
+    // Staff DTO Getters
+    isStaffDTOStale,
+    hasStaffDTO,
+    staffDTOStats,
+
+    // Staff DTO Actions
+    loadStaffDTO,
+    refreshStaffDTO,
+    clearStaffDTO,
+    searchStaffDTO,
+    getStaffDTOStats,
+
+    // Repository access (for advanced usage)
+    studentRepository,
+    parentRepository,
+    staffRepository,
   }
 })
