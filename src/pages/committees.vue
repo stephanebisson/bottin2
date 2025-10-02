@@ -198,22 +198,22 @@
       const enrichedMembers = committee.members
         ? committee.members.map(member => {
           // Try to find member in parents collection first
-          const parentMatch = firebaseStore.parents.find(p => p.email === member.email)
+          const parentMatch = firebaseStore.parentsDTO.find(p => p.email === member.email)
           if (parentMatch) {
             return {
               ...member,
-              fullName: `${parentMatch.first_name} ${parentMatch.last_name}`,
+              fullName: parentMatch.fullName,
               phone: parentMatch.phone,
               memberType: 'parent',
             }
           }
 
           // Try to find member in staff collection
-          const staffMatch = firebaseStore.staff.find(s => s.email === member.email)
+          const staffMatch = firebaseStore.staffDTO.find(s => s.email === member.email)
           if (staffMatch) {
             return {
               ...member,
-              fullName: `${staffMatch.first_name} ${staffMatch.last_name}`,
+              fullName: staffMatch.fullName,
               phone: staffMatch.phone,
               memberType: 'staff',
             }
@@ -263,8 +263,13 @@
     })
   })
 
-  onMounted(() => {
-    firebaseStore.loadAllData()
+  onMounted(async () => {
+    // Load DTO data in parallel
+    await Promise.all([
+      firebaseStore.loadParentsDTO(),
+      firebaseStore.loadStaffDTO(),
+      firebaseStore.loadAllData(), // Still need committees data
+    ])
   })
 </script>
 

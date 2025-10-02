@@ -3,29 +3,29 @@
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h3 font-weight-bold">{{ $t('students.title') }}</h1>
       <v-chip
-        :color="firebaseStore.loading ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
+        :color="firebaseStore.studentsLoadingDTO ? 'orange' : 'green'"
+        :prepend-icon="firebaseStore.studentsLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
       >
-        {{ firebaseStore.loading ? $t('common.loading') : $t('students.studentsLoaded', { count: firebaseStore.students.length }) }}
+        {{ firebaseStore.studentsLoadingDTO ? $t('common.loading') : $t('students.studentsLoaded', { count: firebaseStore.studentsDTO.length }) }}
       </v-chip>
     </div>
 
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.studentsErrorDTO" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.studentsErrorDTO"
         :title="$t('students.errorLoadingStudents')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.studentsErrorDTO = null"
       />
     </div>
 
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.studentsLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-h6 mt-4">{{ $t('students.loadingStudents') }}</p>
     </div>
 
-    <div v-else-if="firebaseStore.students.length === 0" class="text-center py-8">
+    <div v-else-if="firebaseStore.studentsDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-multiple-outline</v-icon>
       <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('students.noStudentsFound') }}</p>
     </div>
@@ -142,7 +142,7 @@
     const groups = []
 
     // Sort students alphabetically first
-    const sortedStudents = [...firebaseStore.students].sort((a, b) => {
+    const sortedStudents = [...firebaseStore.studentsDTO].sort((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
       return aName.localeCompare(bName)
@@ -193,14 +193,14 @@
     return groupedStudents.value.filter(group => {
       // Collect all searchable text from this group
       const searchFields = [
-        // Student names (both formats)
+        // Student names using DTO methods
         ...group.students.flatMap(student => [
-          `${student.first_name} ${student.last_name}`,
+          student.fullName,
           `${student.last_name}, ${student.first_name}`,
         ]),
-        // Parent names
-        group.parent1 ? `${group.parent1.first_name} ${group.parent1.last_name}` : '',
-        group.parent2 ? `${group.parent2.first_name} ${group.parent2.last_name}` : '',
+        // Parent names using DTO methods
+        group.parent1 ? group.parent1.fullName : '',
+        group.parent2 ? group.parent2.fullName : '',
       ].filter(Boolean) // Remove empty strings
 
       return matchesAnyField(searchFields, searchQuery.value)
@@ -217,14 +217,14 @@
 
     if (!parentEmail) return null
 
-    return firebaseStore.parents.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
   }
 
   const getTeacherName = className => {
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null
 
-    const teacher = firebaseStore.staff.find(s => s.id === classItem.teacher)
+    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
     return teacher ? teacher.first_name : null
   }
 
@@ -239,8 +239,14 @@
       .map(committee => committee.name)
   }
 
-  onMounted(() => {
-    firebaseStore.loadAllData()
+  onMounted(async () => {
+    // Load DTO data in parallel
+    await Promise.all([
+      firebaseStore.loadStudentsDTO(),
+      firebaseStore.loadParentsDTO(),
+      firebaseStore.loadStaffDTO(),
+      firebaseStore.loadAllData(), // Still need classes and committees data
+    ])
   })
 </script>
 

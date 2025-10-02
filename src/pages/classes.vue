@@ -430,21 +430,21 @@
   }
 
   const getStudentName = studentId => {
-    const student = firebaseStore.students.find(s => s.id === studentId)
-    return student ? `${student.first_name} ${student.last_name}` : studentId
+    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
+    return student ? student.fullName : studentId
   }
 
   const getStudentLevel = studentId => {
-    const student = firebaseStore.students.find(s => s.id === studentId)
+    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     return student ? student.level : null
   }
 
   const getStudentData = studentId => {
-    return firebaseStore.students.find(s => s.id === studentId) || null
+    return firebaseStore.studentsDTO.find(s => s.id === studentId) || null
   }
 
   const getStudentParentById = (studentId, parentNumber) => {
-    const student = firebaseStore.students.find(s => s.id === studentId)
+    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     if (!student) return null
 
     const parentEmailField = parentNumber === 1 ? 'parent1_email' : 'parent2_email'
@@ -452,15 +452,15 @@
 
     if (!parentEmail) return null
 
-    return firebaseStore.parents.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
   }
 
   const getStudentSiblingsById = studentId => {
-    const student = firebaseStore.students.find(s => s.id === studentId)
+    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     if (!student || (!student.parent1_email && !student.parent2_email)) return []
 
     // Find siblings by matching parent emails (excluding the student themselves)
-    return firebaseStore.students.filter(s =>
+    return firebaseStore.studentsDTO.filter(s =>
       s.id !== student.id && (
         (student.parent1_email && (s.parent1_email === student.parent1_email || s.parent2_email === student.parent1_email))
         || (student.parent2_email && (s.parent1_email === student.parent2_email || s.parent2_email === student.parent2_email))
@@ -469,19 +469,19 @@
   }
 
   const getParentName = parentEmail => {
-    const parent = firebaseStore.parents.find(p => p.email === parentEmail)
-    return parent ? `${parent.first_name} ${parent.last_name}` : parentEmail
+    const parent = firebaseStore.parentsDTO.find(p => p.email === parentEmail)
+    return parent ? parent.fullName : parentEmail
   }
 
   const getParentData = parentEmail => {
-    return firebaseStore.parents.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
   }
 
   const getParentChildren = parentEmail => {
     if (!parentEmail) return []
 
     // Find all students where this parent is either parent1 or parent2
-    return firebaseStore.students.filter(student =>
+    return firebaseStore.studentsDTO.filter(student =>
       student.parent1_email === parentEmail || student.parent2_email === parentEmail,
     )
   }
@@ -511,16 +511,16 @@
   }
 
   const getTeacherName = teacherId => {
-    const teacher = firebaseStore.staff.find(s => s.id === teacherId)
-    return teacher ? `${teacher.first_name} ${teacher.last_name}` : teacherId
+    const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
+    return teacher ? teacher.fullName : teacherId
   }
 
   const getTeacherInfo = teacherId => {
-    return firebaseStore.staff.find(s => s.id === teacherId) || null
+    return firebaseStore.staffDTO.find(s => s.id === teacherId) || null
   }
 
   const getClassStudents = classLetter => {
-    return firebaseStore.students.filter(student => student.className === classLetter)
+    return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
   }
 
   const getStudentsByLevel = classLetter => {
@@ -591,14 +591,14 @@
 
     if (!parentEmail) return null
 
-    return firebaseStore.parents.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
   }
 
   const getStudentSiblings = student => {
     if (!student.parent1_email && !student.parent2_email) return []
 
     // Find siblings by matching parent emails (excluding the student themselves)
-    return firebaseStore.students.filter(s =>
+    return firebaseStore.studentsDTO.filter(s =>
       s.id !== student.id && (
         (student.parent1_email && (s.parent1_email === student.parent1_email || s.parent2_email === student.parent1_email))
         || (student.parent2_email && (s.parent1_email === student.parent2_email || s.parent2_email === student.parent2_email))
@@ -635,8 +635,13 @@
   }
 
   // Load data on component mount
-  onMounted(() => {
-    firebaseStore.loadAllData()
+  onMounted(async () => {
+    await Promise.all([
+      firebaseStore.loadStudentsDTO(),
+      firebaseStore.loadParentsDTO(),
+      firebaseStore.loadStaffDTO(),
+      firebaseStore.loadAllData(), // Still need classes data
+    ])
   })
 </script>
 

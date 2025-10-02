@@ -95,20 +95,16 @@
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
 
-  // Initialize DTO data alongside legacy data for gradual migration
+  // Load DTO data for dashboard
   onMounted(async () => {
     try {
-      // Load legacy data (existing behavior)
-      if (!firebaseStore.hasData || firebaseStore.isDataStale) {
-        firebaseStore.loadAllData()
-      }
-
-      // Load DTO data (new behavior) - load in background, don't wait
-      if (!firebaseStore.hasStudentsDTO || firebaseStore.isStudentsDTOStale) {
-        firebaseStore.loadStudentsDTO().catch(error => {
-          console.log('DTO loading failed, using legacy data:', error.message)
-        })
-      }
+      // Load all DTO data in parallel
+      await Promise.all([
+        firebaseStore.loadStudentsDTO(),
+        firebaseStore.loadParentsDTO(),
+        firebaseStore.loadStaffDTO(),
+        firebaseStore.loadAllData(), // Still need classes and committees
+      ])
     } catch (error) {
       console.error('Error during dashboard initialization:', error)
     }
@@ -131,7 +127,7 @@
       icon: 'mdi-account-multiple',
       color: 'secondary',
       route: '/students',
-      count: firebaseStore.hasStudentsDTO ? firebaseStore.studentsDTO.length : firebaseStore.students.length,
+      count: firebaseStore.studentsDTO.length,
       countLabel: t('dashboard.students').toLowerCase(),
     },
     {
@@ -140,7 +136,7 @@
       icon: 'mdi-account-supervisor',
       color: 'success',
       route: '/parents',
-      count: firebaseStore.parents.length,
+      count: firebaseStore.parentsDTO.length,
       countLabel: t('dashboard.parents').toLowerCase(),
     },
     {
@@ -149,7 +145,7 @@
       icon: 'mdi-account-tie',
       color: 'accent',
       route: '/staff',
-      count: firebaseStore.staff.length,
+      count: firebaseStore.staffDTO.length,
       countLabel: t('dashboard.staffMembers').toLowerCase(),
     },
     {
@@ -168,9 +164,6 @@
     router.push(route)
   }
 
-  onMounted(() => {
-    firebaseStore.loadAllData()
-  })
 </script>
 
 <style scoped>

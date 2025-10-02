@@ -3,29 +3,29 @@
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h3 font-weight-bold">{{ $t('staff.title') }}</h1>
       <v-chip
-        :color="firebaseStore.loading ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
+        :color="firebaseStore.staffLoadingDTO ? 'orange' : 'green'"
+        :prepend-icon="firebaseStore.staffLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
       >
-        {{ firebaseStore.loading ? $t('common.loading') : searchQuery ? $t('staff.staffFiltered', { filtered: filteredStaffGroups.reduce((acc, group) => acc + group.members.length, 0), total: firebaseStore.staff.length }) : $t('staff.staffLoaded', { count: firebaseStore.staff.length }) }}
+        {{ firebaseStore.staffLoadingDTO ? $t('common.loading') : searchQuery ? $t('staff.staffFiltered', { filtered: filteredStaffGroups.reduce((acc, group) => acc + group.members.length, 0), total: firebaseStore.staffDTO.length }) : $t('staff.staffLoaded', { count: firebaseStore.staffDTO.length }) }}
       </v-chip>
     </div>
 
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.staffErrorDTO" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.staffErrorDTO"
         :title="$t('staff.errorLoadingStaff')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.staffErrorDTO = null"
       />
     </div>
 
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.staffLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-h6 mt-4">{{ $t('staff.loadingStaff') }}</p>
     </div>
 
-    <div v-else-if="firebaseStore.staff.length === 0" class="text-center py-8">
+    <div v-else-if="firebaseStore.staffDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-tie-outline</v-icon>
       <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('staff.noStaffFound') }}</p>
     </div>
@@ -174,7 +174,7 @@
     // Group staff by directory_table
     const groups = {}
 
-    for (const member of firebaseStore.staff) {
+    for (const member of firebaseStore.staffDTO) {
       const groupName = member.directory_table || t('staff.otherStaff')
 
       if (!groups[groupName]) {
@@ -205,7 +205,7 @@
       ...group,
       members: group.members.filter(member => {
         const searchFields = [
-          `${member.first_name} ${member.last_name}`,
+          member.fullName,
           member.title || '',
           member.email || '',
           member.directory_table || '',
@@ -255,8 +255,12 @@
     return phone
   }
 
-  onMounted(() => {
-    firebaseStore.loadAllData()
+  onMounted(async () => {
+    // Load DTO data in parallel
+    await Promise.all([
+      firebaseStore.loadStaffDTO(),
+      firebaseStore.loadAllData(), // Still need classes data
+    ])
   })
 </script>
 

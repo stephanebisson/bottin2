@@ -7,10 +7,7 @@ import { StaffRepository } from '@/repositories/StaffRepository.js'
 import { StudentRepository } from '@/repositories/StudentRepository.js'
 
 export const useFirebaseDataStore = defineStore('firebaseData', () => {
-  // ===== EXISTING STATE (unchanged) =====
-  const students = ref([])
-  const parents = ref([])
-  const staff = ref([])
+  // ===== LEGACY STATE (classes and committees only) =====
   const classes = ref([])
   const committees = ref([])
 
@@ -21,7 +18,7 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   // Cache settings (5 minutes)
   const CACHE_DURATION = 5 * 60 * 1000
 
-  // ===== NEW DTO STATE (for gradual migration) =====
+  // ===== DTO STATE =====
   const studentsDTO = ref([])
   const studentsLoadingDTO = ref(false)
   const studentsErrorDTO = ref(null)
@@ -51,17 +48,11 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   })
 
   const hasData = computed(() => {
-    return students.value.length > 0
-      || parents.value.length > 0
-      || staff.value.length > 0
-      || classes.value.length > 0
+    return classes.value.length > 0
       || committees.value.length > 0
   })
 
   const dataStats = computed(() => ({
-    students: students.value.length,
-    parents: parents.value.length,
-    staff: staff.value.length,
     classes: classes.value.length,
     committees: committees.value.length,
     lastUpdated: lastUpdated.value,
@@ -148,26 +139,17 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
 
       console.log('Loading Firebase data...')
 
-      const [studentsSnapshot, parentsSnapshot, staffSnapshot, classesSnapshot, committeesSnapshot] = await Promise.all([
-        getDocs(collection(db, 'students')),
-        getDocs(collection(db, 'parents')),
-        getDocs(collection(db, 'staff')),
+      const [classesSnapshot, committeesSnapshot] = await Promise.all([
         getDocs(collection(db, 'classes')),
         getDocs(collection(db, 'committees')),
       ])
 
-      students.value = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      parents.value = parentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      staff.value = staffSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       classes.value = classesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       committees.value = committeesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
       lastUpdated.value = Date.now()
 
       console.log('Firebase data loaded:', {
-        students: students.value.length,
-        parents: parents.value.length,
-        staff: staff.value.length,
         classes: classes.value.length,
         committees: committees.value.length,
       })
@@ -184,9 +166,6 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   }
 
   const clearData = () => {
-    students.value = []
-    parents.value = []
-    staff.value = []
     classes.value = []
     committees.value = []
     lastUpdated.value = null
@@ -393,11 +372,7 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   }
 
   return {
-    // ===== EXISTING API (unchanged) =====
-    // State - direct refs for reactive access
-    students,
-    parents,
-    staff,
+    // ===== LEGACY API (classes and committees only) =====
     classes,
     committees,
     loading,
@@ -414,7 +389,7 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     refreshData,
     clearData,
 
-    // ===== NEW DTO API (for gradual migration) =====
+    // ===== DTO API =====
     // Student DTO State
     studentsDTO,
     studentsLoadingDTO,

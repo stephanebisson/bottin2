@@ -3,29 +3,29 @@
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h3 font-weight-bold">{{ $t('parents.title') }}</h1>
       <v-chip
-        :color="firebaseStore.loading ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
+        :color="firebaseStore.parentsLoadingDTO ? 'orange' : 'green'"
+        :prepend-icon="firebaseStore.parentsLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
       >
-        {{ firebaseStore.loading ? $t('common.loading') : searchQuery ? $t('parents.parentsFiltered', { filtered: sortedParentsWithChildren.length, total: firebaseStore.parents.length }) : $t('parents.parentsLoaded', { count: firebaseStore.parents.length }) }}
+        {{ firebaseStore.parentsLoadingDTO ? $t('common.loading') : searchQuery ? $t('parents.parentsFiltered', { filtered: sortedParentsWithChildren.length, total: firebaseStore.parentsDTO.length }) : $t('parents.parentsLoaded', { count: firebaseStore.parentsDTO.length }) }}
       </v-chip>
     </div>
 
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.parentsErrorDTO" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.parentsErrorDTO"
         :title="$t('parents.errorLoadingParents')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.parentsErrorDTO = null"
       />
     </div>
 
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.parentsLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-h6 mt-4">{{ $t('parents.loadingParents') }}</p>
     </div>
 
-    <div v-else-if="firebaseStore.parents.length === 0" class="text-center py-8">
+    <div v-else-if="firebaseStore.parentsDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-supervisor-outline</v-icon>
       <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('parents.noParentsFound') }}</p>
     </div>
@@ -64,7 +64,7 @@
               <!-- Parent Column -->
               <td class="py-3">
                 <ParentInfo
-                  :parent="{ ...parentData.parent, fullName: `${parentData.parent.last_name}, ${parentData.parent.first_name}` }"
+                  :parent="parentData.parent"
                   :search-query="searchQuery"
                   show-contact
                   variant="minimal"
@@ -124,9 +124,9 @@
   const firebaseStore = useFirebaseDataStore()
 
   const sortedParentsWithChildren = computed(() => {
-    const parentsWithChildren = firebaseStore.parents.map(parent => {
+    const parentsWithChildren = firebaseStore.parentsDTO.map(parent => {
       // Find children for this parent by matching email
-      const children = firebaseStore.students.filter(student =>
+      const children = firebaseStore.studentsDTO.filter(student =>
         student.parent1_email === parent.email || student.parent2_email === parent.email,
       )
 
@@ -145,9 +145,8 @@
 
     // Filter by search query if provided (accent-insensitive)
     const filteredParents = parentsWithChildren.filter(({ parent, children }) => {
-      // Check if parent name matches
-      const parentFullName = `${parent.first_name} ${parent.last_name}`
-      if (matchesSearch(parentFullName, searchQuery.value)) {
+      // Check if parent name matches using DTO method
+      if (matchesSearch(parent.fullName, searchQuery.value)) {
         return true
       }
 
@@ -158,7 +157,7 @@
       })
     })
 
-    // Sort parents alphabetically by name
+    // Sort parents alphabetically by name using DTO method
     return filteredParents.sort((a, b) => {
       const aName = `${a.parent.last_name}, ${a.parent.first_name}`.toLowerCase()
       const bName = `${b.parent.last_name}, ${b.parent.first_name}`.toLowerCase()
@@ -170,12 +169,18 @@
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null
 
-    const teacher = firebaseStore.staff.find(s => s.id === classItem.teacher)
+    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
     return teacher ? teacher.first_name : null
   }
 
-  onMounted(() => {
-    firebaseStore.loadAllData()
+  onMounted(async () => {
+    // Load DTO data in parallel
+    await Promise.all([
+      firebaseStore.loadParentsDTO(),
+      firebaseStore.loadStudentsDTO(),
+      firebaseStore.loadStaffDTO(),
+      firebaseStore.loadAllData(), // Still need classes data
+    ])
   })
 </script>
 
