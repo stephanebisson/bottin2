@@ -123,9 +123,7 @@ export const getCSPConfig = () => {
       isDev ? 'http://localhost:*' : '', // Dev server
       'https://us-central1-bottin2-3b41d.cloudfunctions.net', // Firebase Functions
       'https://firebaseapp.com',
-      'https://firebase.googleapis.com',
-      'https://firestore.googleapis.com', // Firestore real-time listeners
-      'https://securetoken.googleapis.com', // Firebase Auth token refresh
+      'https://*.googleapis.com', // All Google APIs including Firebase services
     ].filter(Boolean),
     'frame-ancestors': ['\'none\''],
     'base-uri': ['\'self\''],
