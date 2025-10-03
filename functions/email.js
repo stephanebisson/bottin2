@@ -282,7 +282,7 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
           participantDocRef: participantDoc.ref, // Store reference for easy updates
           first_name: parentData.first_name || '',
           last_name: parentData.last_name || '',
-          preferredLanguage: parentData.preferredLanguage || 'en',
+          preferredLanguage: parentData.preferredLanguage || 'fr',
         })
       }
     }
