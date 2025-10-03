@@ -124,6 +124,7 @@ export const getCSPConfig = () => {
       'https://us-central1-bottin2-3b41d.cloudfunctions.net', // Firebase Functions
       'https://firebaseapp.com',
       'https://firebase.googleapis.com',
+      'https://firestore.googleapis.com', // Firestore real-time listeners
     ].filter(Boolean),
     'frame-ancestors': ['\'none\''],
     'base-uri': ['\'self\''],
