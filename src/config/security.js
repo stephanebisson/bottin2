@@ -125,6 +125,7 @@ export const getCSPConfig = () => {
       'https://firebaseapp.com',
       'https://firebase.googleapis.com',
       'https://firestore.googleapis.com', // Firestore real-time listeners
+      'https://securetoken.googleapis.com', // Firebase Auth token refresh
     ].filter(Boolean),
     'frame-ancestors': ['\'none\''],
     'base-uri': ['\'self\''],
