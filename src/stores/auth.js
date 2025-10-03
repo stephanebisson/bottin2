@@ -10,7 +10,7 @@ import {
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { getFunctionsBaseUrl } from '@/config/functions'
+import { getFunctionsBaseUrl, secureFetch } from '@/config/functions'
 import { auth } from '@/firebase'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -99,13 +99,10 @@ export const useAuthStore = defineStore('auth', () => {
       const baseUrl = getFunctionsBaseUrl()
       console.log('Validating email with:', baseUrl)
 
-      // Use retry logic for the API call
+      // Use retry logic for the API call with secure fetch
       const result = await retryWithBackoff(async () => {
-        const response = await fetch(`${baseUrl}/validateEmailV2`, {
+        const response = await secureFetch(`${baseUrl}/validateEmailV2`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({ email: cacheKey }),
         })
 

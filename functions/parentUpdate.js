@@ -2,6 +2,9 @@ const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
+const { applySecurity } = require('./middleware/security')
+const { validateFunctionData } = require('./middleware/validation')
+const { tokenValidationSchema, parentUpdateSchema, parentOptOutSchema } = require('./validators/schemas')
 
 // Get Firestore instance
 const db = admin.firestore()
@@ -22,6 +25,12 @@ exports.validateUpdateTokenV2 = onRequest({
     credentials: true,
   },
 }, async (req, res) => {
+  // Apply security headers
+  applySecurity({
+    useApiHeaders: true,
+    enableRateLimit: true,
+    rateLimitOptions: { maxRequests: 20, windowMs: 60 * 1000 }, // 20 requests per minute for token validation
+  })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -30,18 +39,17 @@ exports.validateUpdateTokenV2 = onRequest({
   }
 
   try {
-    const { token } = req.body
-
     console.log('=== validateUpdateTokenV2 ===')
     console.log('Token validation request received')
 
-    if (!token || typeof token !== 'string') {
-      console.log('Token validation failed: invalid token format')
-      return res.status(400).json({
-        valid: false,
-        error: 'Token is required and must be a string.',
-      })
-    }
+    // Validate and sanitize input
+    const validatedData = validateFunctionData(
+      tokenValidationSchema,
+      req.body,
+      'validateUpdateTokenV2',
+    )
+
+    const { token } = validatedData
 
     // Find the token in active workflows
     const activeWorkflowsSnapshot = await db.collection('workflows')
@@ -187,7 +195,9 @@ exports.validateUpdateTokenV2 = onRequest({
         city: parentData.city || '',
         postal_code: parentData.postal_code || '',
         // committees: removed - membership stored in committees collection only
-        interests: parentData.interests || '',
+        interests: typeof parentData.interests === 'string' && parentData.interests
+          ? parentData.interests.split(', ').filter(i => i.trim() !== '')
+          : (Array.isArray(parentData.interests) ? parentData.interests : []),
         optedOut: parentData.optedOut || false,
       },
       otherParentHasAddress,
@@ -195,6 +205,15 @@ exports.validateUpdateTokenV2 = onRequest({
       availableCommittees: committees,
     })
   } catch (error) {
+    // Handle validation errors
+    if (error.code === 'invalid-argument') {
+      return res.status(400).json({
+        valid: false,
+        error: error.message,
+        details: error.details,
+      })
+    }
+
     console.error('Validate token error:', error)
     res.status(500).json({
       valid: false,
@@ -219,6 +238,12 @@ exports.processParentUpdateV2 = onRequest({
     credentials: true,
   },
 }, async (req, res) => {
+  // Apply security headers
+  applySecurity({
+    useApiHeaders: true,
+    enableRateLimit: true,
+    rateLimitOptions: { maxRequests: 10, windowMs: 60 * 1000 }, // 10 requests per minute for updates
+  })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -227,13 +252,14 @@ exports.processParentUpdateV2 = onRequest({
   }
 
   try {
-    const { token, parentData } = req.body
+    // Validate and sanitize input
+    const validatedData = validateFunctionData(
+      parentUpdateSchema,
+      req.body,
+      'processParentUpdateV2',
+    )
 
-    if (!token || !parentData) {
-      return res.status(400).json({
-        error: 'Token and parent data are required',
-      })
-    }
+    const { token, parentData } = validatedData
 
     console.log('Processing parent update:', {
       email: parentData.email || 'unknown',
@@ -293,7 +319,9 @@ exports.processParentUpdateV2 = onRequest({
       first_name: parentData.first_name || existingParentData.first_name,
       last_name: parentData.last_name || existingParentData.last_name,
       phone: parentData.phone || '',
-      interests: parentData.interests || '',
+      interests: Array.isArray(parentData.interests)
+        ? parentData.interests.join(', ')
+        : (parentData.interests || ''),
       optedOut: false, // Re-opt in if they were previously opted out
       lastUpdated: FieldValue.serverTimestamp(),
     }
@@ -440,6 +468,14 @@ exports.processParentUpdateV2 = onRequest({
       hasAccount,
     })
   } catch (error) {
+    // Handle validation errors
+    if (error.code === 'invalid-argument') {
+      return res.status(400).json({
+        error: error.message,
+        details: error.details,
+      })
+    }
+
     console.error('Process parent update error:', error)
     res.status(500).json({
       error: 'Internal server error occurred while processing update',
@@ -463,6 +499,12 @@ exports.processParentOptOutV2 = onRequest({
     credentials: true,
   },
 }, async (req, res) => {
+  // Apply security headers
+  applySecurity({
+    useApiHeaders: true,
+    enableRateLimit: true,
+    rateLimitOptions: { maxRequests: 5, windowMs: 60 * 1000 }, // 5 requests per minute for opt-out
+  })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -471,15 +513,16 @@ exports.processParentOptOutV2 = onRequest({
   }
 
   try {
-    const { token } = req.body
-
-    if (!token) {
-      return res.status(400).json({
-        error: 'Token is required',
-      })
-    }
-
     console.log('Processing parent opt-out request')
+
+    // Validate and sanitize input
+    const validatedData = validateFunctionData(
+      parentOptOutSchema,
+      req.body,
+      'processParentOptOutV2',
+    )
+
+    const { token } = validatedData
 
     // Find the token in active workflows
     const activeWorkflowsSnapshot = await db.collection('workflows')
@@ -594,6 +637,14 @@ exports.processParentOptOutV2 = onRequest({
       hasAccount,
     })
   } catch (error) {
+    // Handle validation errors
+    if (error.code === 'invalid-argument') {
+      return res.status(400).json({
+        error: error.message,
+        details: error.details,
+      })
+    }
+
     console.error('Process parent opt-out error:', error)
     res.status(500).json({
       error: 'Internal server error occurred while processing opt-out',

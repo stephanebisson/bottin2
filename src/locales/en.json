@@ -243,7 +243,24 @@
     "displayNameMinLength": "Display name must be at least 2 characters long",
     "termsRequired": "You must agree to the terms and conditions",
     "emailNotAuthorized": "This email is not authorized to create an account. Only registered parents and staff can register.",
-    "emailAuthorized": "Email is authorized - you can create an account"
+    "emailAuthorized": "Email is authorized - you can create an account",
+    "phone": {
+      "optional": "Phone number is optional",
+      "invalid": "Please enter a valid phone number",
+      "tooShort": "Phone number too short ({digits} digits). Need 10 digits.",
+      "tooLong": "Phone number too long ({digits} digits). Need 10 digits.",
+      "must10Digits": "Phone must be exactly 10 numerical digits",
+      "elevenDigitsMustStartWith1": "For 11-digit numbers, must start with 1",
+      "valid": "Phone number format is valid"
+    },
+    "postalCode": {
+      "optional": "Postal code is optional",
+      "invalid": "Please enter a valid Canadian postal code",
+      "tooShort": "Postal code too short ({chars} characters). Need 6 characters in A9A9A9 format.",
+      "tooLong": "Postal code too long ({chars} characters). Need 6 characters in A9A9A9 format.",
+      "invalidPattern": "Postal code must follow Canadian format A9A9A9 (letter-digit-letter-digit-letter-digit)",
+      "valid": "Postal code format is valid"
+    }
   },
   "profile": {
     "myChildren": "My Children",

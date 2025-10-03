@@ -2,6 +2,8 @@ const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
+const { validateCallableData } = require('./middleware/validation')
+const { setAdminClaimSchema } = require('./validators/schemas')
 
 // Get Firestore instance
 const db = admin.firestore()
@@ -19,11 +21,14 @@ exports.setAdminClaimV2 = onCall({
       throw new HttpsError('unauthenticated', 'User must be authenticated')
     }
 
-    const { uid, isAdmin = true } = request.data
+    // Validate and sanitize input
+    const validatedData = validateCallableData(
+      setAdminClaimSchema,
+      request.data,
+      'setAdminClaimV2',
+    )
 
-    if (!uid) {
-      throw new HttpsError('invalid-argument', 'User UID is required')
-    }
+    const { uid, isAdmin } = validatedData
 
     // Check if caller is already an admin (except during initial setup)
     const isInitialSetup = await checkInitialSetup()

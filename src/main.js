@@ -7,6 +7,9 @@
 // Composables
 import { createApp } from 'vue'
 
+// Security
+import { initSecurity } from '@/config/security'
+
 // Plugins
 import { registerPlugins } from '@/plugins'
 
@@ -15,6 +18,16 @@ import App from './App.vue'
 
 // Styles
 import 'unfonts.css'
+
+// Initialize security configuration
+try {
+  initSecurity()
+} catch (error) {
+  console.error('Failed to initialize security:', error)
+  if (import.meta.env.PROD) {
+    throw error // Fail hard in production
+  }
+}
 
 const app = createApp(App)
 

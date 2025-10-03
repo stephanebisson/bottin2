@@ -2,6 +2,9 @@ const admin = require('firebase-admin')
 const functions = require('firebase-functions/v1')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
+const { applySecurity } = require('./middleware/security')
+const { validateFunctionData } = require('./middleware/validation')
+const { emailValidationSchema } = require('./validators/schemas')
 
 // Get Firestore instance
 const db = admin.firestore()
@@ -11,13 +14,21 @@ const db = admin.firestore()
  * Only emails that exist in the parents or staff collections can register
  */
 exports.validateEmail = functions.region(FUNCTIONS_REGION).https.onRequest(async (req, res) => {
-  // Set CORS headers for production domain
+  // Apply security headers and validation
   const allowedOrigins = [
     'https://bottin-etoile-filante.org',
     'http://localhost:3000',
     'http://localhost:5173',
   ]
 
+  applySecurity({
+    useApiHeaders: true,
+    allowedOrigins,
+    enableRateLimit: true,
+    rateLimitOptions: { maxRequests: 30, windowMs: 60 * 1000 }, // 30 requests per minute
+  })(req, res)
+
+  // Set CORS headers
   const origin = req.headers.origin
   if (allowedOrigins.includes(origin)) {
     res.set('Access-Control-Allow-Origin', origin)
@@ -26,7 +37,8 @@ exports.validateEmail = functions.region(FUNCTIONS_REGION).https.onRequest(async
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.set('Access-Control-Allow-Headers', 'Content-Type')
   res.set('Access-Control-Allow-Credentials', 'true')
-  // Handle preflight OPTIONS request (though v2 should handle this automatically)
+
+  // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
     return res.status(200).send()
   }
@@ -40,27 +52,14 @@ exports.validateEmail = functions.region(FUNCTIONS_REGION).https.onRequest(async
   }
 
   try {
-    // Get email from request body
-    const { email } = req.body
+    // Validate and sanitize input
+    const validatedData = validateFunctionData(
+      emailValidationSchema,
+      req.body,
+      'validateEmail',
+    )
 
-    // Validate input
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({
-        authorized: false,
-        error: 'Email is required and must be a string.',
-      })
-    }
-
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        authorized: false,
-        error: 'Invalid email format.',
-      })
-    }
-
-    // Normalize email for comparison
+    const { email } = validatedData
     const normalizedEmail = email.toLowerCase().trim()
     console.log('Email validation request processed (V1)')
 
@@ -104,6 +103,15 @@ exports.validateEmail = functions.region(FUNCTIONS_REGION).https.onRequest(async
       message: 'Email not found in authorized collections.',
     })
   } catch (error) {
+    // Handle validation errors
+    if (error.code === 'invalid-argument') {
+      return res.status(400).json({
+        authorized: false,
+        error: error.message,
+        details: error.details,
+      })
+    }
+
     console.error('Email validation error:', error)
     return res.status(500).json({
       authorized: false,
@@ -129,6 +137,12 @@ exports.validateEmailV2 = onRequest({
     credentials: true,
   },
 }, async (req, res) => {
+  // Apply security headers
+  applySecurity({
+    useApiHeaders: true,
+    enableRateLimit: true,
+    rateLimitOptions: { maxRequests: 30, windowMs: 60 * 1000 },
+  })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -138,27 +152,14 @@ exports.validateEmailV2 = onRequest({
   }
 
   try {
-    // Get email from request body
-    const { email } = req.body
+    // Validate and sanitize input
+    const validatedData = validateFunctionData(
+      emailValidationSchema,
+      req.body,
+      'validateEmailV2',
+    )
 
-    // Validate input
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({
-        authorized: false,
-        error: 'Email is required and must be a string.',
-      })
-    }
-
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        authorized: false,
-        error: 'Invalid email format.',
-      })
-    }
-
-    // Normalize email for comparison
+    const { email } = validatedData
     const normalizedEmail = email.toLowerCase().trim()
     console.log('Email validation request processed (V2)')
 
@@ -202,6 +203,15 @@ exports.validateEmailV2 = onRequest({
       message: 'Email not found in authorized collections.',
     })
   } catch (error) {
+    // Handle validation errors
+    if (error.code === 'invalid-argument') {
+      return res.status(400).json({
+        authorized: false,
+        error: error.message,
+        details: error.details,
+      })
+    }
+
     console.error('Email validation error:', error)
     return res.status(500).json({
       authorized: false,

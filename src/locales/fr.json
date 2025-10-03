@@ -251,7 +251,24 @@
     "emailAlreadyInUse": "Un compte avec ce courriel existe déjà.",
     "weakPassword": "Le mot de passe doit contenir au moins 6 caractères.",
     "tooManyRequests": "Trop de tentatives échouées. Veuillez réessayer plus tard.",
-    "networkError": "Erreur réseau. Veuillez vérifier votre connexion."
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "phone": {
+      "optional": "Le numéro de téléphone est optionnel",
+      "invalid": "Veuillez entrer un numéro de téléphone valide",
+      "tooShort": "Numéro de téléphone trop court ({digits} chiffres). Il faut 10 chiffres.",
+      "tooLong": "Numéro de téléphone trop long ({digits} chiffres). Il faut 10 chiffres.",
+      "must10Digits": "Le téléphone doit être exactement 10 chiffres numériques",
+      "elevenDigitsMustStartWith1": "Pour les numéros à 11 chiffres, doit commencer par 1",
+      "valid": "Le format du numéro de téléphone est valide"
+    },
+    "postalCode": {
+      "optional": "Le code postal est optionnel",
+      "invalid": "Veuillez entrer un code postal canadien valide",
+      "tooShort": "Code postal trop court ({chars} caractères). Il faut 6 caractères au format A9A9A9.",
+      "tooLong": "Code postal trop long ({chars} caractères). Il faut 6 caractères au format A9A9A9.",
+      "invalidPattern": "Le code postal doit suivre le format canadien A9A9A9 (lettre-chiffre-lettre-chiffre-lettre-chiffre)",
+      "valid": "Le format du code postal est valide"
+    }
   },
   "profile": {
     "myChildren": "Mes Enfants",

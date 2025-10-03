@@ -116,8 +116,13 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="form.phone"
+                  :error="form.phone && !isValidPhoneFormat(form.phone)"
+                  :error-messages="form.phone && !isValidPhoneFormat(form.phone) ? getPhoneValidationMessage(form.phone, $t) : ''"
                   :label="$t('updateForm.phone')"
+                  placeholder="(123) 456-7890"
                   variant="outlined"
+                  @blur="formatPhoneOnBlur"
+                  @input="handlePhoneInput"
                 />
               </v-col>
 
@@ -149,8 +154,14 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="form.postal_code"
+                  :error="form.postal_code && !isValidPostalCodeFormat(form.postal_code)"
+                  :error-messages="form.postal_code && !isValidPostalCodeFormat(form.postal_code) ? getPostalCodeValidationMessage(form.postal_code, $t) : ''"
                   :label="$t('updateForm.postalCode')"
+                  maxlength="7"
+                  :placeholder="getSamplePostalCode()"
                   variant="outlined"
+                  @blur="formatPostalCodeOnBlur"
+                  @input="handlePostalCodeInput"
                 />
               </v-col>
 
@@ -319,6 +330,8 @@
   import { getCommitteeRoles } from '@/config/committees'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { getAvailableInterests } from '@/config/interests'
+  import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
+  import { formatPostalCodeForDisplay, formatPostalCodeForStorage, getPostalCodeValidationMessage, getSamplePostalCode, isValidPostalCodeFormat } from '@/utils/postalCodeFormatter'
 
   const route = useRoute()
   const router = useRouter()
@@ -414,6 +427,40 @@
     }
   }
 
+  // Phone formatting methods
+  const formatPhoneOnBlur = () => {
+    if (form.value.phone) {
+      // Format for display when user finishes editing
+      form.value.phone = formatPhoneForDisplay(formatPhoneForStorage(form.value.phone))
+    }
+  }
+
+  const handlePhoneInput = event => {
+    // Allow users to type freely, validation happens on blur/submit
+    const value = event.target ? event.target.value : event
+    form.value.phone = value
+  }
+
+  // Postal code formatting methods
+  const formatPostalCodeOnBlur = () => {
+    if (form.value.postal_code) {
+      // Format for display when user finishes editing
+      form.value.postal_code = formatPostalCodeForDisplay(formatPostalCodeForStorage(form.value.postal_code))
+    }
+  }
+
+  const handlePostalCodeInput = event => {
+    // Allow users to type freely, auto-format with space
+    const value = event.target ? event.target.value : event
+    const alphanumeric = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+
+    if (alphanumeric.length <= 6) {
+      // Format as A9A 9A9 while typing
+      form.value.postal_code = alphanumeric.length <= 3 ? alphanumeric : `${alphanumeric.slice(0, 3)} ${alphanumeric.slice(3)}`
+    }
+    // Don't update if more than 6 alphanumeric characters
+  }
+
   // Load parent data using token
   const loadParentData = async () => {
     try {
@@ -484,17 +531,21 @@
       otherParentHasAddress.value = data.otherParentHasAddress || false
       otherParentInfo.value = data.otherParentInfo || null
 
+      // Get committee memberships and roles first
+      const parentCommittees = getParentCommitteeIds(data.parent.email, data.availableCommittees)
+      const currentRoles = { ...form.value.committeeRoles } // Preserve roles set by getParentCommitteeIds
+
       // Pre-fill form with existing data
       form.value = {
         first_name: data.parent.first_name || '',
         last_name: data.parent.last_name || '',
-        phone: data.parent.phone || '',
+        phone: formatPhoneForDisplay(data.parent.phone || ''), // Format phone for display
         address: data.parent.address || '',
         city: data.parent.city || '',
-        postal_code: data.parent.postal_code || '',
+        postal_code: formatPostalCodeForDisplay(data.parent.postal_code || ''), // Format postal code for display
         sameAddressAsOther: false,
-        committees: getParentCommitteeIds(data.parent.email, data.availableCommittees),
-        committeeRoles: {}, // Will be populated by getParentCommitteeIds
+        committees: parentCommittees,
+        committeeRoles: currentRoles, // Use the roles populated by getParentCommitteeIds
         interests: Array.isArray(data.parent.interests) ? data.parent.interests : [],
       }
     } catch (error_) {
@@ -567,10 +618,10 @@
           parentData: {
             first_name: form.value.first_name,
             last_name: form.value.last_name,
-            phone: form.value.phone,
+            phone: formatPhoneForStorage(form.value.phone), // Format phone for backend
             address: form.value.address,
             city: form.value.city,
-            postal_code: form.value.postal_code,
+            postal_code: formatPostalCodeForStorage(form.value.postal_code), // Format postal code for backend
             sameAddressAsOther: form.value.sameAddressAsOther,
             committees: form.value.committees,
             committeeRoles: form.value.committeeRoles,
