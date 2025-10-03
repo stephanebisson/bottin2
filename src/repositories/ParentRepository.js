@@ -157,10 +157,10 @@ export class ParentRepository {
           throw new Error('ParentRepository: Email is required for new parent creation')
         }
 
-        console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with email ${parentDTO.email}...`)
+        console.log(`ParentRepository: Creating new parent ${parentDTO.fullName}...`)
         const docRef = doc(db, this.collectionName, parentDTO.email)
         await setDoc(docRef, firestoreData) // Use setDoc to create document with specific ID
-        console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${parentDTO.email}`)
+        console.log(`ParentRepository: Created parent ${parentDTO.fullName}`)
         return parentDTO.email
       }
     } catch (error) {

@@ -91,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
       const cacheKey = email.toLowerCase().trim()
       const cached = validationCache.get(cacheKey)
       if (cached && (Date.now() - cached.timestamp) < CACHE_TIMEOUT) {
-        console.log('Using cached email validation for:', email)
+        console.log('Using cached email validation result')
         return cached.data
       }
 
@@ -212,9 +212,9 @@ export const useAuthStore = defineStore('auth', () => {
         // Log verification status changes for debugging
         if (firebaseUser) {
           console.log('Auth state changed:', {
-            email: firebaseUser.email,
+            hasEmail: !!firebaseUser.email,
             verified: firebaseUser.emailVerified,
-            uid: firebaseUser.uid,
+            hasUid: !!firebaseUser.uid,
           })
         } else {
           console.log('User signed out')
@@ -402,9 +402,9 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       console.log('🔄 Refreshing user verification status...')
-      console.log('   Current user:', {
-        email: auth.currentUser.email,
-        uid: auth.currentUser.uid,
+      console.log('   Current user verification status:', {
+        hasEmail: !!auth.currentUser.email,
+        hasUid: !!auth.currentUser.uid,
         emailVerified: auth.currentUser.emailVerified,
       })
 

@@ -62,6 +62,7 @@ exports.validateEmail = functions.region(FUNCTIONS_REGION).https.onRequest(async
 
     // Normalize email for comparison
     const normalizedEmail = email.toLowerCase().trim()
+    console.log('Email validation request processed (V1)')
 
     // Check if email exists in parents collection
     const parentsQuery = await db.collection('parents')
@@ -159,6 +160,7 @@ exports.validateEmailV2 = onRequest({
 
     // Normalize email for comparison
     const normalizedEmail = email.toLowerCase().trim()
+    console.log('Email validation request processed (V2)')
 
     // Check if email exists in parents collection
     const parentsQuery = await db.collection('parents')

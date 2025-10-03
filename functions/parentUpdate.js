@@ -33,9 +33,7 @@ exports.validateUpdateTokenV2 = onRequest({
     const { token } = req.body
 
     console.log('=== validateUpdateTokenV2 ===')
-    console.log('Received token:', token)
-    console.log('Token type:', typeof token)
-    console.log('Token length:', token?.length)
+    console.log('Token validation request received')
 
     if (!token || typeof token !== 'string') {
       console.log('Token validation failed: invalid token format')
@@ -74,15 +72,8 @@ exports.validateUpdateTokenV2 = onRequest({
       const participantsSnapshot = await workflowDoc.ref.collection('participants').get()
       console.log(`Participant count: ${participantsSnapshot.size}`)
 
-      // Log first few tokens for comparison
-      const tokens = []
-      for (const doc of participantsSnapshot.docs) {
-        const participant = doc.data()
-        if (tokens.length < 3) {
-          tokens.push(participant.token)
-        }
-      }
-      console.log('Sample tokens:', tokens)
+      // Check participant tokens without logging sensitive data
+      console.log('Checking participant tokens for validation')
 
       for (const participantDoc of participantsSnapshot.docs) {
         const participant = participantDoc.data()
@@ -112,7 +103,7 @@ exports.validateUpdateTokenV2 = onRequest({
     }
 
     if (!tokenFound) {
-      console.log(`✗ Token not found in any active workflows: ${token}`)
+      console.log('✗ Token not found in any active workflows')
     }
 
     if (!parentData) {
@@ -488,7 +479,7 @@ exports.processParentOptOutV2 = onRequest({
       })
     }
 
-    console.log('Processing parent opt-out for token:', token)
+    console.log('Processing parent opt-out request')
 
     // Find the token in active workflows
     const activeWorkflowsSnapshot = await db.collection('workflows')

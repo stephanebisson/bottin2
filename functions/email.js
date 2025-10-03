@@ -303,7 +303,7 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
 
       console.log('=== Sending email ===')
       console.log('Parent email:', parent.email)
-      console.log('Parent token:', parent.updateToken)
+      console.log('Token generation:', parent.updateToken ? 'SUCCESS' : 'FAILED')
       console.log('Token length:', parent.updateToken?.length)
 
       // Construct update URL

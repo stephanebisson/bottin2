@@ -179,10 +179,10 @@ export class StaffRepository {
           throw new Error('StaffRepository: Email is required for new staff member creation')
         }
 
-        console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName} with email ${staffDTO.email}...`)
+        console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName}...`)
         const docRef = doc(db, this.collectionName, staffDTO.email)
         await setDoc(docRef, firestoreData) // Use setDoc to create document with specific ID
-        console.log(`StaffRepository: Created staff member ${staffDTO.fullName} with ID ${staffDTO.email}`)
+        console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
         return staffDTO.email
       }
     } catch (error) {
