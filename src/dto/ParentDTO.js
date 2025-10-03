@@ -48,7 +48,12 @@ export class ParentDTO {
       return ''
     }
     const email = value.trim().toLowerCase()
-    return email.length > 0 && email.includes('@') ? email : ''
+    // Basic validation: must have @ with non-empty parts before and after
+    const atIndex = email.indexOf('@')
+    if (atIndex <= 0 || atIndex >= email.length - 1) {
+      return ''
+    }
+    return email
   }
 
   /**
