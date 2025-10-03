@@ -125,7 +125,6 @@ export const getCSPConfig = () => {
       'https://firebaseapp.com',
       'https://*.googleapis.com', // All Google APIs including Firebase services
     ].filter(Boolean),
-    'frame-ancestors': ['\'none\''],
     'base-uri': ['\'self\''],
     'form-action': ['\'self\''],
   }

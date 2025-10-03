@@ -19,6 +19,11 @@ import App from './App.vue'
 // Styles
 import 'unfonts.css'
 
+// Load icons asynchronously to avoid preload warnings
+requestIdleCallback(() => {
+  import('@/styles/icons.css')
+}, { timeout: 2000 })
+
 // Initialize security configuration
 try {
   initSecurity()

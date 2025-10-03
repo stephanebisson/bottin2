@@ -34,6 +34,8 @@ export default defineConfig({
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
         }],
+        preconnect: true,
+        display: 'swap',
       },
     }),
     AutoImport({
@@ -76,6 +78,16 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Disable automatic preload link generation for unsupported types
+        experimentalMinChunkSize: 1000,
+      },
+    },
+    // Disable preloading of icon fonts to avoid unused preload warnings
+    cssCodeSplit: true,
   },
   css: {
     preprocessorOptions: {
