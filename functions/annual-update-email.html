@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise à Jour Annuelle des Informations</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #1976d2; color: white; text-align: center; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+    .button { display: inline-block; background-color: #1976d2; color: white !important; padding: 15px 35px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-size: 16px; font-weight: bold; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+    .info { background-color: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 5px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📚 Bottin de l'Étoile filante</h1>
+      <h2>Mise à Jour Annuelle des Informations</h2>
+    </div>
+    <div class="content">
+      <p>Bonjour <strong>{{PARENT_NAME}}</strong>,</p>
+      
+      <p>Il vous faudra seulement <strong>2 minutes</strong> pour mettre à jour vos données pour le gros bottin de l'Étoile filante!</p>
+      
+      <p style="text-align: center;">
+        <a href="{{UPDATE_URL}}" class="button">Mettre à Jour Mes Informations</a>
+      </p>
+      
+      <div class="info">
+        <strong>📝 Important :</strong> Ce lien est unique et restera actif pendant 30 jours.
+      </div>
+      
+      <p><strong>Instructions :</strong></p>
+      <ol>
+        <li>Cliquez sur le lien ci-dessus pour accéder à vos informations</li>
+        <li>Apportez les modifications nécessaires</li>
+        <li>Validez vos intérêts et passions et prenez le temps de les mettre à jour au besoin</li>
+        <li><strong>Même si aucune information n'a été modifiée</strong>, assurez-vous de cliquer sur le bouton "valider" pour ne pas recevoir de rappel</li>
+        <li>Vous pouvez indiquer si votre adresse est la même que celle de votre conjoint(e), mais il est préférable que chaque parent remplisse le formulaire</li>
+        <li>La date limite de soumission est le <strong>{{DEADLINE}}</strong></li>
+      </ol>
+      
+      <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>À propos du bottin :</strong></p>
+        <p>Le bottin est un annuaire scolaire imprimé qui contribue à l'autonomie de nos enfants en leur fournissant une liste précise des camarades de classe qu'ils peuvent contacter pour des projets scolaires et des rencontres amicales. Il s'avère aussi une ressource indispensable pour les parents et les enseignants.</p>
+        <p>Comme le bottin contient des informations personnelles, le partage se fait sur une base volontaire. Vous pouvez choisir de partager des informations partielles (ex., téléphone et courriel uniquement).</p>
+        <p><strong>💻 Nouveauté cette année :</strong> Une version en ligne du bottin sera disponible! Vous recevrez une communication séparée quand il sera temps d'activer votre compte pour accéder à la version numérique.</p>
+      </div>
+      
+      <p>Pour toute question, n'hésitez pas à nous contacter à <strong>bottin.etoile.filante@gmail.com</strong>.</p>
+      
+      <p>Merci!</p>
+      
+      <p><strong>Le comité Bottin</strong></p>
+    </div>
+    <div class="footer">
+      <p>Bottin de l'Étoile filante | {{CURRENT_YEAR}}</p>
+      <p style="font-size: 12px; color: #999;">Vous pouvez répondre à ce courriel pour contacter le comité Bottin.</p>
+    </div>
+  </div>
+</body>
+</html>

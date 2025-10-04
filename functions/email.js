@@ -1,3 +1,5 @@
+const fs = require('node:fs')
+const path = require('node:path')
 const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
@@ -10,54 +12,6 @@ const EMAIL_CONFIG = {
   FROM_NAME: 'Bottin Étoile filante',
   APP_URL: 'https://bottin-etoile-filante.org',
 }
-
-// Email messages organized by language
-const EMAIL_MESSAGES = {
-  en: {
-    systemName: 'School Directory System',
-    subject: 'Annual Information Update Required',
-    title: 'Annual Information Update',
-    greeting: 'Dear',
-    intro: (schoolYear, systemName) => `As we begin the <strong>${schoolYear}</strong> school year, we need to update and verify the information in our ${systemName.toLowerCase()}.`,
-    instruction: 'Please take a few minutes to review and update your family\'s information by clicking the button below:',
-    buttonText: 'Update My Information',
-    updateListTitle: 'You will be able to update:',
-    updateItems: [
-      'Contact information (phone, address)',
-      'Committee memberships and interests',
-      'Directory participation preferences',
-    ],
-    noAccountText: '<strong>No account required!</strong> Simply click the link above to get started. After submitting your information, you\'ll have the option to create an account for easier future access.',
-    contactText: 'If you have any questions or need assistance, please contact the school office.',
-    thankYouText: 'Thank you for helping us keep our directory accurate and up-to-date!',
-    signature: 'School Administration',
-    footerText: (systemName, year) => `${systemName} | ${year}`,
-    automatedMessage: 'This is an automated message. Please do not reply to this email.',
-  },
-  fr: {
-    systemName: 'Bottin de l\'Étoile filante',
-    subject: 'Mise à Jour Annuelle des Informations Requise',
-    title: 'Mise à Jour Annuelle des Informations',
-    greeting: 'Cher/Chère',
-    intro: schoolYear => `Alors que nous commençons l'année scolaire <strong>${schoolYear}</strong>, nous devons mettre à jour et vérifier les informations dans notre bottin scolaire.`,
-    instruction: 'Veuillez prendre quelques minutes pour réviser et mettre à jour les informations de votre famille en cliquant sur le bouton ci-dessous :',
-    buttonText: 'Mettre à Jour Mes Informations',
-    updateListTitle: 'Vous pourrez mettre à jour :',
-    updateItems: [
-      'Informations de contact (téléphone, adresse)',
-      'Adhésions aux comités et intérêts',
-      'Préférences de participation au bottin',
-    ],
-    noAccountText: '<strong>Aucun compte requis !</strong> Cliquez simplement sur le lien ci-dessus pour commencer. Après avoir soumis vos informations, vous aurez l\'option de créer un compte pour un accès futur plus facile.',
-    contactText: 'Si vous avez des questions ou avez besoin d\'assistance, veuillez contacter le bureau de l\'école.',
-    thankYouText: 'Merci de nous aider à maintenir notre bottin précis et à jour !',
-    signature: 'Administration Scolaire',
-    footerText: (systemName, year) => `${systemName} | ${year}`,
-    automatedMessage: 'Ceci est un message automatisé. Veuillez ne pas répondre à ce courriel.',
-  },
-}
-
-const EMAIL_SYSTEM_EMOJI = '📚'
 
 // Get Firestore instance
 const db = admin.firestore()
@@ -118,73 +72,29 @@ function getEmailService () {
   }
 }
 
-function getEmailTemplate (parentName, updateUrl, schoolYear, language = 'fr') {
-  const messages = EMAIL_MESSAGES[language] || EMAIL_MESSAGES.en
+function getEmailTemplate (parentName, updateUrl, schoolYear) {
   const currentYear = new Date().getFullYear()
+  const deadline = '13 octobre' // TODO: Make this configurable based on workflow settings
+  const templatePath = path.join(__dirname, 'annual-update-email.html')
 
-  const updateListItems = messages.updateItems.map(item => `<li>${item}</li>`).join('')
+  try {
+    let html = fs.readFileSync(templatePath, 'utf8')
 
-  return {
-    subject: `${schoolYear} - ${messages.subject}`,
-    html: `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${messages.title}</title>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background-color: #1976d2; color: white; text-align: center; padding: 20px; border-radius: 8px 8px 0 0; }
-          .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background-color: #1976d2; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
-          .info { background-color: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>${EMAIL_SYSTEM_EMOJI} ${messages.systemName}</h1>
-            <h2>${messages.title}</h2>
-          </div>
-          <div class="content">
-            <p>${messages.greeting} <strong>${parentName}</strong>,</p>
-            
-            <p>${messages.intro(schoolYear, messages.systemName)}</p>
-            
-            <p>${messages.instruction}</p>
-            
-            <p style="text-align: center;">
-              <a href="${updateUrl}" class="button">${messages.buttonText}</a>
-            </p>
-            
-            <div class="info">
-              <strong>📝 Important:</strong> This link is unique to your family and will remain active throughout the school year.
-            </div>
-            
-            <p>${messages.updateListTitle}</p>
-            <ul>
-              ${updateListItems}
-            </ul>
-            
-            <p>${messages.noAccountText}</p>
-            
-            <p>${messages.contactText}</p>
-            
-            <p>${messages.thankYouText}</p>
-            
-            <p>Sincerely,<br>${messages.signature}</p>
-          </div>
-          <div class="footer">
-            <p>${messages.footerText(messages.systemName, currentYear)}</p>
-            <p style="font-size: 12px; color: #999;">${messages.automatedMessage}</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `,
+    // Replace template variables
+    html = html
+      .replace(/{{PARENT_NAME}}/g, parentName)
+      .replace(/{{UPDATE_URL}}/g, updateUrl)
+      .replace(/{{SCHOOL_YEAR}}/g, schoolYear)
+      .replace(/{{CURRENT_YEAR}}/g, currentYear)
+      .replace(/{{DEADLINE}}/g, deadline)
+
+    return {
+      subject: `${schoolYear} - Mise à Jour Annuelle des Informations Requise`,
+      html,
+    }
+  } catch (error) {
+    console.error('Error reading email template:', error)
+    throw new Error('Failed to load email template')
   }
 }
 
@@ -311,9 +221,7 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       const updateUrl = `${baseUrl}/update/${parent.updateToken}`
       console.log('Update URL:', updateUrl)
 
-      // Determine language (assume 'fr' for now, could be based on parent preference)
-      const language = parent.preferredLanguage || 'fr'
-      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear, language)
+      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear)
 
       try {
         const fromEmail = EMAIL_CONFIG.FROM_EMAIL
