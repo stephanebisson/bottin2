@@ -5,7 +5,7 @@ import { db } from '@/firebase'
 /**
  * Staff Repository - Clean data access layer for staff operations
  * Handles all Firestore interactions and returns StaffDTO objects
- * Note: Staff collection uses email as document ID (see sheets-sync.js line 731-739)
+ * Note: Staff collection uses email as document ID in most cases, but some staff may have generated IDs
  */
 export class StaffRepository {
   constructor () {
@@ -32,8 +32,8 @@ export class StaffRepository {
   }
 
   /**
-   * Get single staff member by ID (which is their email)
-   * @param {string} id - Staff email (used as document ID)
+   * Get single staff member by ID
+   * @param {string} id - Staff ID (usually email, but can be generated ID)
    */
   async getById (id) {
     try {
@@ -57,8 +57,8 @@ export class StaffRepository {
   }
 
   /**
-   * Get multiple staff members by their IDs (emails) efficiently
-   * @param {string[]} ids - Array of staff emails
+   * Get multiple staff members by their IDs efficiently
+   * @param {string[]} ids - Array of staff IDs (emails or generated IDs)
    */
   async getByIds (ids) {
     if (!Array.isArray(ids) || ids.length === 0) {
@@ -166,7 +166,7 @@ export class StaffRepository {
     try {
       const firestoreData = staffDTO.toFirestore()
 
-      if (staffDTO.id && staffDTO.id === staffDTO.email) {
+      if (staffDTO.id) {
         // Update existing staff member
         console.log(`StaffRepository: Updating staff member ${staffDTO.id} (${staffDTO.fullName})...`)
         const docRef = doc(db, this.collectionName, staffDTO.id)
@@ -174,16 +174,22 @@ export class StaffRepository {
         console.log(`StaffRepository: Updated staff member ${staffDTO.fullName}`)
         return staffDTO.id
       } else {
-        // Create new staff member - use email as document ID
-        if (!staffDTO.email) {
-          throw new Error('StaffRepository: Email is required for new staff member creation')
-        }
+        // Create new staff member - use email as document ID if available, otherwise let Firestore generate ID
+        const docId = staffDTO.email || null
 
-        console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName}...`)
-        const docRef = doc(db, this.collectionName, staffDTO.email)
-        await setDoc(docRef, firestoreData) // Use setDoc to create document with specific ID
-        console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
-        return staffDTO.email
+        if (docId) {
+          console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName} with email ID...`)
+          const docRef = doc(db, this.collectionName, docId)
+          await setDoc(docRef, firestoreData)
+          console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
+          return docId
+        } else {
+          console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName} with generated ID...`)
+          const docRef = doc(collection(db, this.collectionName))
+          await setDoc(docRef, firestoreData)
+          console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
+          return docRef.id
+        }
       }
     } catch (error) {
       console.error('StaffRepository: Error saving staff member:', error)

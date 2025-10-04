@@ -1378,7 +1378,7 @@
   }
 
   const getFormattedClassName = classLetter => {
-    if (!classLetter || !firebaseStore.classes || !firebaseStore.staff) {
+    if (!classLetter || !firebaseStore.classes || !firebaseStore.staffDTO) {
       return null
     }
 
@@ -1388,10 +1388,10 @@
     }
 
     // Find teacher in staff collection using teacher ID
-    const teacher = firebaseStore.staff.find(s => s.id === cls.teacher)
+    const teacher = firebaseStore.staffDTO.find(s => s.id === cls.teacher)
 
-    if (teacher && teacher.first_name && teacher.last_name) {
-      return `${teacher.first_name} ${teacher.last_name} (${classLetter})`
+    if (teacher && teacher.fullName) {
+      return `${teacher.fullName} (${classLetter})`
     }
 
     return null
@@ -1424,8 +1424,8 @@
       })
       .map(cls => {
         // Find teacher in staff collection using teacher ID
-        const teacher = firebaseStore.staff?.find(s => s.id === cls.teacher)
-        const teacherName = teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : 'Teacher'
+        const teacher = firebaseStore.staffDTO?.find(s => s.id === cls.teacher)
+        const teacherName = teacher ? teacher.fullName : 'Teacher'
 
         return {
           title: `${teacherName} (${cls.classLetter})`,
@@ -1439,8 +1439,8 @@
 
     return firebaseStore.classes.map(cls => {
       // Find teacher in staff collection using teacher ID
-      const teacher = firebaseStore.staff?.find(s => s.id === cls.teacher)
-      const teacherName = teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : 'Teacher'
+      const teacher = firebaseStore.staffDTO?.find(s => s.id === cls.teacher)
+      const teacherName = teacher ? teacher.fullName : 'Teacher'
 
       return {
         title: `${teacherName} (${cls.classLetter})`,
@@ -1450,9 +1450,9 @@
   }
 
   const getTeacherName = teacherId => {
-    if (!firebaseStore.staff || !teacherId) return 'Unknown Teacher'
-    const teacher = firebaseStore.staff.find(s => s.id === teacherId)
-    return teacher ? `${teacher.first_name} ${teacher.last_name}`.trim() : teacherId
+    if (!firebaseStore.staffDTO || !teacherId) return 'Unknown Teacher'
+    const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
+    return teacher ? teacher.fullName : 'Unknown Teacher'
   }
 
   const getClassStudents = classLetter => {
@@ -1941,6 +1941,8 @@
     await firebaseStore.loadAllData()
     // Load students DTO data needed for class filtering
     await firebaseStore.loadStudentsDTO()
+    // Load staff DTO data needed for teacher name display
+    await firebaseStore.loadStaffDTO()
     // Then load workflow data which depends on Firebase data for calculations
     await loadWorkflowData()
   })

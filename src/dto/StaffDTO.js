@@ -57,8 +57,7 @@ export class StaffDTO {
   isValid () {
     return this.first_name.length > 0
       && this.last_name.length > 0
-      && this.email.length > 0
-      && this.email.includes('@')
+      && this.id && this.id.length > 0
   }
 
   /**
@@ -72,10 +71,8 @@ export class StaffDTO {
     if (!this.last_name) {
       errors.push('Last name is required')
     }
-    if (!this.email) {
-      errors.push('Email is required')
-    } else if (!this.email.includes('@')) {
-      errors.push('Email must be valid')
+    if (!this.id) {
+      errors.push('ID is required')
     }
     return errors
   }
