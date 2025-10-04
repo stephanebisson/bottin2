@@ -151,14 +151,9 @@
         to: '/classes',
       },
       {
-        title: t('nav.students'),
-        icon: 'mdi-account-multiple',
-        to: '/students',
-      },
-      {
-        title: t('nav.parents'),
-        icon: 'mdi-account-supervisor',
-        to: '/parents',
+        title: t('nav.directory'),
+        icon: 'mdi-book-account',
+        to: '/families',
       },
       {
         title: t('nav.staff'),

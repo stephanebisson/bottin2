@@ -4,13 +4,14 @@
     "classes": "Classes",
     "students": "Élèves", 
     "parents": "Parents",
+    "directory": "Familles",
     "staff": "Personnel",
     "committees": "Comités",
     "about": "À propos",
     "profile": "Mon Profil",
     "schoolDirectory": "Bottin Étoile filante",
     "schoolDirectorySystem": "Bottin en ligne",
-    "pleaseLogin": "Veuillez vous connecter pour accéder au répertoire"
+    "pleaseLogin": "Veuillez vous connecter pour accéder au bottin"
   },
   "common": {
     "loading": "Chargement...",
@@ -94,6 +95,25 @@
     "searchParentsChildren": "Rechercher parents et enfants...",
     "noChildrenFound": "Aucun enfant trouvé"
   },
+  "directory": {
+    "title": "Familles",
+    "dataLoaded": "{students} élèves, {parents} parents chargés",
+    "loadingData": "Chargement des familles...",
+    "errorLoadingData": "Erreur lors du chargement des familles",
+    "noDataFound": "Aucune donnée de famille trouvée",
+    "searchPlaceholder": "Rechercher familles, parents, élèves, classes...",
+    "familiesView": "Familles",
+    "parentsView": "Parents",
+    "filterByClass": "Filtrer par Classe",
+    "allClasses": "Toutes les Classes",
+    "familiesShown": "{filtered} sur {total} familles affichées",
+    "parentsShown": "{filtered} sur {total} parents affichés",
+    "parent": "Parent",
+    "children": "Enfants",
+    "teacherLevel": "Enseignant, Niveau",
+    "noParentInfo": "Aucune information parent disponible",
+    "noChildren": "Aucun enfant trouvé"
+  },
   "staff": {
     "title": "Répertoire du Personnel",
     "staffLoaded": "{count} membres du personnel chargés",
@@ -162,11 +182,11 @@
     "students": "élèves",
     "classes": "classes",
     "parents": "parents",
+    "families": "membres",
     "staffMembers": "membres du personnel",
     "committees": "comités",
     "classesDescription": "Parcourir toutes les classes avec les informations des enseignants et élèves",
-    "studentsDescription": "Voir tous les élèves organisés par familles et niveaux",
-    "parentsDescription": "Accéder aux coordonnées des parents",
+    "familiesDescription": "Parcourir les familles avec les informations des parents et élèves",
     "staffDescription": "Répertoire de tout le personnel enseignant et administratif",
     "committeesDescription": "Comités scolaires et informations de leurs membres",
     "errorLoadingData": "Erreur lors du chargement du tableau de bord"
