@@ -58,10 +58,22 @@
               <h3 class="text-h5 font-weight-bold mb-2">{{ navItem.title }}</h3>
               <p class="text-body-2 text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
             </div>
-            <div class="d-flex justify-center">
-              <v-chip :color="navItem.color" size="small" variant="outlined">
+            <div class="d-flex justify-center gap-3 flex-wrap">
+              <v-chip v-if="!navItem.counts" :color="navItem.color" size="small" variant="outlined">
                 {{ navItem.count }} {{ navItem.countLabel }}
               </v-chip>
+              <template v-else>
+                <v-chip
+                  v-for="chipData in navItem.counts"
+                  :key="chipData.label"
+                  class="mx-1"
+                  :color="navItem.color"
+                  size="small"
+                  variant="outlined"
+                >
+                  {{ chipData.count }} {{ chipData.label }}
+                </v-chip>
+              </template>
             </div>
           </v-card>
         </v-col>
@@ -127,8 +139,16 @@
       icon: 'mdi-book-account',
       color: 'secondary',
       route: '/families',
-      count: firebaseStore.studentsDTO.length + firebaseStore.parentsDTO.length,
-      countLabel: t('dashboard.families').toLowerCase(),
+      counts: [
+        {
+          count: firebaseStore.studentsDTO.length,
+          label: t('dashboard.students').toLowerCase(),
+        },
+        {
+          count: firebaseStore.parentsDTO.length,
+          label: t('dashboard.parents').toLowerCase(),
+        },
+      ],
     },
     {
       title: t('nav.staff'),
