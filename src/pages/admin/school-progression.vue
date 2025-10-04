@@ -1125,7 +1125,7 @@
     }
 
     // Validate that we have both workflow changes and Firebase data loaded
-    if (!currentWorkflow.value.changes || !firebaseStore.students) {
+    if (!currentWorkflow.value.changes || !firebaseStore.studentsDTO) {
       return false
     }
 
@@ -1135,7 +1135,7 @@
       .map(assignment => assignment.studentId)
 
     const missingStudents = assignedStudentIds.filter(studentId =>
-      !firebaseStore.students.some(s => s.id === studentId),
+      !firebaseStore.studentsDTO.some(s => s.id === studentId),
     )
 
     if (missingStudents.length > 0) {
@@ -1164,7 +1164,7 @@
 
     return departing.map(student => {
       // Find the actual student record to get parent information
-      const fullStudent = firebaseStore.students?.find(s => s.id === student.studentId)
+      const fullStudent = firebaseStore.studentsDTO?.find(s => s.id === student.studentId)
       if (!fullStudent) {
         return {
           ...student,
@@ -1179,7 +1179,7 @@
 
       const parentsNeedRemoval = parentEmails.map(email => {
         // Count how many other students have this parent email
-        const otherStudentCount = firebaseStore.students?.filter(otherStudent =>
+        const otherStudentCount = firebaseStore.studentsDTO?.filter(otherStudent =>
           otherStudent.id !== student.studentId
           && (otherStudent.parent1_email === email || otherStudent.parent2_email === email),
         ).length || 0
@@ -1224,7 +1224,7 @@
       .filter(change => change.changeType === 'graduating')
       .map(change => {
         // Find the actual student record to get parent information
-        const student = firebaseStore.students?.find(s => s.id === change.studentId)
+        const student = firebaseStore.studentsDTO?.find(s => s.id === change.studentId)
         if (!student) {
           return {
             ...change,
@@ -1239,7 +1239,7 @@
 
         const parentsNeedRemoval = parentEmails.map(email => {
           // Count how many other students have this parent email
-          const otherStudentCount = firebaseStore.students?.filter(otherStudent =>
+          const otherStudentCount = firebaseStore.studentsDTO?.filter(otherStudent =>
             otherStudent.id !== change.studentId
             && (otherStudent.parent1_email === email || otherStudent.parent2_email === email),
           ).length || 0
@@ -1404,7 +1404,7 @@
     return firebaseStore.classes
       .filter(cls => {
         // Get students in this class to see what levels they have
-        const classStudents = firebaseStore.students.filter(s => s.className === cls.classLetter)
+        const classStudents = firebaseStore.studentsDTO.filter(s => s.className === cls.classLetter)
         const levels = classStudents.map(s => Number.parseInt(s.level)).filter(l => !Number.isNaN(l))
 
         // For level 1, look for classes with levels 1-2
@@ -1456,8 +1456,8 @@
   }
 
   const getClassStudents = classLetter => {
-    if (!firebaseStore.students) return []
-    return firebaseStore.students.filter(student => student.className === classLetter)
+    if (!firebaseStore.studentsDTO) return []
+    return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
   }
 
   const getClassLevelData = classLetter => {
@@ -1506,7 +1506,7 @@
       )
 
     for (const change of autoProgressionStudents) {
-      const student = firebaseStore.students.find(s => s.id === change.studentId)
+      const student = firebaseStore.studentsDTO.find(s => s.id === change.studentId)
       if (!student) continue
 
       // Check if this student has an assignment (meaning they need to move classes)
@@ -1541,7 +1541,7 @@
       )
 
     for (const assignment of studentsAssignedHere) {
-      const student = firebaseStore.students.find(s => s.id === assignment.studentId)
+      const student = firebaseStore.studentsDTO.find(s => s.id === assignment.studentId)
       if (student) {
         projectedStudents.push({
           id: student.id,
@@ -1939,6 +1939,8 @@
   onMounted(async () => {
     // Load Firebase data first to ensure computed properties have current student/parent data
     await firebaseStore.loadAllData()
+    // Load students DTO data needed for class filtering
+    await firebaseStore.loadStudentsDTO()
     // Then load workflow data which depends on Firebase data for calculations
     await loadWorkflowData()
   })
