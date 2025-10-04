@@ -487,6 +487,9 @@
                     <div class="text-caption text-grey-darken-1">{{ parent.email }}</div>
                     <div class="text-caption font-weight-medium" :class="parent.needsRemoval ? 'text-error' : 'text-success'">
                       {{ parent.needsRemoval ? $t('admin.willBeDeleted') : $t('admin.willRemain') }}
+                      <span v-if="!parent.needsRemoval && parent.remainingChildren && parent.remainingChildren.length > 0" class="text-grey-darken-1">
+                        ({{ parent.remainingChildren.join(', ') }})
+                      </span>
                     </div>
                   </div>
                 </v-alert>
@@ -550,6 +553,9 @@
                     <div class="text-caption text-grey-darken-1">{{ parent.email }}</div>
                     <div class="text-caption font-weight-medium" :class="parent.needsRemoval ? 'text-error' : 'text-success'">
                       {{ parent.needsRemoval ? $t('admin.willBeDeleted') : $t('admin.willRemain') }}
+                      <span v-if="!parent.needsRemoval && parent.remainingChildren && parent.remainingChildren.length > 0" class="text-grey-darken-1">
+                        ({{ parent.remainingChildren.join(', ') }})
+                      </span>
                     </div>
                   </div>
                 </v-alert>
@@ -1178,11 +1184,19 @@
       if (fullStudent.parent2_email) parentEmails.push(fullStudent.parent2_email)
 
       const parentsNeedRemoval = parentEmails.map(email => {
-        // Count how many other students have this parent email
-        const otherStudentCount = firebaseStore.studentsDTO?.filter(otherStudent =>
+        // Count how many other students have this parent email (excluding those who are also leaving)
+        const allLeavingStudentIds = new Set([
+          ...departingStudentsData.value.map(s => s.studentId),
+          ...(graduatingStudents.value || []).map(s => s.studentId),
+        ])
+
+        const remainingStudents = firebaseStore.studentsDTO?.filter(otherStudent =>
           otherStudent.id !== student.studentId
+          && !allLeavingStudentIds.has(otherStudent.id)
           && (otherStudent.parent1_email === email || otherStudent.parent2_email === email),
-        ).length || 0
+        ) || []
+
+        const otherStudentCount = remainingStudents.length
 
         // Check if this parent is also a parent of any new students in the workflow
         const isParentOfNewStudent = currentWorkflow.value?.newStudents?.some(newStudent => {
@@ -1203,10 +1217,16 @@
           parentName = name || email
         }
 
+        // Get names of remaining children for display
+        const remainingChildrenNames = remainingStudents.map(s =>
+          `${s.first_name || ''} ${s.last_name || ''}`.trim(),
+        ).filter(name => name.length > 0)
+
         return {
           email,
           name: parentName,
           needsRemoval: otherStudentCount === 0 && !isParentOfNewStudent,
+          remainingChildren: remainingChildrenNames,
         }
       })
 
@@ -1238,11 +1258,19 @@
         if (student.parent2_email) parentEmails.push(student.parent2_email)
 
         const parentsNeedRemoval = parentEmails.map(email => {
-          // Count how many other students have this parent email
-          const otherStudentCount = firebaseStore.studentsDTO?.filter(otherStudent =>
+          // Count how many other students have this parent email (excluding those who are also leaving)
+          const allLeavingStudentIds = new Set([
+            ...departingStudentsData.value.map(s => s.studentId),
+            ...(graduatingStudents.value || []).map(s => s.studentId),
+          ])
+
+          const remainingStudents = firebaseStore.studentsDTO?.filter(otherStudent =>
             otherStudent.id !== change.studentId
+            && !allLeavingStudentIds.has(otherStudent.id)
             && (otherStudent.parent1_email === email || otherStudent.parent2_email === email),
-          ).length || 0
+          ) || []
+
+          const otherStudentCount = remainingStudents.length
 
           // Check if this parent is also a parent of any new students in the workflow
           const isParentOfNewStudent = currentWorkflow.value?.newStudents?.some(newStudent => {
@@ -1263,10 +1291,16 @@
             parentName = name || email
           }
 
+          // Get names of remaining children for display
+          const remainingChildrenNames = remainingStudents.map(s =>
+            `${s.first_name || ''} ${s.last_name || ''}`.trim(),
+          ).filter(name => name.length > 0)
+
           return {
             email,
             name: parentName,
             needsRemoval: otherStudentCount === 0 && !isParentOfNewStudent,
+            remainingChildren: remainingChildrenNames,
           }
         })
 
