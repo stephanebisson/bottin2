@@ -996,19 +996,19 @@ exports.applyProgressionChangesV2 = onRequest({
       })
     }
 
-    // Check for orphaned parents (parents whose all children graduated)
-    const graduatingStudents = changesSnapshot.docs
-      .filter(doc => doc.data().changeType === 'graduating')
+    // Check for orphaned parents (parents whose all children graduated or are departing)
+    const leavingStudents = changesSnapshot.docs
+      .filter(doc => doc.data().changeType === 'graduating' || doc.data().changeType === 'departing')
       .map(doc => doc.data().studentId)
       .filter(id => id && typeof id === 'string') // Filter out invalid/undefined IDs
 
-    if (graduatingStudents.length > 0) {
-      console.log(`Processing ${graduatingStudents.length} graduating students for orphaned parent check`)
+    if (leavingStudents.length > 0) {
+      console.log(`Processing ${leavingStudents.length} leaving students for orphaned parent check`)
 
       // Get all students to check for orphaned parents
       const allStudentsSnapshot = await db.collection('students').get()
       const remainingStudents = allStudentsSnapshot.docs
-        .filter(doc => !graduatingStudents.includes(doc.id))
+        .filter(doc => !leavingStudents.includes(doc.id))
         .map(doc => doc.data())
 
       // Get all parent emails from remaining students
@@ -1022,21 +1022,21 @@ exports.applyProgressionChangesV2 = onRequest({
         }
       }
 
-      // Get graduating students' parent emails
+      // Get leaving students' parent emails (both graduating and departing)
       // Handle Firestore 'in' query limitations (max 10 items per query)
       const orphanedParentEmails = new Set()
 
-      if (graduatingStudents.length > 0) {
+      if (leavingStudents.length > 0) {
         // Process in batches of 10 (Firestore 'in' limit)
-        for (let i = 0; i < graduatingStudents.length; i += 10) {
-          const batch = graduatingStudents.slice(i, i + 10)
+        for (let i = 0; i < leavingStudents.length; i += 10) {
+          const batch = leavingStudents.slice(i, i + 10)
 
           try {
-            const graduatingStudentsSnapshot = await db.collection('students')
+            const leavingStudentsSnapshot = await db.collection('students')
               .where(admin.firestore.FieldPath.documentId(), 'in', batch)
               .get()
 
-            for (const doc of graduatingStudentsSnapshot.docs) {
+            for (const doc of leavingStudentsSnapshot.docs) {
               const student = doc.data()
               if (student.parent1_email && !remainingParentEmails.has(student.parent1_email)) {
                 orphanedParentEmails.add(student.parent1_email)
@@ -1046,7 +1046,7 @@ exports.applyProgressionChangesV2 = onRequest({
               }
             }
           } catch (error) {
-            console.error(`Error querying graduating students batch ${i / 10 + 1}:`, error)
+            console.error(`Error querying leaving students batch ${i / 10 + 1}:`, error)
             console.error('Batch contents:', batch)
             // Continue with next batch rather than failing completely
           }
@@ -1068,7 +1068,7 @@ exports.applyProgressionChangesV2 = onRequest({
             type: 'parent_removed',
             parentEmail: parent.email,
             parentName: `${parent.first_name} ${parent.last_name}`,
-            reason: 'All children graduated',
+            reason: 'All children left school',
             timestamp: FieldValue.serverTimestamp(),
           })
         }
