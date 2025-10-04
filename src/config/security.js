@@ -20,7 +20,7 @@ const validateHttpsUrl = (url, name = 'API') => {
  */
 export const getFunctionsBaseUrl = () => {
   const baseUrl = import.meta.env.PROD
-    ? 'https://us-central1-bottin2-3b41d.cloudfunctions.net'
+    ? 'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net'
     : 'http://localhost:5001/bottin2-3b41d/us-central1'
 
   validateHttpsUrl(baseUrl, 'Firebase Functions')
@@ -121,7 +121,7 @@ export const getCSPConfig = () => {
       '\'self\'',
       isDev ? 'ws://localhost:*' : '', // WebSocket for HMR in dev
       isDev ? 'http://localhost:*' : '', // Dev server
-      'https://us-central1-bottin2-3b41d.cloudfunctions.net', // Firebase Functions
+      'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net', // Firebase Functions
       'https://firebaseapp.com',
       'https://*.googleapis.com', // All Google APIs including Firebase services
     ].filter(Boolean),
