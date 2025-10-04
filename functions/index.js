@@ -4,11 +4,11 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminManagement')
-const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2 } = require('./annualUpdateWorkflow')
+const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2, updateWorkflowProgressV2 } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmail, validateEmailV2 } = require('./auth')
 const { updateCommitteeMembersV2 } = require('./committees')
-const { sendUpdateEmailsToSelectedV2 } = require('./email')
+const { sendParentEmailV2 } = require('./email')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
 const { startSchoolProgressionV2, assignTransitionClassV2, addNewStudentV2, applyProgressionChangesV2, getProgressionStatusV2, markStudentsDepartingV2, removeDepartingStudentV2 } = require('./schoolProgression')
 const { healthCheckV2 } = require('./utils')
@@ -20,7 +20,8 @@ exports.startAnnualUpdate = startAnnualUpdate
 exports.getWorkflowStatus = getWorkflowStatus
 exports.startAnnualUpdateV2 = startAnnualUpdateV2
 exports.getWorkflowStatusV2 = getWorkflowStatusV2
-exports.sendUpdateEmailsToSelectedV2 = sendUpdateEmailsToSelectedV2
+exports.updateWorkflowProgressV2 = updateWorkflowProgressV2
+exports.sendParentEmailV2 = sendParentEmailV2
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2
 exports.processParentOptOutV2 = processParentOptOutV2

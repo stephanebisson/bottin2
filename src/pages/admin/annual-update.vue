@@ -137,58 +137,93 @@
       </v-card-title>
 
       <v-card-text>
-        <!-- Controls -->
-        <div class="d-flex flex-column flex-md-row gap-4 mb-4">
-          <!-- Search -->
+        <!-- Column Filters -->
+        <div class="d-flex flex-column flex-lg-row gap-3 mb-4">
+          <!-- Name Filter -->
           <v-text-field
-            v-model="parentSearch"
+            v-model="nameFilter"
             class="flex-grow-1"
             clearable
             density="compact"
-            :label="$t('common.search')"
-            :placeholder="$t('admin.searchParents')"
-            prepend-inner-icon="mdi-magnify"
+            label="Filter by Name"
+            placeholder="e.g., connor"
+            prepend-inner-icon="mdi-account-search"
             variant="outlined"
           />
 
-          <!-- Status Filter -->
+          <!-- Email Status Filter -->
           <v-select
-            v-model="statusFilter"
+            v-model="emailStatusFilter"
             class="flex-shrink-0"
             clearable
             density="compact"
-            :items="statusFilterOptions"
-            :label="$t('admin.filterByStatus')"
-            style="min-width: 200px;"
+            :items="emailStatusFilterOptions"
+            label="Email Status"
+            style="min-width: 140px;"
             variant="outlined"
           />
 
-          <!-- Bulk Actions -->
-          <div class="d-flex gap-2">
-            <v-btn
-              color="primary"
-              :disabled="selectedParentRows.length === 0 || sendingEmails"
-              :loading="sendingEmails"
-              size="small"
-              @click="sendSelectedEmails"
-            >
-              <v-icon start>mdi-email-send</v-icon>
-              {{ $t('admin.sendEmails') }} ({{ selectedParentRows.length }})
-            </v-btn>
-            <v-btn
-              size="small"
-              variant="outlined"
-              @click="selectAllVisibleParents"
-            >
-              {{ $t('admin.selectAllVisible') }}
-            </v-btn>
-            <v-btn
-              size="small"
-              variant="outlined"
-              @click="clearSelection"
-            >
-              {{ $t('admin.clearSelection') }}
-            </v-btn>
+          <!-- Form Status Filter -->
+          <v-select
+            v-model="formStatusFilter"
+            class="flex-shrink-0"
+            clearable
+            density="compact"
+            :items="formStatusFilterOptions"
+            label="Form Status"
+            style="min-width: 140px;"
+            variant="outlined"
+          />
+
+          <!-- Class Filter -->
+          <v-select
+            v-model="classFilter"
+            class="flex-shrink-0"
+            clearable
+            density="compact"
+            :items="classFilterOptions"
+            label="Class"
+            style="min-width: 140px;"
+            variant="outlined"
+          />
+
+          <!-- Filter Actions -->
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex gap-2 align-center">
+              <v-btn
+                size="small"
+                variant="outlined"
+                @click="selectAllVisibleParents"
+              >
+                <v-icon start>mdi-check-all</v-icon>
+                Select All Filtered
+              </v-btn>
+              <v-btn
+                size="small"
+                variant="outlined"
+                @click="clearAllFilters"
+              >
+                <v-icon start>mdi-filter-off</v-icon>
+                Clear Filters
+              </v-btn>
+            </div>
+
+            <!-- Filter Summary -->
+            <div v-if="hasActiveFilters" class="text-caption text-grey-darken-1">
+              {{ filteredAndSortedParents.length }} of {{ enrichedParents.length }} parents shown
+            </div>
+
+            <!-- Simulation Mode Indicator -->
+            <div v-if="isDevelopment" class="d-flex align-center">
+              <v-chip
+                color="orange"
+                prepend-icon="mdi-flask"
+                size="small"
+                variant="tonal"
+              >
+                🧪 SIMULATION MODE - No real emails will be sent
+              </v-chip>
+            </div>
           </div>
         </div>
 
@@ -200,7 +235,7 @@
           :items="filteredAndSortedParents"
           :items-per-page="25"
           :items-per-page-options="[10, 25, 50, 100, 200, 300]"
-          :loading="loading"
+          :loading="loading || sendingEmails"
           return-object
           select-strategy="page"
           show-select
@@ -211,6 +246,24 @@
             <div>
               <div class="font-weight-medium">{{ item.firstName }} {{ item.lastName }}</div>
               <div class="text-caption text-grey-darken-1">{{ item.email }}</div>
+            </div>
+          </template>
+
+          <!-- Classes Column -->
+          <template #item.classes="{ item }">
+            <div v-if="item.classes && item.classes.length > 0" class="d-flex flex-wrap gap-1">
+              <v-chip
+                v-for="className in item.classes"
+                :key="className"
+                color="primary"
+                size="small"
+                variant="tonal"
+              >
+                {{ className }}
+              </v-chip>
+            </div>
+            <div v-else class="text-caption text-grey-darken-1">
+              No classes
             </div>
           </template>
 
@@ -254,6 +307,169 @@
           </template>
 
         </v-data-table>
+      </v-card-text>
+    </v-card>
+
+    <!-- Selected Parents List -->
+    <v-card v-if="selectedParentRows.length > 0" class="mt-4">
+      <v-card-title class="d-flex align-center justify-space-between">
+        <div class="d-flex align-center">
+          <v-icon class="mr-2">mdi-email-multiple</v-icon>
+          Selected Parents ({{ selectedParentRows.length }})
+        </div>
+        <div v-if="sendingEmails" class="d-flex align-center gap-2">
+          <span class="text-body-2">{{ emailProgress.current }}/{{ emailProgress.total }}</span>
+          <v-progress-circular
+            v-if="!emailProgress.isPaused"
+            color="primary"
+            :model-value="(emailProgress.current / emailProgress.total) * 100"
+            :size="20"
+            :width="3"
+          />
+        </div>
+      </v-card-title>
+
+      <!-- Progress Bar -->
+      <div v-if="sendingEmails" class="px-4 pb-2">
+        <v-progress-linear
+          :color="emailProgress.error ? 'error' : 'primary'"
+          height="6"
+          :model-value="(emailProgress.current / emailProgress.total) * 100"
+          rounded
+        />
+        <div class="text-caption text-grey-darken-1 mt-1">
+          {{ emailProgress.error ? 'Paused due to error' :
+            emailProgress.isPaused ? 'Paused' :
+            emailProgress.currentEmail ? `Sending to ${emailProgress.currentEmail}` : 'Processing...' }}
+        </div>
+      </div>
+
+      <v-card-text>
+        <!-- Email Controls -->
+        <div class="d-flex gap-2 mb-4 align-center flex-wrap">
+          <v-btn
+            v-if="!sendingEmails && !emailProgress.isPaused"
+            color="primary"
+            @click="sendSelectedEmails"
+          >
+            <v-icon start>mdi-email-send</v-icon>
+            Send All Emails
+          </v-btn>
+
+          <v-btn
+            v-if="sendingEmails && !emailProgress.isPaused"
+            color="warning"
+            @click="pauseEmailSending"
+          >
+            <v-icon start>mdi-pause</v-icon>
+            Pause
+          </v-btn>
+
+          <v-btn
+            v-if="emailProgress.isPaused && emailProgress.error"
+            color="success"
+            @click="resumeEmailSending"
+          >
+            <v-icon start>mdi-play</v-icon>
+            Resume
+          </v-btn>
+
+          <v-btn
+            v-if="emailProgress.isPaused || sendingEmails"
+            color="grey"
+            variant="outlined"
+            @click="resetEmailProgress"
+          >
+            <v-icon start>mdi-stop</v-icon>
+            Stop
+          </v-btn>
+
+          <v-btn
+            v-if="!sendingEmails"
+            color="grey"
+            variant="outlined"
+            @click="clearSelection"
+          >
+            <v-icon start>mdi-close</v-icon>
+            Clear Selection
+          </v-btn>
+        </div>
+
+        <!-- Error Display -->
+        <v-alert
+          v-if="emailProgress.error"
+          class="mb-4"
+          color="error"
+          icon="mdi-alert-circle"
+          variant="tonal"
+        >
+          <div class="text-body-1 font-weight-medium mb-2">
+            Failed to send email {{ emailProgress.error.index }}/{{ emailProgress.error.total }}
+          </div>
+          <div class="text-body-2 mb-2">
+            <strong>Email:</strong> {{ emailProgress.error.parentEmail }}
+          </div>
+          <div class="text-body-2">
+            <strong>Error:</strong> {{ emailProgress.error.message }}
+          </div>
+        </v-alert>
+
+        <!-- Selected Parents Cards -->
+        <div class="d-flex flex-column gap-2">
+          <v-card
+            v-for="parent in selectedParentRows"
+            :key="parent.id"
+            class="parent-card"
+            :color="getParentCardColor(parent)"
+            variant="outlined"
+          >
+            <v-card-text class="d-flex align-center justify-space-between py-3">
+              <div class="d-flex flex-column">
+                <div class="font-weight-medium">
+                  {{ parent.firstName }} {{ parent.lastName }}
+                </div>
+                <div class="text-caption text-grey-darken-1">
+                  {{ parent.email }}
+                </div>
+              </div>
+
+              <div class="d-flex align-center gap-3">
+                <!-- Status Display -->
+                <div class="text-center">
+                  <v-chip
+                    :color="getParentStatusColor(parent)"
+                    size="small"
+                    variant="tonal"
+                  >
+                    <v-icon size="16" start>{{ getParentStatusIcon(parent) }}</v-icon>
+                    {{ getParentStatusText(parent) }}
+                  </v-chip>
+                  <div v-if="parent.emailSentAt" class="text-caption text-grey-darken-2 mt-1">
+                    {{ formatEmailDate(parent.emailSentAt) }}
+                  </div>
+                </div>
+
+                <!-- Remove Button -->
+                <v-btn
+                  v-if="!sendingEmails"
+                  icon="mdi-close"
+                  size="small"
+                  variant="text"
+                  @click="removeFromSelection(parent)"
+                />
+
+                <!-- Loading Indicator -->
+                <v-progress-circular
+                  v-if="isParentBeingProcessed(parent)"
+                  color="primary"
+                  indeterminate
+                  :size="20"
+                  :width="3"
+                />
+              </div>
+            </v-card-text>
+          </v-card>
+        </div>
       </v-card-text>
     </v-card>
 
@@ -388,9 +604,46 @@
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
+  // Development mode detection
+  const isDevelopment = computed(() => {
+    return import.meta.env.DEV || window.location.hostname === 'localhost'
+  })
+
+  // Filter state helpers
+  const hasActiveFilters = computed(() => {
+    return nameFilter.value || emailStatusFilter.value || formStatusFilter.value || classFilter.value
+  })
+
+  // Parent-to-classes lookup
+  const parentClassesLookup = computed(() => {
+    const lookup = new Map()
+
+    for (const student of students.value) {
+      const parentEmails = [student.parent1_email, student.parent2_email].filter(Boolean)
+
+      for (const email of parentEmails) {
+        if (!lookup.has(email)) {
+          lookup.set(email, new Set())
+        }
+        if (student.className) {
+          lookup.get(email).add(student.className)
+        }
+      }
+    }
+
+    // Convert Sets to sorted Arrays
+    const result = new Map()
+    for (const [email, classesSet] of lookup) {
+      result.set(email, Array.from(classesSet).sort())
+    }
+
+    return result
+  })
+
   // State
   const loading = ref(false)
   const sendingEmails = ref(false)
+  const emailProgress = ref({ current: 0, total: 0, currentEmail: '', isPaused: false, error: null, parentStatuses: new Map() })
   const error = ref(null)
   const showStartWorkflowDialog = ref(false)
   const confirmationText = ref('')
@@ -399,9 +652,12 @@
 
   // Parent management state
   const parents = ref([])
+  const students = ref([])
   const selectedParentRows = ref([])
-  const parentSearch = ref('')
-  const statusFilter = ref(null)
+  const nameFilter = ref('')
+  const emailStatusFilter = ref(null)
+  const formStatusFilter = ref(null)
+  const classFilter = ref(null)
   const tableOptions = ref({
     sortBy: [],
     sortDesc: [],
@@ -410,18 +666,39 @@
   // Table configuration
   const parentTableHeaders = [
     { title: 'Name', key: 'name', sortable: true },
+    { title: 'Classes', key: 'classes', sortable: true },
     { title: 'Email Status', key: 'emailStatus', sortable: true },
     { title: 'Form Status', key: 'formStatus', sortable: true },
     { title: 'Last Updated', key: 'lastUpdated', sortable: true },
   ]
 
-  const statusFilterOptions = [
-    { title: 'All Parents', value: null },
-    { title: 'Email Not Sent', value: 'email_not_sent' },
-    { title: 'Email Sent', value: 'email_sent' },
-    { title: 'Form Submitted', value: 'form_submitted' },
+  const emailStatusFilterOptions = [
+    { title: 'All', value: null },
+    { title: 'Not Sent', value: 'not_sent' },
+    { title: 'Sent', value: 'sent' },
+  ]
+
+  const formStatusFilterOptions = [
+    { title: 'All', value: null },
+    { title: 'Pending', value: 'pending' },
+    { title: 'Submitted', value: 'submitted' },
     { title: 'Opted Out', value: 'opted_out' },
   ]
+
+  // Dynamic class filter options based on loaded student data
+  const classFilterOptions = computed(() => {
+    const classes = new Set()
+    for (const student of students.value) {
+      if (student.className) {
+        classes.add(student.className)
+      }
+    }
+    const sortedClasses = Array.from(classes).sort()
+    return [
+      { title: 'All', value: null },
+      ...sortedClasses.map(className => ({ title: className, value: className })),
+    ]
+  })
 
   // Workflow status helpers
   const getWorkflowStatusType = status => {
@@ -493,11 +770,15 @@
       // Try to find the parent in the parents collection for additional info
       const parentInfo = parents.value.find(p => p.email === participant.email) || {}
 
+      const parentClasses = parentClassesLookup.value.get(participant.email) || []
+
       return {
         id: parentInfo.id || participant.email, // Use email as fallback ID
         email: participant.email,
         firstName: parentInfo.firstName || parentInfo.first_name || '',
         lastName: parentInfo.lastName || parentInfo.last_name || '',
+        classes: parentClasses,
+        classesText: parentClasses.join(', ') || 'No classes',
         emailSent: participant.emailSent || false,
         emailSentAt: participant.emailSentAt,
         formSubmitted: participant.formSubmitted || false,
@@ -516,27 +797,37 @@
   const filteredAndSortedParents = computed(() => {
     let filtered = enrichedParents.value
 
-    // Apply search filter
-    if (parentSearch.value) {
-      const searchTerm = parentSearch.value.toLowerCase()
+    // Apply name filter
+    if (nameFilter.value) {
+      const searchTerm = nameFilter.value.toLowerCase()
       filtered = filtered.filter(parent =>
         `${parent.firstName} ${parent.lastName}`.toLowerCase().includes(searchTerm)
         || parent.email.toLowerCase().includes(searchTerm),
       )
     }
 
-    // Apply status filter
-    if (statusFilter.value) {
-      switch (statusFilter.value) {
-        case 'email_not_sent': {
+    // Apply email status filter
+    if (emailStatusFilter.value) {
+      switch (emailStatusFilter.value) {
+        case 'not_sent': {
           filtered = filtered.filter(parent => !parent.emailSent)
           break
         }
-        case 'email_sent': {
+        case 'sent': {
           filtered = filtered.filter(parent => parent.emailSent)
           break
         }
-        case 'form_submitted': {
+      }
+    }
+
+    // Apply form status filter
+    if (formStatusFilter.value) {
+      switch (formStatusFilter.value) {
+        case 'pending': {
+          filtered = filtered.filter(parent => !parent.formSubmitted && !parent.optedOut)
+          break
+        }
+        case 'submitted': {
           filtered = filtered.filter(parent => parent.formSubmitted)
           break
         }
@@ -545,6 +836,13 @@
           break
         }
       }
+    }
+
+    // Apply class filter
+    if (classFilter.value) {
+      filtered = filtered.filter(parent =>
+        parent.classes && parent.classes.includes(classFilter.value),
+      )
     }
 
     return filtered
@@ -630,6 +928,53 @@
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
+  // Selected parents list helpers
+  const removeFromSelection = parent => {
+    const index = selectedParentRows.value.findIndex(p => p.id === parent.id)
+    if (index !== -1) {
+      selectedParentRows.value.splice(index, 1)
+    }
+  }
+
+  const isParentBeingProcessed = parent => {
+    return emailProgress.value.parentStatuses.get(parent.email) === 'sending'
+  }
+
+  const getParentCardColor = parent => {
+    const status = emailProgress.value.parentStatuses.get(parent.email)
+    if (status === 'sending') return 'primary'
+    if (status === 'sent' || parent.emailSent) return 'success'
+    if (status === 'failed') return 'error'
+    return ''
+  }
+
+  const getParentStatusColor = parent => {
+    const status = emailProgress.value.parentStatuses.get(parent.email)
+    if (status === 'sending') return 'primary'
+    if (status === 'sent' || parent.emailSent) return 'success'
+    if (status === 'failed') return 'error'
+    if (status === 'pending') return 'grey'
+    return getEmailStatusColor(parent.emailStatus)
+  }
+
+  const getParentStatusIcon = parent => {
+    const status = emailProgress.value.parentStatuses.get(parent.email)
+    if (status === 'sending') return 'mdi-loading'
+    if (status === 'sent' || parent.emailSent) return 'mdi-check-circle'
+    if (status === 'failed') return 'mdi-alert-circle'
+    if (status === 'pending') return 'mdi-clock-outline'
+    return getEmailStatusIcon(parent.emailStatus)
+  }
+
+  const getParentStatusText = parent => {
+    const status = emailProgress.value.parentStatuses.get(parent.email)
+    if (status === 'sending') return 'Sending...'
+    if (status === 'sent') return 'Just sent'
+    if (status === 'failed') return 'Failed'
+    if (status === 'pending') return 'Pending'
+    return getEmailStatusText(parent.emailStatus)
+  }
+
   // Table functions
   const updateTableOptions = options => {
     tableOptions.value = options
@@ -641,6 +986,13 @@
 
   const clearSelection = () => {
     selectedParentRows.value = []
+  }
+
+  const clearAllFilters = () => {
+    nameFilter.value = ''
+    emailStatusFilter.value = null
+    formStatusFilter.value = null
+    classFilter.value = null
   }
 
   // Email sending functions
@@ -660,29 +1012,6 @@
 
   const resendEmailToParent = async parent => {
     await sendEmailToParent(parent)
-  }
-
-  const sendEmailsToParents = async emailList => {
-    const baseUrl = getFunctionsBaseUrl()
-
-    const response = await fetch(`${baseUrl}/sendUpdateEmailsToSelectedV2`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
-      },
-      body: JSON.stringify({
-        workflowId: currentWorkflow.value.id,
-        parentEmails: emailList,
-      }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const result = await response.json()
-    return result
   }
 
   // Start a new annual update workflow
@@ -760,6 +1089,27 @@
     }
   }
 
+  // Load students data for class information
+  const loadStudents = async () => {
+    try {
+      // Load students from the store (it handles caching and loading from Firestore)
+      await firebaseStore.loadStudentsDTO()
+
+      // Map the store data to our local format
+      if (firebaseStore.studentsDTO && Array.isArray(firebaseStore.studentsDTO)) {
+        students.value = firebaseStore.studentsDTO.map(student => ({
+          id: student.id,
+          ...student,
+        }))
+      } else {
+        console.warn('Students data is not available or not an array:', firebaseStore.studentsDTO)
+        students.value = []
+      }
+    } catch (error_) {
+      console.error('Failed to load students:', error_)
+    }
+  }
+
   // Load current workflow and history
   const loadWorkflowData = async () => {
     try {
@@ -812,7 +1162,32 @@
     }
   }
 
-  // Send emails to selected parents
+  // Send single email to a parent
+  const sendSingleEmail = async parentEmail => {
+    const baseUrl = getFunctionsBaseUrl()
+
+    const response = await fetch(`${baseUrl}/sendParentEmailV2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+      },
+      body: JSON.stringify({
+        workflowId: currentWorkflow.value.id,
+        parentEmail,
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.error || `HTTP error! status: ${response.status}`)
+    }
+
+    return result
+  }
+
+  // Send emails to selected parents sequentially
   const sendSelectedEmails = async () => {
     if (!currentWorkflow.value || selectedParentRows.value.length === 0) return
 
@@ -823,22 +1198,164 @@
       // Get selected parent emails
       const selectedEmails = selectedParentRows.value.map(parent => parent.email).filter(Boolean)
 
-      await sendEmailsToParents(selectedEmails)
-      console.log(`Emails sent successfully to ${selectedEmails.length} parents`)
+      // Initialize progress tracking
+      emailProgress.value = {
+        current: 0,
+        total: selectedEmails.length,
+        currentEmail: '',
+        isPaused: false,
+        error: null,
+        parentStatuses: new Map(),
+      }
 
-      // Clear selection and refresh data
-      selectedParentRows.value = []
+      // Initialize all parent statuses
+      for (const email of selectedEmails) {
+        emailProgress.value.parentStatuses.set(email, 'pending')
+      }
+
+      // Update workflow with progress tracking
+      await updateWorkflowProgress(0, selectedEmails.length, 'starting')
+
+      // Send emails sequentially
+      for (let i = 0; i < selectedEmails.length; i++) {
+        if (emailProgress.value.isPaused) {
+          console.log('Email sending paused by user')
+          break
+        }
+
+        const parentEmail = selectedEmails[i]
+        emailProgress.value.currentEmail = parentEmail
+        emailProgress.value.current = i
+
+        // Mark parent as being processed
+        emailProgress.value.parentStatuses.set(parentEmail, 'sending')
+
+        // Update workflow progress
+        await updateWorkflowProgress(i, selectedEmails.length, 'in_progress', parentEmail)
+
+        try {
+          console.log(`Sending email ${i + 1}/${selectedEmails.length} to ${parentEmail}`)
+          const result = await sendSingleEmail(parentEmail)
+
+          // Mark parent as sent
+          emailProgress.value.parentStatuses.set(parentEmail, 'sent')
+
+          if (result.simulated) {
+            console.log(`🧪 Successfully simulated email to ${parentEmail}`)
+          } else {
+            console.log(`📧 Successfully sent real email to ${parentEmail}`)
+          }
+        } catch (emailError) {
+          console.error(`Failed to send email to ${parentEmail}:`, emailError)
+
+          // Mark parent as failed
+          emailProgress.value.parentStatuses.set(parentEmail, 'failed')
+
+          // Pause on error and update progress
+          emailProgress.value.error = {
+            parentEmail,
+            message: emailError.message,
+            index: i + 1,
+            total: selectedEmails.length,
+          }
+          emailProgress.value.isPaused = true
+
+          await updateWorkflowProgress(i, selectedEmails.length, 'error', parentEmail, emailError.message)
+
+          // Stop processing and let admin decide
+          break
+        }
+      }
+
+      // Final progress update
+      if (!emailProgress.value.isPaused) {
+        emailProgress.value.current = selectedEmails.length
+        await updateWorkflowProgress(selectedEmails.length, selectedEmails.length, 'completed')
+        console.log(`Email sending completed: ${selectedEmails.length} emails sent`)
+        // Clear selection
+        selectedParentRows.value = []
+      }
+
+      // Refresh data to show updated status
       await loadWorkflowData()
     } catch (error_) {
       console.error('Failed to send emails:', error_)
       error.value = error_.message
+      emailProgress.value.error = {
+        message: error_.message,
+        general: true,
+      }
     } finally {
       sendingEmails.value = false
     }
   }
 
+  // Update workflow progress in Firestore
+  const updateWorkflowProgress = async (current, total, status, currentEmail = null, errorMessage = null) => {
+    try {
+      const progressData = {
+        current,
+        total,
+        status,
+      }
+
+      if (currentEmail) {
+        progressData.currentEmail = currentEmail
+      }
+
+      if (errorMessage) {
+        progressData.lastError = {
+          message: errorMessage,
+          email: currentEmail,
+          timestamp: new Date().toISOString(),
+        }
+      }
+
+      const baseUrl = getFunctionsBaseUrl()
+
+      const response = await fetch(`${baseUrl}/updateWorkflowProgressV2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          workflowId: currentWorkflow.value.id,
+          progress: progressData,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('Failed to update workflow progress:', response.status)
+      }
+    } catch (error_) {
+      console.error('Failed to update workflow progress:', error_)
+    }
+  }
+
+  // Resume email sending after error
+  const resumeEmailSending = () => {
+    emailProgress.value.isPaused = false
+    emailProgress.value.error = null
+    sendSelectedEmails()
+  }
+
+  // Pause email sending
+  const pauseEmailSending = () => {
+    emailProgress.value.isPaused = true
+  }
+
+  // Reset email progress
+  const resetEmailProgress = () => {
+    emailProgress.value = { current: 0, total: 0, currentEmail: '', isPaused: false, error: null, parentStatuses: new Map() }
+    sendingEmails.value = false
+  }
+
   onMounted(async () => {
     await loadWorkflowData()
-    await loadParents()
+    await Promise.all([
+      loadParents(),
+      loadStudents(),
+    ])
   })
 </script>

@@ -4,7 +4,7 @@ const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const nodemailer = require('nodemailer')
-const { FUNCTIONS_REGION } = require('./config')
+const { FUNCTIONS_REGION, SIMULATE_EMAILS, EMAIL_SIMULATION_DELAY_MS } = require('./config')
 
 // Email configuration constants
 const EMAIL_CONFIG = {
@@ -99,9 +99,9 @@ function getEmailTemplate (parentName, updateUrl, schoolYear) {
 }
 
 /**
- * Send email notifications to selected parents for annual update
+ * Send email notification to a single parent for annual update
  */
-exports.sendUpdateEmailsToSelectedV2 = onRequest({
+exports.sendParentEmailV2 = onRequest({
   region: FUNCTIONS_REGION,
   cors: {
     origin: [
@@ -122,6 +122,8 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
   }
 
   try {
+    console.log('🚨 EMAIL FUNCTION CALLED - SIMULATE_EMAILS:', SIMULATE_EMAILS)
+
     // Verify user is authenticated and is admin
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -142,11 +144,11 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       return res.status(403).json({ error: 'Admin access required' })
     }
 
-    const { workflowId, parentEmails } = req.body
+    const { workflowId, parentEmail } = req.body
 
-    if (!workflowId || !parentEmails || !Array.isArray(parentEmails)) {
+    if (!workflowId || !parentEmail) {
       return res.status(400).json({
-        error: 'workflowId and parentEmails array are required',
+        error: 'workflowId and parentEmail are required',
       })
     }
 
@@ -167,118 +169,102 @@ exports.sendUpdateEmailsToSelectedV2 = onRequest({
       })
     }
 
-    // Get selected parents from workflow participants subcollection
-    const selectedParents = []
+    // Get participant from subcollection
+    const participantDoc = await db.collection('workflows').doc(workflowId)
+      .collection('participants').doc(parentEmail).get()
 
-    for (const email of parentEmails) {
-      // Get participant from subcollection
-      const participantDoc = await db.collection('workflows').doc(workflowId)
-        .collection('participants').doc(email).get()
-
-      if (participantDoc.exists) {
-        const participant = participantDoc.data()
-
-        // Get parent info from parents collection for additional details
-        const parentQuery = await db.collection('parents')
-          .where('email', '==', email)
-          .limit(1)
-          .get()
-
-        const parentData = parentQuery.empty ? {} : parentQuery.docs[0].data()
-
-        selectedParents.push({
-          email,
-          updateToken: participant.token,
-          participantDocRef: participantDoc.ref, // Store reference for easy updates
-          first_name: parentData.first_name || '',
-          last_name: parentData.last_name || '',
-          preferredLanguage: parentData.preferredLanguage || 'fr',
-        })
-      }
-    }
-
-    if (selectedParents.length === 0) {
-      return res.status(400).json({
-        error: 'No selected parents found in workflow participants',
+    if (!participantDoc.exists) {
+      return res.status(404).json({
+        error: 'Parent not found in workflow participants',
       })
     }
 
-    const emailService = getEmailService()
-    let emailsSent = 0
-    const emailResults = []
+    const participant = participantDoc.data()
 
-    // Send emails to selected parents only
-    for (const parent of selectedParents) {
-      const parentName = `${parent.first_name || ''} ${parent.last_name || ''}`.trim() || 'Parent'
+    // Get parent info from parents collection for additional details
+    const parentQuery = await db.collection('parents')
+      .where('email', '==', parentEmail)
+      .limit(1)
+      .get()
 
-      console.log('=== Sending email ===')
-      console.log('Parent email:', parent.email)
-      console.log('Token generation:', parent.updateToken ? 'SUCCESS' : 'FAILED')
-      console.log('Token length:', parent.updateToken?.length)
+    const parentData = parentQuery.empty ? {} : parentQuery.docs[0].data()
 
-      // Construct update URL
-      const baseUrl = EMAIL_CONFIG.APP_URL
-      const updateUrl = `${baseUrl}/update/${parent.updateToken}`
-      console.log('Update URL:', updateUrl)
+    const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent'
 
-      const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear)
+    console.log('=== Sending single email ===')
+    console.log('🔧 SIMULATE_EMAILS setting:', SIMULATE_EMAILS)
+    console.log('📧 Parent email:', parentEmail)
+    console.log('🔑 Token:', participant.token ? 'EXISTS' : 'MISSING')
 
-      try {
+    if (SIMULATE_EMAILS) {
+      console.log('🧪 EMAIL SIMULATION MODE ACTIVE - No real email will be sent!')
+    } else {
+      console.log('⚠️  REAL EMAIL MODE - This will send an actual email!')
+    }
+
+    // Construct update URL
+    const baseUrl = EMAIL_CONFIG.APP_URL
+    const updateUrl = `${baseUrl}/update/${participant.token}`
+    console.log('Update URL:', updateUrl)
+
+    const template = getEmailTemplate(parentName, updateUrl, workflowData.schoolYear)
+
+    try {
+      if (SIMULATE_EMAILS) {
+        // Development mode: simulate email sending with delay
+        console.log(`🧪 SIMULATION MODE: Simulating email send to ${parentEmail}`)
+        console.log(`📧 Subject: ${template.subject}`)
+        console.log(`⏱️  Adding ${EMAIL_SIMULATION_DELAY_MS}ms delay to simulate email processing`)
+
+        // Add delay to simulate email service slowness
+        await new Promise(resolve => setTimeout(resolve, EMAIL_SIMULATION_DELAY_MS))
+
+        console.log(`✅ Simulated email "sent" to ${parentEmail}`)
+      } else {
+        // Production mode: send real email
+        const emailService = getEmailService()
         const fromEmail = EMAIL_CONFIG.FROM_EMAIL
         const fromName = EMAIL_CONFIG.FROM_NAME
 
         await emailService.sendEmail(
           { email: fromEmail, name: fromName },
-          parent.email,
+          parentEmail,
           template.subject,
           template.html,
         )
-        emailsSent++
 
-        emailResults.push({
-          email: parent.email,
-          status: 'sent',
-          sentAt: new Date(),
-        })
-
-        // Update participant status immediately after successful email send
-        try {
-          // Update participant document directly in subcollection
-          await parent.participantDocRef.update({
-            emailSent: true,
-            emailSentAt: FieldValue.serverTimestamp(),
-          })
-          console.log(`Database updated for ${parent.email}`)
-        } catch (dbError) {
-          console.error(`Failed to update database for ${parent.email}:`, dbError)
-          // Email was sent successfully, but database update failed
-          emailResults.at(-1).dbUpdateFailed = true
-          emailResults.at(-1).dbError = dbError.message
-        }
-      } catch (emailError) {
-        console.error(`Failed to send email to ${parent.email}:`, emailError)
-        emailResults.push({
-          email: parent.email,
-          status: 'failed',
-          error: emailError.message,
-        })
+        console.log(`📧 Real email sent successfully to ${parentEmail}`)
       }
+
+      // Update participant status after successful email send (real or simulated)
+      await participantDoc.ref.update({
+        emailSent: true,
+        emailSentAt: FieldValue.serverTimestamp(),
+      })
+
+      res.status(200).json({
+        success: true,
+        email: parentEmail,
+        sentAt: new Date().toISOString(),
+        simulated: SIMULATE_EMAILS,
+      })
+    } catch (emailError) {
+      console.error(`Failed to send email to ${parentEmail}:`, emailError)
+
+      // Return detailed error information for frontend handling
+      res.status(500).json({
+        success: false,
+        email: parentEmail,
+        error: emailError.message,
+        errorType: emailError.code || 'EMAIL_SEND_FAILED',
+      })
     }
-
-    // Stats are now calculated dynamically from subcollection, no manual update needed
-
-    console.log(`Selected email sending completed: ${emailsSent} emails sent to selected parents`)
-
-    res.status(200).json({
-      success: true,
-      emailsSent,
-      totalSelected: selectedParents.length,
-      results: emailResults,
-    })
   } catch (error) {
-    console.error('Send selected emails error:', error)
+    console.error('Send parent email error:', error)
     res.status(500).json({
-      error: 'Internal server error occurred while sending emails',
+      success: false,
+      error: 'Internal server error occurred while sending email',
+      errorType: 'INTERNAL_ERROR',
     })
   }
 })

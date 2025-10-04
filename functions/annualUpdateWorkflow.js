@@ -200,6 +200,80 @@ exports.startAnnualUpdateV2 = onRequest({
 })
 
 /**
+ * V2 - Update workflow email progress
+ */
+exports.updateWorkflowProgressV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  },
+}, async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
+  }
+
+  try {
+    // Verify user is authenticated and is admin
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
+    }
+
+    const idToken = authHeader.split('Bearer ')[1]
+    let decodedToken
+
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken)
+    } catch {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
+    }
+
+    // Verify admin claim
+    if (!decodedToken.admin) {
+      return res.status(403).json({ error: 'Admin access required' })
+    }
+
+    const { workflowId, progress } = req.body
+
+    if (!workflowId || !progress) {
+      return res.status(400).json({
+        error: 'workflowId and progress are required',
+      })
+    }
+
+    // Update workflow document with progress
+    const workflowRef = db.collection('workflows').doc(workflowId)
+    await workflowRef.update({
+      emailProgress: {
+        ...progress,
+        lastUpdated: FieldValue.serverTimestamp(),
+      },
+      updatedAt: FieldValue.serverTimestamp(),
+    })
+
+    res.status(200).json({
+      success: true,
+      workflowId,
+      progress,
+    })
+  } catch (error) {
+    console.error('Update workflow progress error:', error)
+    res.status(500).json({
+      error: 'Internal server error occurred while updating progress',
+    })
+  }
+})
+
+/**
  * V2 - Get current workflow status and history
  */
 exports.getWorkflowStatusV2 = onRequest({
