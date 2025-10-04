@@ -144,6 +144,7 @@ exports.startAnnualUpdateV2 = onRequest({
     const workflowRef = db.collection('workflows').doc(workflowId)
     batch.set(workflowRef, {
       id: workflowId,
+      type: 'annual_update', // Add the missing type field
       schoolYear,
       status: 'active',
       startedAt,
@@ -317,8 +318,9 @@ exports.getWorkflowStatusV2 = onRequest({
       return res.status(403).json({ error: 'Admin access required' })
     }
 
-    // Get all workflow sessions, ordered by start date
+    // Get only annual update workflows, ordered by start date
     const workflowsSnapshot = await db.collection('workflows')
+      .where('type', '==', 'annual_update')
       .orderBy('startedAt', 'desc')
       .get()
 
@@ -340,8 +342,8 @@ exports.getWorkflowStatusV2 = onRequest({
         completedAt: data.completedAt?.toDate?.()?.toISOString() || null,
       }
 
-      // For the current (active) workflow, also load participants for frontend display
-      if (data.status === 'active' && !currentWorkflow) {
+      // For the current (active) annual update workflow, also load participants for frontend display
+      if (data.status === 'active' && data.type === 'annual_update' && !currentWorkflow) {
         const participantsSnapshot = await doc.ref.collection('participants').get()
         const participants = []
 

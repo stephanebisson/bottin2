@@ -1127,9 +1127,23 @@
       }
 
       const data = await response.json()
+      console.log('🔍 ANNUAL UPDATE API DEBUG:')
       console.log('Full API response:', data)
       console.log('Current workflow:', data.current)
+      console.log('Current workflow type:', data.current?.type)
+      console.log('Current workflow status:', data.current?.status)
+      console.log('Current workflow participants:', data.current?.participants?.length || 0)
       console.log('Current workflow stats:', data.current?.stats)
+      console.log('History length:', data.history?.length || 0)
+
+      if (!data.current) {
+        console.log('❌ No current workflow found!')
+        console.log('🔍 This means either:')
+        console.log('  1. No annual update workflows exist')
+        console.log('  2. Existing workflows are not marked as "active"')
+        console.log('  3. You might be looking at production Firestore while app uses emulator')
+        console.log('  4. The workflow type filter is too restrictive')
+      }
 
       // Ensure stats exist with default values for current workflow
       if (data.current) {

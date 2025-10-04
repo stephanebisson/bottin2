@@ -2,6 +2,8 @@ const admin = require('firebase-admin')
 const { FieldValue } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
+const { ParentDTO } = require('./dto/ParentDTO')
+const { StudentDTO } = require('./dto/StudentDTO')
 
 // Get Firestore instance
 const db = admin.firestore()
@@ -331,14 +333,16 @@ exports.addNewStudentV2 = onRequest({
       })
     }
 
-    // Validate required student fields
-    if (!student.first_name || !student.last_name || !student.className) {
+    // Validate student data using DTO
+    try {
+      StudentDTO.fromRawData(student)
+    } catch (error) {
       return res.status(400).json({
-        error: 'Student first name, last name, and class are required',
+        error: `Invalid student data: ${error.message}`,
       })
     }
 
-    // Validate parent 1 fields (different validation for existing vs new)
+    // Validate parent 1 fields using DTO (different validation for existing vs new)
     if (useExistingParent1) {
       if (!parent1.email) {
         return res.status(400).json({
@@ -346,14 +350,16 @@ exports.addNewStudentV2 = onRequest({
         })
       }
     } else {
-      if (!parent1.first_name || !parent1.last_name || !parent1.email) {
+      try {
+        ParentDTO.fromRawData(parent1)
+      } catch (error) {
         return res.status(400).json({
-          error: 'New parent first name, last name, and email are required',
+          error: `Invalid parent1 data: ${error.message}`,
         })
       }
     }
 
-    // Validate parent 2 fields if provided
+    // Validate parent 2 fields if provided using DTO
     if (parent2) {
       if (useExistingParent2) {
         if (!parent2.email) {
@@ -362,10 +368,11 @@ exports.addNewStudentV2 = onRequest({
           })
         }
       } else {
-        // For new parent 2, email is required but other fields can be optional
-        if (!parent2.email) {
+        try {
+          ParentDTO.fromRawData(parent2)
+        } catch (error) {
           return res.status(400).json({
-            error: 'Parent 2 email is required',
+            error: `Invalid parent2 data: ${error.message}`,
           })
         }
       }
@@ -820,6 +827,58 @@ exports.applyProgressionChangesV2 = onRequest({
       parentsRemoved: 0,
     }
 
+    // Pre-fetch all current student data for validation
+    const studentUpdateMap = new Map()
+    const studentUpdatePromises = []
+
+    for (const changeDoc of changesSnapshot.docs) {
+      const change = changeDoc.data()
+      if (change.newClass && change.newLevel) {
+        studentUpdatePromises.push(
+          db.collection('students').doc(change.studentId).get()
+            .then(doc => ({ change, doc })),
+        )
+      }
+    }
+
+    const studentUpdateResults = await Promise.all(studentUpdatePromises)
+
+    // Validate and prepare all student updates using DTO
+    for (const { change, doc } of studentUpdateResults) {
+      try {
+        if (!doc.exists()) {
+          console.error(`Student ${change.studentId} not found during progression update`)
+          continue
+        }
+
+        // Create DTO from current data and apply progression
+        const currentStudentDTO = new StudentDTO({
+          id: change.studentId,
+          ...doc.data(),
+        })
+
+        const updatedStudentDTO = currentStudentDTO.progressToNextYear(
+          change.newLevel,
+          change.newClass,
+        )
+
+        if (!updatedStudentDTO.isValid()) {
+          const errors = updatedStudentDTO.getValidationErrors()
+          console.error(`Invalid student progression data for ${change.studentId}: ${errors.join(', ')}`)
+          continue
+        }
+
+        // Store validated update data
+        studentUpdateMap.set(change.studentId, {
+          updateData: updatedStudentDTO.toUpdateFirestoreData(FieldValue),
+          change,
+        })
+      } catch (error) {
+        console.error(`Failed to validate progression for student ${change.studentId}:`, error)
+        continue
+      }
+    }
+
     // Process existing student changes
     for (const changeDoc of changesSnapshot.docs) {
       const change = changeDoc.data()
@@ -855,14 +914,11 @@ exports.applyProgressionChangesV2 = onRequest({
           departureReason,
           timestamp: FieldValue.serverTimestamp(),
         })
-      } else if (change.newClass && change.newLevel) {
-        // Update student with new level and class
+      } else if (change.newClass && change.newLevel && studentUpdateMap.has(change.studentId)) {
+        // Apply pre-validated student update
+        const { updateData } = studentUpdateMap.get(change.studentId)
         const studentRef = db.collection('students').doc(change.studentId)
-        batch.update(studentRef, {
-          level: change.newLevel,
-          className: change.newClass,
-          updatedAt: FieldValue.serverTimestamp(),
-        })
+        batch.update(studentRef, updateData)
         stats.studentsProgressed++
 
         auditEntries.push({
@@ -878,43 +934,52 @@ exports.applyProgressionChangesV2 = onRequest({
       }
     }
 
-    // Process new students
+    // Process new students with DTO validation
     for (const newStudentDoc of newStudentsSnapshot.docs) {
       const newStudentData = newStudentDoc.data()
 
-      // Add student
-      const studentRef = db.collection('students').doc()
-      batch.set(studentRef, {
-        ...newStudentData.student,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-      })
-      stats.newStudentsAdded++
+      try {
+        // Validate student data using DTO
+        const studentDTO = StudentDTO.fromRawData(newStudentData.student)
 
-      // Handle parent 1 (only add if not existing)
-      if (!newStudentData.parent1.isExisting) {
-        const parent1Ref = db.collection('parents').doc()
-        const parent1Data = { ...newStudentData.parent1 }
-        delete parent1Data.isExisting
-        batch.set(parent1Ref, {
-          ...parent1Data,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        })
-        stats.parentsAdded++
-      }
+        // Add validated student
+        const studentRef = db.collection('students').doc()
+        batch.set(studentRef, studentDTO.toNewStudentFirestoreData(FieldValue))
+        stats.newStudentsAdded++
 
-      // Handle parent 2 if exists (only add if not existing)
-      if (newStudentData.parent2 && !newStudentData.parent2.isExisting) {
-        const parent2Ref = db.collection('parents').doc()
-        const parent2Data = { ...newStudentData.parent2 }
-        delete parent2Data.isExisting
-        batch.set(parent2Ref, {
-          ...parent2Data,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        })
-        stats.parentsAdded++
+        // Handle parent 1 (only add if not existing) with DTO validation
+        if (!newStudentData.parent1.isExisting) {
+          try {
+            const parent1DTO = ParentDTO.fromRawData(newStudentData.parent1)
+
+            // Use email as document ID for parents (as per architecture)
+            const parent1Ref = db.collection('parents').doc(parent1DTO.email)
+            batch.set(parent1Ref, parent1DTO.toNewParentFirestoreData(FieldValue))
+            stats.parentsAdded++
+          } catch (error) {
+            console.error(`Failed to validate parent1 data for student ${studentDTO.fullName}:`, error.message)
+            // Continue with student creation even if parent validation fails
+          }
+        }
+
+        // Handle parent 2 if exists (only add if not existing) with DTO validation
+        if (newStudentData.parent2 && !newStudentData.parent2.isExisting) {
+          try {
+            const parent2DTO = ParentDTO.fromRawData(newStudentData.parent2)
+
+            // Use email as document ID for parents (as per architecture)
+            const parent2Ref = db.collection('parents').doc(parent2DTO.email)
+            batch.set(parent2Ref, parent2DTO.toNewParentFirestoreData(FieldValue))
+            stats.parentsAdded++
+          } catch (error) {
+            console.error(`Failed to validate parent2 data for student ${studentDTO.fullName}:`, error.message)
+            // Continue with student creation even if parent validation fails
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to create new student:`, error.message)
+        console.error('Student data:', newStudentData.student)
+        continue // Skip this student and continue with others
       }
 
       auditEntries.push({
