@@ -1462,7 +1462,7 @@
         const teacherName = teacher ? teacher.fullName : 'Teacher'
 
         return {
-          title: `${teacherName} (${cls.classLetter})`,
+          title: `${teacherName} (${cls.classCode})`,
           value: cls.classLetter,
         }
       })
@@ -1477,7 +1477,7 @@
       const teacherName = teacher ? teacher.fullName : 'Teacher'
 
       return {
-        title: `${teacherName} (${cls.classLetter})`,
+        title: `${teacherName} (${cls.classCode})`,
         value: cls.classLetter,
       }
     }).sort((a, b) => a.value.localeCompare(b.value))
