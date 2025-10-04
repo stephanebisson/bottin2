@@ -233,7 +233,7 @@
   const parentProfile = computed(() => {
     if (!authStore.user?.email) return null
 
-    return firebaseStore.parents.find(parent =>
+    return firebaseStore.parentsDTO.find(parent =>
       parent.email && parent.email.toLowerCase() === authStore.user.email.toLowerCase(),
     )
   })
@@ -243,7 +243,7 @@
     if (!parentProfile.value?.email) return []
 
     const parentEmail = parentProfile.value.email.toLowerCase()
-    return firebaseStore.students.filter(student =>
+    return firebaseStore.studentsDTO.filter(student =>
       (student.parent1_email && student.parent1_email.toLowerCase() === parentEmail)
       || (student.parent2_email && student.parent2_email.toLowerCase() === parentEmail),
     ).sort((a, b) => {
@@ -314,7 +314,7 @@
     if (!className) return null
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null
-    const teacher = firebaseStore.staff.find(s => s.id === classItem.teacher)
+    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
     return teacher ? teacher.first_name : null
   }
 
@@ -334,10 +334,17 @@
         await firebaseStore.loadAllData()
       }
 
+      // Load DTO data for parents, students, and staff
+      await Promise.all([
+        firebaseStore.loadParentsDTO(),
+        firebaseStore.loadStudentsDTO(),
+        firebaseStore.loadStaffDTO(),
+      ])
+
       // Check if user is a parent (not staff)
       if (!parentProfile.value) {
         // Check if they're staff instead
-        const isStaff = firebaseStore.staff.some(staff =>
+        const isStaff = firebaseStore.staffDTO.some(staff =>
           staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
         )
 
