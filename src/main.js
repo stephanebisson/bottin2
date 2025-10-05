@@ -16,11 +16,21 @@ import { registerPlugins } from '@/plugins'
 // Components
 import App from './App.vue'
 
+// Polyfills for older browsers
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch'
+
 // Styles
 import 'unfonts.css'
 
+// Feature detection fallback for requestIdleCallback
+const scheduleWork = window.requestIdleCallback
+  || ((callback, options) => {
+    const timeout = options?.timeout || 2000
+    return setTimeout(callback, Math.min(timeout, 16))
+  })
+
 // Load icons asynchronously to avoid preload warnings
-requestIdleCallback(() => {
+scheduleWork(() => {
   import('@/styles/icons.css')
 }, { timeout: 2000 })
 

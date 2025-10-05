@@ -1,4 +1,22 @@
+# Browsers that we support - devices from ~2017+
+
+# Modern browsers (default build)
 > 1%
 last 2 versions
+Firefox ESR
 not dead
-not ie 11
+
+# Specific legacy browser support
+Safari >= 11
+iOS >= 11
+Chrome >= 63
+ChromeAndroid >= 63
+Firefox >= 67
+FirefoxAndroid >= 67
+Edge >= 80
+Samsung >= 8
+
+# Exclude legacy browsers
+not IE 11
+not IE 10
+not < 0.25%

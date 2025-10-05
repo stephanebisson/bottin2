@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import legacy from '@vitejs/plugin-legacy'
 import Vue from '@vitejs/plugin-vue'
 // Plugins
 import AutoImport from 'unplugin-auto-import/vite'
@@ -50,6 +51,11 @@ export default defineConfig({
         enabled: true,
       },
       vueTemplate: true,
+    }),
+    legacy({
+      targets: ['Chrome >= 63', 'Firefox >= 67', 'Safari >= 11', 'Edge >= 80'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      renderModernChunks: true,
     }),
   ],
   optimizeDeps: {
