@@ -306,6 +306,35 @@
             </div>
           </template>
 
+          <!-- Update Link Column -->
+          <template #item.updateLink="{ item }">
+            <div v-if="item.token" class="d-flex flex-column gap-1">
+              <v-btn
+                color="primary"
+                density="compact"
+                prepend-icon="mdi-link"
+                size="small"
+                variant="tonal"
+                @click="openUpdateLink(item.token)"
+              >
+                Open Link
+              </v-btn>
+              <v-btn
+                color="grey"
+                density="compact"
+                prepend-icon="mdi-content-copy"
+                size="x-small"
+                variant="text"
+                @click="copyUpdateLink(item.token)"
+              >
+                Copy
+              </v-btn>
+            </div>
+            <div v-else class="text-caption text-grey-darken-1">
+              No token
+            </div>
+          </template>
+
         </v-data-table>
       </v-card-text>
     </v-card>
@@ -670,6 +699,7 @@
     { title: 'Email Status', key: 'emailStatus', sortable: true },
     { title: 'Form Status', key: 'formStatus', sortable: true },
     { title: 'Last Updated', key: 'lastUpdated', sortable: true },
+    { title: 'Update Link', key: 'updateLink', sortable: false, width: 200 },
   ]
 
   const emailStatusFilterOptions = [
@@ -783,6 +813,7 @@
         emailSentAt: participant.emailSentAt,
         formSubmitted: participant.formSubmitted || false,
         submittedAt: participant.submittedAt,
+        token: participant.token, // Add token for update links
         optedOut: participant.optedOut || false,
         emailStatus: participant.emailSent ? 'sent' : 'not_sent',
         formStatus: participant.formSubmitted
@@ -993,6 +1024,36 @@
     emailStatusFilter.value = null
     formStatusFilter.value = null
     classFilter.value = null
+  }
+
+  // Update link functions
+  const openUpdateLink = token => {
+    if (!token) return
+    const baseUrl = window.location.origin
+    const updateUrl = `${baseUrl}/update/${token}`
+    window.open(updateUrl, '_blank')
+  }
+
+  const copyUpdateLink = async token => {
+    if (!token) return
+    const baseUrl = window.location.origin
+    const updateUrl = `${baseUrl}/update/${token}`
+
+    try {
+      await navigator.clipboard.writeText(updateUrl)
+      // You could add a toast notification here if available
+      console.log('Update link copied to clipboard:', updateUrl)
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = updateUrl
+      document.body.append(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      textArea.remove()
+      console.log('Update link copied to clipboard (fallback):', updateUrl)
+    }
   }
 
   // Email sending functions
