@@ -39,22 +39,21 @@ export const COMMITTEE_ROLES = {
   'Bibliothèque': [
     'Membre',
     'Porte-parole',
+    'Bénévole',
   ],
   'Bottin': [
     'Membre',
     'Porte-parole',
   ],
-  'CAMPÉ': [
+  'CAMPÉR': [
     'Membre',
     'Porte-parole',
   ],
-  'Comité d\'Établissement:  Équipe enseignants': [
+  'Conseil d\'établissement': [
     'Enseignant(e)',
-    'Membre  non votants direction',
+    'Membre non votants direction',
     'SDG',
     'Subsitut',
-  ],
-  'Comité d\'Établissement:  Équipe parents': [
     'Membre Parent',
     'Président',
     'Secrétaire',
