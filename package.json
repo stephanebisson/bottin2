@@ -35,7 +35,9 @@
     "admin:status": "node scripts/manageAdmin.js status",
     "admin:auto": "NODE_ENV=development node scripts/autoSetupAdmin.js",
     "emulator:with-admin": "firebase emulators:start --import=./backups/2025-09-18-175305-emulator-backup",
-    "dev:auto": "node scripts/devStart.js"
+    "dev:auto": "node scripts/devStart.js",
+    "migrate:dev": "NODE_ENV=development node scripts/migrate-document-id.js",
+    "migrate:prod": "NODE_ENV=production node scripts/migrate-document-id.js"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
