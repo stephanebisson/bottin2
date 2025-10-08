@@ -37,11 +37,11 @@ const postalCodeSchema = Joi.string()
     'string.pattern.base': 'Postal code must be in Canadian format A9A9A9 (e.g., H1A2B3)',
   })
 
-// Committee ID validation (assuming UUIDs or similar)
+// Committee ID validation (supports French committee names with accents, apostrophes, and spaces)
 const committeeIdSchema = Joi.string()
   .min(1)
-  .max(50)
-  .pattern(/^[a-zA-Z0-9_-]+$/)
+  .max(100)
+  .pattern(/^[a-zA-Z0-9\u00C0-\u017F\s\-'_]+$/)
 
 // Auth validation schemas
 const emailValidationSchema = Joi.object({
