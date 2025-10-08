@@ -6,14 +6,46 @@
       <p class="text-h6 mt-4">{{ $t('updateForm.loadingInfo') }}</p>
     </div>
 
-    <!-- Error State -->
+    <!-- Error State with Friendly Messages -->
     <div v-else-if="error" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-      <h2 class="text-h4 mt-4 text-error">{{ $t('updateForm.errorTitle') }}</h2>
-      <p class="text-body-1 mt-2 text-grey-darken-1">{{ error }}</p>
-      <v-btn class="mt-4" color="primary" variant="outlined" @click="$router.push('/')">
-        {{ $t('updateForm.goHome') }}
-      </v-btn>
+      <v-icon color="warning" size="64">mdi-information-outline</v-icon>
+      <h2 class="text-h4 mt-4 text-warning">{{ getErrorTitle() }}</h2>
+      <p class="text-body-1 mt-2 text-grey-darken-1">{{ getErrorMessage() }}</p>
+
+      <!-- Action buttons based on error type -->
+      <div class="mt-6">
+        <v-btn
+          v-if="errorType === 'network' || errorType === 'temporary'"
+          class="mr-2"
+          color="primary"
+          variant="flat"
+          @click="retryLoad"
+        >
+          <v-icon class="mr-2">mdi-refresh</v-icon>
+          Try Again
+        </v-btn>
+
+        <v-btn
+          color="secondary"
+          variant="outlined"
+          @click="$router.push('/')"
+        >
+          <v-icon class="mr-2">mdi-home</v-icon>
+          {{ $t('updateForm.goHome') }}
+        </v-btn>
+      </div>
+
+      <!-- Contact info for persistent issues -->
+      <v-alert
+        v-if="errorType === 'expired' || retryCount >= 2"
+        class="mt-6 mx-auto"
+        color="info"
+        icon="mdi-email"
+        max-width="500"
+        variant="tonal"
+      >
+        If you continue to have issues, please contact the school office for assistance.
+      </v-alert>
     </div>
 
     <!-- Update Form -->
@@ -341,6 +373,8 @@
   const loading = ref(true)
   const submitting = ref(false)
   const error = ref(null)
+  const errorType = ref(null) // 'network', 'expired', 'temporary', 'invalid'
+  const retryCount = ref(0)
   const parentData = ref(null)
   const availableCommittees = ref([])
   const availableInterests = ref([])
@@ -461,15 +495,19 @@
     // Don't update if more than 6 alphanumeric characters
   }
 
-  // Load parent data using token
+  // Load parent data using token with friendly error handling
   const loadParentData = async () => {
     try {
       loading.value = true
       error.value = null
+      errorType.value = null
 
       // Validate token exists
       if (!token.value) {
-        throw new Error(t('updateForm.invalidToken'))
+        await logErrorToAnalytics('missing_token', { message: 'Token parameter missing from URL' })
+        error.value = 'missing_token'
+        errorType.value = 'invalid'
+        return
       }
 
       const baseUrl = getFunctionsBaseUrl()
@@ -509,19 +547,41 @@
           console.error('Response status:', response.status, response.statusText)
         }
 
-        if (response.status === 404) {
-          throw new Error(t('updateForm.invalidToken'))
-        } else if (response.status === 410) {
-          throw new Error(t('updateForm.expiredToken'))
+        // Log error for admin review and show friendly error
+        await logErrorToAnalytics('token_validation_failed', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorMessage,
+          errorData,
+          token: token.value?.slice(0, 8) + '...',
+          retryCount: retryCount.value,
+        })
+
+        // Set appropriate error type and message
+        if (response.status === 404 || response.status === 410) {
+          error.value = 'expired_token'
+          errorType.value = 'expired'
+        } else if (response.status >= 500) {
+          error.value = 'server_error'
+          errorType.value = 'temporary'
         } else {
-          throw new Error(errorMessage)
+          error.value = 'network_error'
+          errorType.value = 'network'
         }
+        return
       }
 
       const data = await response.json()
 
       if (!data.valid) {
-        throw new Error(data.error || t('updateForm.invalidToken'))
+        await logErrorToAnalytics('invalid_token_response', {
+          error: data.error,
+          token: token.value?.slice(0, 8) + '...',
+          retryCount: retryCount.value,
+        })
+        error.value = 'invalid_token'
+        errorType.value = 'expired'
+        return
       }
 
       // Set parent data and form values
@@ -550,7 +610,22 @@
       }
     } catch (error_) {
       console.error('Failed to load parent data:', error_)
-      error.value = error_.message
+      // Log error for admin review
+      await logErrorToAnalytics('load_parent_data_error', {
+        error: error_.message,
+        stack: error_.stack,
+        token: token.value?.slice(0, 8) + '...',
+        retryCount: retryCount.value,
+      })
+
+      // Show friendly error message
+      if (error_.message.includes('network') || error_.message.includes('fetch')) {
+        error.value = 'network_error'
+        errorType.value = 'network'
+      } else {
+        error.value = 'unexpected_error'
+        errorType.value = 'temporary'
+      }
     } finally {
       loading.value = false
     }
@@ -574,10 +649,31 @@
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        // Log error for admin review
+        await logErrorToAnalytics('opt_out_failed', {
+          status: response.status,
+          statusText: response.statusText,
+          parentEmail: parentData.value?.email || 'unknown',
+        })
+
+        // Show user-friendly error
+        if (response.status === 404 || response.status === 410) {
+          error.value = 'expired_token'
+          errorType.value = 'expired'
+        } else {
+          error.value = 'opt_out_error'
+          errorType.value = 'temporary'
+        }
+        showOptOutDialog.value = false
+        return
       }
 
       const result = await response.json()
+
+      // Log successful opt-out for analytics
+      await logErrorToAnalytics('opt_out_success', {
+        parentEmail: parentData.value?.email || 'unknown',
+      })
 
       // Redirect to success page
       router.push({
@@ -590,7 +686,16 @@
       })
     } catch (error_) {
       console.error('Failed to process opt-out:', error_)
-      error.value = t('updateForm.submitError')
+      // Log error for admin review
+      await logErrorToAnalytics('opt_out_exception', {
+        error: error_.message,
+        stack: error_.stack,
+        parentEmail: parentData.value?.email || 'unknown',
+      })
+
+      // Show user-friendly error
+      error.value = 'opt_out_error'
+      errorType.value = 'network'
       showOptOutDialog.value = false
     } finally {
       optingOut.value = false
@@ -618,10 +723,10 @@
           parentData: {
             first_name: form.value.first_name,
             last_name: form.value.last_name,
-            phone: formatPhoneForStorage(form.value.phone), // Format phone for backend
+            phone: formatPhoneForStorage(form.value.phone),
             address: form.value.address,
             city: form.value.city,
-            postal_code: formatPostalCodeForStorage(form.value.postal_code), // Format postal code for backend
+            postal_code: formatPostalCodeForStorage(form.value.postal_code),
             sameAddressAsOther: form.value.sameAddressAsOther,
             committees: form.value.committees,
             committeeRoles: form.value.committeeRoles,
@@ -631,12 +736,35 @@
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        // Log detailed error for admin review
+        await logErrorToAnalytics('form_submission_failed', {
+          status: response.status,
+          statusText: response.statusText,
+          formData: { ...form.value, phone: '***', address: '***' },
+          parentEmail: parentData.value?.email || 'unknown',
+        })
+
+        // Show user-friendly error based on status
+        if (response.status === 404 || response.status === 410) {
+          error.value = 'expired_token'
+          errorType.value = 'expired'
+        } else {
+          error.value = 'submission_error'
+          errorType.value = 'temporary'
+        }
+        return
       }
 
       const result = await response.json()
 
-      // Redirect to success page or show success message
+      // Log successful submission for analytics
+      await logErrorToAnalytics('form_submission_success', {
+        parentEmail: parentData.value?.email || 'unknown',
+        committees: form.value.committees.length,
+        interests: form.value.interests.length,
+      })
+
+      // Redirect to success page
       router.push({
         path: '/update-success',
         query: {
@@ -646,9 +774,149 @@
       })
     } catch (error_) {
       console.error('Failed to submit form:', error_)
-      error.value = t('updateForm.submitError')
+      // Log error for admin review
+      await logErrorToAnalytics('form_submission_exception', {
+        error: error_.message,
+        stack: error_.stack,
+        formData: { ...form.value, phone: '***', address: '***' },
+        parentEmail: parentData.value?.email || 'unknown',
+      })
+
+      // Show user-friendly error
+      error.value = 'submission_error'
+      errorType.value = 'network'
     } finally {
       submitting.value = false
+    }
+  }
+
+  // Retry loading data
+  const retryLoad = async () => {
+    retryCount.value++
+    await loadParentData()
+  }
+
+  // Get user-friendly error title
+  const getErrorTitle = () => {
+    switch (error.value) {
+      case 'missing_token':
+      case 'invalid_token':
+      case 'expired_token': {
+        return 'Update Link Expired'
+      }
+      case 'server_error': {
+        return 'Temporary Service Issue'
+      }
+      case 'network_error': {
+        return 'Connection Issue'
+      }
+      case 'submission_error': {
+        return 'Submission Issue'
+      }
+      case 'opt_out_error': {
+        return 'Opt-out Issue'
+      }
+      default: {
+        return 'Unexpected Issue'
+      }
+    }
+  }
+
+  // Get user-friendly error message
+  const getErrorMessage = () => {
+    switch (error.value) {
+      case 'missing_token':
+      case 'invalid_token': {
+        return 'This update link appears to be invalid. Please check that you used the complete link from your email.'
+      }
+      case 'expired_token': {
+        return 'This update link has expired or the update period has ended. Please contact the school office if you need assistance.'
+      }
+      case 'server_error': {
+        return 'We\'re experiencing temporary technical difficulties. Please try again in a few minutes.'
+      }
+      case 'network_error': {
+        return 'Unable to connect to our servers. Please check your internet connection and try again.'
+      }
+      case 'submission_error': {
+        return 'We encountered an issue while saving your information. Your data has been preserved and our technical team will review it.'
+      }
+      case 'opt_out_error': {
+        return 'We encountered an issue while processing your opt-out request. Please try again or contact the school office.'
+      }
+      default: {
+        return 'An unexpected issue occurred. Our technical team has been notified and will review your request.'
+      }
+    }
+  }
+
+  // Categorize errors for Firebase Analytics
+  const getErrorCategory = eventName => {
+    if (eventName.includes('token')) return 'authentication'
+    if (eventName.includes('network') || eventName.includes('fetch')) return 'network'
+    if (eventName.includes('submission')) return 'form_processing'
+    if (eventName.includes('opt_out')) return 'opt_out'
+    if (eventName.includes('server')) return 'server_error'
+    return 'unknown'
+  }
+
+  // Log error to Firebase Analytics for admin review
+  const logErrorToAnalytics = async (eventName, errorDetails) => {
+    try {
+      // Enhanced error context
+      const errorContext = {
+        ...errorDetails,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        referrer: document.referrer,
+        token: token.value?.slice(0, 8) + '...', // Safe partial token
+        sessionId: crypto.randomUUID(), // Unique session identifier
+      }
+
+      console.error(`Analytics Error [${eventName}]:`, errorContext)
+
+      // Firebase Analytics implementation
+      try {
+        const { analytics } = await import('@/firebase')
+        const { logEvent } = await import('firebase/analytics')
+
+        // Get analytics instance
+        const analyticsInstance = analytics()
+
+        // Only log if analytics is available
+        if (analyticsInstance) {
+          // Log to Firebase Analytics
+          await logEvent(analyticsInstance, 'parent_update_error', {
+            error_type: eventName,
+            // Firebase Analytics has parameter limitations, so we'll use key fields
+            status: errorContext.status?.toString() || 'unknown',
+            retry_count: errorContext.retryCount?.toString() || '0',
+            error_category: getErrorCategory(eventName),
+            // Custom dimensions for detailed analysis
+            custom_error_details: JSON.stringify({
+              error: errorContext.error,
+              token_partial: errorContext.token,
+              timestamp: errorContext.timestamp,
+            }).slice(0, 500), // Firebase has 500 char limit
+          })
+        }
+      } catch (analyticsError) {
+        console.error('Firebase Analytics logging failed:', analyticsError)
+      }
+
+      // For now, we'll log to console with clear formatting for admin review
+      console.group(`🚨 FIREBASE ANALYTICS: ${eventName}`)
+      console.error('Event Data:', {
+        event_name: 'parent_update_error',
+        parameters: {
+          error_type: eventName,
+          ...errorContext,
+        },
+      })
+      console.groupEnd()
+    } catch (analyticsError) {
+      console.error('Failed to log error to analytics:', analyticsError)
     }
   }
 

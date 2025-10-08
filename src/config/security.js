@@ -101,6 +101,7 @@ export const getCSPConfig = () => {
       '\'self\'',
       isDev ? '\'unsafe-eval\'' : '', // Allow eval in development for HMR
       '\'unsafe-inline\'', // Required for Vue.js
+      'https://www.googletagmanager.com', // Google Analytics
     ].filter(Boolean),
     'style-src': [
       '\'self\'',
@@ -124,6 +125,7 @@ export const getCSPConfig = () => {
       'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net', // Firebase Functions
       'https://firebaseapp.com',
       'https://*.googleapis.com', // All Google APIs including Firebase services
+      'https://www.google-analytics.com', // Google Analytics data collection
     ].filter(Boolean),
     'base-uri': ['\'self\''],
     'form-action': ['\'self\''],
