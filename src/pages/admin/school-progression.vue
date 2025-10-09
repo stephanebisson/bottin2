@@ -243,324 +243,297 @@
       </v-card-text>
     </v-card>
 
-    <!-- Class Assignments Section -->
-    <v-card v-if="currentWorkflow && pendingAssignments.length > 0" class="mb-6">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-account-switch</v-icon>
-        {{ $t('admin.classAssignments') }}
-        <v-chip class="ml-2" color="warning" size="small">
-          {{ pendingAssignments.length }} {{ $t('admin.pending') }}
-        </v-chip>
-      </v-card-title>
-
-      <v-card-text>
-        <v-data-table
-          :headers="assignmentHeaders"
-          item-key="studentId"
-          :items="pendingAssignments"
-          :loading="loading"
-        >
-          <template #item.studentName="{ item }">
-            <div>
-              <div class="font-weight-medium">{{ item.studentName }}</div>
-              <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
-              </div>
-            </div>
-          </template>
-
-          <template #item.newLevel="{ item }">
-            <v-chip color="primary" size="small" variant="tonal">
-              {{ formatGradeLevel(item.newLevel) }}
-            </v-chip>
-          </template>
-
-          <template #item.assignedClass="{ item }">
-            <v-select
-              v-if="!item.assigned"
-              v-model="item.selectedClass"
-              density="compact"
-              hide-details
-              :items="getAvailableClasses(item.newLevel)"
-              :label="$t('admin.selectClass')"
-              variant="outlined"
-              @update:model-value="assignClass(item)"
-            />
-            <v-chip v-else color="success" size="small">
-              {{ item.assignedClass }}
-            </v-chip>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
-
-    <!-- Completed Class Assignments Section -->
-    <v-card v-if="currentWorkflow && completedAssignments.length > 0" class="mb-6">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-check-circle</v-icon>
-        {{ $t('admin.completedAssignments') }}
-        <v-chip class="ml-2" color="success" size="small">
-          {{ completedAssignments.length }} {{ $t('admin.completed') }}
-        </v-chip>
-      </v-card-title>
-
-      <v-card-text>
-        <v-data-table
-          :headers="completedAssignmentHeaders"
-          item-key="studentId"
-          :items="completedAssignments"
-          :loading="loading"
-        >
-          <template #item.studentName="{ item }">
-            <div>
-              <div class="font-weight-medium">{{ item.studentName }}</div>
-              <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
-              </div>
-            </div>
-          </template>
-
-          <template #item.newLevel="{ item }">
-            <v-chip color="primary" size="small" variant="tonal">
-              {{ formatGradeLevel(item.newLevel) }}
-            </v-chip>
-          </template>
-
-          <template #item.assignedClass="{ item }">
-            <v-chip color="success" size="small">
-              {{ getFormattedClassName(item.assignedClass) }}
-            </v-chip>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
-
-    <!-- New Students Section -->
+    <!-- New Student Parents Section -->
     <v-card v-if="currentWorkflow" class="mb-6">
       <v-card-title class="d-flex align-center justify-space-between">
         <div class="d-flex align-center">
           <v-icon class="mr-2">mdi-account-plus</v-icon>
-          {{ $t('admin.newStudents') }}
-          <v-chip v-if="newStudents.length > 0" class="ml-2" color="info" size="small">
-            {{ newStudents.length }} {{ $t('admin.added') }}
+          {{ $t('admin.newStudentParents') }}
+          <v-chip v-if="newStudentParents.length > 0" class="ml-2" color="success" size="small">
+            {{ newStudentParents.length }} {{ $t('admin.parents') }}
           </v-chip>
         </div>
         <v-btn
-          color="primary"
+          color="success"
           prepend-icon="mdi-plus"
           size="small"
-          @click="showAddStudentDialog = true"
+          @click="addNewParentRow"
         >
-          {{ $t('admin.addNewStudent') }}
+          {{ $t('admin.addNewParent') }}
         </v-btn>
       </v-card-title>
 
       <v-card-text>
-        <div v-if="newStudents.length === 0" class="text-center py-4">
+        <v-alert
+          class="mb-4"
+          color="info"
+          density="compact"
+          icon="mdi-information"
+          variant="tonal"
+        >
+          {{ $t('admin.newStudentParentsHelp') }}
+        </v-alert>
+
+        <div v-if="newStudentParents.length === 0" class="text-center py-4">
           <p class="text-body-1 text-grey-darken-1">
-            {{ $t('admin.noNewStudentsAdded') }}
+            {{ $t('admin.noNewParentsAdded') }}
           </p>
         </div>
 
         <v-data-table
           v-else
-          :headers="newStudentHeaders"
-          item-key="id"
-          :items="newStudents"
+          :headers="newParentsTableHeaders"
+          hide-default-footer
+          item-key="key"
+          :items="newStudentParents"
+          :items-per-page="-1"
           :loading="loading"
         >
-          <template #item.studentName="{ item }">
-            <div>
-              <div class="font-weight-medium">{{ item.student.first_name }} {{ item.student.last_name }}</div>
-              <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.class') }}: {{ item.student.className }} ({{ formatGradeLevel(item.student.level || getNewStudentGradeLevel(item.student.className)) }})
-              </div>
-            </div>
+          <template #item.first_name="{ item }">
+            <v-text-field
+              v-model="item.first_name"
+              density="compact"
+              hide-details
+              :placeholder="$t('admin.firstName')"
+              variant="outlined"
+              @blur="validateAndSaveParent(item)"
+              @keyup.enter="validateAndSaveParent(item)"
+            />
           </template>
 
-          <template #item.parentInfo="{ item }">
-            <div>
-              <div v-if="item.parent1" class="mb-2">
-                <v-alert
-                  color="info"
-                  density="compact"
-                  icon="mdi-account-plus"
-                  variant="tonal"
-                >
-                  <div>
-                    <div class="font-weight-medium">
-                      {{ `${item.parent1.first_name} ${item.parent1.last_name}` }}
-                    </div>
-                    <div class="text-caption text-grey-darken-1">
-                      {{ item.parent1.isExisting ? (item.parent1.email || 'Unknown') : item.parent1.email }}
-                    </div>
-                    <div class="text-caption font-weight-medium text-info">
-                      {{ item.parent1.isExisting ? $t('admin.existingParent') : $t('admin.newParent') }}
-                    </div>
-                  </div>
-                </v-alert>
-              </div>
-
-              <div v-if="item.parent2" class="mb-2">
-                <v-alert
-                  color="info"
-                  density="compact"
-                  icon="mdi-account-plus"
-                  variant="tonal"
-                >
-                  <div>
-                    <div class="font-weight-medium">
-                      {{ `${item.parent2.first_name} ${item.parent2.last_name}` }}
-                    </div>
-                    <div class="text-caption text-grey-darken-1">
-                      {{ item.parent2.isExisting ? (item.parent2.email || 'Unknown') : item.parent2.email }}
-                    </div>
-                    <div class="text-caption font-weight-medium text-info">
-                      {{ item.parent2.isExisting ? $t('admin.existingParent') : $t('admin.newParent') }}
-                    </div>
-                  </div>
-                </v-alert>
-              </div>
-            </div>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
-
-    <!-- Departing Students Section -->
-    <v-card v-if="currentWorkflow" class="mb-6">
-      <v-card-title class="d-flex align-center justify-space-between">
-        <div class="d-flex align-center">
-          <v-icon class="mr-2">mdi-account-minus</v-icon>
-          {{ $t('admin.departingStudents') }}
-          <v-chip v-if="departingStudents.length > 0" class="ml-2" color="warning" size="small">
-            {{ departingStudents.length }} {{ $t('admin.selected') }}
-          </v-chip>
-        </div>
-        <v-btn
-          color="warning"
-          prepend-icon="mdi-account-remove"
-          size="small"
-          @click="showSelectDepartingDialog = true"
-        >
-          {{ $t('admin.selectDepartingStudents') }}
-        </v-btn>
-      </v-card-title>
-
-      <v-card-text>
-        <div v-if="departingStudents.length === 0" class="text-center py-4">
-          <p class="text-body-1 text-grey-darken-1">
-            {{ $t('admin.noDepartingStudentsSelected') }}
-          </p>
-        </div>
-
-        <v-data-table
-          v-else
-          :headers="departingStudentHeaders"
-          item-key="studentId"
-          :items="departingStudents"
-          :loading="loading"
-        >
-          <template #item.studentName="{ item }">
-            <div>
-              <div class="font-weight-medium">{{ item.studentName }}</div>
-              <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
-              </div>
-            </div>
+          <template #item.last_name="{ item }">
+            <v-text-field
+              v-model="item.last_name"
+              density="compact"
+              hide-details
+              :placeholder="$t('admin.lastName')"
+              variant="outlined"
+              @blur="validateAndSaveParent(item)"
+              @keyup.enter="validateAndSaveParent(item)"
+            />
           </template>
 
-          <template #item.parentStatus="{ item }">
-            <div v-if="!item.parentsNeedRemoval || item.parentsNeedRemoval.length === 0" class="text-caption">
-              {{ $t('admin.noParentsListed') }}
-            </div>
-            <div v-else>
-              <div v-for="parent in item.parentsNeedRemoval" :key="parent.email" class="mb-2">
-                <v-alert
-                  :color="parent.needsRemoval ? 'error' : 'success'"
-                  density="compact"
-                  :icon="parent.needsRemoval ? 'mdi-account-remove' : 'mdi-account-check'"
-                  variant="tonal"
-                >
-                  <div>
-                    <div class="font-weight-medium">{{ parent.name }}</div>
-                    <div class="text-caption text-grey-darken-1">{{ parent.email }}</div>
-                    <div class="text-caption font-weight-medium" :class="parent.needsRemoval ? 'text-error' : 'text-success'">
-                      {{ parent.needsRemoval ? $t('admin.willBeDeleted') : $t('admin.willRemain') }}
-                      <span v-if="!parent.needsRemoval && parent.remainingChildren && parent.remainingChildren.length > 0" class="text-grey-darken-1">
-                        ({{ parent.remainingChildren.join(', ') }})
-                      </span>
-                    </div>
-                  </div>
-                </v-alert>
-              </div>
-            </div>
+          <template #item.phone="{ item }">
+            <v-text-field
+              v-model="item.phone"
+              density="compact"
+              hide-details
+              :placeholder="$t('common.phone')"
+              variant="outlined"
+              @blur="validateAndSaveParent(item)"
+              @keyup.enter="validateAndSaveParent(item)"
+            />
+          </template>
+
+          <template #item.email="{ item }">
+            <v-text-field
+              v-model="item.email"
+              density="compact"
+              hide-details
+              :placeholder="$t('common.email')"
+              :rules="[v => !v || /.+@.+\..+/.test(v) || $t('validation.emailInvalid')]"
+              type="email"
+              variant="outlined"
+              @blur="validateAndSaveParent(item)"
+              @keyup.enter="validateAndSaveParent(item)"
+            />
           </template>
 
           <template #item.actions="{ item }">
-            <v-btn
-              color="error"
-              icon="mdi-close"
-              size="small"
-              variant="text"
-              @click="removeDepartingStudent(item.id)"
-            />
+            <div class="d-flex gap-1 align-center">
+              <v-icon
+                v-if="item.isValid"
+                color="success"
+                size="small"
+              >
+                mdi-check-circle
+              </v-icon>
+              <v-icon
+                v-else-if="item.hasChanges"
+                color="warning"
+                size="small"
+              >
+                mdi-alert-circle
+              </v-icon>
+              <v-btn
+                color="error"
+                icon="mdi-delete"
+                size="small"
+                variant="text"
+                @click="removeParentRow(item.key)"
+              />
+            </div>
           </template>
         </v-data-table>
       </v-card-text>
     </v-card>
 
-    <!-- Graduating Students Section -->
-    <v-card v-if="currentWorkflow && graduatingStudents.length > 0" class="mb-6">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-school</v-icon>
-        {{ $t('admin.graduatingStudents') }}
-        <v-chip class="ml-2" color="success" size="small">
-          {{ graduatingStudents.length }} {{ $t('admin.graduating') }}
-        </v-chip>
+    <!-- Students Management Section -->
+    <v-card v-if="currentWorkflow" class="mb-6">
+      <v-card-title class="d-flex align-center justify-space-between">
+        <div class="d-flex align-center">
+          <v-icon class="mr-2">mdi-account-school</v-icon>
+          {{ $t('admin.studentsManagement') }}
+          <v-chip v-if="allStudentsForTable.length > 0" class="ml-2" color="info" size="small">
+            {{ allStudentsForTable.length }} {{ $t('admin.students') }}
+          </v-chip>
+        </div>
+        <div class="d-flex gap-2">
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            size="small"
+            @click="addNewStudentRow"
+          >
+            {{ $t('admin.addStudent') }}
+          </v-btn>
+        </div>
       </v-card-title>
 
       <v-card-text>
+        <div v-if="allStudentsForTable.length === 0" class="text-center py-4">
+          <p class="text-body-1 text-grey-darken-1">
+            {{ $t('admin.noStudentsFound') }}
+          </p>
+        </div>
+
         <v-data-table
-          :headers="graduatingStudentHeaders"
-          item-key="studentId"
-          :items="graduatingStudents"
+          v-else
+          :headers="studentsTableHeaders"
+          item-key="key"
+          :items="allStudentsForTable"
+          :items-per-page="50"
           :loading="loading"
         >
-          <template #item.studentName="{ item }">
-            <div>
-              <div class="font-weight-medium">{{ item.studentName }}</div>
-              <div class="text-caption text-grey-darken-1">
-                {{ getFormattedClassName(item.currentClass) || `${$t('admin.currentClass')}: ${item.currentClass}` }} - {{ formatGradeLevel(item.currentLevel) }}
-              </div>
-            </div>
-          </template>
-
-          <template #item.parentStatus="{ item }">
-            <div v-if="!item.parentsNeedRemoval || item.parentsNeedRemoval.length === 0" class="text-caption">
-              {{ $t('admin.noParentsListed') }}
-            </div>
-            <div v-else>
-              <div v-for="parent in item.parentsNeedRemoval" :key="parent.email" class="mb-2">
-                <v-alert
-                  :color="parent.needsRemoval ? 'error' : 'success'"
+          <template #item="{ item }">
+            <tr :class="getStudentRowClass(item)">
+              <td>
+                <div v-if="item.isEditing" class="d-flex align-center gap-2">
+                  <v-text-field
+                    v-model="item.first_name"
+                    density="compact"
+                    hide-details
+                    :placeholder="$t('admin.firstName')"
+                    variant="outlined"
+                  />
+                  <v-text-field
+                    v-model="item.last_name"
+                    density="compact"
+                    hide-details
+                    :placeholder="$t('admin.lastName')"
+                    variant="outlined"
+                  />
+                </div>
+                <div v-else>
+                  <div class="font-weight-medium">{{ item.fullName }}</div>
+                  <div class="text-caption text-grey-darken-1">{{ item.statusText }}</div>
+                </div>
+              </td>
+              <td>
+                <v-select
+                  v-if="item.isEditing || item.isClassEditable"
+                  v-model="item.className"
                   density="compact"
-                  :icon="parent.needsRemoval ? 'mdi-account-remove' : 'mdi-account-check'"
-                  variant="tonal"
-                >
-                  <div>
-                    <div class="font-weight-medium">{{ parent.name }}</div>
-                    <div class="text-caption text-grey-darken-1">{{ parent.email }}</div>
-                    <div class="text-caption font-weight-medium" :class="parent.needsRemoval ? 'text-error' : 'text-success'">
-                      {{ parent.needsRemoval ? $t('admin.willBeDeleted') : $t('admin.willRemain') }}
-                      <span v-if="!parent.needsRemoval && parent.remainingChildren && parent.remainingChildren.length > 0" class="text-grey-darken-1">
-                        ({{ parent.remainingChildren.join(', ') }})
-                      </span>
-                    </div>
-                  </div>
-                </v-alert>
-              </div>
-            </div>
+                  hide-details
+                  :items="getAllClassOptions()"
+                  :placeholder="$t('admin.selectClass')"
+                  variant="outlined"
+                  @update:model-value="handleClassAssignment(item)"
+                />
+                <span v-else>{{ getFormattedClassName(item.className) || item.className }}</span>
+              </td>
+              <td>
+                <v-select
+                  v-if="item.isEditing"
+                  v-model="item.level"
+                  density="compact"
+                  hide-details
+                  :items="getAvailableLevelsForClass(item.className)"
+                  :placeholder="$t('admin.selectLevel')"
+                  variant="outlined"
+                />
+                <span v-else>{{ formatGradeLevel(item.level) }}</span>
+              </td>
+              <td>
+                <v-select
+                  v-if="item.isEditing"
+                  v-model="item.parent1"
+                  clearable
+                  density="compact"
+                  hide-details
+                  item-title="displayName"
+                  item-value="email"
+                  :items="parentOptionsForSelector"
+                  :placeholder="$t('admin.selectParent')"
+                  variant="outlined"
+                />
+                <span v-else>{{ item.parent1Name || '-' }}</span>
+              </td>
+              <td>
+                <v-select
+                  v-if="item.isEditing"
+                  v-model="item.parent2"
+                  clearable
+                  density="compact"
+                  hide-details
+                  item-title="displayName"
+                  item-value="email"
+                  :items="parentOptionsForSelector"
+                  :placeholder="$t('admin.selectParent')"
+                  variant="outlined"
+                />
+                <span v-else>{{ item.parent2Name || '-' }}</span>
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  <v-btn
+                    v-if="item.canMarkDeparting"
+                    :color="item.isDeparting ? 'success' : 'warning'"
+                    :icon="item.isDeparting ? 'mdi-undo' : 'mdi-account-minus'"
+                    size="small"
+                    variant="text"
+                    @click="toggleStudentDeparting(item)"
+                  />
+                  <!-- New student row buttons -->
+                  <template v-if="item.isNew">
+                    <template v-if="item.isEditing">
+                      <!-- Editing mode: Show save and cancel -->
+                      <v-btn
+                        color="success"
+                        icon="mdi-content-save"
+                        size="small"
+                        variant="text"
+                        @click="saveNewStudentRow(item)"
+                      />
+                      <v-btn
+                        color="error"
+                        icon="mdi-close"
+                        size="small"
+                        variant="text"
+                        @click="cancelNewStudentRow(item)"
+                      />
+                    </template>
+                    <template v-else>
+                      <!-- View mode: Show edit and delete (removed final save) -->
+                      <v-btn
+                        color="primary"
+                        icon="mdi-pencil"
+                        size="small"
+                        variant="text"
+                        @click="editNewStudentRow(item)"
+                      />
+                      <v-btn
+                        color="error"
+                        icon="mdi-delete"
+                        size="small"
+                        variant="text"
+                        @click="removeNewStudentRow(item)"
+                      />
+                    </template>
+                  </template>
+                </div>
+              </td>
+            </tr>
           </template>
         </v-data-table>
       </v-card-text>
@@ -1012,9 +985,13 @@
 </template>
 
 <script setup>
+  import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from '@/composables/useI18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
+  import { ParentDTO } from '@/dto/ParentDTO'
+  import { db } from '@/firebase'
+  import { ParentRepository } from '@/repositories/ParentRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -1027,6 +1004,127 @@
   const addingStudent = ref(false)
   const applyingChanges = ref(false)
   const error = ref(null)
+
+  // New Student Parents Management
+  const parentRepository = new ParentRepository()
+  const newStudentParents = ref([])
+  const parentRowCounter = ref(0)
+
+  // Students Management
+  const allStudentsForTable = ref([])
+  const newStudentsRows = ref([])
+  const studentRowCounter = ref(0)
+
+  // Firestore operations for new_students subcollection
+  const saveNewStudentToFirestore = async studentData => {
+    if (!currentWorkflow.value?.id) return null
+
+    try {
+      const newStudentsRef = collection(db, 'workflows', currentWorkflow.value.id, 'new_students')
+      const dataToSave = {
+        ...studentData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      const docRef = await addDoc(newStudentsRef, dataToSave)
+      return docRef.id
+    } catch (error) {
+      console.error('Failed to save new student to Firestore:', error)
+      throw error
+    }
+  }
+
+  const updateNewStudentInFirestore = async (docId, studentData) => {
+    if (!currentWorkflow.value?.id || !docId) return
+
+    try {
+      const docRef = doc(db, 'workflows', currentWorkflow.value.id, 'new_students', docId)
+      const dataToUpdate = {
+        ...studentData,
+        updatedAt: new Date(),
+      }
+      await updateDoc(docRef, dataToUpdate)
+    } catch (error) {
+      console.error('Failed to update new student in Firestore:', error)
+      throw error
+    }
+  }
+
+  const deleteNewStudentFromFirestore = async docId => {
+    if (!currentWorkflow.value?.id || !docId) return
+
+    try {
+      const docRef = doc(db, 'workflows', currentWorkflow.value.id, 'new_students', docId)
+      await deleteDoc(docRef)
+    } catch (error) {
+      console.error('Failed to delete new student from Firestore:', error)
+      throw error
+    }
+  }
+
+  const loadNewStudentsFromFirestore = async () => {
+    if (!currentWorkflow.value?.id) return
+
+    try {
+      const newStudentsRef = collection(db, 'workflows', currentWorkflow.value.id, 'new_students')
+      const querySnapshot = await getDocs(query(newStudentsRef))
+
+      const loadedStudents = []
+      for (const doc of querySnapshot) {
+        const data = doc.data()
+        // Ensure all required properties exist with defaults
+        const studentData = {
+          key: data.key || doc.id,
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+          className: data.className || '',
+          level: data.level || null,
+          parent1: data.parent1 || null,
+          parent2: data.parent2 || null,
+          isEditing: data.isEditing || false,
+          originalData: null,
+          firestoreId: doc.id,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        }
+
+        // Always load temporary students - they should remain editable
+        loadedStudents.push(studentData)
+      }
+
+      newStudentsRows.value = loadedStudents
+
+      // Update counter to avoid conflicts
+      if (loadedStudents.length > 0) {
+        const maxCounter = Math.max(0, ...loadedStudents.map(row =>
+          Number.parseInt(row.key?.split('-')[1]) || 0,
+        ))
+        studentRowCounter.value = maxCounter + 1
+      }
+    } catch (error) {
+      console.error('Failed to load new students from Firestore:', error)
+      // Set empty array on error to prevent crashes
+      newStudentsRows.value = []
+    }
+  }
+
+  const clearNewStudentsFromFirestore = async () => {
+    if (!currentWorkflow.value?.id) return
+
+    try {
+      const newStudentsRef = collection(db, 'workflows', currentWorkflow.value.id, 'new_students')
+      const querySnapshot = await getDocs(query(newStudentsRef))
+
+      const deletePromises = []
+      for (const doc of querySnapshot) {
+        deletePromises.push(deleteDoc(doc.ref))
+      }
+
+      await Promise.all(deletePromises)
+    } catch (error) {
+      console.error('Failed to clear new students from Firestore:', error)
+    }
+  }
 
   // Dialogs
   const showStartWorkflowDialog = ref(false)
@@ -1074,6 +1172,22 @@
   const departingStudentsData = ref([])
 
   // Table headers
+  const newParentsTableHeaders = [
+    { title: t('admin.firstName'), key: 'first_name', sortable: false },
+    { title: t('admin.lastName'), key: 'last_name', sortable: false },
+    { title: t('common.phone'), key: 'phone', sortable: false },
+    { title: t('common.email'), key: 'email', sortable: false },
+    { title: t('admin.actions'), key: 'actions', sortable: false, width: 100 },
+  ]
+
+  const studentsTableHeaders = [
+    { title: t('admin.student'), key: 'fullName', sortable: false },
+    { title: t('admin.class'), key: 'className', sortable: false },
+    { title: t('admin.level'), key: 'level', sortable: false },
+    { title: t('admin.parent1'), key: 'parent1Name', sortable: false },
+    { title: t('admin.parent2'), key: 'parent2Name', sortable: false },
+    { title: t('admin.actions'), key: 'actions', sortable: false, width: 120 },
+  ]
   const assignmentHeaders = [
     { title: t('admin.student'), key: 'studentName', sortable: true },
     { title: t('admin.newLevel'), key: 'newLevel', sortable: false },
@@ -1435,7 +1549,636 @@
       .replace(/[\u0300-\u036F]/g, '') // Remove accent marks
   }
 
+  // New Student Parent Management Functions
+  const createNewParentRow = () => {
+    parentRowCounter.value++
+    return {
+      key: `new-parent-${parentRowCounter.value}`,
+      first_name: '',
+      last_name: '',
+      phone: '',
+      email: '',
+      hasChanges: false,
+      isValid: false,
+    }
+  }
+
+  const addNewParentRow = () => {
+    const newRow = createNewParentRow()
+    newStudentParents.value.push(newRow)
+  }
+
+  const removeParentRow = key => {
+    const index = newStudentParents.value.findIndex(p => p.key === key)
+    if (index !== -1) {
+      newStudentParents.value.splice(index, 1)
+      // Update students table to refresh parent options
+      buildAllStudentsForTable()
+    }
+  }
+
+  const validateAndSaveParent = parent => {
+    // Update validation and change tracking
+    const wasValid = parent.isValid
+    parent.isValid = parent.first_name.trim() && parent.last_name.trim() && parent.email.trim() && parent.email.includes('@')
+    parent.hasChanges = parent.first_name.trim() || parent.last_name.trim() || parent.phone.trim() || parent.email.trim()
+
+    // If validation state changed, update students table
+    if (wasValid !== parent.isValid) {
+      buildAllStudentsForTable()
+    }
+  }
+
+  const saveParent = async parent => {
+    // This function is not needed in the new approach
+    // Parents are saved automatically when creating new students
+    // This is just a placeholder to prevent errors
+    console.log('Parent save called, but parents are now saved with students')
+  }
+
+  // Students Management Functions
+  const parentOptionsForSelector = computed(() => {
+    const options = []
+
+    // Add existing parents from database
+    if (firebaseStore.parentsDTO) {
+      options.push(...firebaseStore.parentsDTO.map(parent => ({
+        displayName: parent.fullName || parent.email,
+        email: parent.email,
+        isExisting: true,
+      })))
+    }
+
+    // Add new parents from the new student parents table (valid ones only)
+    const newParentsFromTable = newStudentParents.value
+      .filter(p => p.isValid && p.email && p.email.includes('@'))
+      .map(p => ({
+        displayName: `${p.first_name} ${p.last_name}`.trim() || p.email,
+        email: p.email,
+        isExisting: false,
+      }))
+
+    options.push(...newParentsFromTable)
+
+    return options.sort((a, b) => a.displayName.localeCompare(b.displayName))
+  })
+
+  const getAllClassOptions = () => {
+    if (!firebaseStore.classes) return []
+
+    return firebaseStore.classes.map(cls => {
+      const teacher = firebaseStore.staffDTO?.find(s => s.id === cls.teacher)
+      const teacherName = teacher ? teacher.fullName : 'Teacher'
+      return {
+        title: `${teacherName} (${cls.classCode})`,
+        value: cls.classLetter,
+      }
+    }).sort((a, b) => a.value.localeCompare(b.value))
+  }
+
+  const buildAllStudentsForTable = () => {
+    const students = []
+
+    if (!currentWorkflow.value) {
+      allStudentsForTable.value = students
+      return
+    }
+
+    // Process workflow changes to create unified student list
+    const processedStudentIds = new Set()
+
+    // 1. Add students from workflow changes (existing students)
+    if (currentWorkflow.value.changes) {
+      for (const change of currentWorkflow.value.changes) {
+        if (processedStudentIds.has(change.studentId)) continue
+        processedStudentIds.add(change.studentId)
+
+        const student = firebaseStore.studentsDTO?.find(s => s.id === change.studentId)
+        if (!student) continue
+
+        // Check if student is departing
+        const isDeparting = departingStudentsData.value.some(d => d.studentId === change.studentId)
+
+        // Check if student has a pending assignment (needs class selection)
+        const pendingAssignment = currentWorkflow.value.assignments?.find(a =>
+          a.studentId === change.studentId && !a.assigned,
+        )
+
+        // Check if student has a completed assignment (class already assigned)
+        const completedAssignment = currentWorkflow.value.assignments?.find(a =>
+          a.studentId === change.studentId && a.assigned,
+        )
+
+        // Determine parent names
+        const parent1Name = getParentNameByEmail(student.parent1_email)
+        const parent2Name = getParentNameByEmail(student.parent2_email)
+
+        const studentRow = {
+          key: `existing-${change.studentId}`,
+          id: change.studentId,
+          fullName: student.fullName,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          className: pendingAssignment ? (pendingAssignment.selectedClass || '') : (completedAssignment ? completedAssignment.assignedClass : student.className),
+          level: change.changeType === 'graduating' ? null : (student.level ? student.level + 1 : null),
+          levelSortValue: change.changeType === 'graduating' ? 7 : (student.level ? student.level + 1 : 0),
+          parent1: student.parent1_email,
+          parent2: student.parent2_email,
+          parent1Name,
+          parent2Name,
+          changeType: change.changeType,
+          statusText: getStudentStatusText(change, isDeparting),
+          isDeparting,
+          isNew: false,
+          isEditable: false,
+          isClassEditable: !!pendingAssignment, // Allow class editing if assignment pending
+          isLevelEditable: false, // Level is auto-set based on class
+          isParentsEditable: false,
+          canMarkDeparting: !isDeparting && change.changeType !== 'graduating',
+          pendingAssignment, // Store for later use
+        }
+
+        students.push(studentRow)
+      }
+    }
+
+    // 2. Add new students from workflow (but skip if they exist as editable temporary students)
+    if (currentWorkflow.value.newStudents) {
+      for (const newStudent of currentWorkflow.value.newStudents) {
+        // Handle both possible data structures with null checks
+        const studentData = newStudent.student || newStudent
+
+        // Skip if this student exists in temporary editable rows (prioritize editable version)
+        const existsInTempRows = newStudentsRows.value.some(tempRow => {
+          return tempRow?.first_name === studentData?.first_name
+            && tempRow?.last_name === studentData?.last_name
+            && tempRow?.className === studentData?.className
+        })
+
+        if (existsInTempRows) {
+          continue // Skip this permanent student, use the editable version instead
+        }
+
+        const parent1Name = getParentNameFromNewStudentParent(newStudent.parent1)
+        const parent2Name = getParentNameFromNewStudentParent(newStudent.parent2)
+
+        const studentRow = {
+          key: `workflow-new-${newStudent.id}`,
+          id: newStudent.id,
+          fullName: `${studentData?.first_name || ''} ${studentData?.last_name || ''}`.trim() || 'New Student',
+          first_name: studentData?.first_name || '',
+          last_name: studentData?.last_name || '',
+          className: studentData?.className || '',
+          level: studentData?.level || null,
+          levelSortValue: studentData?.level || 0,
+          parent1: newStudent.parent1?.email || newStudent.parent1?.value?.email || null,
+          parent2: newStudent.parent2?.email || newStudent.parent2?.value?.email || null,
+          parent1Name,
+          parent2Name,
+          changeType: 'new',
+          statusText: 'New Student',
+          isDeparting: false,
+          isNew: false, // These are already saved to workflow
+          isEditable: false,
+          isClassEditable: false,
+          isLevelEditable: false,
+          isParentsEditable: false,
+          canMarkDeparting: false,
+        }
+
+        students.push(studentRow)
+      }
+    }
+
+    // 3. Add new student rows from table (not yet saved to workflow)
+    for (const newRow of newStudentsRows.value) {
+      // Add null checks for all properties
+      const firstName = newRow?.first_name || ''
+      const lastName = newRow?.last_name || ''
+      const parent1Name = getParentNameByEmail(newRow?.parent1)
+      const parent2Name = getParentNameByEmail(newRow?.parent2)
+
+      const studentRow = {
+        key: newRow?.key,
+        id: null,
+        fullName: `${firstName} ${lastName}`.trim() || 'New Student',
+        first_name: firstName,
+        last_name: lastName,
+        className: newRow?.className || '',
+        level: newRow?.level || null,
+        levelSortValue: newRow?.level || 0, // New rows without level should be at the very top
+        parent1: newRow?.parent1 || null,
+        parent2: newRow?.parent2 || null,
+        parent1Name,
+        parent2Name,
+        changeType: 'new',
+        statusText: 'New Student (Unsaved)',
+        isDeparting: false,
+        isNew: true,
+        isEditing: newRow?.isEditing || false,
+        isEditable: newRow?.isEditing || false,
+        isClassEditable: newRow?.isEditing || false,
+        isLevelEditable: newRow?.isEditing || false,
+        isParentsEditable: newRow?.isEditing || false,
+        canMarkDeparting: false,
+        firestoreId: newRow?.firestoreId, // Include the Firestore document ID
+      }
+
+      students.push(studentRow)
+    }
+
+    // Sort students by level, then by name for consistent default order
+    allStudentsForTable.value = students.sort((a, b) => {
+      if (a.levelSortValue !== b.levelSortValue) {
+        return a.levelSortValue - b.levelSortValue
+      }
+      return a.fullName.localeCompare(b.fullName)
+    })
+  }
+
+  const getParentNameByEmail = email => {
+    if (!email) return null
+
+    // Check in existing parents from database
+    const parent = firebaseStore.parentsDTO?.find(p => p.email === email)
+    if (parent) return parent.fullName
+
+    // Check in new student parents table
+    const newParent = newStudentParents.value.find(p => p.email === email)
+    if (newParent) {
+      return `${newParent.first_name} ${newParent.last_name}`.trim() || email
+    }
+
+    return email
+  }
+
+  const getParentNameFromNewStudentParent = parent => {
+    if (!parent) return null
+
+    if (parent.isExisting && parent.value) {
+      return parent.value.fullName || parent.value.email
+    } else if (parent.first_name || parent.last_name) {
+      return `${parent.first_name || ''} ${parent.last_name || ''}`.trim()
+    } else if (parent.email) {
+      return parent.email
+    }
+
+    return null
+  }
+
+  const getStudentStatusText = (change, isDeparting) => {
+    if (isDeparting) return 'Departing'
+
+    switch (change.changeType) {
+      case 'auto_progression': { return 'Auto Progression'
+      }
+      case 'graduating': { return 'Graduating'
+      }
+      case 'new': { return 'New Student'
+      }
+      default: { return 'Manual Progression'
+      }
+    }
+  }
+
+  const getStudentRowClass = student => {
+    if (student.isDeparting) return 'student-row-departing'
+    if (student.isNew) return 'student-row-new'
+
+    switch (student.changeType) {
+      case 'auto_progression': { return 'student-row-auto-progression'
+      }
+      case 'graduating': { return 'student-row-graduating'
+      }
+      case 'new': { return 'student-row-new'
+      }
+      default: { return 'student-row-manual-progression'
+      }
+    }
+  }
+
+  const addNewStudentRow = async () => {
+    try {
+      studentRowCounter.value++
+      const newRow = {
+        key: `new-student-${studentRowCounter.value}`,
+        first_name: '',
+        last_name: '',
+        className: '',
+        level: null,
+        parent1: null,
+        parent2: null,
+        isEditing: true,
+        originalData: null, // No original data since it's new
+      }
+
+      // Save immediately to Firestore
+      const firestoreId = await saveNewStudentToFirestore(newRow)
+      newRow.firestoreId = firestoreId
+
+      newStudentsRows.value.push(newRow)
+      buildAllStudentsForTable()
+    } catch (error) {
+      console.error('Failed to add new student row:', error)
+      // Show error to user if needed
+      if (error.value !== undefined) {
+        error.value = error.message
+      }
+    }
+  }
+
+  const removeNewStudentRow = async studentRow => {
+    const index = newStudentsRows.value.findIndex(s => s.key === studentRow.key)
+    if (index !== -1) {
+      try {
+        // Delete from Firestore first
+        if (studentRow.firestoreId) {
+          await deleteNewStudentFromFirestore(studentRow.firestoreId)
+        }
+
+        // Remove from local state
+        newStudentsRows.value.splice(index, 1)
+        buildAllStudentsForTable()
+      } catch (error) {
+        console.error('Failed to remove new student row:', error)
+        alert('Failed to delete student. Please try again.')
+      }
+    }
+  }
+
+  const editNewStudentRow = studentRow => {
+    const index = newStudentsRows.value.findIndex(s => s.key === studentRow.key)
+    if (index !== -1) {
+      // Store original data for cancel functionality
+      newStudentsRows.value[index].originalData = { ...newStudentsRows.value[index] }
+      newStudentsRows.value[index].isEditing = true
+      buildAllStudentsForTable()
+    }
+  }
+
+  const saveNewStudentRow = async studentRow => {
+    const index = newStudentsRows.value.findIndex(s => s.key === studentRow.key)
+    if (index !== -1) {
+      // Validate required fields
+      if (!studentRow.first_name.trim() || !studentRow.last_name.trim()) {
+        alert('First name and last name are required')
+        return
+      }
+
+      try {
+        // Update the data in newStudentsRows
+        const updatedData = {
+          ...newStudentsRows.value[index],
+          first_name: studentRow.first_name,
+          last_name: studentRow.last_name,
+          className: studentRow.className,
+          level: studentRow.level,
+          parent1: studentRow.parent1,
+          parent2: studentRow.parent2,
+          isEditing: false,
+          originalData: null,
+        }
+
+        // Update in Firestore
+        if (studentRow.firestoreId) {
+          await updateNewStudentInFirestore(studentRow.firestoreId, updatedData)
+        } else {
+          console.warn('No firestoreId found for student:', studentRow)
+        }
+
+        newStudentsRows.value[index] = updatedData
+        buildAllStudentsForTable()
+      } catch (error) {
+        console.error('Failed to save new student row:', error)
+        alert('Failed to save student data. Please try again.')
+      }
+    }
+  }
+
+  const cancelNewStudentRow = studentRow => {
+    const index = newStudentsRows.value.findIndex(s => s.key === studentRow.key)
+    if (index !== -1) {
+      const row = newStudentsRows.value[index]
+      if (row.originalData) {
+        // Restore original data
+        for (const key of Object.keys(row.originalData)) {
+          if (key !== 'originalData' && key !== 'isEditing') {
+            row[key] = row.originalData[key]
+          }
+        }
+      }
+      row.isEditing = false
+      row.originalData = null
+      buildAllStudentsForTable()
+    }
+  }
+
+  const saveNewStudent = async studentRow => {
+    if (!currentWorkflow.value) return
+
+    try {
+      loading.value = true
+
+      // Validate required fields
+      if (!studentRow.first_name || !studentRow.last_name || !studentRow.className) {
+        throw new Error('First name, last name, and class are required')
+      }
+
+      // Prepare student data
+      const studentData = {
+        first_name: studentRow.first_name,
+        last_name: studentRow.last_name,
+        className: studentRow.className,
+        level: studentRow.level,
+      }
+
+      // Prepare parent data
+      let parent1Data = null
+      let parent2Data = null
+      let useExistingParent1 = false
+      let useExistingParent2 = false
+
+      if (studentRow.parent1) {
+        // Check if it's an existing parent
+        const existingParent1 = firebaseStore.parentsDTO?.find(p => p.email === studentRow.parent1)
+        if (existingParent1) {
+          parent1Data = existingParent1
+          useExistingParent1 = true
+        } else {
+          // Check if it's a new parent from the new student parents table
+          const newParent1 = newStudentParents.value.find(p => p.email === studentRow.parent1)
+          if (newParent1) {
+            parent1Data = {
+              first_name: newParent1.first_name,
+              last_name: newParent1.last_name,
+              phone: newParent1.phone,
+              email: newParent1.email,
+            }
+            useExistingParent1 = false
+          }
+        }
+      }
+
+      if (studentRow.parent2) {
+        // Check if it's an existing parent
+        const existingParent2 = firebaseStore.parentsDTO?.find(p => p.email === studentRow.parent2)
+        if (existingParent2) {
+          parent2Data = existingParent2
+          useExistingParent2 = true
+        } else {
+          // Check if it's a new parent from the new student parents table
+          const newParent2 = newStudentParents.value.find(p => p.email === studentRow.parent2)
+          if (newParent2) {
+            parent2Data = {
+              first_name: newParent2.first_name,
+              last_name: newParent2.last_name,
+              phone: newParent2.phone,
+              email: newParent2.email,
+            }
+            useExistingParent2 = false
+          }
+        }
+      }
+
+      // Call the existing addNewStudent API
+      const baseUrl = getFunctionsBaseUrl()
+      const response = await fetch(`${baseUrl}/addNewStudentV2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          workflowId: currentWorkflow.value.id,
+          student: studentData,
+          parent1: parent1Data,
+          parent2: parent2Data,
+          useExistingParent1,
+          useExistingParent2,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      // Remove from new students rows and refresh data
+      removeNewStudentRow(studentRow)
+      await loadWorkflowData()
+
+      // Refresh Firebase data if new parents were created
+      if (!useExistingParent1 || !useExistingParent2) {
+        await firebaseStore.loadParentsDTO()
+      }
+    } catch (error_) {
+      console.error('Failed to save new student:', error_)
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const toggleStudentDeparting = async studentRow => {
+    if (!currentWorkflow.value || !studentRow.id) return
+
+    try {
+      loading.value = true
+
+      if (studentRow.isDeparting) {
+        // Remove from departing (undo)
+        const baseUrl = getFunctionsBaseUrl()
+        const response = await fetch(`${baseUrl}/removeDepartingStudentV2`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            workflowId: currentWorkflow.value.id,
+            studentId: studentRow.id,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+      } else {
+        // Mark as departing
+        const departingStudent = {
+          studentId: studentRow.id,
+          studentName: studentRow.fullName,
+          currentClass: studentRow.className,
+          currentLevel: studentRow.level,
+          departureReason: '', // Could be made editable in the future
+        }
+
+        const baseUrl = getFunctionsBaseUrl()
+        const response = await fetch(`${baseUrl}/markStudentsDepartingV2`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            workflowId: currentWorkflow.value.id,
+            departingStudents: [departingStudent],
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+      }
+
+      // Refresh workflow data to update the table
+      await loadWorkflowData()
+    } catch (error_) {
+      console.error('Failed to toggle student departing status:', error_)
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const handleClassAssignment = async studentRow => {
+    if (!currentWorkflow.value || !studentRow.pendingAssignment || !studentRow.className) return
+
+    try {
+      loading.value = true
+
+      const baseUrl = getFunctionsBaseUrl()
+      const response = await fetch(`${baseUrl}/assignTransitionClassV2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          workflowId: currentWorkflow.value.id,
+          studentId: studentRow.id,
+          assignedClass: studentRow.className,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      // Refresh workflow data to update assignments
+      await loadWorkflowData()
+    } catch (error_) {
+      console.error('Failed to assign class:', error_)
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
+  }
+
   const formatGradeLevel = level => {
+    if (level === null || level === undefined) {
+      return '' // Return blank for graduating students
+    }
+
     const { locale } = useI18n()
     const currentLocale = locale.value || 'en'
 
@@ -1677,14 +2420,19 @@
 
     // C) NEW students added to this class
     const newStudentsInClass = (currentWorkflow.value.newStudents || [])
-      .filter(newStudent => newStudent.student.className === classLetter)
+      .filter(newStudent => {
+        // Handle both possible data structures with null checks
+        const studentData = newStudent.student || newStudent
+        return studentData?.className === classLetter
+      })
 
     for (const newStudent of newStudentsInClass) {
+      const studentData = newStudent.student || newStudent
       projectedStudents.push({
         id: `new-${newStudent.id || Math.random()}`,
-        firstName: newStudent.student.first_name,
-        lastName: newStudent.student.last_name,
-        level: newStudent.student.level || 1, // Use selected level or default to 1
+        firstName: studentData?.first_name || '',
+        lastName: studentData?.last_name || '',
+        level: studentData?.level || 1, // Use selected level or default to 1
         className: classLetter,
         isProgressed: false,
         isNew: true,
@@ -2067,6 +2815,10 @@
       showApplyChangesDialog.value = false
       applyConfirmationText.value = ''
 
+      // Clear temporary new student rows since changes have been applied
+      await clearNewStudentsFromFirestore()
+      newStudentsRows.value = []
+
       // Refresh all data - Firebase data first, then workflow data
       await firebaseStore.refreshData()
       await loadWorkflowData()
@@ -2098,6 +2850,12 @@
 
       // Load departing students data
       departingStudentsData.value = data.current?.departingStudents || []
+
+      // Load new students from Firestore subcollection
+      await loadNewStudentsFromFirestore()
+
+      // Rebuild students table when workflow data changes
+      buildAllStudentsForTable()
     } catch (error_) {
       console.error('Failed to load workflow data:', error_)
     }
@@ -2114,11 +2872,34 @@
     await firebaseStore.loadStaffDTO()
     // Then load workflow data which depends on Firebase data for calculations
     await loadWorkflowData()
+    // Build students table after workflow data is loaded
+    buildAllStudentsForTable()
   })
 </script>
 
 <style scoped>
 .v-card-title {
   word-break: break-word;
+}
+
+/* Student row color coding */
+.student-row-auto-progression {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.student-row-manual-progression {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.student-row-departing {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.student-row-new {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.student-row-graduating {
+  background-color: rgba(156, 39, 176, 0.1);
 }
 </style>
