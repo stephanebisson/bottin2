@@ -1067,7 +1067,7 @@
 
     try {
       const newStudentsRef = collection(db, 'workflows', currentWorkflow.value.id, 'new_students')
-      const querySnapshot = await getDocs(query(newStudentsRef))
+      const querySnapshot = await getDocs(newStudentsRef)
 
       const loadedStudents = []
       for (const doc of querySnapshot) {
