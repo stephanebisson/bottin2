@@ -134,7 +134,7 @@
 
             <!-- Parents in two columns -->
             <v-row v-if="group.parent1 || group.parent2">
-              <v-col cols="6">
+              <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent1"
                   :committees="getParentCommittees(group.parent1.email)"
@@ -147,7 +147,7 @@
                   variant="detailed"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent2"
                   :committees="getParentCommittees(group.parent2.email)"

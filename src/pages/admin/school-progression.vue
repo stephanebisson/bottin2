@@ -373,7 +373,7 @@
             <div>
               <div class="font-weight-medium">{{ item.student.first_name }} {{ item.student.last_name }}</div>
               <div class="text-caption text-grey-darken-1">
-                {{ $t('admin.class') }}: {{ item.student.className }} ({{ formatGradeLevel(1) }})
+                {{ $t('admin.class') }}: {{ item.student.className }} ({{ formatGradeLevel(item.student.level || getNewStudentGradeLevel(item.student.className)) }})
               </div>
             </div>
           </template>
@@ -658,6 +658,18 @@
                   v-model="newStudent.className"
                   :items="getAllClasses()"
                   :label="$t('admin.class')"
+                  required
+                  :rules="[v => !!v || $t('validation.required')]"
+                  variant="outlined"
+                  @update:model-value="newStudent.level = null"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-select
+                  v-model="newStudent.level"
+                  :disabled="!newStudent.className"
+                  :items="getAvailableLevelsForClass(newStudent.className)"
+                  :label="$t('admin.level')"
                   required
                   :rules="[v => !!v || $t('validation.required')]"
                   variant="outlined"
@@ -1015,6 +1027,7 @@
     first_name: '',
     last_name: '',
     className: '',
+    level: null,
   })
   const newParent1 = ref({
     first_name: '',
@@ -1599,7 +1612,7 @@
         id: `new-${newStudent.id || Math.random()}`,
         firstName: newStudent.student.first_name,
         lastName: newStudent.student.last_name,
-        level: 1, // New students always start at level 1
+        level: newStudent.student.level || 1, // Use selected level or default to 1
         className: classLetter,
         isProgressed: false,
         isNew: true,
@@ -1645,6 +1658,54 @@
       .concat(
         levelGroups['Unknown'] ? [{ level: 'Unknown', students: levelGroups['Unknown'] }] : [],
       )
+  }
+
+  const getAvailableLevelsForClass = className => {
+    // Get the available grade levels for a specific class
+    if (!firebaseStore.classes || !className) return []
+
+    // Find the class object
+    const classItem = firebaseStore.classes.find(cls => cls.classLetter === className)
+    if (!classItem) return []
+
+    // Get current students in this class to determine the grade level range
+    const classStudents = firebaseStore.studentsDTO.filter(s => s.className === className)
+    const levels = classStudents.map(s => Number.parseInt(s.level)).filter(l => !Number.isNaN(l))
+
+    if (levels.length === 0) {
+      // No existing students, return default levels 1-2
+      return [
+        { title: formatGradeLevel(1), value: 1 },
+        { title: formatGradeLevel(2), value: 2 },
+      ]
+    }
+
+    // Determine the level range for this class based on existing students
+    const minLevel = Math.min(...levels)
+
+    // Classes are organized as 1-2, 3-4, 5-6
+    if (minLevel <= 2) {
+      return [
+        { title: formatGradeLevel(1), value: 1 },
+        { title: formatGradeLevel(2), value: 2 },
+      ]
+    } else if (minLevel <= 4) {
+      return [
+        { title: formatGradeLevel(3), value: 3 },
+        { title: formatGradeLevel(4), value: 4 },
+      ]
+    } else {
+      return [
+        { title: formatGradeLevel(5), value: 5 },
+        { title: formatGradeLevel(6), value: 6 },
+      ]
+    }
+  }
+
+  const getNewStudentGradeLevel = className => {
+    // Determine the appropriate starting grade level for a new student based on their assigned class
+    const availableLevels = getAvailableLevelsForClass(className)
+    return availableLevels.length > 0 ? availableLevels[0].value : 1
   }
 
   const getProjectedClassLevelPairs = classLetter => {
@@ -1828,7 +1889,7 @@
   }
 
   const resetAddStudentForm = () => {
-    newStudent.value = { first_name: '', last_name: '', className: '' }
+    newStudent.value = { first_name: '', last_name: '', className: '', level: null }
     newParent1.value = { first_name: '', last_name: '', email: '', phone: '' }
     newParent2.value = { first_name: '', last_name: '', email: '', phone: '' }
     hasParent2.value = false

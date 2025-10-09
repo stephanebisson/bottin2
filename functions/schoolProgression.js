@@ -390,7 +390,7 @@ exports.addNewStudentV2 = onRequest({
       id: newStudentId,
       student: {
         ...student,
-        level: 1, // New students always start at level 1
+        level: student.level || 1, // Use selected level or default to 1
         parent1_email: parent1.email,
         parent2_email: parent2?.email || null,
       },
