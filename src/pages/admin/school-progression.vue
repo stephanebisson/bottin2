@@ -704,7 +704,20 @@
                   variant="outlined"
                 >
                   <template #item="{ props, item }">
-                    <v-list-item v-bind="props" :subtitle="item.raw.email" :title="item.raw.displayName" />
+                    <v-list-item v-bind="props" :title="item.raw.displayName">
+                      <template #subtitle>
+                        <div>
+                          <div>{{ item.raw.email }}</div>
+                          <v-chip
+                            :color="item.raw.source === 'database' ? 'primary' : 'success'"
+                            size="x-small"
+                            variant="tonal"
+                          >
+                            {{ item.raw.source === 'database' ? $t('admin.existingParent') : $t('admin.newParent') }}
+                          </v-chip>
+                        </div>
+                      </template>
+                    </v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
@@ -783,7 +796,20 @@
                   variant="outlined"
                 >
                   <template #item="{ props, item }">
-                    <v-list-item v-bind="props" :subtitle="item.raw.email" :title="item.raw.displayName" />
+                    <v-list-item v-bind="props" :title="item.raw.displayName">
+                      <template #subtitle>
+                        <div>
+                          <div>{{ item.raw.email }}</div>
+                          <v-chip
+                            :color="item.raw.source === 'database' ? 'primary' : 'success'"
+                            size="x-small"
+                            variant="tonal"
+                          >
+                            {{ item.raw.source === 'database' ? $t('admin.existingParent') : $t('admin.newParent') }}
+                          </v-chip>
+                        </div>
+                      </template>
+                    </v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
@@ -1166,16 +1192,62 @@
   })
 
   const parentOptions = computed(() => {
-    if (!firebaseStore.parents) return []
+    const options = []
 
-    return firebaseStore.parents.map(parent => {
-      const fullName = `${parent.first_name || ''} ${parent.last_name || ''}`.trim()
-      return {
-        displayName: fullName || parent.email,
-        email: parent.email,
-        value: parent,
+    // Add existing parents from database
+    if (firebaseStore.parentsDTO) {
+      const existingParents = firebaseStore.parentsDTO.map(parent => {
+        const fullName = `${parent.first_name || ''} ${parent.last_name || ''}`.trim()
+        return {
+          displayName: fullName || parent.email,
+          email: parent.email,
+          value: parent,
+          isExisting: true,
+          source: 'database',
+        }
+      })
+      options.push(...existingParents)
+    }
+
+    // Add parents from previously added new students in current workflow
+    if (currentWorkflow.value?.newStudents) {
+      const newStudentParents = []
+
+      for (const newStudent of currentWorkflow.value.newStudents) {
+        // Add parent1 if it's a new parent (not existing)
+        if (newStudent.parent1 && !newStudent.parent1.isExisting && newStudent.parent1.email) {
+          const fullName = `${newStudent.parent1.first_name || ''} ${newStudent.parent1.last_name || ''}`.trim()
+          newStudentParents.push({
+            displayName: fullName || newStudent.parent1.email,
+            email: newStudent.parent1.email,
+            value: newStudent.parent1,
+            isExisting: false,
+            source: 'new_student',
+          })
+        }
+
+        // Add parent2 if it exists and is a new parent (not existing)
+        if (newStudent.parent2 && !newStudent.parent2.isExisting && newStudent.parent2.email) {
+          const fullName = `${newStudent.parent2.first_name || ''} ${newStudent.parent2.last_name || ''}`.trim()
+          newStudentParents.push({
+            displayName: fullName || newStudent.parent2.email,
+            email: newStudent.parent2.email,
+            value: newStudent.parent2,
+            isExisting: false,
+            source: 'new_student',
+          })
+        }
       }
-    }).sort((a, b) => a.displayName.localeCompare(b.displayName))
+
+      // Remove duplicates based on email
+      const uniqueNewParents = newStudentParents.filter((parent, index, self) =>
+        index === self.findIndex(p => p.email === parent.email),
+      )
+
+      options.push(...uniqueNewParents)
+    }
+
+    return options.sort((a, b) => a.displayName.localeCompare(b.displayName))
   })
 
   const departingStudents = computed(() => {
@@ -1223,7 +1295,7 @@
         }) || false
 
         // Find parent name from parent records
-        const parentRecord = firebaseStore.parents?.find(p => p.email === email)
+        const parentRecord = firebaseStore.parentsDTO?.find(p => p.email === email)
         let parentName = email // fallback to email
         if (parentRecord) {
           const name = `${parentRecord.first_name || ''} ${parentRecord.last_name || ''}`.trim()
@@ -1297,7 +1369,7 @@
           }) || false
 
           // Find parent name from parent records
-          const parentRecord = firebaseStore.parents?.find(p => p.email === email)
+          const parentRecord = firebaseStore.parentsDTO?.find(p => p.email === email)
           let parentName = email // fallback to email
           if (parentRecord) {
             const name = `${parentRecord.first_name || ''} ${parentRecord.last_name || ''}`.trim()
@@ -2036,6 +2108,8 @@
     await firebaseStore.loadAllData()
     // Load students DTO data needed for class filtering
     await firebaseStore.loadStudentsDTO()
+    // Load parents DTO data needed for parent selection
+    await firebaseStore.loadParentsDTO()
     // Load staff DTO data needed for teacher name display
     await firebaseStore.loadStaffDTO()
     // Then load workflow data which depends on Firebase data for calculations
