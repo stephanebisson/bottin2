@@ -1070,7 +1070,7 @@
       const querySnapshot = await getDocs(newStudentsRef)
 
       const loadedStudents = []
-      for (const doc of querySnapshot) {
+      for (const doc of querySnapshot.docs) {
         const data = doc.data()
         // Ensure all required properties exist with defaults
         const studentData = {
@@ -1116,7 +1116,7 @@
       const querySnapshot = await getDocs(newStudentsRef)
 
       const deletePromises = []
-      for (const doc of querySnapshot) {
+      for (const doc of querySnapshot.docs) {
         deletePromises.push(deleteDoc(doc.ref))
       }
 
