@@ -1113,7 +1113,7 @@
 
     try {
       const newStudentsRef = collection(db, 'workflows', currentWorkflow.value.id, 'new_students')
-      const querySnapshot = await getDocs(query(newStudentsRef))
+      const querySnapshot = await getDocs(newStudentsRef)
 
       const deletePromises = []
       for (const doc of querySnapshot) {
