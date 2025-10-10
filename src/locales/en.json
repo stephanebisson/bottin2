@@ -458,6 +458,13 @@
         "class": "Class",
         "level": "Level",
         "parents": "Parents"
+      },
+      "newStudent": "New Student",
+      "createError": "Failed to create student. Please try again.",
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "parentRequired": "At least one parent is required"
       }
     },
     "newParent": "New parent",

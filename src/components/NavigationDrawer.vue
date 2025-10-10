@@ -40,9 +40,9 @@
         <template v-for="item in navigationItems" :key="item.title">
           <!-- Items with subitems -->
           <v-list-group v-if="item.children">
-            <template #activator="{ props }">
+            <template #activator="{ props: activatorProps }">
               <v-list-item
-                v-bind="props"
+                v-bind="activatorProps"
                 :prepend-icon="item.icon"
                 :title="item.title"
               />

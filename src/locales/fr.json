@@ -466,6 +466,13 @@
         "class": "Classe",
         "level": "Niveau",
         "parents": "Parents"
+      },
+      "newStudent": "Nouvel élève",
+      "createError": "Échec de la création de l'élève. Veuillez réessayer.",
+      "validation": {
+        "firstNameRequired": "Le prénom est obligatoire",
+        "lastNameRequired": "Le nom de famille est obligatoire",
+        "parentRequired": "Au moins un parent est obligatoire"
       }
     },
     "newParent": "Nouveau parent",

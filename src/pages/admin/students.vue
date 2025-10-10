@@ -39,8 +39,18 @@
       <v-card v-else>
         <v-card-title class="d-flex justify-space-between align-center">
           <span>{{ $t('admin.studentsTable.tableTitle') }}</span>
-          <div class="text-body-2 text-grey-darken-1">
-            {{ $t('admin.studentsTable.totalStudents', { count: students.length }) }}
+          <div class="d-flex align-center ga-4">
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-plus"
+              variant="elevated"
+              @click="createNewStudent"
+            >
+              {{ $t('admin.studentsTable.newStudent') }}
+            </v-btn>
+            <div class="text-body-2 text-grey-darken-1">
+              {{ $t('admin.studentsTable.totalStudents', { count: students.length }) }}
+            </div>
           </div>
         </v-card-title>
 
@@ -49,7 +59,7 @@
           disable-sort
           :headers="headers"
           item-value="id"
-          :items="students"
+          :items="displayStudents"
           :items-per-page="50"
           :loading="loading"
           :sort-by="[]"
@@ -228,6 +238,7 @@
   const classOptions = ref([])
   const parentOptions = ref([]) // Array of simplified parent objects {email, fullName} from ParentDTO
   const editingRows = ref(new Set())
+  const newStudent = ref(null) // StudentDTO for new student being created
 
   // Check if user is authorized using Firebase Custom Claims
   const isAuthorized = ref(false)
@@ -250,6 +261,14 @@
       isAuthorized.value = false
     }
   }
+
+  // Computed students list that includes new student row at the beginning
+  const displayStudents = computed(() => {
+    if (newStudent.value) {
+      return [newStudent.value, ...students.value]
+    }
+    return students.value
+  })
 
   // Define table headers
   const headers = computed(() => [
@@ -399,8 +418,22 @@
     editingRows.value.add(studentDTO.id)
   }
 
+  // Cancel new student creation
+  const cancelNewStudent = () => {
+    if (newStudent.value) {
+      editingRows.value.delete(newStudent.value.id)
+      newStudent.value = null
+    }
+  }
+
   // Cancel editing and restore original values
   const cancelEditing = studentDTO => {
+    // Check if this is a new student being cancelled
+    if (newStudent.value && studentDTO.id === newStudent.value.id) {
+      cancelNewStudent()
+      return
+    }
+
     if (studentDTO._originalValues) {
       studentDTO.first_name = studentDTO._originalValues.first_name
       studentDTO.last_name = studentDTO._originalValues.last_name
@@ -413,8 +446,104 @@
     editingRows.value.delete(studentDTO.id)
   }
 
+  // Create new student row
+  const createNewStudent = () => {
+    if (newStudent.value) {
+      // Already creating a new student
+      return
+    }
+
+    // Create a new StudentDTO with temporary ID for editing
+    const tempId = 'new-student-' + Date.now()
+    newStudent.value = new StudentDTO({
+      id: tempId,
+      first_name: '',
+      last_name: '',
+      className: '',
+      level: null,
+      parent1_email: null,
+      parent2_email: null,
+    })
+
+    // Add to editing rows
+    editingRows.value.add(tempId)
+  }
+
+  // Save new student
+  const saveNewStudent = async () => {
+    if (!newStudent.value) return
+
+    try {
+      newStudent.value._saving = true
+
+      // Validate required fields
+      if (!newStudent.value.first_name.trim()) {
+        error.value = t('admin.studentsTable.validation.firstNameRequired')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
+
+      if (!newStudent.value.last_name.trim()) {
+        error.value = t('admin.studentsTable.validation.lastNameRequired')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
+
+      if (!newStudent.value.parent1_email && !newStudent.value.parent2_email) {
+        error.value = t('admin.studentsTable.validation.parentRequired')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
+
+      // Create student data (without temporary ID)
+      const studentData = {
+        first_name: newStudent.value.first_name.trim(),
+        last_name: newStudent.value.last_name.trim(),
+        className: newStudent.value.className,
+        level: newStudent.value.level,
+        parent1_email: newStudent.value.parent1_email || null,
+        parent2_email: newStudent.value.parent2_email || null,
+      }
+
+      // Use StudentRepository.create which handles DTO validation internally
+      const repository = new StudentRepository()
+      const createdStudentDTO = await repository.create(studentData)
+
+      // Add new student to the beginning of the students array
+      students.value.unshift(createdStudentDTO)
+
+      console.log(`Created new student ${createdStudentDTO.fullName}`)
+
+      // Clear new student state
+      editingRows.value.delete(newStudent.value.id)
+      newStudent.value = null
+    } catch (error_) {
+      console.error('Failed to create student:', error_)
+      error.value = t('admin.studentsTable.createError')
+      setTimeout(() => {
+        error.value = null
+      }, 5000)
+    } finally {
+      if (newStudent.value) {
+        newStudent.value._saving = false
+      }
+    }
+  }
+
   // Save student changes
   const saveStudent = async studentDTO => {
+    // Check if this is a new student being saved
+    if (newStudent.value && studentDTO.id === newStudent.value.id) {
+      await saveNewStudent()
+      return
+    }
+
     try {
       studentDTO._saving = true
 
@@ -433,7 +562,14 @@
       const updatedStudentDTO = await repository.update(studentDTO.id, updates)
 
       // Update the reactive student object with the validated data from the updated DTO
-      Object.assign(studentDTO, updatedStudentDTO.toJSON())
+      // Only update writable properties, not computed ones like fullName
+      studentDTO.first_name = updatedStudentDTO.first_name
+      studentDTO.last_name = updatedStudentDTO.last_name
+      studentDTO.className = updatedStudentDTO.className
+      studentDTO.level = updatedStudentDTO.level
+      studentDTO.parent1_email = updatedStudentDTO.parent1_email
+      studentDTO.parent2_email = updatedStudentDTO.parent2_email
+      studentDTO.updatedAt = updatedStudentDTO.updatedAt
 
       console.log(`Updated student ${updatedStudentDTO.fullName}`)
       delete studentDTO._originalValues
