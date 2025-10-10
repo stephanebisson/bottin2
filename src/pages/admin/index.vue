@@ -122,6 +122,30 @@
           </v-card>
         </v-col>
 
+        <!-- Parents Directory -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="handleParentsClick"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="primary" size="64">mdi-account-group</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.parentsDirectory.title') }}</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                {{ $t('admin.parentsDirectory.description') }}
+              </p>
+
+              <!-- Quick Stats -->
+              <div class="mt-4">
+                <v-chip color="primary" size="small" variant="tonal">
+                  {{ $t('admin.parentsDirectory.viewAllParents') }}
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
       </v-row>
     </div>
   </v-container>
@@ -195,6 +219,11 @@
   // Handle school progression card click
   const handleProgressionClick = () => {
     router.push('/admin/school-progression')
+  }
+
+  // Handle parents directory card click
+  const handleParentsClick = () => {
+    router.push('/admin/parents')
   }
 
   // Load current workflow for dashboard overview

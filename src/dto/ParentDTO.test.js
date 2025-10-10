@@ -382,11 +382,11 @@ describe('ParentDTO', () => {
       expect(firestoreDoc).toHaveProperty('first_name', 'Jean')
       expect(firestoreDoc).toHaveProperty('last_name', 'Dupont')
       expect(firestoreDoc).toHaveProperty('email', 'jean@example.com')
-      expect(firestoreDoc).toHaveProperty('fullName', 'Jean Dupont')
-      expect(firestoreDoc).toHaveProperty('searchableText')
       expect(firestoreDoc).toHaveProperty('updatedAt')
       expect(firestoreDoc).toHaveProperty('createdAt')
       expect(firestoreDoc).not.toHaveProperty('id') // ID not included in Firestore doc
+      expect(firestoreDoc).not.toHaveProperty('fullName') // Computed field not stored
+      expect(firestoreDoc).not.toHaveProperty('searchableText') // Computed field not stored
     })
 
     test('getSearchableText creates searchable content', () => {

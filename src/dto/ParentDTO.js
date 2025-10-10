@@ -172,7 +172,7 @@ export class ParentDTO {
   }
 
   /**
-   * Transform data for Firestore storage (removes id, adds computed fields)
+   * Transform data for Firestore storage (only raw fields, no computed fields)
    */
   toFirestore () {
     return {
@@ -184,10 +184,6 @@ export class ParentDTO {
       city: this.city,
       postal_code: this.postal_code,
       interests: this.interests,
-
-      // Computed fields for easier querying
-      fullName: this.fullName,
-      searchableText: this.getSearchableText(),
 
       // Metadata
       updatedAt: new Date(),

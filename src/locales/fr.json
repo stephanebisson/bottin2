@@ -35,7 +35,11 @@
     "language": "Langue",
     "chooseLanguage": "Choisir la langue",
     "cancel": "Annuler",
-    "save": "Sauvegarder"
+    "save": "Sauvegarder",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "retry": "Réessayer",
+    "notProvided": "Non fourni"
   },
   "classes": {
     "title": "Classes",
@@ -420,6 +424,23 @@
     "actions": "Actions",
     "parentInfo": "Information des parents",
     "existingParent": "Parent existant",
+    "parentsDirectory": {
+      "title": "Répertoire des Parents",
+      "description": "Voir et gérer tous les parents du système avec leurs enfants associés.",
+      "viewAllParents": "Voir Tous les Parents",
+      "summary": "Aperçu du Répertoire des Parents",
+      "totalParents": "{count} parents au total",
+      "allParents": "Tous les Parents",
+      "children": "Enfants",
+      "childrenCount": "{count} enfant | {count} enfants",
+      "noChildren": "Aucun enfant",
+      "noTeacher": "Aucun enseignant",
+      "addNewParent": "Ajouter un Nouveau Parent",
+      "validation": {
+        "required": "Ce champ est obligatoire",
+        "invalidEmail": "Veuillez saisir une adresse email valide"
+      }
+    },
     "newParent": "Nouveau parent",
     "selectExistingParent": "Sélectionner un parent existant",
     "selectParent1": "Sélectionner le Parent 1",

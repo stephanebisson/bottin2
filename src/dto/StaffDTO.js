@@ -153,9 +153,7 @@ export class StaffDTO {
       ce_role: this.ce_role,
       ce_hierarchy: this.ce_hierarchy,
 
-      // Computed fields for easier querying
-      fullName: this.fullName,
-      searchableText: this.getSearchableText(),
+      // Raw data only - no computed fields
 
       // Metadata
       updatedAt: new Date(),

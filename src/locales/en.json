@@ -35,7 +35,11 @@
     "language": "Language",
     "chooseLanguage": "Choose Language",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "retry": "Retry",
+    "notProvided": "Not provided"
   },
   "classes": {
     "title": "Classes",
@@ -412,6 +416,23 @@
     "actions": "Actions",
     "parentInfo": "Parent Information",
     "existingParent": "Existing parent",
+    "parentsDirectory": {
+      "title": "Parents Directory",
+      "description": "View and manage all parents in the system with their associated children.",
+      "viewAllParents": "View All Parents",
+      "summary": "Parents Directory Overview",
+      "totalParents": "{count} total parents",
+      "allParents": "All Parents",
+      "children": "Children",
+      "childrenCount": "{count} child | {count} children",
+      "noChildren": "No children",
+      "noTeacher": "No teacher",
+      "addNewParent": "Add New Parent",
+      "validation": {
+        "required": "This field is required",
+        "invalidEmail": "Please enter a valid email address"
+      }
+    },
     "newParent": "New parent",
     "selectExistingParent": "Select existing parent",
     "selectParent1": "Select Parent 1",

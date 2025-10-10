@@ -363,11 +363,11 @@ describe('StudentDTO', () => {
       expect(firestoreDoc).toHaveProperty('level', 3)
       expect(firestoreDoc).toHaveProperty('parent1_email', 'parent1@example.com')
       expect(firestoreDoc).toHaveProperty('parent2_email', 'parent2@example.com')
-      expect(firestoreDoc).toHaveProperty('fullName', 'Marie Dupont')
-      expect(firestoreDoc).toHaveProperty('searchableText')
       expect(firestoreDoc).toHaveProperty('updatedAt')
       expect(firestoreDoc).toHaveProperty('createdAt')
       expect(firestoreDoc).not.toHaveProperty('id') // ID not included
+      expect(firestoreDoc).not.toHaveProperty('fullName') // Computed field not stored
+      expect(firestoreDoc).not.toHaveProperty('searchableText') // Computed field not stored
     })
 
     test('getSearchableText creates searchable content', () => {

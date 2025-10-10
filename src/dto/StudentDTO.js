@@ -192,9 +192,7 @@ export class StudentDTO {
       parent1_email: this.parent1_email,
       parent2_email: this.parent2_email,
 
-      // Computed fields for easier querying
-      fullName: this.fullName,
-      searchableText: this.getSearchableText(),
+      // Raw data only - no computed fields
 
       // Metadata
       updatedAt: new Date(),
