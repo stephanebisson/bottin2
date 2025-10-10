@@ -134,7 +134,7 @@
       countLabel: t('dashboard.classes').toLowerCase(),
     },
     {
-      title: t('nav.directory'),
+      title: t('directory.title'),
       description: t('dashboard.familiesDescription'),
       icon: 'mdi-book-account',
       color: 'secondary',

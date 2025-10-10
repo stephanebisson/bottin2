@@ -146,6 +146,30 @@
           </v-card>
         </v-col>
 
+        <!-- Students Table -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card
+            class="h-100 cursor-pointer admin-card"
+            hover
+            @click="handleStudentsClick"
+          >
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="primary" size="64">mdi-school-outline</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.studentsTable.title') }}</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                {{ $t('admin.studentsTable.description') }}
+              </p>
+
+              <!-- Quick Stats -->
+              <div class="mt-4">
+                <v-chip color="primary" size="small" variant="tonal">
+                  {{ $t('admin.studentsTable.viewAllStudents') }}
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
       </v-row>
     </div>
   </v-container>
@@ -224,6 +248,11 @@
   // Handle parents directory card click
   const handleParentsClick = () => {
     router.push('/admin/parents')
+  }
+
+  // Handle students table card click
+  const handleStudentsClick = () => {
+    router.push('/admin/students')
   }
 
   // Load current workflow for dashboard overview

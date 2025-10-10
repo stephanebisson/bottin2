@@ -4,6 +4,13 @@
     "classes": "Classes",
     "students": "Élèves", 
     "parents": "Parents",
+    "parentDirectory": "Répertoire des parents",
+    "parentProfile": "Mon profil",
+    "studentDirectory": "Répertoire des élèves",
+    "classList": "Liste des classes",
+    "workflows": "Processus",
+    "annualUpdate": "Mise à jour annuelle",
+    "parentUpdate": "Mise à jour parent",
     "directory": "Familles",
     "staff": "Personnel",
     "committees": "Comités",
@@ -36,6 +43,7 @@
     "chooseLanguage": "Choisir la langue",
     "cancel": "Annuler",
     "save": "Sauvegarder",
+    "actions": "Actions",
     "firstName": "Prénom",
     "lastName": "Nom de famille",
     "retry": "Réessayer",
@@ -439,6 +447,25 @@
       "validation": {
         "required": "Ce champ est obligatoire",
         "invalidEmail": "Veuillez saisir une adresse email valide"
+      }
+    },
+    "studentsTable": {
+      "title": "Répertoire des Élèves",
+      "description": "Voir tous les élèves avec leurs informations de classe et parents",
+      "viewAllStudents": "Voir Tous les Élèves",
+      "tableTitle": "Tous les Élèves",
+      "loading": "Chargement des élèves...",
+      "loadError": "Échec du chargement des élèves. Veuillez réessayer.",
+      "totalStudents": "{count} élèves au total",
+      "noStudents": "Aucun élève trouvé",
+      "noParent": "Aucun parent assigné",
+      "updateError": "Échec de la mise à jour des informations de l'élève. Veuillez réessayer.",
+      "headers": {
+        "firstName": "Prénom",
+        "lastName": "Nom de famille", 
+        "class": "Classe",
+        "level": "Niveau",
+        "parents": "Parents"
       }
     },
     "newParent": "Nouveau parent",

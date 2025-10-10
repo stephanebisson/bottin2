@@ -37,15 +37,36 @@
 
       <!-- Navigation Items (only show when authenticated) -->
       <template v-if="authStore.isAuthenticated">
-        <v-list-item
-          v-for="item in navigationItems"
-          :key="item.title"
-          :active="$route.path === item.to"
-          link
-          :prepend-icon="item.icon"
-          :title="item.title"
-          :to="item.to"
-        />
+        <template v-for="item in navigationItems" :key="item.title">
+          <!-- Items with subitems -->
+          <v-list-group v-if="item.children">
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :prepend-icon="item.icon"
+                :title="item.title"
+              />
+            </template>
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.title"
+              :active="$route.path === child.to"
+              link
+              :prepend-icon="child.icon"
+              :title="child.title"
+              :to="child.to"
+            />
+          </v-list-group>
+          <!-- Regular items without subitems -->
+          <v-list-item
+            v-else
+            :active="$route.path === item.to"
+            link
+            :prepend-icon="item.icon"
+            :title="item.title"
+            :to="item.to"
+          />
+        </template>
       </template>
 
       <!-- Welcome message for unauthenticated users -->
@@ -151,7 +172,7 @@
         to: '/classes',
       },
       {
-        title: t('nav.directory'),
+        title: t('directory.title'),
         icon: 'mdi-book-account',
         to: '/families',
       },
@@ -172,7 +193,28 @@
       baseItems.push({
         title: t('admin.title'),
         icon: 'mdi-cog',
-        to: '/admin',
+        children: [
+          {
+            title: t('admin.annualUpdateWorkflow'),
+            icon: 'mdi-calendar-sync',
+            to: '/admin/annual-update',
+          },
+          {
+            title: t('nav.parentUpdate'),
+            icon: 'mdi-account-edit-outline',
+            to: '/admin/parent-update',
+          },
+          {
+            title: t('admin.parentsDirectory.title'),
+            icon: 'mdi-account-heart-outline',
+            to: '/admin/parents',
+          },
+          {
+            title: t('admin.studentsTable.title'),
+            icon: 'mdi-account-school-outline',
+            to: '/admin/students',
+          },
+        ],
       })
     }
 

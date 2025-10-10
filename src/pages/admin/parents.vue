@@ -32,7 +32,7 @@
     <div v-else>
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
-        <v-progress-circular indeterminate size="64" color="primary" />
+        <v-progress-circular color="primary" indeterminate size="64" />
         <p class="text-h6 mt-4">{{ $t('common.loading') }}</p>
       </div>
 
@@ -41,9 +41,9 @@
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
         <h2 class="text-h5 mt-4 text-error">{{ $t('common.error') }}</h2>
         <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
-        <v-btn 
-          color="primary" 
+        <v-btn
           class="mt-4"
+          color="primary"
           @click="loadData"
         >
           {{ $t('common.retry') }}
@@ -81,27 +81,27 @@
               </v-btn>
             </div>
           </v-card-title>
-          
+
           <v-data-table
+            class="elevation-0"
+            :disable-sort="true"
             :headers="tableHeaders"
             :items="sortedParents"
             :items-per-page="50"
             :sort-by="[{ key: 'first_name', order: 'asc' }, { key: 'last_name', order: 'asc' }]"
-            :disable-sort="true"
-            class="elevation-0"
           >
             <!-- Phone Column -->
-            <template v-slot:item.phone="{ item }">
+            <template #item.phone="{ item }">
               <span v-if="item.phone">{{ item.displayPhone }}</span>
               <span v-else class="text-grey-darken-1 font-italic">{{ $t('common.notProvided') }}</span>
             </template>
 
             <!-- Children Column -->
-            <template v-slot:item.children="{ item }">
+            <template #item.children="{ item }">
               <div v-if="item.childrenInfo && item.childrenInfo.length > 0">
                 <div class="text-body-2">
-                  <div 
-                    v-for="child in item.childrenInfo" 
+                  <div
+                    v-for="child in item.childrenInfo"
                     :key="child.id"
                     class="mb-1"
                   >
@@ -115,8 +115,8 @@
             </template>
 
             <!-- Email Column -->
-            <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.email}`" class="text-primary text-decoration-none">
+            <template #item.email="{ item }">
+              <a class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
                 {{ item.email }}
               </a>
             </template>
@@ -144,27 +144,27 @@
                   <v-text-field
                     v-model="newParent.first_name"
                     :label="$t('common.firstName')"
-                    :rules="[rules.required]"
                     outlined
                     required
+                    :rules="[rules.required]"
                   />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field
                     v-model="newParent.last_name"
                     :label="$t('common.lastName')"
-                    :rules="[rules.required]"
                     outlined
                     required
+                    :rules="[rules.required]"
                   />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field
                     v-model="newParent.email"
                     :label="$t('common.email')"
-                    :rules="[rules.required, rules.email]"
                     outlined
                     required
+                    :rules="[rules.required, rules.email]"
                     type="email"
                   />
                 </v-col>
@@ -192,9 +192,9 @@
           </v-btn>
           <v-btn
             color="primary"
-            variant="flat"
-            :loading="savingParent"
             :disabled="!formValid"
+            :loading="savingParent"
+            variant="flat"
             @click="saveNewParent"
           >
             {{ $t('common.save') }}
@@ -208,10 +208,10 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from '@/composables/useI18n'
-  import { useAuthStore } from '@/stores/auth'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { ParentRepository } from '@/repositories/ParentRepository.js'
   import { StudentRepository } from '@/repositories/StudentRepository.js'
+  import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const { t } = useI18n()
   const authStore = useAuthStore()
@@ -232,7 +232,7 @@
     first_name: '',
     last_name: '',
     email: '',
-    phone: ''
+    phone: '',
   })
 
   // Authorization
@@ -248,17 +248,17 @@
     email: value => {
       const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return pattern.test(value) || t('admin.parentsDirectory.validation.invalidEmail')
-    }
+    },
   }
 
   // Helper functions for teacher information
-  const getTeacherName = (teacherId) => {
+  const getTeacherName = teacherId => {
     if (!teacherId || !firebaseStore.staffDTO) return ''
     const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
     return teacher ? teacher.fullName : ''
   }
 
-  const getClassTeacher = (className) => {
+  const getClassTeacher = className => {
     if (!className || !firebaseStore.classes) return null
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     return classItem ? classItem.teacher : null
@@ -318,12 +318,12 @@
 
   // Computed sorted parents with children info
   const sortedParents = computed(() => {
-    if (!parents.value.length) return []
+    if (parents.value.length === 0) return []
 
     // Map children to parents
     const parentsWithChildren = parents.value.map(parent => {
-      const childrenInfo = students.value.filter(student => 
-        student.parent1_email === parent.email || student.parent2_email === parent.email
+      const childrenInfo = students.value.filter(student =>
+        student.parent1_email === parent.email || student.parent2_email === parent.email,
       )
 
       return {
@@ -347,13 +347,13 @@
 
     try {
       console.log('Loading parents, students, staff and classes data...')
-      
+
       // First ensure Firebase store is loaded (contains staff and classes data)
       await Promise.all([
         (!firebaseStore.hasData || firebaseStore.isDataStale) ? firebaseStore.loadAllData() : Promise.resolve(),
         firebaseStore.loadStaffDTO(),
       ])
-      
+
       // Load both parents and students in parallel
       const [parentsData, studentsData] = await Promise.all([
         parentRepository.getAll(),
@@ -364,9 +364,9 @@
       students.value = studentsData
 
       console.log(`Loaded ${parentsData.length} parents, ${studentsData.length} students, ${firebaseStore.staffDTO?.length || 0} staff, ${firebaseStore.classes?.length || 0} classes`)
-    } catch (err) {
-      console.error('Error loading data:', err)
-      error.value = err.message || 'Failed to load data'
+    } catch (error_) {
+      console.error('Error loading data:', error_)
+      error.value = error_.message || 'Failed to load data'
     } finally {
       loading.value = false
     }
@@ -378,7 +378,7 @@
       first_name: '',
       last_name: '',
       email: '',
-      phone: ''
+      phone: '',
     }
     formValid.value = false
     if (addParentForm.value) {
@@ -397,7 +397,7 @@
     savingParent.value = true
     try {
       console.log('Creating new parent:', newParent.value)
-      
+
       // Create parent using repository
       const createdParent = await parentRepository.create(newParent.value)
       console.log('Parent created successfully:', createdParent.fullName)
@@ -411,11 +411,10 @@
 
       // Show success message (you could add a snackbar here)
       console.log('Parent added successfully!')
-      
-    } catch (err) {
-      console.error('Error creating parent:', err)
+    } catch (error_) {
+      console.error('Error creating parent:', error_)
       // You could show an error snackbar here
-      error.value = `Failed to create parent: ${err.message}`
+      error.value = `Failed to create parent: ${error_.message}`
     } finally {
       savingParent.value = false
     }

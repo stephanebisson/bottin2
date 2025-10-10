@@ -4,6 +4,13 @@
     "classes": "Classes",
     "students": "Students", 
     "parents": "Parents",
+    "parentDirectory": "Parent Directory",
+    "parentProfile": "My Profile",
+    "studentDirectory": "Student Directory",
+    "classList": "Class List",
+    "workflows": "Workflows",
+    "annualUpdate": "Annual Update",
+    "parentUpdate": "Parent Update",
     "directory": "Directory",
     "staff": "Staff",
     "committees": "Committees",
@@ -36,6 +43,7 @@
     "chooseLanguage": "Choose Language",
     "cancel": "Cancel",
     "save": "Save",
+    "actions": "Actions",
     "firstName": "First Name",
     "lastName": "Last Name",
     "retry": "Retry",
@@ -100,7 +108,7 @@
     "noChildrenFound": "No children found"
   },
   "directory": {
-    "title": "Family Directory",
+    "title": "Families",
     "dataLoaded": "{students} students, {parents} parents loaded",
     "loadingData": "Loading directory data...",
     "errorLoadingData": "Error loading directory data",
@@ -431,6 +439,25 @@
       "validation": {
         "required": "This field is required",
         "invalidEmail": "Please enter a valid email address"
+      }
+    },
+    "studentsTable": {
+      "title": "Students Directory",
+      "description": "View all students with class and parent information",
+      "viewAllStudents": "View All Students",
+      "tableTitle": "All Students",
+      "loading": "Loading students...",
+      "loadError": "Failed to load students. Please try again.",
+      "totalStudents": "{count} students total",
+      "noStudents": "No students found",
+      "noParent": "No parent assigned",
+      "updateError": "Failed to update student information. Please try again.",
+      "headers": {
+        "firstName": "First Name",
+        "lastName": "Last Name", 
+        "class": "Class",
+        "level": "Level",
+        "parents": "Parents"
       }
     },
     "newParent": "New parent",
