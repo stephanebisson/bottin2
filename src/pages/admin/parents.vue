@@ -75,7 +75,7 @@
               <v-btn
                 color="primary"
                 prepend-icon="mdi-account-plus"
-                @click="showAddParentDialog = true"
+                @click="createNewParent"
               >
                 {{ $t('admin.parentsDirectory.addNewParent') }}
               </v-btn>
@@ -86,13 +86,62 @@
             class="elevation-0"
             :disable-sort="true"
             :headers="tableHeaders"
-            :items="sortedParents"
+            :item-class="getRowClass"
+            :item-value="item => item._tempEmail || item.email"
+            :items="displayParents"
             :items-per-page="50"
             :sort-by="[{ key: 'first_name', order: 'asc' }, { key: 'last_name', order: 'asc' }]"
           >
+            <!-- First Name Column -->
+            <template #item.first_name="{ item }">
+              <v-text-field
+                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-model="item.first_name"
+                density="compact"
+                hide-details
+                variant="outlined"
+              />
+              <span v-else class="font-weight-medium">{{ item.first_name }}</span>
+            </template>
+
+            <!-- Last Name Column -->
+            <template #item.last_name="{ item }">
+              <v-text-field
+                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-model="item.last_name"
+                density="compact"
+                hide-details
+                variant="outlined"
+              />
+              <span v-else class="font-weight-medium">{{ item.last_name }}</span>
+            </template>
+
+            <!-- Email Column -->
+            <template #item.email="{ item }">
+              <v-text-field
+                v-if="editingRows.has(item._tempEmail || item.email) && item._isNew"
+                v-model="item.email"
+                density="compact"
+                hide-details
+                type="email"
+                variant="outlined"
+              />
+              <a v-else class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
+                {{ item.email }}
+              </a>
+            </template>
+
             <!-- Phone Column -->
             <template #item.phone="{ item }">
-              <span v-if="item.phone">{{ item.displayPhone }}</span>
+              <v-text-field
+                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-model="item.phone"
+                density="compact"
+                hide-details
+                type="tel"
+                variant="outlined"
+              />
+              <span v-else-if="item.phone">{{ item.displayPhone }}</span>
               <span v-else class="text-grey-darken-1 font-italic">{{ $t('common.notProvided') }}</span>
             </template>
 
@@ -114,94 +163,42 @@
               </span>
             </template>
 
-            <!-- Email Column -->
-            <template #item.email="{ item }">
-              <a class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
-                {{ item.email }}
-              </a>
+            <!-- Actions Column -->
+            <template #item.actions="{ item }">
+              <div class="d-flex align-center ga-1">
+                <template v-if="!editingRows.has(item._tempEmail || item.email)">
+                  <v-btn
+                    color="primary"
+                    icon="mdi-pencil"
+                    size="small"
+                    variant="text"
+                    @click="startEditing(item)"
+                  />
+                </template>
+                <template v-else>
+                  <v-btn
+                    color="success"
+                    icon="mdi-check"
+                    :loading="item._saving"
+                    size="small"
+                    variant="text"
+                    @click="saveParent(item)"
+                  />
+                  <v-btn
+                    color="grey"
+                    :disabled="item._saving"
+                    icon="mdi-close"
+                    size="small"
+                    variant="text"
+                    @click="cancelEditing(item)"
+                  />
+                </template>
+              </div>
             </template>
           </v-data-table>
         </v-card>
       </div>
     </div>
-
-    <!-- Add Parent Dialog -->
-    <v-dialog
-      v-model="showAddParentDialog"
-      max-width="600px"
-      persistent
-    >
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">{{ $t('admin.parentsDirectory.addNewParent') }}</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-form ref="addParentForm" v-model="formValid">
-            <v-container>
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="newParent.first_name"
-                    :label="$t('common.firstName')"
-                    outlined
-                    required
-                    :rules="[rules.required]"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="newParent.last_name"
-                    :label="$t('common.lastName')"
-                    outlined
-                    required
-                    :rules="[rules.required]"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="newParent.email"
-                    :label="$t('common.email')"
-                    outlined
-                    required
-                    :rules="[rules.required, rules.email]"
-                    type="email"
-                  />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="newParent.phone"
-                    :label="$t('common.phone')"
-                    outlined
-                    type="tel"
-                  />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="grey"
-            variant="text"
-            @click="cancelAddParent"
-          >
-            {{ $t('common.cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            :disabled="!formValid"
-            :loading="savingParent"
-            variant="flat"
-            @click="saveNewParent"
-          >
-            {{ $t('common.save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -222,18 +219,8 @@
   const error = ref(null)
   const parents = ref([])
   const students = ref([])
-
-  // Add Parent Dialog State
-  const showAddParentDialog = ref(false)
-  const formValid = ref(false)
-  const savingParent = ref(false)
-  const addParentForm = ref(null)
-  const newParent = ref({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-  })
+  const editingRows = ref(new Set())
+  const newParent = ref(null) // ParentDTO for new parent being created
 
   // Authorization
   const isAuthorized = ref(false)
@@ -241,15 +228,6 @@
   // Repositories
   const parentRepository = new ParentRepository()
   const studentRepository = new StudentRepository()
-
-  // Form validation rules
-  const rules = {
-    required: value => !!value || t('admin.parentsDirectory.validation.required'),
-    email: value => {
-      const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      return pattern.test(value) || t('admin.parentsDirectory.validation.invalidEmail')
-    },
-  }
 
   // Helper functions for teacher information
   const getTeacherName = teacherId => {
@@ -288,12 +266,14 @@
       align: 'start',
       sortable: false,
       key: 'first_name',
+      width: '120px',
     },
     {
       title: t('common.lastName'),
       align: 'start',
       sortable: false,
       key: 'last_name',
+      width: '120px',
     },
     {
       title: t('common.email'),
@@ -313,6 +293,12 @@
       sortable: false,
       key: 'children',
       width: '300px',
+    },
+    {
+      title: t('common.actions'),
+      key: 'actions',
+      sortable: false,
+      width: '100px',
     },
   ])
 
@@ -339,6 +325,25 @@
       return a.last_name.localeCompare(b.last_name)
     })
   })
+
+  // Computed parents list that includes new parent row at the beginning
+  const displayParents = computed(() => {
+    if (newParent.value) {
+      return [newParent.value, ...sortedParents.value]
+    }
+    return sortedParents.value
+  })
+
+  // Get row class for highlighting parents without children
+  const getRowClass = item => {
+    // Don't highlight new parents being created
+    if (item._isNew) return ''
+    // Highlight parents with no children in orange
+    if (!item.childrenInfo || item.childrenInfo.length === 0) {
+      return 'parent-no-children'
+    }
+    return ''
+  }
 
   // Load all data
   const loadData = async () => {
@@ -372,51 +377,180 @@
     }
   }
 
-  // Add Parent Dialog Methods
-  const resetNewParentForm = () => {
+  // Start editing a parent row
+  const startEditing = parentDTO => {
+    // Store original values for cancel functionality
+    parentDTO._originalValues = {
+      first_name: parentDTO.first_name,
+      last_name: parentDTO.last_name,
+      phone: parentDTO.phone,
+    }
+    editingRows.value.add(parentDTO.email)
+  }
+
+  // Cancel new parent creation
+  const cancelNewParent = () => {
+    if (newParent.value) {
+      editingRows.value.delete(newParent.value._tempEmail || newParent.value.email)
+      newParent.value = null
+    }
+  }
+
+  // Cancel editing and restore original values
+  const cancelEditing = parentDTO => {
+    // Check if this is a new parent being cancelled
+    if (newParent.value && (parentDTO._tempEmail === newParent.value._tempEmail || parentDTO.email === newParent.value.email)) {
+      cancelNewParent()
+      return
+    }
+
+    if (parentDTO._originalValues) {
+      parentDTO.first_name = parentDTO._originalValues.first_name
+      parentDTO.last_name = parentDTO._originalValues.last_name
+      parentDTO.phone = parentDTO._originalValues.phone
+      delete parentDTO._originalValues
+    }
+    editingRows.value.delete(parentDTO.email)
+  }
+
+  // Create new parent row
+  const createNewParent = () => {
+    if (newParent.value) {
+      // Already creating a new parent
+      return
+    }
+
+    // Create a new parent object with temporary email for tracking
+    const tempEmail = 'new-parent-' + Date.now() + '@temp.com'
     newParent.value = {
+      email: '',
       first_name: '',
       last_name: '',
-      email: '',
       phone: '',
+      displayPhone: '',
+      fullName: '',
+      childrenInfo: [],
+      _isNew: true,
+      _tempEmail: tempEmail, // Stable identifier for tracking editing state
     }
-    formValid.value = false
-    if (addParentForm.value) {
-      addParentForm.value.resetValidation()
-    }
+    // Use temporary email as the key for consistent tracking
+    editingRows.value.add(tempEmail)
   }
 
-  const cancelAddParent = () => {
-    showAddParentDialog.value = false
-    resetNewParentForm()
-  }
-
+  // Save new parent
   const saveNewParent = async () => {
-    if (!formValid.value) return
+    if (!newParent.value) return
 
-    savingParent.value = true
     try {
-      console.log('Creating new parent:', newParent.value)
+      newParent.value._saving = true
 
-      // Create parent using repository
-      const createdParent = await parentRepository.create(newParent.value)
-      console.log('Parent created successfully:', createdParent.fullName)
+      // Validate required fields
+      if (!newParent.value.first_name.trim()) {
+        error.value = t('admin.parentsDirectory.validation.required')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
 
-      // Refresh the parents list
-      parents.value = await parentRepository.getAll()
+      if (!newParent.value.last_name.trim()) {
+        error.value = t('admin.parentsDirectory.validation.required')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
 
-      // Close dialog and reset form
-      showAddParentDialog.value = false
-      resetNewParentForm()
+      if (!newParent.value.email.trim()) {
+        error.value = t('admin.parentsDirectory.validation.required')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
 
-      // Show success message (you could add a snackbar here)
-      console.log('Parent added successfully!')
+      // Validate email format
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailPattern.test(newParent.value.email)) {
+        error.value = t('admin.parentsDirectory.validation.invalidEmail')
+        setTimeout(() => {
+          error.value = null
+        }, 5000)
+        return
+      }
+
+      // Create parent data
+      const parentData = {
+        first_name: newParent.value.first_name.trim(),
+        last_name: newParent.value.last_name.trim(),
+        email: newParent.value.email.trim(),
+        phone: newParent.value.phone.trim() || '',
+      }
+
+      // Use ParentRepository.create which handles DTO validation internally
+      const createdParentDTO = await parentRepository.create(parentData)
+
+      // Add new parent to the parents array
+      parents.value.push(createdParentDTO)
+
+      console.log(`Created new parent ${createdParentDTO.fullName}`)
+
+      // Clear new parent state
+      editingRows.value.delete(newParent.value._tempEmail)
+      newParent.value = null
     } catch (error_) {
-      console.error('Error creating parent:', error_)
-      // You could show an error snackbar here
+      console.error('Failed to create parent:', error_)
       error.value = `Failed to create parent: ${error_.message}`
+      setTimeout(() => {
+        error.value = null
+      }, 5000)
     } finally {
-      savingParent.value = false
+      if (newParent.value) {
+        newParent.value._saving = false
+      }
+    }
+  }
+
+  // Save parent changes
+  const saveParent = async parentDTO => {
+    // Check if this is a new parent being saved
+    if (newParent.value && (parentDTO._tempEmail === newParent.value._tempEmail || parentDTO._isNew)) {
+      await saveNewParent()
+      return
+    }
+
+    try {
+      parentDTO._saving = true
+
+      // Create updates object with proper data sanitization
+      const updates = {
+        first_name: parentDTO.first_name,
+        last_name: parentDTO.last_name,
+        phone: parentDTO.phone || '',
+      }
+
+      // Use ParentRepository.update which handles DTO validation internally
+      const updatedParentDTO = await parentRepository.update(parentDTO.email, updates)
+
+      // Update the reactive parent object with the validated data from the updated DTO
+      parentDTO.first_name = updatedParentDTO.first_name
+      parentDTO.last_name = updatedParentDTO.last_name
+      parentDTO.phone = updatedParentDTO.phone
+      parentDTO.displayPhone = updatedParentDTO.displayPhone
+      parentDTO.fullName = updatedParentDTO.fullName
+      parentDTO.updatedAt = updatedParentDTO.updatedAt
+
+      console.log(`Updated parent ${updatedParentDTO.fullName}`)
+      delete parentDTO._originalValues
+      editingRows.value.delete(parentDTO.email)
+    } catch (error_) {
+      console.error('Failed to save parent:', error_)
+      error.value = `Failed to update parent: ${error_.message}`
+      setTimeout(() => {
+        error.value = null
+      }, 5000)
+    } finally {
+      parentDTO._saving = false
     }
   }
 
@@ -431,5 +565,13 @@
 <style scoped>
   .v-data-table {
     border-radius: 0;
+  }
+
+  :deep(.parent-no-children) {
+    background-color: #fff3e0 !important;
+  }
+
+  :deep(.parent-no-children:hover) {
+    background-color: #ffe0b2 !important;
   }
 </style>
