@@ -86,10 +86,10 @@
             class="elevation-0"
             :disable-sort="true"
             :headers="tableHeaders"
-            :item-class="getRowClass"
             :item-value="item => item._tempEmail || item.email"
             :items="displayParents"
             :items-per-page="50"
+            :row-props="getRowProps"
             :sort-by="[{ key: 'first_name', order: 'asc' }, { key: 'last_name', order: 'asc' }]"
           >
             <!-- First Name Column -->
@@ -334,15 +334,16 @@
     return sortedParents.value
   })
 
-  // Get row class for highlighting parents without children
-  const getRowClass = item => {
+  // Get row props for highlighting parents without children
+  const getRowProps = ({ item }) => {
     // Don't highlight new parents being created
-    if (item._isNew) return ''
+    if (item._isNew) return {}
     // Highlight parents with no children in orange
-    if (!item.childrenInfo || item.childrenInfo.length === 0) {
-      return 'parent-no-children'
+    const hasChildren = item.childrenInfo && item.childrenInfo.length > 0
+    if (!hasChildren) {
+      return { class: 'parent-no-children' }
     }
-    return ''
+    return {}
   }
 
   // Load all data
