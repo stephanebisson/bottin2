@@ -52,11 +52,11 @@ export class StudentDTO {
 
   /**
    * Validate required fields and data integrity
+   * Note: className is optional since students may not have a class assigned (e.g., after progression)
    */
   isValid () {
     return this.first_name.length > 0
       && this.last_name.length > 0
-      && this.className.length > 0
   }
 
   /**
@@ -70,9 +70,7 @@ export class StudentDTO {
     if (!this.last_name) {
       errors.push('Last name is required')
     }
-    if (!this.className) {
-      errors.push('Class name is required')
-    }
+    // className is optional - students may not have a class assigned
     return errors
   }
 

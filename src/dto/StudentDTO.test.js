@@ -126,6 +126,12 @@ describe('StudentDTO', () => {
         true,
         [],
       ],
+      // Student without class (valid after progression)
+      [
+        { first_name: 'Marie', last_name: 'Dupont', className: '' },
+        true,
+        [],
+      ],
 
       // Invalid students - missing required fields
       [
@@ -138,17 +144,12 @@ describe('StudentDTO', () => {
         false,
         ['Last name is required'],
       ],
-      [
-        { first_name: 'Marie', last_name: 'Dupont', className: '' },
-        false,
-        ['Class name is required'],
-      ],
 
       // Multiple errors
       [
         { first_name: '', last_name: '', className: '' },
         false,
-        ['First name is required', 'Last name is required', 'Class name is required'],
+        ['First name is required', 'Last name is required'],
       ],
     ])('should validate student data', (data, isValid, expectedErrors) => {
       const student = new StudentDTO(data)
@@ -472,6 +473,11 @@ describe('StudentDTO', () => {
             data: () => ({ first_name: 'Jean', last_name: 'Martin', className: '5B' }),
           },
           {
+            id: 'student-3',
+            exists: () => true,
+            data: () => ({ first_name: 'Paul', last_name: 'Tremblay', className: '' }), // Valid - no class assigned yet
+          },
+          {
             id: 'invalid',
             exists: () => true,
             data: () => ({ first_name: '', last_name: '', className: '' }), // Invalid - filtered out
@@ -481,9 +487,10 @@ describe('StudentDTO', () => {
 
       const students = StudentDTO.fromFirestoreSnapshot(mockSnapshot)
 
-      expect(students).toHaveLength(2) // Invalid one filtered out
+      expect(students).toHaveLength(3) // Invalid one filtered out, student without class is valid
       expect(students[0].first_name).toBe('Marie')
       expect(students[1].first_name).toBe('Jean')
+      expect(students[2].first_name).toBe('Paul')
     })
 
     test('fromFirestoreSnapshot handles document creation errors gracefully', () => {

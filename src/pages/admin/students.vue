@@ -338,18 +338,21 @@
       const repository = new StudentRepository()
       const studentDTOs = await repository.getAll()
 
-      // Sort by class, level, first name, last name (all ascending)
+      // Sort by level, class, first name, last name (all ascending)
+      // Students without a level or class are sorted at the end
       // StudentRepository.getAll() returns StudentDTO instances
       students.value = studentDTOs.sort((a, b) => {
-        // First sort by className
-        if (a.className < b.className) return -1
-        if (a.className > b.className) return 1
-
-        // Then sort by level (ascending)
-        const levelA = a.level || 0
-        const levelB = b.level || 0
+        // First sort by level (ascending) - null values go to end
+        const levelA = a.level === null ? Number.MAX_SAFE_INTEGER : a.level
+        const levelB = b.level === null ? Number.MAX_SAFE_INTEGER : b.level
         if (levelA < levelB) return -1
         if (levelA > levelB) return 1
+
+        // Then sort by className - empty strings go to the end
+        const classA = a.className || '\uFFFF' // Use max Unicode char to sort empty to end
+        const classB = b.className || '\uFFFF'
+        if (classA < classB) return -1
+        if (classA > classB) return 1
 
         // Then sort by first name (ascending)
         if (a.first_name < b.first_name) return -1

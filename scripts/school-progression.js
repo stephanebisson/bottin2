@@ -44,7 +44,7 @@ const CLASS_LEVEL_MAPPING = {
 /**
  * Check if a level is valid for a given class
  */
-function isLevelValidForClass(classLetter, level) {
+function isLevelValidForClass (classLetter, level) {
   if (!classLetter || typeof classLetter !== 'string') {
     return false
   }
@@ -56,7 +56,7 @@ function isLevelValidForClass(classLetter, level) {
 /**
  * Initialize Firebase Admin
  */
-async function initializeFirebase() {
+async function initializeFirebase () {
   try {
     const firebaseConfig = {
       projectId: config.firebase.projectId,
@@ -95,7 +95,7 @@ async function initializeFirebase() {
 /**
  * Create a backup of the students collection
  */
-async function createBackup(db) {
+async function createBackup (db) {
   try {
     console.log('\n📦 Creating backup of students collection...')
 
@@ -105,9 +105,9 @@ async function createBackup(db) {
     const studentsSnapshot = await db.collection('students').get()
     const studentsData = {}
 
-    studentsSnapshot.docs.forEach(doc => {
+    for (const doc of studentsSnapshot.docs) {
       studentsData[doc.id] = doc.data()
-    })
+    }
 
     await backupRef.set({
       collection: 'students',
@@ -129,7 +129,7 @@ async function createBackup(db) {
 /**
  * Determine progression action for a student
  */
-function determineProgression(student) {
+function determineProgression (student) {
   const currentLevel = student.level
   const className = student.className
   const studentId = student.id
@@ -145,7 +145,7 @@ function determineProgression(student) {
   }
 
   // Determine action based on current level
-  let action = {
+  const action = {
     studentId,
     studentName,
     currentLevel,
@@ -159,30 +159,34 @@ function determineProgression(student) {
   switch (currentLevel) {
     case 1:
     case 3:
-    case 5:
+    case 5: {
       // First level of class: Stay in same class, move to next level
       action.newLevel = currentLevel + 1
       action.newClass = className
       action.actionType = 'auto_progression'
       break
+    }
 
     case 2:
-    case 4:
+    case 4: {
       // Second level of class: Move to next level, remove class assignment
       action.newLevel = currentLevel + 1
       action.newClass = null
       action.actionType = 'needs_assignment'
       break
+    }
 
-    case 6:
+    case 6: {
       // Graduating: Remove from system
       action.actionType = 'graduating'
       break
+    }
 
-    default:
+    default: {
       // Invalid level
       action.actionType = 'invalid_level'
       warnings.push(`⚠️  Student ${studentId} (${studentName}) has invalid level: ${currentLevel}`)
+    }
   }
 
   return action
@@ -191,7 +195,7 @@ function determineProgression(student) {
 /**
  * Apply progression changes to the database
  */
-async function applyProgressionChanges(db, progressionActions) {
+async function applyProgressionChanges (db, progressionActions) {
   console.log('\n💾 Applying progression changes to database...')
 
   const stats = {
@@ -212,7 +216,7 @@ async function applyProgressionChanges(db, progressionActions) {
       const studentRef = db.collection('students').doc(action.studentId)
 
       switch (action.actionType) {
-        case 'auto_progression':
+        case 'auto_progression': {
           // Update student with new level, keep class
           currentBatch.update(studentRef, {
             level: action.newLevel,
@@ -221,8 +225,9 @@ async function applyProgressionChanges(db, progressionActions) {
           stats.autoProgressed++
           operationCount++
           break
+        }
 
-        case 'needs_assignment':
+        case 'needs_assignment': {
           // Update student with new level, remove class
           currentBatch.update(studentRef, {
             level: action.newLevel,
@@ -232,18 +237,21 @@ async function applyProgressionChanges(db, progressionActions) {
           stats.needsAssignment++
           operationCount++
           break
+        }
 
-        case 'graduating':
+        case 'graduating': {
           // Delete graduating student
           currentBatch.delete(studentRef)
           stats.graduated++
           operationCount++
           break
+        }
 
-        case 'invalid_level':
+        case 'invalid_level': {
           stats.invalidLevel++
           console.log(`⚠️  Skipping student ${action.studentId} with invalid level ${action.currentLevel}`)
           break
+        }
       }
 
       // Commit batch if we've reached the limit
@@ -271,7 +279,7 @@ async function applyProgressionChanges(db, progressionActions) {
 /**
  * Main progression function
  */
-async function progressStudents() {
+async function progressStudents () {
   const environment = config.firebase.useEmulator ? 'Development (Emulator)' : 'Production'
   const mode = isDryRun ? 'DRY RUN' : 'LIVE'
 
@@ -310,7 +318,7 @@ async function progressStudents() {
 
     // Display progression summary
     console.log('\n📈 Progression Summary:')
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
 
     const stats = {
       autoProgression: progressionActions.filter(a => a.actionType === 'auto_progression').length,
@@ -332,56 +340,59 @@ async function progressStudents() {
     // Auto-progression
     if (stats.autoProgression > 0) {
       console.log('\n✅ Auto-Progression (staying in same class):')
-      progressionActions
-        .filter(a => a.actionType === 'auto_progression')
-        .forEach(action => {
-          console.log(`   ${action.studentName} (${action.studentId})`)
-          console.log(`      Class ${action.currentClass}: Level ${action.currentLevel} → ${action.newLevel}`)
-        })
+      for (const action of progressionActions
+        .filter(a => a.actionType === 'auto_progression')) {
+        console.log(`   ${action.studentName} (${action.studentId})`)
+        console.log(`      Class ${action.currentClass}: Level ${action.currentLevel} → ${action.newLevel}`)
+      }
     }
 
     // Needs assignment
     if (stats.needsAssignment > 0) {
       console.log('\n🔄 Needs Class Assignment (moving to new class):')
-      progressionActions
-        .filter(a => a.actionType === 'needs_assignment')
-        .forEach(action => {
-          console.log(`   ${action.studentName} (${action.studentId})`)
-          console.log(`      Class ${action.currentClass}: Level ${action.currentLevel} → ${action.newLevel} (class: null)`)
-        })
+      for (const action of progressionActions
+        .filter(a => a.actionType === 'needs_assignment')) {
+        console.log(`   ${action.studentName} (${action.studentId})`)
+        console.log(`      Class ${action.currentClass}: Level ${action.currentLevel} → ${action.newLevel} (class: null)`)
+      }
     }
 
     // Graduating
     if (stats.graduating > 0) {
       console.log('\n🎓 Graduating (will be removed from system):')
-      progressionActions
-        .filter(a => a.actionType === 'graduating')
-        .forEach(action => {
-          console.log(`   ${action.studentName} (${action.studentId})`)
-          console.log(`      Class ${action.currentClass}, Level ${action.currentLevel}`)
-        })
+      for (const action of progressionActions
+        .filter(a => a.actionType === 'graduating')) {
+        console.log(`   ${action.studentName} (${action.studentId})`)
+        console.log(`      Class ${action.currentClass}, Level ${action.currentLevel}`)
+      }
     }
 
     // Invalid levels
     if (stats.invalidLevel > 0) {
       console.log('\n⚠️  Invalid Levels (will be skipped):')
-      progressionActions
-        .filter(a => a.actionType === 'invalid_level')
-        .forEach(action => {
-          console.log(`   ${action.studentName} (${action.studentId})`)
-          console.log(`      Class ${action.currentClass}, Level ${action.currentLevel}`)
-        })
+      for (const action of progressionActions
+        .filter(a => a.actionType === 'invalid_level')) {
+        console.log(`   ${action.studentName} (${action.studentId})`)
+        console.log(`      Class ${action.currentClass}, Level ${action.currentLevel}`)
+      }
     }
 
     // Display all warnings
     const allWarnings = progressionActions.flatMap(a => a.warnings)
     if (allWarnings.length > 0) {
       console.log('\n⚠️  Warnings:')
-      allWarnings.forEach(warning => console.log(`   ${warning}`))
+      for (const warning of allWarnings) {
+        console.log(`   ${warning}`)
+      }
     }
 
     // Apply changes if not dry run
-    if (!isDryRun) {
+    if (isDryRun) {
+      console.log('\n' + '='.repeat(80))
+      console.log('✅ DRY RUN COMPLETE - No changes were made')
+      console.log('   Run without --dry-run to apply these changes')
+      console.log('='.repeat(80))
+    } else {
       console.log('\n' + '='.repeat(80))
       console.log('⚠️  APPLYING CHANGES - This cannot be undone!')
       console.log('='.repeat(80))
@@ -397,13 +408,7 @@ async function progressStudents() {
       if (applyStats.errors > 0) {
         console.log(`   ⚠️  Errors: ${applyStats.errors}`)
       }
-    } else {
-      console.log('\n' + '='.repeat(80))
-      console.log('✅ DRY RUN COMPLETE - No changes were made')
-      console.log('   Run without --dry-run to apply these changes')
-      console.log('='.repeat(80))
     }
-
   } catch (error) {
     console.error('\n💥 Script failed:', error.message)
     console.error(error.stack)

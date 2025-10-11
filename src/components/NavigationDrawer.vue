@@ -200,9 +200,9 @@
             to: '/admin/annual-update',
           },
           {
-            title: t('nav.parentUpdate'),
-            icon: 'mdi-account-edit-outline',
-            to: '/admin/parent-update',
+            title: t('admin.schoolProgression.title'),
+            icon: 'mdi-school-outline',
+            to: '/admin/school-progression',
           },
           {
             title: t('admin.parentsDirectory.title'),
