@@ -306,16 +306,15 @@
   const sortedParents = computed(() => {
     if (parents.value.length === 0) return []
 
-    // Map children to parents
+    // Map children to parents - preserve ParentDTO instance to keep getters
     const parentsWithChildren = parents.value.map(parent => {
       const childrenInfo = students.value.filter(student =>
         student.parent1_email === parent.email || student.parent2_email === parent.email,
       )
 
-      return {
-        ...parent,
-        childrenInfo,
-      }
+      // Add childrenInfo directly to parent object instead of spreading
+      parent.childrenInfo = childrenInfo
+      return parent
     })
 
     // Sort by first name, then last name (ascending)
@@ -534,11 +533,10 @@
       const updatedParentDTO = await parentRepository.update(parentDTO.email, updates)
 
       // Update the reactive parent object with the validated data from the updated DTO
+      // Note: Only update actual data fields, not computed getters like displayPhone/fullName
       parentDTO.first_name = updatedParentDTO.first_name
       parentDTO.last_name = updatedParentDTO.last_name
       parentDTO.phone = updatedParentDTO.phone
-      parentDTO.displayPhone = updatedParentDTO.displayPhone
-      parentDTO.fullName = updatedParentDTO.fullName
       parentDTO.updatedAt = updatedParentDTO.updatedAt
 
       console.log(`Updated parent ${updatedParentDTO.fullName}`)
