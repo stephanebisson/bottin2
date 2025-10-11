@@ -443,7 +443,16 @@
       "childrenCount": "{count} enfant | {count} enfants",
       "noChildren": "Aucun enfant",
       "noTeacher": "Aucun enseignant",
-      "addNewParent": "Ajouter un Nouveau Parent",
+      "addNewParent": "Ajouter un nouveau parent",
+      "deleteStudent": "Supprimer l'élève",
+      "confirmDeleteStudent": "Supprimer définitivement l'élève",
+      "deleteStudentWarning": "Vous êtes sur le point de supprimer définitivement cet élève du système scolaire. Cette action supprimera toutes ses informations de la base de données.",
+      "deleteStudentExplanation": "Il s'agit d'une action permanente pour les élèves qui quittent l'école avant d'être finissants. Une fois supprimés, tous les dossiers de l'élève seront perdus et ne pourront pas être récupérés.",
+      "deleteStudentConfirmation": "Pour confirmer cette suppression permanente, veuillez taper le mot SUPPRIMER dans la case ci-dessous :",
+      "typeDeleteToConfirm": "Tapez SUPPRIMER pour confirmer",
+      "deleteStudentSuccess": "L'élève a été définitivement supprimé du système",
+      "deleteStudentError": "Échec de la suppression de l'élève. Veuillez réessayer.",
+      "deleteStudentMismatch": "Le mot de confirmation ne correspond pas. Veuillez taper SUPPRIMER exactement.",
       "validation": {
         "required": "Ce champ est obligatoire",
         "invalidEmail": "Veuillez saisir une adresse email valide"

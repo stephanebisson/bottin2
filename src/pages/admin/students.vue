@@ -174,14 +174,22 @@
           <!-- Actions Column -->
           <template #item.actions="{ item }">
             <div class="d-flex align-center ga-1">
-              <v-btn
-                v-if="!editingRows.has(item.id)"
-                color="primary"
-                icon="mdi-pencil"
-                size="small"
-                variant="text"
-                @click="startEditing(item)"
-              />
+              <template v-if="!editingRows.has(item.id)">
+                <v-btn
+                  color="primary"
+                  icon="mdi-pencil"
+                  size="small"
+                  variant="text"
+                  @click="startEditing(item)"
+                />
+                <v-btn
+                  color="error"
+                  icon="mdi-delete"
+                  size="small"
+                  variant="text"
+                  @click="openDeleteStudentDialog(item)"
+                />
+              </template>
               <template v-else>
                 <v-btn
                   color="success"
@@ -215,6 +223,89 @@
         </v-data-table>
       </v-card>
     </div>
+
+    <!-- Delete Student Confirmation Dialog -->
+    <v-dialog
+      v-model="showDeleteDialog"
+      max-width="600px"
+      persistent
+    >
+      <v-card>
+        <v-card-title class="bg-error text-white">
+          <div class="d-flex align-center">
+            <v-icon class="mr-2" color="white" size="large">mdi-alert-circle</v-icon>
+            <span class="text-h5">{{ $t('admin.parentsDirectory.confirmDeleteStudent') }}</span>
+          </div>
+        </v-card-title>
+
+        <v-card-text class="pt-6">
+          <v-alert
+            class="mb-4"
+            color="error"
+            icon="mdi-alert"
+            variant="tonal"
+          >
+            <div class="text-body-1 font-weight-bold mb-2">
+              {{ $t('admin.parentsDirectory.deleteStudentWarning') }}
+            </div>
+          </v-alert>
+
+          <div v-if="studentToDelete" class="mb-4">
+            <div class="text-h6 mb-2">
+              {{ studentToDelete.fullName }}
+            </div>
+            <div class="text-body-2 text-grey-darken-1">
+              {{ studentToDelete.displayLevel }} - {{ studentToDelete.className }}
+            </div>
+          </div>
+
+          <p class="text-body-1 mb-4">
+            {{ $t('admin.parentsDirectory.deleteStudentExplanation') }}
+          </p>
+
+          <v-divider class="my-4" />
+
+          <div class="mb-4">
+            <p class="text-body-1 font-weight-bold mb-2">
+              {{ $t('admin.parentsDirectory.deleteStudentConfirmation') }}
+            </p>
+            <v-text-field
+              v-model="deleteConfirmationText"
+              class="mt-2"
+              color="error"
+              density="comfortable"
+              :error="deleteConfirmationError"
+              :error-messages="deleteConfirmationErrorMessage"
+              hide-details="auto"
+              :placeholder="$t('admin.parentsDirectory.typeDeleteToConfirm')"
+              variant="outlined"
+              @keyup.enter="confirmDeleteStudent"
+            />
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="grey"
+            :disabled="deletingStudent"
+            variant="text"
+            @click="cancelDeleteStudent"
+          >
+            {{ $t('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            :disabled="!isDeleteConfirmed"
+            :loading="deletingStudent"
+            variant="flat"
+            @click="confirmDeleteStudent"
+          >
+            {{ $t('admin.parentsDirectory.deleteStudent') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -239,6 +330,14 @@
   const parentOptions = ref([]) // Array of simplified parent objects {email, fullName} from ParentDTO
   const editingRows = ref(new Set())
   const newStudent = ref(null) // StudentDTO for new student being created
+
+  // Delete Student Dialog State
+  const showDeleteDialog = ref(false)
+  const studentToDelete = ref(null)
+  const deleteConfirmationText = ref('')
+  const deleteConfirmationError = ref(false)
+  const deleteConfirmationErrorMessage = ref('')
+  const deletingStudent = ref(false)
 
   // Check if user is authorized using Firebase Custom Claims
   const isAuthorized = ref(false)
@@ -585,6 +684,68 @@
       }, 5000)
     } finally {
       studentDTO._saving = false
+    }
+  }
+
+  // Delete Student Dialog Methods
+  const isDeleteConfirmed = computed(() => {
+    const expectedText = t('admin.delete').toUpperCase()
+    return deleteConfirmationText.value.trim().toUpperCase() === expectedText
+  })
+
+  const openDeleteStudentDialog = student => {
+    studentToDelete.value = student
+    deleteConfirmationText.value = ''
+    deleteConfirmationError.value = false
+    deleteConfirmationErrorMessage.value = ''
+    showDeleteDialog.value = true
+  }
+
+  const cancelDeleteStudent = () => {
+    showDeleteDialog.value = false
+    studentToDelete.value = null
+    deleteConfirmationText.value = ''
+    deleteConfirmationError.value = false
+    deleteConfirmationErrorMessage.value = ''
+  }
+
+  const confirmDeleteStudent = async () => {
+    if (!isDeleteConfirmed.value) {
+      deleteConfirmationError.value = true
+      deleteConfirmationErrorMessage.value = t('admin.parentsDirectory.deleteStudentMismatch')
+      return
+    }
+
+    if (!studentToDelete.value) return
+
+    deletingStudent.value = true
+    deleteConfirmationError.value = false
+    deleteConfirmationErrorMessage.value = ''
+
+    try {
+      console.log('Deleting student:', studentToDelete.value.fullName)
+
+      // Delete student using repository
+      const repository = new StudentRepository()
+      await repository.delete(studentToDelete.value.id)
+      console.log('Student deleted successfully:', studentToDelete.value.fullName)
+
+      // Remove from students array
+      students.value = students.value.filter(s => s.id !== studentToDelete.value.id)
+
+      // Close dialog
+      showDeleteDialog.value = false
+      studentToDelete.value = null
+      deleteConfirmationText.value = ''
+
+      // Show success message (you could add a snackbar here)
+      console.log('Student deleted successfully!')
+    } catch (error_) {
+      console.error('Error deleting student:', error_)
+      deleteConfirmationError.value = true
+      deleteConfirmationErrorMessage.value = t('admin.parentsDirectory.deleteStudentError')
+    } finally {
+      deletingStudent.value = false
     }
   }
 

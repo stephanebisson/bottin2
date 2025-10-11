@@ -436,6 +436,15 @@
       "noChildren": "No children",
       "noTeacher": "No teacher",
       "addNewParent": "Add New Parent",
+      "deleteStudent": "Delete Student",
+      "confirmDeleteStudent": "Permanently Delete Student",
+      "deleteStudentWarning": "You are about to permanently delete this student from the school system. This action will remove all of their information from the database.",
+      "deleteStudentExplanation": "This is a permanent action for students who are leaving the school before graduating. Once deleted, all student records will be lost and cannot be recovered.",
+      "deleteStudentConfirmation": "To confirm this permanent deletion, please type the word DELETE in the box below:",
+      "typeDeleteToConfirm": "Type DELETE to confirm",
+      "deleteStudentSuccess": "Student has been permanently deleted from the system",
+      "deleteStudentError": "Failed to delete student. Please try again.",
+      "deleteStudentMismatch": "Confirmation word does not match. Please type DELETE exactly.",
       "validation": {
         "required": "This field is required",
         "invalidEmail": "Please enter a valid email address"
