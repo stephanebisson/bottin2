@@ -437,7 +437,7 @@
             name: 'Find student with parent contacts',
             passed: true,
             error: null,
-            details: `Found ${studentWithParents.fullName} with ${studentWithParents.parentEmails.length} parent(s)`,
+            details: `Found ${studentWithParents.fullName} with ${studentWithParents.parentIds.length} parent(s)`,
           })
 
           // Test 3: Test individual parent lookup

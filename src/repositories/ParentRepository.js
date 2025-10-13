@@ -5,7 +5,7 @@ import { db } from '@/firebase'
 /**
  * Parent Repository - Clean data access layer for parent operations
  * Handles all Firestore interactions and returns ParentDTO objects
- * Note: Parents collection uses email as document ID (see sheets-sync.js line 731-739)
+ * Note: Parents use structured IDs: FirstName_LastName_ABC123 (see sheets-sync.js and migrate-parents-to-structured-id.js)
  */
 export class ParentRepository {
   constructor () {
@@ -32,8 +32,8 @@ export class ParentRepository {
   }
 
   /**
-   * Get single parent by ID (which is their email)
-   * @param {string} id - Parent email (used as document ID)
+   * Get single parent by ID
+   * @param {string} id - Parent document ID (structured format: FirstName_LastName_ABC123)
    */
   async getById (id) {
     try {
@@ -57,8 +57,8 @@ export class ParentRepository {
   }
 
   /**
-   * Get multiple parents by their IDs (emails) efficiently
-   * @param {string[]} ids - Array of parent emails
+   * Get multiple parents by their IDs efficiently
+   * @param {string[]} ids - Array of parent document IDs
    */
   async getByIds (ids) {
     if (!Array.isArray(ids) || ids.length === 0) {
@@ -129,7 +129,8 @@ export class ParentRepository {
 
   /**
    * Save parent (create or update)
-   * Note: Uses email as document ID if provided, otherwise auto-generates ID
+   * Note: If no ID is provided, auto-generates a Firestore ID
+   * For structured IDs (FirstName_LastName_ABC123), use setDoc with explicit ID
    */
   async save (parentDTO) {
     if (!(parentDTO instanceof ParentDTO)) {
@@ -152,21 +153,11 @@ export class ParentRepository {
         console.log(`ParentRepository: Updated parent ${parentDTO.fullName}`)
         return parentDTO.id
       } else {
-        // Create new parent
-        if (parentDTO.email) {
-          // Use email as document ID
-          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with email as ID...`)
-          const docRef = doc(db, this.collectionName, parentDTO.email)
-          await setDoc(docRef, firestoreData)
-          console.log(`ParentRepository: Created parent ${parentDTO.fullName}`)
-          return parentDTO.email
-        } else {
-          // Use auto-generated ID
-          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with auto-generated ID...`)
-          const docRef = await addDoc(this.collectionRef, firestoreData)
-          console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${docRef.id}`)
-          return docRef.id
-        }
+        // Create new parent with auto-generated ID
+        console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with auto-generated ID...`)
+        const docRef = await addDoc(this.collectionRef, firestoreData)
+        console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${docRef.id}`)
+        return docRef.id
       }
     } catch (error) {
       console.error('ParentRepository: Error saving parent:', error)
@@ -181,7 +172,7 @@ export class ParentRepository {
     const parentDTO = new ParentDTO(parentData)
     const id = await this.save(parentDTO)
 
-    // Return the parent with the email as ID
+    // Return the parent with the generated ID
     return await this.getById(id)
   }
 

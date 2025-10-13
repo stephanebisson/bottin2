@@ -240,12 +240,11 @@
 
   // Get children for this parent
   const children = computed(() => {
-    if (!parentProfile.value?.email) return []
+    if (!parentProfile.value?.id) return []
 
-    const parentEmail = parentProfile.value.email.toLowerCase()
+    const parentId = parentProfile.value.id
     return firebaseStore.studentsDTO.filter(student =>
-      (student.parent1_email && student.parent1_email.toLowerCase() === parentEmail)
-      || (student.parent2_email && student.parent2_email.toLowerCase() === parentEmail),
+      student.parent1_id === parentId || student.parent2_id === parentId,
     ).sort((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
@@ -255,18 +254,18 @@
 
   // Get committees for this parent
   const committees = computed(() => {
-    if (!parentProfile.value?.email) return []
+    if (!parentProfile.value?.id) return []
 
-    const parentEmail = parentProfile.value.email.toLowerCase()
+    const parentId = parentProfile.value.id
     return firebaseStore.committees
       .filter(committee =>
         committee.members && committee.members.some(member =>
-          member.email && member.email.toLowerCase() === parentEmail,
+          member.parent_id === parentId,
         ),
       )
       .map(committee => {
         const member = committee.members.find(member =>
-          member.email && member.email.toLowerCase() === parentEmail,
+          member.parent_id === parentId,
         )
         return {
           id: committee.id,

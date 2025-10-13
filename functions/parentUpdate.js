@@ -128,38 +128,36 @@ exports.validateUpdateTokenV2 = onRequest({
     let otherParentHasAddress = false
     let otherParentInfo = null
 
-    // Find students that belong to this parent
+    // Find students that belong to this parent (using parent document ID)
+    const parentId = parentDoc.id
     const studentsSnapshot = await db.collection('students')
-      .where('parent1_email', '==', parentData.email)
+      .where('parent1_id', '==', parentId)
       .get()
 
     const studentsSnapshot2 = await db.collection('students')
-      .where('parent2_email', '==', parentData.email)
+      .where('parent2_id', '==', parentId)
       .get()
 
-    // Combine results and find other parent emails
+    // Combine results and find other parent IDs
     const allStudents = [...studentsSnapshot.docs, ...studentsSnapshot2.docs]
-    const otherParentEmails = new Set()
+    const otherParentIds = new Set()
 
     for (const studentDoc of allStudents) {
       const student = studentDoc.data()
-      if (student.parent1_email && student.parent1_email !== parentData.email) {
-        otherParentEmails.add(student.parent1_email)
+      if (student.parent1_id && student.parent1_id !== parentId) {
+        otherParentIds.add(student.parent1_id)
       }
-      if (student.parent2_email && student.parent2_email !== parentData.email) {
-        otherParentEmails.add(student.parent2_email)
+      if (student.parent2_id && student.parent2_id !== parentId) {
+        otherParentIds.add(student.parent2_id)
       }
     }
 
     // Check if there are other parents and get their info
-    for (const otherParentEmail of otherParentEmails) {
-      const otherParentQuery = await db.collection('parents')
-        .where('email', '==', otherParentEmail)
-        .limit(1)
-        .get()
+    for (const otherParentId of otherParentIds) {
+      const otherParentDoc = await db.collection('parents').doc(otherParentId).get()
 
-      if (!otherParentQuery.empty) {
-        const otherParentData = otherParentQuery.docs[0].data()
+      if (otherParentDoc.exists) {
+        const otherParentData = otherParentDoc.data()
         // Show checkbox for any other parent, regardless of whether they have address info
         otherParentHasAddress = true
         otherParentInfo = {
@@ -333,39 +331,45 @@ exports.processParentUpdateV2 = onRequest({
 
     // If user confirms other parent lives at the same address, mark other parent as confirmed
     if (parentData.sameAddressAsOther) {
-      // Find students that belong to this parent to get other parent emails
+      // Find students that belong to this parent to get other parent IDs
+      const currentParentId = parentDoc.id
       const studentsSnapshot1 = await db.collection('students')
-        .where('parent1_email', '==', existingParentData.email)
+        .where('parent1_id', '==', currentParentId)
         .get()
 
       const studentsSnapshot2 = await db.collection('students')
-        .where('parent2_email', '==', existingParentData.email)
+        .where('parent2_id', '==', currentParentId)
         .get()
 
       const allStudents = [...studentsSnapshot1.docs, ...studentsSnapshot2.docs]
-      let confirmedParentEmail = null
+      let confirmedParentId = null
 
-      // Find other parent emails
+      // Find other parent IDs
       for (const studentDoc of allStudents) {
         const student = studentDoc.data()
-        const otherEmails = []
+        const otherIds = []
 
-        if (student.parent1_email && student.parent1_email !== existingParentData.email) {
-          otherEmails.push(student.parent1_email)
+        if (student.parent1_id && student.parent1_id !== currentParentId) {
+          otherIds.push(student.parent1_id)
         }
-        if (student.parent2_email && student.parent2_email !== existingParentData.email) {
-          otherEmails.push(student.parent2_email)
+        if (student.parent2_id && student.parent2_id !== currentParentId) {
+          otherIds.push(student.parent2_id)
         }
 
         // Find the first other parent (the one we're confirming)
-        if (otherEmails.length > 0) {
-          confirmedParentEmail = otherEmails[0]
+        if (otherIds.length > 0) {
+          confirmedParentId = otherIds[0]
           break
         }
       }
 
       // Mark the other parent's address as confirmed by updating their workflow participant record
-      if (confirmedParentEmail) {
+      if (confirmedParentId) {
+        // Get the confirmed parent's email for workflow lookup
+        const confirmedParentDoc = await db.collection('parents').doc(confirmedParentId).get()
+        const confirmedParentEmail = confirmedParentDoc.exists ? confirmedParentDoc.data().email : null
+
+        if (confirmedParentEmail) {
         const activeWorkflowsSnapshot = await db.collection('workflows')
           .where('status', '==', 'active')
           .get()
@@ -383,23 +387,17 @@ exports.processParentUpdateV2 = onRequest({
             console.log(`Marked ${confirmedParentEmail}'s address as confirmed by ${existingParentData.email}`)
 
             // Also update the other parent's address to match the confirmed address
-            const otherParentQuery = await db.collection('parents')
-              .where('email', '==', confirmedParentEmail)
-              .limit(1)
-              .get()
-
-            if (!otherParentQuery.empty) {
-              const otherParentRef = db.collection('parents').doc(otherParentQuery.docs[0].id)
-              batch.update(otherParentRef, {
-                address: updatedData.address,
-                city: updatedData.city,
-                postal_code: updatedData.postal_code,
-                lastUpdated: FieldValue.serverTimestamp(),
-              })
-              console.log(`Updated ${confirmedParentEmail}'s address to match confirmed address`)
-            }
+            const otherParentRef = db.collection('parents').doc(confirmedParentId)
+            batch.update(otherParentRef, {
+              address: updatedData.address,
+              city: updatedData.city,
+              postal_code: updatedData.postal_code,
+              lastUpdated: FieldValue.serverTimestamp(),
+            })
+            console.log(`Updated ${confirmedParentEmail}'s address to match confirmed address`)
             break
           }
+        }
         }
       }
     }

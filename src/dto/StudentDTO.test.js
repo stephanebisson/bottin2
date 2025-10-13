@@ -11,16 +11,16 @@ describe('StudentDTO', () => {
           last_name: 'Dupont',
           className: '3A',
           level: 3,
-          parent1_email: 'parent1@example.com',
-          parent2_email: 'parent2@example.com',
+          parent1_id: 'Parent1_Name_ABC123',
+          parent2_id: 'Parent2_Name_DEF456',
         },
         {
           first_name: 'Marie',
           last_name: 'Dupont',
           className: '3A',
           level: 3,
-          parent1_email: 'parent1@example.com',
-          parent2_email: 'parent2@example.com',
+          parent1_id: 'Parent1_Name_ABC123',
+          parent2_id: 'Parent2_Name_DEF456',
         },
       ],
 
@@ -31,16 +31,16 @@ describe('StudentDTO', () => {
           last_name: '  Dupont  ',
           className: '  3A  ',
           level: '3',
-          parent1_email: '  PARENT1@EXAMPLE.COM  ',
-          parent2_email: '  PARENT2@EXAMPLE.COM  ',
+          parent1_id: '  Parent1_Name_ABC123  ',
+          parent2_id: '  Parent2_Name_DEF456  ',
         },
         {
           first_name: 'Marie',
           last_name: 'Dupont',
           className: '3A',
           level: 3,
-          parent1_email: 'parent1@example.com',
-          parent2_email: 'parent2@example.com',
+          parent1_id: 'Parent1_Name_ABC123',
+          parent2_id: 'Parent2_Name_DEF456',
         },
       ],
     ])('should sanitize input data correctly', (input, expected) => {
@@ -57,16 +57,16 @@ describe('StudentDTO', () => {
         last_name: undefined,
         className: '',
         level: null,
-        parent1_email: null,
-        parent2_email: undefined,
+        parent1_id: null,
+        parent2_id: undefined,
       })
 
       expect(student.first_name).toBe('')
       expect(student.last_name).toBe('')
       expect(student.className).toBe('')
       expect(student.level).toBe(null)
-      expect(student.parent1_email).toBe(null)
-      expect(student.parent2_email).toBe(null)
+      expect(student.parent1_id).toBe(null)
+      expect(student.parent2_id).toBe(null)
     })
   })
 
@@ -93,25 +93,6 @@ describe('StudentDTO', () => {
     })
   })
 
-  describe('sanitizeEmail', () => {
-    let student
-
-    beforeEach(() => {
-      student = new StudentDTO()
-    })
-
-    test.each([
-      ['PARENT@EXAMPLE.COM', 'parent@example.com'],
-      ['  parent@example.com  ', 'parent@example.com'],
-      ['parent@example.com', 'parent@example.com'],
-      ['invalid-email', null], // No @ symbol
-      ['', null],
-      [null, null],
-      [undefined, null],
-    ])('should sanitize email "%s" to %s', (input, expected) => {
-      expect(student.sanitizeEmail(input)).toBe(expected)
-    })
-  })
 
   describe('validation', () => {
     test.each([
@@ -193,40 +174,40 @@ describe('StudentDTO', () => {
       expect(student.displayLevel).toBe(expected)
     })
 
-    test('parentEmails returns array of non-null emails', () => {
+    test('parentIds returns array of non-null IDs', () => {
       const testCases = [
         {
-          data: { parent1_email: 'parent1@example.com', parent2_email: 'parent2@example.com' },
-          expected: ['parent1@example.com', 'parent2@example.com'],
+          data: { parent1_id: 'Parent1_Name_ABC123', parent2_id: 'Parent2_Name_DEF456' },
+          expected: ['Parent1_Name_ABC123', 'Parent2_Name_DEF456'],
         },
         {
-          data: { parent1_email: 'parent1@example.com', parent2_email: null },
-          expected: ['parent1@example.com'],
+          data: { parent1_id: 'Parent1_Name_ABC123', parent2_id: null },
+          expected: ['Parent1_Name_ABC123'],
         },
         {
-          data: { parent1_email: null, parent2_email: 'parent2@example.com' },
-          expected: ['parent2@example.com'],
+          data: { parent1_id: null, parent2_id: 'Parent2_Name_DEF456' },
+          expected: ['Parent2_Name_DEF456'],
         },
         {
-          data: { parent1_email: null, parent2_email: null },
+          data: { parent1_id: null, parent2_id: null },
           expected: [],
         },
       ]
 
       for (const { data, expected } of testCases) {
         const student = new StudentDTO(data)
-        expect(student.parentEmails).toEqual(expected)
+        expect(student.parentIds).toEqual(expected)
         expect(student.hasParentContacts).toBe(expected.length > 0)
       }
     })
 
-    test('parentForeignKeys returns valid parent email keys', () => {
+    test('parentForeignKeys returns valid parent ID keys', () => {
       const student = new StudentDTO({
-        parent1_email: 'parent1@example.com',
-        parent2_email: null,
+        parent1_id: 'Parent1_Name_ABC123',
+        parent2_id: null,
       })
 
-      expect(student.parentForeignKeys).toEqual(['parent1@example.com'])
+      expect(student.parentForeignKeys).toEqual(['Parent1_Name_ABC123'])
     })
   })
 
@@ -238,8 +219,8 @@ describe('StudentDTO', () => {
       student = new StudentDTO({
         first_name: 'Marie',
         last_name: 'Dupont',
-        parent1_email: 'parent1@example.com',
-        parent2_email: 'parent2@example.com',
+        parent1_id: 'Parent1_Name_ABC123',
+        parent2_id: 'Parent2_Name_DEF456',
       })
 
       mockParentRepository = {
@@ -248,17 +229,17 @@ describe('StudentDTO', () => {
     })
 
     test('getParent1 returns parent when found', async () => {
-      const mockParent = { email: 'parent1@example.com', name: 'Parent 1' }
+      const mockParent = { id: 'Parent1_Name_ABC123', name: 'Parent 1' }
       mockParentRepository.getById.mockResolvedValue(mockParent)
 
       const result = await student.getParent1(mockParentRepository)
 
       expect(result).toEqual(mockParent)
-      expect(mockParentRepository.getById).toHaveBeenCalledWith('parent1@example.com')
+      expect(mockParentRepository.getById).toHaveBeenCalledWith('Parent1_Name_ABC123')
     })
 
-    test('getParent1 returns null when email is null', async () => {
-      student.parent1_email = null
+    test('getParent1 returns null when ID is null', async () => {
+      student.parent1_id = null
 
       const result = await student.getParent1(mockParentRepository)
 
@@ -278,8 +259,8 @@ describe('StudentDTO', () => {
     })
 
     test('getParents returns array of all parents', async () => {
-      const mockParent1 = { email: 'parent1@example.com', name: 'Parent 1' }
-      const mockParent2 = { email: 'parent2@example.com', name: 'Parent 2' }
+      const mockParent1 = { id: 'Parent1_Name_ABC123', name: 'Parent 1' }
+      const mockParent2 = { id: 'Parent2_Name_DEF456', name: 'Parent 2' }
 
       mockParentRepository.getById
         .mockResolvedValueOnce(mockParent1)
@@ -292,7 +273,7 @@ describe('StudentDTO', () => {
     })
 
     test('getParents filters out null parents', async () => {
-      const mockParent1 = { email: 'parent1@example.com', name: 'Parent 1' }
+      const mockParent1 = { id: 'Parent1_Name_ABC123', name: 'Parent 1' }
 
       mockParentRepository.getById
         .mockResolvedValueOnce(mockParent1)
@@ -350,8 +331,8 @@ describe('StudentDTO', () => {
         last_name: 'Dupont',
         className: '3A',
         level: 3,
-        parent1_email: 'parent1@example.com',
-        parent2_email: 'parent2@example.com',
+        parent1_id: 'Parent1_Name_ABC123',
+        parent2_id: 'Parent2_Name_DEF456',
       })
     })
 
@@ -362,8 +343,8 @@ describe('StudentDTO', () => {
       expect(firestoreDoc).toHaveProperty('last_name', 'Dupont')
       expect(firestoreDoc).toHaveProperty('className', '3A')
       expect(firestoreDoc).toHaveProperty('level', 3)
-      expect(firestoreDoc).toHaveProperty('parent1_email', 'parent1@example.com')
-      expect(firestoreDoc).toHaveProperty('parent2_email', 'parent2@example.com')
+      expect(firestoreDoc).toHaveProperty('parent1_id', 'Parent1_Name_ABC123')
+      expect(firestoreDoc).toHaveProperty('parent2_id', 'Parent2_Name_DEF456')
       expect(firestoreDoc).toHaveProperty('updatedAt')
       expect(firestoreDoc).toHaveProperty('createdAt')
       expect(firestoreDoc).not.toHaveProperty('id') // ID not included
@@ -378,8 +359,8 @@ describe('StudentDTO', () => {
       expect(searchableText).toContain('dupont')
       expect(searchableText).toContain('3a')
       expect(searchableText).toContain('3')
-      expect(searchableText).toContain('parent1@example.com')
-      expect(searchableText).toContain('parent2@example.com')
+      expect(searchableText).toContain('parent1_name_abc123')
+      expect(searchableText).toContain('parent2_name_def456')
       expect(searchableText).toBe(searchableText.toLowerCase())
     })
 
@@ -400,7 +381,7 @@ describe('StudentDTO', () => {
       expect(json).toHaveProperty('fullName', 'Marie Dupont')
       expect(json).toHaveProperty('displayClassName', '3A')
       expect(json).toHaveProperty('displayLevel', '3')
-      expect(json).toHaveProperty('parentEmails', ['parent1@example.com', 'parent2@example.com'])
+      expect(json).toHaveProperty('parentIds', ['Parent1_Name_ABC123', 'Parent2_Name_DEF456'])
       expect(json).toHaveProperty('hasParentContacts', true)
     })
   })
@@ -417,12 +398,12 @@ describe('StudentDTO', () => {
       const updated = student.withUpdates({
         className: '3B',
         level: 4,
-        parent1_email: 'new.parent@example.com',
+        parent1_id: 'NewParent_Name_XYZ789',
       })
 
       expect(updated.className).toBe('3B')
       expect(updated.level).toBe(4)
-      expect(updated.parent1_email).toBe('new.parent@example.com')
+      expect(updated.parent1_id).toBe('NewParent_Name_XYZ789')
       expect(updated.first_name).toBe('Marie') // Unchanged fields preserved
       expect(updated).not.toBe(student) // Different instance
       expect(student.className).toBe('3A') // Original unchanged
@@ -439,7 +420,7 @@ describe('StudentDTO', () => {
           last_name: 'Dupont',
           className: '3A',
           level: 3,
-          parent1_email: 'parent1@example.com',
+          parent1_id: 'Parent1_Name_ABC123',
         }),
       }
 

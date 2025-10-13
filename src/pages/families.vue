@@ -137,7 +137,7 @@
               <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent1"
-                  :committees="getParentCommittees(group.parent1.email)"
+                  :committees="getParentCommittees(group.parent1.id)"
                   :parent="group.parent1"
                   :search-query="searchQuery"
                   show-address
@@ -150,7 +150,7 @@
               <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent2"
-                  :committees="getParentCommittees(group.parent2.email)"
+                  :committees="getParentCommittees(group.parent2.id)"
                   :parent="group.parent2"
                   :search-query="searchQuery"
                   show-address
@@ -300,8 +300,8 @@
 
       const siblings = sortedStudents.filter(s =>
         !processed.has(s.id) && (
-          (student.parent1_email && (s.parent1_email === student.parent1_email || s.parent2_email === student.parent1_email))
-          || (student.parent2_email && (s.parent1_email === student.parent2_email || s.parent2_email === student.parent2_email))
+          (student.parent1_id && (s.parent1_id === student.parent1_id || s.parent2_id === student.parent1_id))
+          || (student.parent2_id && (s.parent1_id === student.parent2_id || s.parent2_id === student.parent2_id))
         ),
       )
 
@@ -336,7 +336,7 @@
   const parentsWithChildren = computed(() => {
     const parentsWithChildren = firebaseStore.parentsDTO.map(parent => {
       const children = firebaseStore.studentsDTO.filter(student =>
-        student.parent1_email === parent.email || student.parent2_email === parent.email,
+        student.parent1_id === parent.id || student.parent2_id === parent.id,
       )
 
       children.sort((a, b) => {
@@ -427,12 +427,12 @@
 
   // Helper functions
   const getStudentParent = (student, parentNumber) => {
-    const parentEmailField = parentNumber === 1 ? 'parent1_email' : 'parent2_email'
-    const parentEmail = student[parentEmailField]
+    const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
+    const parentId = student[parentIdField]
 
-    if (!parentEmail) return null
+    if (!parentId) return null
 
-    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
   const getTeacherName = className => {
@@ -443,13 +443,13 @@
     return teacher ? teacher.first_name : null
   }
 
-  const getParentCommittees = parentEmail => {
-    if (!parentEmail) return []
+  const getParentCommittees = parentId => {
+    if (!parentId) return []
 
     return firebaseStore.committees
       .filter(committee =>
         committee.members
-        && committee.members.some(member => member.email === parentEmail),
+        && committee.members.some(member => member.parent_id === parentId),
       )
       .map(committee => committee.name)
   }

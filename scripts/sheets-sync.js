@@ -15,6 +15,7 @@ import { readFileSync } from 'node:fs'
 import dotenv from 'dotenv'
 import admin from 'firebase-admin'
 import { google } from 'googleapis'
+import { generateParentId } from './utils/parentIdGenerator.js'
 
 dotenv.config()
 
@@ -316,16 +317,16 @@ function transformStudents (documents) {
       doc.level = Number.parseInt(doc.level)
     }
 
-    // Lookup parent emails by name and remove parent name fields
+    // Lookup parent IDs by name and remove parent name fields
     if (doc.parent1) {
       const parent1 = findParentByName(parentsData, doc.parent1)
-      doc.parent1_email = parent1 ? parent1.email : null
+      doc.parent1_id = parent1 ? parent1._docId : null
       delete doc.parent1 // Remove parent name
     }
 
     if (doc.parent2) {
       const parent2 = findParentByName(parentsData, doc.parent2)
-      doc.parent2_email = parent2 ? parent2.email : null
+      doc.parent2_id = parent2 ? parent2._docId : null
       delete doc.parent2 // Remove parent name
     }
 
@@ -399,10 +400,10 @@ function transformClasses (documents) {
       doc.student_rep_2 = student2 ? student2._docId : null
     }
 
-    // Lookup parent email (which is also their document ID) by name
+    // Lookup parent ID by name
     if (doc.parent_rep) {
       const parent = findParentByName(parentsData, doc.parent_rep)
-      doc.parent_rep = parent ? parent.email : null // Replace name with email
+      doc.parent_rep = parent ? parent._docId : null // Replace name with parent ID
     }
 
     return doc
@@ -500,12 +501,13 @@ function transformCommittees (rows) {
 
     // If we have a current committee and a parent name, this is a member row
     if (currentCommittee && parentName && parentName !== currentCommittee) {
-      // Find parent email from imported parents data
+      // Find parent from imported parents data
       const parent = findParentByName(parentsData, parentName)
       const parentEmail = parent ? parent.email : email // Use found email or fallback to sheet email
+      const parentId = parent ? parent._docId : null
 
-      // Skip if we can't determine parent email
-      if (!parentEmail) {
+      // Skip if we can't determine parent email or ID
+      if (!parentEmail || !parentId) {
         continue
       }
 
@@ -524,6 +526,7 @@ function transformCommittees (rows) {
       if (!existingMember) {
         committee.members.push({
           email: parentEmail,
+          parent_id: parentId,
           member_type: 'parent',
           role: 'Member',
         })
@@ -617,9 +620,11 @@ function transformCECommittees (rows) {
           // Look up parent by email to ensure it exists in our parent data
           const parentData = parentsLookup.get(email)
           const parentEmail = parentData?.email || email
+          const parentId = parentData?._docId || null
 
           allMembers.push({
             email: parentEmail,
+            parent_id: parentId,
             role,
             member_type: 'parent',
             active: true, // assume active unless specified otherwise
@@ -650,6 +655,10 @@ function transformFondationCommittee (rows) {
 
   const members = []
 
+  // Get the parents data for ID lookup
+  const parentsData = global.importedParents || []
+  const parentsLookup = new Map(parentsData.map(p => [p.email, p]))
+
   // Skip row 0 (header) and process data rows
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i]
@@ -662,8 +671,12 @@ function transformFondationCommittee (rows) {
 
     // Only add members with both role and email
     if (role && email) {
+      const parentData = parentsLookup.get(email)
+      const parentId = parentData?._docId || null
+
       members.push({
         email,
+        parent_id: parentId,
         role,
         member_type: 'parent',
         active: true, // assume all Fondation members are active
@@ -720,7 +733,7 @@ async function writeToFirestore (db, documents, collectionName) {
     console.log(`💾 Writing ${documents.length} documents to ${collectionName}...`)
 
     const writeBatch = db.batch()
-    let emailCount = 0
+    let structuredIdCount = 0
     let autoIdCount = 0
     const documentsWithIds = [] // Track documents with their IDs
 
@@ -728,18 +741,27 @@ async function writeToFirestore (db, documents, collectionName) {
       let docId
 
       // Use custom document ID logic based on collection
-      if ((collectionName === 'parents' || collectionName === 'staff') && doc.email && doc.email.trim()) {
-        // Sanitize email for Firestore document ID
+      if (collectionName === 'parents' && doc.first_name && doc.last_name) {
+        // Generate structured ID for parents: FirstName_LastName_ABC123
+        try {
+          docId = generateParentId(doc)
+          structuredIdCount++
+        } catch (error) {
+          console.warn(`Failed to generate parent ID for ${doc.first_name} ${doc.last_name}:`, error.message)
+          docId = undefined // Fall back to auto-generated ID
+          autoIdCount++
+        }
+      } else if (collectionName === 'staff' && doc.email && doc.email.trim()) {
+        // Staff still use email as ID
         const sanitizedEmail = doc.email.trim()
           .replace(/[/[\]]/g, '_') // Replace invalid characters with underscore
           .replace(/\s+/g, '_') // Replace spaces with underscore
 
-        // Check if sanitized email is still valid (not empty after sanitization)
         if (sanitizedEmail && sanitizedEmail.length > 0) {
           docId = sanitizedEmail
-          emailCount++
+          structuredIdCount++
         } else {
-          docId = undefined // Fall back to auto-generated ID
+          docId = undefined
           autoIdCount++
         }
       } else if (collectionName === 'classes' && doc.classLetter && doc.classLetter.trim()) {
@@ -777,8 +799,10 @@ async function writeToFirestore (db, documents, collectionName) {
       console.log(`📝 Stored ${documentsWithIds.length} staff members for classes lookup`)
     }
 
-    if (collectionName === 'parents' || collectionName === 'staff') {
-      console.log(`📧 Using emails as IDs: ${emailCount}, Auto-generated IDs: ${autoIdCount}`)
+    if (collectionName === 'parents') {
+      console.log(`🆔 Using structured IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
+    } else if (collectionName === 'staff') {
+      console.log(`📧 Using email IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
     }
 
     await writeBatch.commit()

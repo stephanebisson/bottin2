@@ -447,42 +447,42 @@
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     if (!student) return null
 
-    const parentEmailField = parentNumber === 1 ? 'parent1_email' : 'parent2_email'
-    const parentEmail = student[parentEmailField]
+    const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
+    const parentId = student[parentIdField]
 
-    if (!parentEmail) return null
+    if (!parentId) return null
 
-    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
   const getStudentSiblingsById = studentId => {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
-    if (!student || (!student.parent1_email && !student.parent2_email)) return []
+    if (!student || (!student.parent1_id && !student.parent2_id)) return []
 
-    // Find siblings by matching parent emails (excluding the student themselves)
+    // Find siblings by matching parent IDs (excluding the student themselves)
     return firebaseStore.studentsDTO.filter(s =>
       s.id !== student.id && (
-        (student.parent1_email && (s.parent1_email === student.parent1_email || s.parent2_email === student.parent1_email))
-        || (student.parent2_email && (s.parent1_email === student.parent2_email || s.parent2_email === student.parent2_email))
+        (student.parent1_id && (s.parent1_id === student.parent1_id || s.parent2_id === student.parent1_id))
+        || (student.parent2_id && (s.parent1_id === student.parent2_id || s.parent2_id === student.parent2_id))
       ),
     )
   }
 
-  const getParentName = parentEmail => {
-    const parent = firebaseStore.parentsDTO.find(p => p.email === parentEmail)
-    return parent ? parent.fullName : parentEmail
+  const getParentName = parentId => {
+    const parent = firebaseStore.parentsDTO.find(p => p.id === parentId)
+    return parent ? parent.fullName : parentId
   }
 
-  const getParentData = parentEmail => {
-    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
+  const getParentData = parentId => {
+    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  const getParentChildren = parentEmail => {
-    if (!parentEmail) return []
+  const getParentChildren = parentId => {
+    if (!parentId) return []
 
     // Find all students where this parent is either parent1 or parent2
     return firebaseStore.studentsDTO.filter(student =>
-      student.parent1_email === parentEmail || student.parent2_email === parentEmail,
+      student.parent1_id === parentId || student.parent2_id === parentId,
     )
   }
 
@@ -586,22 +586,22 @@
   }
 
   const getStudentParent = (student, parentNumber) => {
-    const parentEmailField = parentNumber === 1 ? 'parent1_email' : 'parent2_email'
-    const parentEmail = student[parentEmailField]
+    const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
+    const parentId = student[parentIdField]
 
-    if (!parentEmail) return null
+    if (!parentId) return null
 
-    return firebaseStore.parentsDTO.find(p => p.email === parentEmail) || null
+    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
   const getStudentSiblings = student => {
-    if (!student.parent1_email && !student.parent2_email) return []
+    if (!student.parent1_id && !student.parent2_id) return []
 
-    // Find siblings by matching parent emails (excluding the student themselves)
+    // Find siblings by matching parent IDs (excluding the student themselves)
     return firebaseStore.studentsDTO.filter(s =>
       s.id !== student.id && (
-        (student.parent1_email && (s.parent1_email === student.parent1_email || s.parent2_email === student.parent1_email))
-        || (student.parent2_email && (s.parent1_email === student.parent2_email || s.parent2_email === student.parent2_email))
+        (student.parent1_id && (s.parent1_id === student.parent1_id || s.parent2_id === student.parent1_id))
+        || (student.parent2_id && (s.parent1_id === student.parent2_id || s.parent2_id === student.parent2_id))
       ),
     )
   }

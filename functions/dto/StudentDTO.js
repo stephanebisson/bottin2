@@ -9,8 +9,8 @@ class StudentDTO {
     this.last_name = this.sanitizeString(data.last_name)
     this.className = this.sanitizeString(data.className)
     this.level = this.sanitizeNumber(data.level)
-    this.parent1_email = this.sanitizeEmail(data.parent1_email)
-    this.parent2_email = this.sanitizeEmail(data.parent2_email)
+    this.parent1_id = this.sanitizeString(data.parent1_id)
+    this.parent2_id = this.sanitizeString(data.parent2_id)
 
     // Metadata
     this.createdAt = data.createdAt || null
@@ -38,16 +38,6 @@ class StudentDTO {
     return Number.isNaN(num) ? null : num
   }
 
-  /**
-   * Sanitize email input - trim, lowercase, and validate basic format
-   */
-  sanitizeEmail (value) {
-    if (!value || typeof value !== 'string') {
-      return null
-    }
-    const email = value.trim().toLowerCase()
-    return email.length > 0 && email.includes('@') ? email : null
-  }
 
   /**
    * Validate required fields and data integrity
@@ -91,8 +81,8 @@ class StudentDTO {
       last_name: this.last_name,
       className: this.className,
       level: this.level,
-      parent1_email: this.parent1_email,
-      parent2_email: this.parent2_email,
+      parent1_id: this.parent1_id,
+      parent2_id: this.parent2_id,
 
       // Computed fields for easier querying
       fullName: this.fullName,
@@ -113,8 +103,8 @@ class StudentDTO {
       this.last_name,
       this.className,
       this.level ? this.level.toString() : '',
-      this.parent1_email,
-      this.parent2_email,
+      this.parent1_id,
+      this.parent2_id,
     ].filter(text => text && String(text).trim().length > 0)
       .join(' ')
       .toLowerCase()

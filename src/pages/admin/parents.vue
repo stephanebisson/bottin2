@@ -316,7 +316,7 @@
     // Map children to parents - preserve ParentDTO instance to keep getters
     const parentsWithChildren = parents.value.map(parent => {
       const childrenInfo = students.value.filter(student =>
-        student.parent1_email === parent.email || student.parent2_email === parent.email,
+        student.parent1_id === parent.id || student.parent2_id === parent.id,
       )
 
       // Add childrenInfo directly to parent object instead of spreading

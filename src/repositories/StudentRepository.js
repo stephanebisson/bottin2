@@ -222,26 +222,26 @@ export class StudentRepository {
       console.log('StudentRepository: Loading all students with parent data...')
       const students = await this.getAll()
 
-      // Get all unique parent emails
-      const parentEmails = new Set()
+      // Get all unique parent IDs
+      const parentIds = new Set()
       for (const student of students) {
-        for (const email of student.parentForeignKeys) {
-          parentEmails.add(email)
+        for (const id of student.parentForeignKeys) {
+          parentIds.add(id)
         }
       }
 
-      console.log(`StudentRepository: Found ${parentEmails.size} unique parent emails to lookup`)
+      console.log(`StudentRepository: Found ${parentIds.size} unique parent IDs to lookup`)
 
       // Bulk load all parents
       const parentLookup = new Map()
-      const parentLoadPromises = Array.from(parentEmails).map(async email => {
+      const parentLoadPromises = Array.from(parentIds).map(async id => {
         try {
-          const parent = await parentRepository.getById(email)
+          const parent = await parentRepository.getById(id)
           if (parent) {
-            parentLookup.set(email, parent)
+            parentLookup.set(id, parent)
           }
         } catch (error) {
-          console.warn(`Failed to load parent ${email}:`, error.message)
+          console.warn(`Failed to load parent ${id}:`, error.message)
         }
       })
 
@@ -251,11 +251,11 @@ export class StudentRepository {
       // Create result with populated parent data
       const results = students.map(student => {
         const parents = []
-        if (student.parent1_email && parentLookup.has(student.parent1_email)) {
-          parents.push(parentLookup.get(student.parent1_email))
+        if (student.parent1_id && parentLookup.has(student.parent1_id)) {
+          parents.push(parentLookup.get(student.parent1_id))
         }
-        if (student.parent2_email && parentLookup.has(student.parent2_email)) {
-          parents.push(parentLookup.get(student.parent2_email))
+        if (student.parent2_id && parentLookup.has(student.parent2_id)) {
+          parents.push(parentLookup.get(student.parent2_id))
         }
 
         return {

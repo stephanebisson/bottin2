@@ -10,8 +10,8 @@ export class StudentDTO {
     this.last_name = this.sanitizeString(data.last_name)
     this.className = this.sanitizeString(data.className)
     this.level = this.sanitizeNumber(data.level)
-    this.parent1_email = this.sanitizeEmail(data.parent1_email)
-    this.parent2_email = this.sanitizeEmail(data.parent2_email)
+    this.parent1_id = this.sanitizeString(data.parent1_id)
+    this.parent2_id = this.sanitizeString(data.parent2_id)
 
     // Metadata (these fields might exist from Firestore)
     this.createdAt = data.createdAt || null
@@ -39,16 +39,6 @@ export class StudentDTO {
     return Number.isNaN(num) ? null : num
   }
 
-  /**
-   * Sanitize email input - trim, lowercase, and validate basic format
-   */
-  sanitizeEmail (value) {
-    if (!value || typeof value !== 'string') {
-      return null
-    }
-    const email = value.trim().toLowerCase()
-    return email.length > 0 && email.includes('@') ? email : null
-  }
 
   /**
    * Validate required fields and data integrity
@@ -96,24 +86,24 @@ export class StudentDTO {
   }
 
   /**
-   * Get parent emails as an array (excluding null values)
+   * Get parent IDs as an array (excluding null values)
    */
-  get parentEmails () {
-    const emails = []
-    if (this.parent1_email) {
-      emails.push(this.parent1_email)
+  get parentIds () {
+    const ids = []
+    if (this.parent1_id) {
+      ids.push(this.parent1_id)
     }
-    if (this.parent2_email) {
-      emails.push(this.parent2_email)
+    if (this.parent2_id) {
+      ids.push(this.parent2_id)
     }
-    return emails
+    return ids
   }
 
   /**
-   * Check if student has parent email contacts
+   * Check if student has parent references
    */
   get hasParentContacts () {
-    return this.parentEmails.length > 0
+    return this.parentIds.length > 0
   }
 
   /**
@@ -122,13 +112,13 @@ export class StudentDTO {
    * @returns {Promise<ParentDTO|null>} Parent DTO or null if not found
    */
   async getParent1 (parentRepository) {
-    if (!this.parent1_email) {
+    if (!this.parent1_id) {
       return null
     }
     try {
-      return await parentRepository.getById(this.parent1_email)
+      return await parentRepository.getById(this.parent1_id)
     } catch (error) {
-      console.warn(`Failed to load parent1 (${this.parent1_email}) for student ${this.fullName}:`, error.message)
+      console.warn(`Failed to load parent1 (${this.parent1_id}) for student ${this.fullName}:`, error.message)
       return null
     }
   }
@@ -139,13 +129,13 @@ export class StudentDTO {
    * @returns {Promise<ParentDTO|null>} Parent DTO or null if not found
    */
   async getParent2 (parentRepository) {
-    if (!this.parent2_email) {
+    if (!this.parent2_id) {
       return null
     }
     try {
-      return await parentRepository.getById(this.parent2_email)
+      return await parentRepository.getById(this.parent2_id)
     } catch (error) {
-      console.warn(`Failed to load parent2 (${this.parent2_email}) for student ${this.fullName}:`, error.message)
+      console.warn(`Failed to load parent2 (${this.parent2_id}) for student ${this.fullName}:`, error.message)
       return null
     }
   }
@@ -164,16 +154,16 @@ export class StudentDTO {
   }
 
   /**
-   * Get parent emails that are valid foreign keys (non-null)
-   * @returns {string[]} Array of valid parent email foreign keys
+   * Get parent IDs that are valid foreign keys (non-null)
+   * @returns {string[]} Array of valid parent ID foreign keys
    */
   get parentForeignKeys () {
     const keys = []
-    if (this.parent1_email) {
-      keys.push(this.parent1_email)
+    if (this.parent1_id) {
+      keys.push(this.parent1_id)
     }
-    if (this.parent2_email) {
-      keys.push(this.parent2_email)
+    if (this.parent2_id) {
+      keys.push(this.parent2_id)
     }
     return keys
   }
@@ -187,8 +177,8 @@ export class StudentDTO {
       last_name: this.last_name,
       className: this.className,
       level: this.level,
-      parent1_email: this.parent1_email,
-      parent2_email: this.parent2_email,
+      parent1_id: this.parent1_id,
+      parent2_id: this.parent2_id,
 
       // Raw data only - no computed fields
 
@@ -207,8 +197,8 @@ export class StudentDTO {
       this.last_name,
       this.className,
       this.displayLevel,
-      this.parent1_email,
-      this.parent2_email,
+      this.parent1_id,
+      this.parent2_id,
     ].filter(text => text && String(text).trim().length > 0)
       .join(' ')
       .toLowerCase()
@@ -227,9 +217,9 @@ export class StudentDTO {
       displayClassName: this.displayClassName,
       level: this.level,
       displayLevel: this.displayLevel,
-      parent1_email: this.parent1_email,
-      parent2_email: this.parent2_email,
-      parentEmails: this.parentEmails,
+      parent1_id: this.parent1_id,
+      parent2_id: this.parent2_id,
+      parentIds: this.parentIds,
       hasParentContacts: this.hasParentContacts,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

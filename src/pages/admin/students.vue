@@ -136,36 +136,36 @@
           <template #item.parents="{ item }">
             <div v-if="editingRows.has(item.id)" class="d-flex flex-column ga-1">
               <v-select
-                v-model="item.parent1_email"
+                v-model="item.parent1_id"
                 clearable
                 density="compact"
                 hide-details
                 item-title="fullName"
-                item-value="email"
+                item-value="id"
                 :items="parentOptions"
                 placeholder="Select Parent 1"
                 variant="outlined"
               />
               <v-select
-                v-model="item.parent2_email"
+                v-model="item.parent2_id"
                 clearable
                 density="compact"
                 hide-details
                 item-title="fullName"
-                item-value="email"
+                item-value="id"
                 :items="parentOptions"
                 placeholder="Select Parent 2"
                 variant="outlined"
               />
             </div>
             <div v-else class="d-flex flex-column">
-              <span v-if="item.parent1_email" class="text-body-2 mb-1">
-                {{ getParentDisplayName(item.parent1_email) }}
+              <span v-if="item.parent1_id" class="text-body-2 mb-1">
+                {{ getParentDisplayName(item.parent1_id) }}
               </span>
-              <span v-if="item.parent2_email" class="text-body-2">
-                {{ getParentDisplayName(item.parent2_email) }}
+              <span v-if="item.parent2_id" class="text-body-2">
+                {{ getParentDisplayName(item.parent2_id) }}
               </span>
-              <span v-if="!item.parent1_email && !item.parent2_email" class="text-grey-darken-1 font-italic">
+              <span v-if="!item.parent1_id && !item.parent2_id" class="text-grey-darken-1 font-italic">
                 {{ $t('admin.studentsTable.noParent') }}
               </span>
             </div>
@@ -327,7 +327,7 @@
   const error = ref(null)
   const students = ref([]) // Array of StudentDTO instances
   const classOptions = ref([])
-  const parentOptions = ref([]) // Array of simplified parent objects {email, fullName} from ParentDTO
+  const parentOptions = ref([]) // Array of simplified parent objects {id, fullName} from ParentDTO
   const editingRows = ref(new Set())
   const newStudent = ref(null) // StudentDTO for new student being created
 
@@ -490,7 +490,7 @@
       const parentRepository = new ParentRepository()
       const parents = await parentRepository.getAll()
       parentOptions.value = parents.map(parentDTO => ({
-        email: parentDTO.email,
+        id: parentDTO.id,
         fullName: parentDTO.fullName,
       }))
       console.log(`Loaded ${parentOptions.value.length} parent options`)
@@ -499,11 +499,11 @@
     }
   }
 
-  // Get parent display name from email
-  const getParentDisplayName = email => {
-    if (!email) return null
-    const parent = parentOptions.value.find(p => p.email === email)
-    return parent ? parent.fullName : email
+  // Get parent display name from ID
+  const getParentDisplayName = parentId => {
+    if (!parentId) return null
+    const parent = parentOptions.value.find(p => p.id === parentId)
+    return parent ? parent.fullName : parentId
   }
 
   // Start editing a student row
@@ -514,8 +514,8 @@
       last_name: studentDTO.last_name,
       className: studentDTO.className,
       level: studentDTO.level,
-      parent1_email: studentDTO.parent1_email,
-      parent2_email: studentDTO.parent2_email,
+      parent1_id: studentDTO.parent1_id,
+      parent2_id: studentDTO.parent2_id,
     }
     editingRows.value.add(studentDTO.id)
   }
@@ -541,8 +541,8 @@
       studentDTO.last_name = studentDTO._originalValues.last_name
       studentDTO.className = studentDTO._originalValues.className
       studentDTO.level = studentDTO._originalValues.level
-      studentDTO.parent1_email = studentDTO._originalValues.parent1_email
-      studentDTO.parent2_email = studentDTO._originalValues.parent2_email
+      studentDTO.parent1_id = studentDTO._originalValues.parent1_id
+      studentDTO.parent2_id = studentDTO._originalValues.parent2_id
       delete studentDTO._originalValues
     }
     editingRows.value.delete(studentDTO.id)
@@ -563,8 +563,8 @@
       last_name: '',
       className: '',
       level: null,
-      parent1_email: null,
-      parent2_email: null,
+      parent1_id: null,
+      parent2_id: null,
     })
 
     // Add to editing rows
@@ -595,7 +595,7 @@
         return
       }
 
-      if (!newStudent.value.parent1_email && !newStudent.value.parent2_email) {
+      if (!newStudent.value.parent1_id && !newStudent.value.parent2_id) {
         error.value = t('admin.studentsTable.validation.parentRequired')
         setTimeout(() => {
           error.value = null
@@ -609,8 +609,8 @@
         last_name: newStudent.value.last_name.trim(),
         className: newStudent.value.className,
         level: newStudent.value.level,
-        parent1_email: newStudent.value.parent1_email || null,
-        parent2_email: newStudent.value.parent2_email || null,
+        parent1_id: newStudent.value.parent1_id || null,
+        parent2_id: newStudent.value.parent2_id || null,
       }
 
       // Use StudentRepository.create which handles DTO validation internally
@@ -655,8 +655,8 @@
         last_name: studentDTO.last_name,
         className: studentDTO.className,
         level: studentDTO.level,
-        parent1_email: studentDTO.parent1_email || null,
-        parent2_email: studentDTO.parent2_email || null,
+        parent1_id: studentDTO.parent1_id || null,
+        parent2_id: studentDTO.parent2_id || null,
       }
 
       // Use StudentRepository.update which handles DTO validation internally
@@ -669,8 +669,8 @@
       studentDTO.last_name = updatedStudentDTO.last_name
       studentDTO.className = updatedStudentDTO.className
       studentDTO.level = updatedStudentDTO.level
-      studentDTO.parent1_email = updatedStudentDTO.parent1_email
-      studentDTO.parent2_email = updatedStudentDTO.parent2_email
+      studentDTO.parent1_id = updatedStudentDTO.parent1_id
+      studentDTO.parent2_id = updatedStudentDTO.parent2_id
       studentDTO.updatedAt = updatedStudentDTO.updatedAt
 
       console.log(`Updated student ${updatedStudentDTO.fullName}`)
