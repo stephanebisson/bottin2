@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { ParentDTO } from '@/dto/ParentDTO.js'
 import { db } from '@/firebase'
 
@@ -129,7 +129,7 @@ export class ParentRepository {
 
   /**
    * Save parent (create or update)
-   * Note: Uses email as document ID to match sheets-sync.js behavior
+   * Note: Uses email as document ID if provided, otherwise auto-generates ID
    */
   async save (parentDTO) {
     if (!(parentDTO instanceof ParentDTO)) {
@@ -144,7 +144,7 @@ export class ParentRepository {
     try {
       const firestoreData = parentDTO.toFirestore()
 
-      if (parentDTO.id && parentDTO.id === parentDTO.email) {
+      if (parentDTO.id) {
         // Update existing parent
         console.log(`ParentRepository: Updating parent ${parentDTO.id} (${parentDTO.fullName})...`)
         const docRef = doc(db, this.collectionName, parentDTO.id)
@@ -152,16 +152,21 @@ export class ParentRepository {
         console.log(`ParentRepository: Updated parent ${parentDTO.fullName}`)
         return parentDTO.id
       } else {
-        // Create new parent - use email as document ID
-        if (!parentDTO.email) {
-          throw new Error('ParentRepository: Email is required for new parent creation')
+        // Create new parent
+        if (parentDTO.email) {
+          // Use email as document ID
+          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with email as ID...`)
+          const docRef = doc(db, this.collectionName, parentDTO.email)
+          await setDoc(docRef, firestoreData)
+          console.log(`ParentRepository: Created parent ${parentDTO.fullName}`)
+          return parentDTO.email
+        } else {
+          // Use auto-generated ID
+          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with auto-generated ID...`)
+          const docRef = await addDoc(this.collectionRef, firestoreData)
+          console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${docRef.id}`)
+          return docRef.id
         }
-
-        console.log(`ParentRepository: Creating new parent ${parentDTO.fullName}...`)
-        const docRef = doc(db, this.collectionName, parentDTO.email)
-        await setDoc(docRef, firestoreData) // Use setDoc to create document with specific ID
-        console.log(`ParentRepository: Created parent ${parentDTO.fullName}`)
-        return parentDTO.email
       }
     } catch (error) {
       console.error('ParentRepository: Error saving parent:', error)

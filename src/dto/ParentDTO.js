@@ -42,9 +42,10 @@ export class ParentDTO {
 
   /**
    * Sanitize email input - trim, lowercase, and validate basic format
+   * Returns empty string if email is invalid or not provided
    */
   sanitizeEmail (value) {
-    if (!value || typeof value !== 'string') {
+    if (!value || typeof value !== 'string' || value.trim().length === 0) {
       return ''
     }
     const email = value.trim().toLowerCase()
@@ -71,12 +72,12 @@ export class ParentDTO {
 
   /**
    * Validate required fields and data integrity
+   * Email is optional - parents without email will use auto-generated IDs
    */
   isValid () {
     return this.first_name.length > 0
       && this.last_name.length > 0
-      && this.email.length > 0
-      && this.email.includes('@')
+      && (this.email.length === 0 || this.email.includes('@'))
   }
 
   /**
@@ -90,9 +91,8 @@ export class ParentDTO {
     if (!this.last_name) {
       errors.push('Last name is required')
     }
-    if (!this.email) {
-      errors.push('Email is required')
-    } else if (!this.email.includes('@')) {
+    // Email is optional, but if provided, must be valid
+    if (this.email && !this.email.includes('@')) {
       errors.push('Email must be valid')
     }
     return errors

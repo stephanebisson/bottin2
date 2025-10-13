@@ -86,7 +86,7 @@
             class="elevation-0"
             :disable-sort="true"
             :headers="tableHeaders"
-            :item-value="item => item._tempEmail || item.email"
+            :item-value="getParentKey"
             :items="displayParents"
             :items-per-page="50"
             :row-props="getRowProps"
@@ -95,7 +95,7 @@
             <!-- First Name Column -->
             <template #item.first_name="{ item }">
               <v-text-field
-                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-if="editingRows.has(getParentKey(item))"
                 v-model="item.first_name"
                 density="compact"
                 hide-details
@@ -107,7 +107,7 @@
             <!-- Last Name Column -->
             <template #item.last_name="{ item }">
               <v-text-field
-                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-if="editingRows.has(getParentKey(item))"
                 v-model="item.last_name"
                 density="compact"
                 hide-details
@@ -119,22 +119,24 @@
             <!-- Email Column -->
             <template #item.email="{ item }">
               <v-text-field
-                v-if="editingRows.has(item._tempEmail || item.email) && item._isNew"
+                v-if="editingRows.has(getParentKey(item)) && item._isNew"
                 v-model="item.email"
                 density="compact"
                 hide-details
+                :placeholder="$t('common.optional')"
                 type="email"
                 variant="outlined"
               />
-              <a v-else class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
+              <a v-else-if="item.email" class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
                 {{ item.email }}
               </a>
+              <span v-else class="text-grey-darken-1 font-italic">{{ $t('common.notProvided') }}</span>
             </template>
 
             <!-- Phone Column -->
             <template #item.phone="{ item }">
               <v-text-field
-                v-if="editingRows.has(item._tempEmail || item.email)"
+                v-if="editingRows.has(getParentKey(item))"
                 v-model="item.phone"
                 density="compact"
                 hide-details
@@ -166,7 +168,7 @@
             <!-- Actions Column -->
             <template #item.actions="{ item }">
               <div class="d-flex align-center ga-1">
-                <template v-if="!editingRows.has(item._tempEmail || item.email)">
+                <template v-if="!editingRows.has(getParentKey(item))">
                   <v-btn
                     color="primary"
                     icon="mdi-pencil"
@@ -228,6 +230,11 @@
   // Repositories
   const parentRepository = new ParentRepository()
   const studentRepository = new StudentRepository()
+
+  // Helper function to get unique identifier for a parent
+  const getParentKey = parent => {
+    return parent._tempEmail || parent.id || parent.email
+  }
 
   // Helper functions for teacher information
   const getTeacherName = teacherId => {
@@ -385,13 +392,13 @@
       last_name: parentDTO.last_name,
       phone: parentDTO.phone,
     }
-    editingRows.value.add(parentDTO.email)
+    editingRows.value.add(getParentKey(parentDTO))
   }
 
   // Cancel new parent creation
   const cancelNewParent = () => {
     if (newParent.value) {
-      editingRows.value.delete(newParent.value._tempEmail || newParent.value.email)
+      editingRows.value.delete(getParentKey(newParent.value))
       newParent.value = null
     }
   }
@@ -399,7 +406,7 @@
   // Cancel editing and restore original values
   const cancelEditing = parentDTO => {
     // Check if this is a new parent being cancelled
-    if (newParent.value && (parentDTO._tempEmail === newParent.value._tempEmail || parentDTO.email === newParent.value.email)) {
+    if (newParent.value && getParentKey(parentDTO) === getParentKey(newParent.value)) {
       cancelNewParent()
       return
     }
@@ -410,7 +417,7 @@
       parentDTO.phone = parentDTO._originalValues.phone
       delete parentDTO._originalValues
     }
-    editingRows.value.delete(parentDTO.email)
+    editingRows.value.delete(getParentKey(parentDTO))
   }
 
   // Create new parent row
@@ -461,22 +468,16 @@
         return
       }
 
-      if (!newParent.value.email.trim()) {
-        error.value = t('admin.parentsDirectory.validation.required')
-        setTimeout(() => {
-          error.value = null
-        }, 5000)
-        return
-      }
-
-      // Validate email format
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailPattern.test(newParent.value.email)) {
-        error.value = t('admin.parentsDirectory.validation.invalidEmail')
-        setTimeout(() => {
-          error.value = null
-        }, 5000)
-        return
+      // Validate email format if provided
+      if (newParent.value.email.trim()) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailPattern.test(newParent.value.email.trim())) {
+          error.value = t('admin.parentsDirectory.validation.invalidEmail')
+          setTimeout(() => {
+            error.value = null
+          }, 5000)
+          return
+        }
       }
 
       // Create parent data
@@ -496,7 +497,7 @@
       console.log(`Created new parent ${createdParentDTO.fullName}`)
 
       // Clear new parent state
-      editingRows.value.delete(newParent.value._tempEmail)
+      editingRows.value.delete(getParentKey(newParent.value))
       newParent.value = null
     } catch (error_) {
       console.error('Failed to create parent:', error_)
@@ -514,7 +515,7 @@
   // Save parent changes
   const saveParent = async parentDTO => {
     // Check if this is a new parent being saved
-    if (newParent.value && (parentDTO._tempEmail === newParent.value._tempEmail || parentDTO._isNew)) {
+    if (newParent.value && (getParentKey(parentDTO) === getParentKey(newParent.value) || parentDTO._isNew)) {
       await saveNewParent()
       return
     }
@@ -530,7 +531,7 @@
       }
 
       // Use ParentRepository.update which handles DTO validation internally
-      const updatedParentDTO = await parentRepository.update(parentDTO.email, updates)
+      const updatedParentDTO = await parentRepository.update(parentDTO.id || parentDTO.email, updates)
 
       // Update the reactive parent object with the validated data from the updated DTO
       // Note: Only update actual data fields, not computed getters like displayPhone/fullName
@@ -541,7 +542,7 @@
 
       console.log(`Updated parent ${updatedParentDTO.fullName}`)
       delete parentDTO._originalValues
-      editingRows.value.delete(parentDTO.email)
+      editingRows.value.delete(getParentKey(parentDTO))
     } catch (error_) {
       console.error('Failed to save parent:', error_)
       error.value = `Failed to update parent: ${error_.message}`
