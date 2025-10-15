@@ -961,7 +961,7 @@
 
   // Selected parents list helpers
   const removeFromSelection = parent => {
-    const index = selectedParentRows.value.findIndex(p => p.id === parent.id)
+    const index = selectedParentRows.value.findIndex(p => p.email === parent.email)
     if (index !== -1) {
       selectedParentRows.value.splice(index, 1)
     }
