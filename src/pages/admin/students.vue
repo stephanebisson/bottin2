@@ -135,7 +135,7 @@
           <!-- Parents Column -->
           <template #item.parents="{ item }">
             <div v-if="editingRows.has(item.id)" class="d-flex flex-column ga-1">
-              <v-select
+              <v-autocomplete
                 v-model="item.parent1_id"
                 clearable
                 density="compact"
@@ -146,7 +146,7 @@
                 placeholder="Select Parent 1"
                 variant="outlined"
               />
-              <v-select
+              <v-autocomplete
                 v-model="item.parent2_id"
                 clearable
                 density="compact"
