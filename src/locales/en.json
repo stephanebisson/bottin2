@@ -47,7 +47,8 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "retry": "Retry",
-    "notProvided": "Not provided"
+    "notProvided": "Not provided",
+    "optional": "Optional"
   },
   "classes": {
     "title": "Classes",

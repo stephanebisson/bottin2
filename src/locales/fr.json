@@ -47,7 +47,8 @@
     "firstName": "Prénom",
     "lastName": "Nom de famille",
     "retry": "Réessayer",
-    "notProvided": "Non fourni"
+    "notProvided": "Non fourni",
+    "optional": "Optionnel"
   },
   "classes": {
     "title": "Classes",

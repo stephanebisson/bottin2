@@ -119,7 +119,7 @@
             <!-- Email Column -->
             <template #item.email="{ item }">
               <v-text-field
-                v-if="editingRows.has(getParentKey(item)) && item._isNew"
+                v-if="editingRows.has(getParentKey(item))"
                 v-model="item.email"
                 density="compact"
                 hide-details
@@ -390,6 +390,7 @@
     parentDTO._originalValues = {
       first_name: parentDTO.first_name,
       last_name: parentDTO.last_name,
+      email: parentDTO.email,
       phone: parentDTO.phone,
     }
     editingRows.value.add(getParentKey(parentDTO))
@@ -414,6 +415,7 @@
     if (parentDTO._originalValues) {
       parentDTO.first_name = parentDTO._originalValues.first_name
       parentDTO.last_name = parentDTO._originalValues.last_name
+      parentDTO.email = parentDTO._originalValues.email
       parentDTO.phone = parentDTO._originalValues.phone
       delete parentDTO._originalValues
     }
@@ -527,6 +529,7 @@
       const updates = {
         first_name: parentDTO.first_name,
         last_name: parentDTO.last_name,
+        email: parentDTO.email || '',
         phone: parentDTO.phone || '',
       }
 
@@ -537,6 +540,7 @@
       // Note: Only update actual data fields, not computed getters like displayPhone/fullName
       parentDTO.first_name = updatedParentDTO.first_name
       parentDTO.last_name = updatedParentDTO.last_name
+      parentDTO.email = updatedParentDTO.email
       parentDTO.phone = updatedParentDTO.phone
       parentDTO.updatedAt = updatedParentDTO.updatedAt
 
