@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs'
 import dotenv from 'dotenv'
 import admin from 'firebase-admin'
 import { google } from 'googleapis'
-import { generateParentId } from './utils/parentIdGenerator.js'
+import { generateParentId, generateStaffId, generateStudentId } from './utils/parentIdGenerator.js'
 
 dotenv.config()
 
@@ -97,8 +97,6 @@ const config = {
           'Courriel': 'email',
           'Téléphone': 'phone',
           'Table pour bottin': 'directory_table',
-          'Rôle-CE': 'ce_role',
-          'Hierarchy-CE': 'ce_hierarchy',
         },
         // No transformFunction = uses generic mapping only
       },
@@ -382,11 +380,11 @@ function transformClasses (documents) {
       doc.classLetter = doc.classLetter.toString().toUpperCase().trim()
     }
 
-    // Lookup teacher email or document ID by name
+    // Lookup teacher document ID by name
     if (doc.teacher) {
       const teacher = findStaffByName(staffData, doc.teacher)
-      // Use email if available, otherwise use document ID
-      doc.teacher = teacher ? (teacher.email || teacher._docId) : null
+      // Use document ID
+      doc.teacher = teacher ? teacher._docId : null
     }
 
     // Lookup student document IDs by name for representatives
@@ -528,7 +526,7 @@ function transformCommittees (rows) {
           email: parentEmail,
           parent_id: parentId,
           member_type: 'parent',
-          role: 'Member',
+          role: 'Membre',
         })
       }
     }
@@ -572,9 +570,11 @@ function transformCECommittees (rows) {
 
   // Create lookup maps for parents and staff
   const parentsData = global.importedParents || []
+  const staffData = global.importedStaff || []
 
   // Create email-based lookup maps
   const parentsLookup = new Map(parentsData.map(p => [p.email, p]))
+  const staffLookup = new Map(staffData.map(s => [s.email, s]))
 
   const allMembers = []
   let isStaffCommittee = false
@@ -610,8 +610,13 @@ function transformCECommittees (rows) {
 
       if (name && email) {
         if (isStaffCommittee) {
+          // Look up staff by email
+          const staffData = staffLookup.get(email)
+          const staffId = staffData?._docId || null
+
           allMembers.push({
             email,
+            staff_id: staffId,
             role,
             member_type: 'staff',
             active: true, // assume active unless specified otherwise
@@ -708,6 +713,17 @@ function getTransformFunction (functionName) {
   return transformFunctions[functionName]
 }
 
+// Remove undefined fields from document (Firestore doesn't accept undefined values)
+function cleanDocument (doc) {
+  const cleaned = {}
+  for (const [key, value] of Object.entries(doc)) {
+    if (value !== undefined) {
+      cleaned[key] = value
+    }
+  }
+  return cleaned
+}
+
 // Write data to Firestore
 async function writeToFirestore (db, documents, collectionName) {
   if (documents.length === 0) {
@@ -724,6 +740,13 @@ async function writeToFirestore (db, documents, collectionName) {
     const batch = db.batch()
 
     for (const doc of snapshot.docs) {
+      // For committees, also delete members subcollection
+      if (collectionName === 'committees') {
+        const membersSnapshot = await doc.ref.collection('members').get()
+        for (const memberDoc of membersSnapshot.docs) {
+          batch.delete(memberDoc.ref)
+        }
+      }
       batch.delete(doc.ref)
     }
 
@@ -731,6 +754,9 @@ async function writeToFirestore (db, documents, collectionName) {
 
     // Write new data
     console.log(`💾 Writing ${documents.length} documents to ${collectionName}...`)
+
+    // For committees, we'll need a separate approach to write members after main documents
+    const committeeMembers = [] // Store members to write after committees
 
     const writeBatch = db.batch()
     let structuredIdCount = 0
@@ -751,17 +777,25 @@ async function writeToFirestore (db, documents, collectionName) {
           docId = undefined // Fall back to auto-generated ID
           autoIdCount++
         }
-      } else if (collectionName === 'staff' && doc.email && doc.email.trim()) {
-        // Staff still use email as ID
-        const sanitizedEmail = doc.email.trim()
-          .replace(/[/[\]]/g, '_') // Replace invalid characters with underscore
-          .replace(/\s+/g, '_') // Replace spaces with underscore
-
-        if (sanitizedEmail && sanitizedEmail.length > 0) {
-          docId = sanitizedEmail
+      } else if (collectionName === 'students' && doc.first_name && doc.last_name) {
+        // Generate structured ID for students: firstname_lastname_abc123
+        try {
+          docId = generateStudentId(doc)
           structuredIdCount++
-        } else {
-          docId = undefined
+        } catch (error) {
+          console.warn(`Failed to generate student ID for ${doc.first_name} ${doc.last_name}:`, error.message)
+          docId = undefined // Fall back to auto-generated ID
+          autoIdCount++
+        }
+      } else if (collectionName === 'staff' && (doc.first_name || doc.last_name)) {
+        // Generate structured ID for staff: firstname_lastname_abc123 (supports partial names)
+        try {
+          docId = generateStaffId(doc)
+          structuredIdCount++
+        } catch (error) {
+          const staffName = `${doc.first_name || ''} ${doc.last_name || ''}`.trim()
+          console.warn(`Failed to generate staff ID for ${staffName}:`, error.message)
+          docId = undefined // Fall back to auto-generated ID
           autoIdCount++
         }
       } else if (collectionName === 'classes' && doc.classLetter && doc.classLetter.trim()) {
@@ -771,7 +805,7 @@ async function writeToFirestore (db, documents, collectionName) {
         // Use committee name as document ID for committees
         docId = doc.name.trim()
       } else {
-        if (collectionName === 'parents' || collectionName === 'staff') {
+        if (collectionName === 'parents' || collectionName === 'students' || collectionName === 'staff') {
           autoIdCount++
         }
         // Auto-generate ID for other collections or if classLetter/email is missing
@@ -784,7 +818,58 @@ async function writeToFirestore (db, documents, collectionName) {
       const docWithId = { ...doc, _docId: docRef.id }
       documentsWithIds.push(docWithId)
 
-      writeBatch.set(docRef, doc)
+      // For committees, separate members into subcollection
+      if (collectionName === 'committees') {
+        const members = doc.members || []
+        // eslint-disable-next-line no-unused-vars
+        const { members: _members, ...committeeDoc } = doc
+
+        // Clean undefined fields before writing (Firestore doesn't accept undefined)
+        const cleanedDoc = cleanDocument(committeeDoc)
+        // Explicitly delete the members field to ensure it's removed
+        cleanedDoc.members = admin.firestore.FieldValue.delete()
+        writeBatch.set(docRef, cleanedDoc, { merge: true })
+
+        // Collect members to write after committee documents are committed
+        let memberCount = 0
+        for (const member of members) {
+          // Determine member document ID based on member_type
+          let memberId
+          if (member.member_type === 'parent' && member.parent_id) {
+            memberId = member.parent_id
+          } else if (member.member_type === 'staff' && member.staff_id) {
+            memberId = member.staff_id
+          } else if (member.member_type === 'staff' && member.email) {
+            // For staff without staff_id, use email
+            memberId = member.email
+          } else {
+            console.warn(`  ⚠️  Skipping member without valid ID in committee ${doc.name}:`, JSON.stringify(member))
+            continue
+          }
+
+          // Store member info for later writing
+          committeeMembers.push({
+            committeeRef: docRef,
+            memberId,
+            memberData: {
+              member_type: member.member_type,
+              role: member.role || 'Membre',
+            },
+          })
+          memberCount++
+        }
+        console.log(`  ✅ Prepared ${memberCount} members for this committee`)
+      } else {
+        // Clean undefined fields before writing (Firestore doesn't accept undefined)
+        const cleanedDoc = cleanDocument(doc)
+        writeBatch.set(docRef, cleanedDoc)
+      }
+    }
+
+    // Store parents data globally for student and committee lookups
+    if (collectionName === 'parents') {
+      global.importedParents = documentsWithIds
+      console.log(`📝 Stored ${documentsWithIds.length} parents with IDs for lookups`)
     }
 
     // Store students data globally for classes lookup
@@ -793,22 +878,67 @@ async function writeToFirestore (db, documents, collectionName) {
       console.log(`📝 Stored ${documentsWithIds.length} students with IDs for classes lookup`)
     }
 
-    // Store staff data globally for classes lookup
+    // Store staff data globally for classes and committee lookups
     if (collectionName === 'staff') {
       global.importedStaff = documentsWithIds
-      console.log(`📝 Stored ${documentsWithIds.length} staff members for classes lookup`)
+      console.log(`📝 Stored ${documentsWithIds.length} staff members with IDs for lookups`)
     }
 
-    if (collectionName === 'parents') {
-      console.log(`🆔 Using structured IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
-    } else if (collectionName === 'staff') {
-      console.log(`📧 Using email IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
+    switch (collectionName) {
+      case 'parents': {
+        console.log(`🆔 Using structured IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
+
+        break
+      }
+      case 'students': {
+        console.log(`🆔 Using structured IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
+
+        break
+      }
+      case 'staff': {
+        console.log(`🆔 Using structured IDs: ${structuredIdCount}, Auto-generated IDs: ${autoIdCount}`)
+
+        break
+      }
+    // No default
     }
 
-    await writeBatch.commit()
-    console.log(`✅ Successfully wrote ${documents.length} documents to collection: ${collectionName}`)
+    try {
+      await writeBatch.commit()
+      console.log(`✅ Batch committed successfully`)
+    } catch (batchError) {
+      console.error(`❌ Batch commit failed:`, batchError)
+      throw batchError
+    }
+
+    // For committees, write members in a separate batch after main documents are committed
+    if (collectionName === 'committees' && committeeMembers.length > 0) {
+      console.log(`\n💾 Writing ${committeeMembers.length} committee members to subcollections...`)
+      const membersBatch = db.batch()
+
+      for (const { committeeRef, memberId, memberData } of committeeMembers) {
+        const memberRef = committeeRef.collection('members').doc(memberId)
+        membersBatch.set(memberRef, memberData)
+      }
+
+      try {
+        await membersBatch.commit()
+        console.log(`✅ Members batch committed successfully`)
+      } catch (membersBatchError) {
+        console.error(`❌ Members batch commit failed:`, membersBatchError)
+        throw membersBatchError
+      }
+
+      const totalMembers = documents.reduce((sum, doc) => sum + (doc.members?.length || 0), 0)
+      console.log(`✅ Successfully wrote ${documents.length} committee documents with ${totalMembers} total members to subcollections`)
+    } else if (collectionName === 'committees') {
+      console.log(`✅ Successfully wrote ${documents.length} committee documents`)
+    } else {
+      console.log(`✅ Successfully wrote ${documents.length} documents to collection: ${collectionName}`)
+    }
   } catch (error) {
     console.error(`❌ Failed to write to collection ${collectionName}:`, error.message)
+    console.error(error)
     throw error
   }
 }
@@ -840,16 +970,6 @@ async function syncSheetsToFirestore () {
         const documents = transformData(rows, tab)
 
         console.log(`🔄 Transformed ${documents.length} documents with field mapping${tab.transformFunction ? ` + ${tab.transformFunction}` : ''}`)
-
-        // Store parents and staff data globally for lookups
-        if (tab.collection === 'parents') {
-          global.importedParents = documents
-          console.log(`📝 Stored ${documents.length} parents for student lookup`)
-        }
-        if (tab.collection === 'staff') {
-          global.importedStaff = documents
-          console.log(`📝 Stored ${documents.length} staff for committee lookup`)
-        }
 
         // Handle committees collection specially - collect all committee documents
         if (tab.collection === 'committees') {

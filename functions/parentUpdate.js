@@ -370,34 +370,34 @@ exports.processParentUpdateV2 = onRequest({
         const confirmedParentEmail = confirmedParentDoc.exists ? confirmedParentDoc.data().email : null
 
         if (confirmedParentEmail) {
-        const activeWorkflowsSnapshot = await db.collection('workflows')
-          .where('status', '==', 'active')
-          .get()
+          const activeWorkflowsSnapshot = await db.collection('workflows')
+            .where('status', '==', 'active')
+            .get()
 
-        for (const workflowDoc of activeWorkflowsSnapshot.docs) {
-          const otherParticipantRef = workflowDoc.ref.collection('participants').doc(confirmedParentEmail)
-          const otherParticipantDoc = await otherParticipantRef.get()
+          for (const workflowDoc of activeWorkflowsSnapshot.docs) {
+            const otherParticipantRef = workflowDoc.ref.collection('participants').doc(confirmedParentEmail)
+            const otherParticipantDoc = await otherParticipantRef.get()
 
-          if (otherParticipantDoc.exists) {
-            batch.update(otherParticipantRef, {
-              formSubmitted: true,
-              submittedAt: FieldValue.serverTimestamp(),
-              confirmedByPartner: existingParentData.email,
-            })
-            console.log(`Marked ${confirmedParentEmail}'s address as confirmed by ${existingParentData.email}`)
+            if (otherParticipantDoc.exists) {
+              batch.update(otherParticipantRef, {
+                formSubmitted: true,
+                submittedAt: FieldValue.serverTimestamp(),
+                confirmedByPartner: existingParentData.email,
+              })
+              console.log(`Marked ${confirmedParentEmail}'s address as confirmed by ${existingParentData.email}`)
 
-            // Also update the other parent's address to match the confirmed address
-            const otherParentRef = db.collection('parents').doc(confirmedParentId)
-            batch.update(otherParentRef, {
-              address: updatedData.address,
-              city: updatedData.city,
-              postal_code: updatedData.postal_code,
-              lastUpdated: FieldValue.serverTimestamp(),
-            })
-            console.log(`Updated ${confirmedParentEmail}'s address to match confirmed address`)
-            break
+              // Also update the other parent's address to match the confirmed address
+              const otherParentRef = db.collection('parents').doc(confirmedParentId)
+              batch.update(otherParentRef, {
+                address: updatedData.address,
+                city: updatedData.city,
+                postal_code: updatedData.postal_code,
+                lastUpdated: FieldValue.serverTimestamp(),
+              })
+              console.log(`Updated ${confirmedParentEmail}'s address to match confirmed address`)
+              break
+            }
           }
-        }
         }
       }
     }

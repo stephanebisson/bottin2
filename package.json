@@ -41,10 +41,7 @@
     "emulator:with-admin": "firebase emulators:start --import=./backups/2025-09-18-175305-emulator-backup",
     "dev:auto": "node scripts/devStart.js",
     "migrate:doc:dev": "NODE_ENV=development node scripts/migrate-document-id.js",
-    "migrate:doc:prod": "NODE_ENV=production node scripts/migrate-document-id.js",
-    "migrate:parents:dev": "NODE_ENV=development node scripts/migrate-parents-to-structured-id.js",
-    "migrate:parents:prod": "NODE_ENV=production node scripts/migrate-parents-to-structured-id.js",
-    "migrate:parents:dev:dry-run": "NODE_ENV=development node scripts/migrate-parents-to-structured-id.js --dry-run"
+    "migrate:doc:prod": "NODE_ENV=production node scripts/migrate-document-id.js"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",

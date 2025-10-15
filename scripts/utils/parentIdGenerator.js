@@ -15,7 +15,7 @@ export function sanitizeName (name) {
   const normalized = name.normalize('NFD')
 
   // Remove accent marks (Unicode combining diacritical marks)
-  const withoutAccents = normalized.replace(/[\u0300-\u036f]/g, '')
+  const withoutAccents = normalized.replace(/[\u0300-\u036F]/g, '')
 
   // Keep only a-zA-Z
   const cleaned = withoutAccents.replace(/[^a-zA-Z]/g, '')
@@ -57,4 +57,56 @@ export function generateParentId (parent) {
   }
 
   return `${firstName}_${lastName}_${suffix}`
+}
+
+/**
+ * Generate structured student ID
+ * Format: firstname_lastname_ABC123 (lowercase)
+ * @param {Object} student - Student object with first_name and last_name
+ * @returns {string} Generated student ID
+ * @throws {Error} If student name is invalid
+ */
+export function generateStudentId (student) {
+  const firstName = sanitizeName(student.first_name)
+  const lastName = sanitizeName(student.last_name)
+  const suffix = generateRandomSuffix(6)
+
+  if (!firstName || !lastName) {
+    throw new Error(`Cannot generate ID for student with invalid name: ${JSON.stringify(student)}`)
+  }
+
+  // Use lowercase for student IDs
+  return `${firstName}_${lastName}_${suffix}`.toLowerCase()
+}
+
+/**
+ * Generate structured staff ID
+ * Format: firstname_lastname_ABC123 or firstname_ABC123 or lastname_ABC123 (lowercase)
+ * Supports partial names (first name only or last name only)
+ * @param {Object} staff - Staff object with first_name and/or last_name
+ * @returns {string} Generated staff ID
+ * @throws {Error} If staff has no valid name
+ */
+export function generateStaffId (staff) {
+  const firstName = sanitizeName(staff.first_name)
+  const lastName = sanitizeName(staff.last_name)
+  const suffix = generateRandomSuffix(6)
+
+  // At least one name part must exist
+  if (!firstName && !lastName) {
+    throw new Error(`Cannot generate ID for staff with no valid name: ${JSON.stringify(staff)}`)
+  }
+
+  // Build ID based on available name parts
+  const idParts = []
+  if (firstName) {
+    idParts.push(firstName)
+  }
+  if (lastName) {
+    idParts.push(lastName)
+  }
+  idParts.push(suffix)
+
+  // Use lowercase for staff IDs
+  return idParts.join('_').toLowerCase()
 }

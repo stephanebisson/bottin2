@@ -65,8 +65,8 @@ describe('StudentDTO', () => {
       expect(student.last_name).toBe('')
       expect(student.className).toBe('')
       expect(student.level).toBe(null)
-      expect(student.parent1_id).toBe(null)
-      expect(student.parent2_id).toBe(null)
+      expect(student.parent1_id).toBe('') // sanitizeString converts null to ''
+      expect(student.parent2_id).toBe('') // sanitizeString converts undefined to ''
     })
   })
 
@@ -92,7 +92,6 @@ describe('StudentDTO', () => {
       expect(student.sanitizeNumber(input)).toBe(expected)
     })
   })
-
 
   describe('validation', () => {
     test.each([

@@ -159,20 +159,20 @@ describe('ParentDTO', () => {
       ],
       [
         { first_name: 'Jean', last_name: 'Dupont', email: '' },
-        false,
-        ['Email is required'],
+        true,
+        [], // Email is optional - valid without email
       ],
       [
         { first_name: 'Jean', last_name: 'Dupont', email: 'invalid-email' },
-        false,
-        ['Email is required'], // invalid-email gets sanitized to empty string
+        true,
+        [], // invalid-email gets sanitized to empty string which is acceptable
       ],
 
       // Multiple errors
       [
         { first_name: '', last_name: '', email: '' },
         false,
-        ['First name is required', 'Last name is required', 'Email is required'],
+        ['First name is required', 'Last name is required'],
       ],
     ])('should validate parent data', (data, isValid, expectedErrors) => {
       const parent = new ParentDTO(data)

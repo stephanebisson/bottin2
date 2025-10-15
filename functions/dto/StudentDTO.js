@@ -38,7 +38,6 @@ class StudentDTO {
     return Number.isNaN(num) ? null : num
   }
 
-
   /**
    * Validate required fields and data integrity
    */

@@ -176,7 +176,6 @@
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
   import { getCommitteeRoles } from '@/config/committees'
-  import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -221,6 +220,7 @@
       const enrichedMembers = props.committee.enrichedMembers || []
 
       members.value = enrichedMembers.map(member => ({
+        memberId: member.memberId, // Store the parent/staff ID
         email: member.email,
         fullName: member.fullName,
         role: member.role,
@@ -268,12 +268,14 @@
       // Combine and format results
       const allUsers = [
         ...parents.map(p => ({
+          memberId: p.id, // Store the parent ID
           email: p.email,
           label: `${p.fullName} (${p.email}) - Parent`,
           fullName: p.fullName,
           memberType: 'parent',
         })),
         ...staff.map(s => ({
+          memberId: s.id, // Store the staff ID
           email: s.email,
           label: `${s.fullName} (${s.email}) - Staff`,
           fullName: s.fullName,
@@ -281,9 +283,9 @@
         })),
       ]
 
-      // Filter out existing members
-      const existingEmails = new Set(members.value.map(m => m.email))
-      availableUsers.value = allUsers.filter(u => !existingEmails.has(u.email))
+      // Filter out existing members by memberId
+      const existingMemberIds = new Set(members.value.map(m => m.memberId))
+      availableUsers.value = allUsers.filter(u => !existingMemberIds.has(u.memberId))
     } catch (error_) {
       console.error('Error searching users:', error_)
     } finally {
@@ -297,6 +299,7 @@
     if (!selectedUser) return
 
     members.value.push({
+      memberId: selectedUser.memberId, // Store the parent/staff ID
       email: selectedUser.email,
       fullName: selectedUser.fullName,
       role: newMemberRole.value,
@@ -333,32 +336,23 @@
       saving.value = true
       error.value = null
 
-      const baseUrl = getFunctionsBaseUrl()
-      const response = await fetch(`${baseUrl}/updateCommitteeMembersV2`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          committeeId: props.committee.id,
-          members: members.value.map(m => ({
-            email: m.email,
-            role: m.role,
-          })),
-        }),
-      })
+      // Use the repository to replace all members
+      const membersToSave = members.value.map(m => ({
+        memberId: m.memberId, // Already have the parent/staff ID
+        role: m.role,
+        member_type: m.memberType,
+      }))
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
+      await firebaseStore.committeeRepository.replaceMembers(
+        props.committee.id,
+        membersToSave,
+      )
 
-      const result = await response.json()
-      console.log('Committee members updated:', result)
+      console.log('Committee members updated successfully')
       emit('updated')
     } catch (error_) {
       console.error('Error saving committee members:', error_)
-      error.value = 'Failed to save changes. Please try again.'
+      error.value = `Failed to save changes: ${error_.message}`
     } finally {
       saving.value = false
     }

@@ -3,29 +3,29 @@
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h3 font-weight-bold">{{ $t('committees.title') }}</h1>
       <v-chip
-        :color="firebaseStore.loading ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
+        :color="firebaseStore.committeesLoadingDTO ? 'orange' : 'green'"
+        :prepend-icon="firebaseStore.committeesLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
       >
-        {{ firebaseStore.loading ? $t('common.loading') : searchQuery ? $t('committees.committeesFiltered', { filtered: filteredCommittees.length, total: firebaseStore.committees.length }) : $t('committees.committeesLoaded', { count: firebaseStore.committees.length }) }}
+        {{ firebaseStore.committeesLoadingDTO ? $t('common.loading') : searchQuery ? $t('committees.committeesFiltered', { filtered: filteredCommittees.length, total: firebaseStore.committeesDTO.length }) : $t('committees.committeesLoaded', { count: firebaseStore.committeesDTO.length }) }}
       </v-chip>
     </div>
 
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.committeesErrorDTO" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.committeesErrorDTO"
         :title="$t('committees.errorLoadingCommittees')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.committeesErrorDTO = null"
       />
     </div>
 
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.committeesLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-h6 mt-4">{{ $t('committees.loadingCommittees') }}</p>
     </div>
 
-    <div v-else-if="firebaseStore.committees.length === 0" class="text-center py-8">
+    <div v-else-if="firebaseStore.committeesDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-group-outline</v-icon>
       <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('committees.noCommitteesFound') }}</p>
     </div>
@@ -242,35 +242,41 @@
   }
 
   const enrichedCommittees = computed(() => {
-    return firebaseStore.committees.map(committee => {
+    return firebaseStore.committeesDTO.map(committee => {
+      // Enrich members with full information from parents and staff
+      // memberId is the parent or staff document ID
       const enrichedMembers = committee.members
-        ? committee.members.map(member => {
-          // Try to find member in parents collection first
-          const parentMatch = firebaseStore.parentsDTO.find(p => p.email === member.email)
-          if (parentMatch) {
-            return {
-              ...member,
-              fullName: parentMatch.fullName,
-              phone: parentMatch.phone,
-              memberType: 'parent',
+        .map(member => {
+          // Look up by memberId (parent/staff document ID)
+          if (member.member_type === 'parent') {
+            const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
+            if (parentMatch) {
+              return {
+                ...member,
+                email: parentMatch.email,
+                fullName: parentMatch.fullName,
+                phone: parentMatch.phone,
+                memberType: 'parent',
+              }
+            }
+          } else if (member.member_type === 'staff') {
+            const staffMatch = firebaseStore.staffDTO.find(s => s.id === member.memberId)
+            if (staffMatch) {
+              return {
+                ...member,
+                email: staffMatch.email,
+                fullName: staffMatch.fullName,
+                phone: staffMatch.phone,
+                memberType: 'staff',
+              }
             }
           }
 
-          // Try to find member in staff collection
-          const staffMatch = firebaseStore.staffDTO.find(s => s.email === member.email)
-          if (staffMatch) {
-            return {
-              ...member,
-              fullName: staffMatch.fullName,
-              phone: staffMatch.phone,
-              memberType: 'staff',
-            }
-          }
-
-          // If not found in either collection, use email as name
+          // If not found in either collection, show member ID
           return {
             ...member,
-            fullName: member.email,
+            email: null,
+            fullName: `[${member.memberId}]`,
             phone: null,
             memberType: 'unknown',
           }
@@ -286,7 +292,6 @@
           // Then sort by name within the same member type
           return a.fullName.localeCompare(b.fullName)
         })
-        : []
 
       // Separate members by type for grouped display
       const parentMembers = enrichedMembers.filter(member => member.memberType === 'parent')
@@ -326,7 +331,7 @@
   // Handle committee updated
   const handleCommitteeUpdated = async () => {
     // Refresh committee data to show updated members
-    await firebaseStore.refreshData()
+    await firebaseStore.refreshCommitteesDTO()
     closeEditDialog()
   }
 
@@ -335,7 +340,7 @@
     await Promise.all([
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
-      firebaseStore.loadAllData(), // Still need committees data
+      firebaseStore.loadCommitteesDTO(),
       checkAdminStatus(),
     ])
   })

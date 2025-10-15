@@ -39,7 +39,6 @@ export class StudentDTO {
     return Number.isNaN(num) ? null : num
   }
 
-
   /**
    * Validate required fields and data integrity
    * Note: className is optional since students may not have a class assigned (e.g., after progression)

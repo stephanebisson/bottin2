@@ -2,6 +2,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { db } from '@/firebase'
+import { CommitteeRepository } from '@/repositories/CommitteeRepository.js'
 import { ParentRepository } from '@/repositories/ParentRepository.js'
 import { StaffRepository } from '@/repositories/StaffRepository.js'
 import { StudentRepository } from '@/repositories/StudentRepository.js'
@@ -34,10 +35,16 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   const staffErrorDTO = ref(null)
   const staffLastUpdatedDTO = ref(null)
 
+  const committeesDTO = ref([])
+  const committeesLoadingDTO = ref(false)
+  const committeesErrorDTO = ref(null)
+  const committeesLastUpdatedDTO = ref(null)
+
   // Repository instances
   const studentRepository = new StudentRepository()
   const parentRepository = new ParentRepository()
   const staffRepository = new StaffRepository()
+  const committeeRepository = new CommitteeRepository()
 
   // ===== EXISTING GETTERS (unchanged) =====
   const isDataStale = computed(() => {
@@ -123,6 +130,27 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     isStale: isStaffDTOStale.value,
     withCERoles: staffDTO.value.filter(s => s.hasCERole).length,
     inDirectory: staffDTO.value.filter(s => s.inDirectory).length,
+  }))
+
+  // ===== NEW COMMITTEE DTO GETTERS =====
+  const isCommitteesDTOStale = computed(() => {
+    if (!committeesLastUpdatedDTO.value) {
+      return true
+    }
+    return Date.now() - committeesLastUpdatedDTO.value > CACHE_DURATION
+  })
+
+  const hasCommitteesDTO = computed(() => {
+    return committeesDTO.value.length > 0
+  })
+
+  const committeesDTOStats = computed(() => ({
+    count: committeesDTO.value.length,
+    loading: committeesLoadingDTO.value,
+    error: committeesErrorDTO.value,
+    lastUpdated: committeesLastUpdatedDTO.value,
+    isStale: isCommitteesDTOStale.value,
+    totalMembers: committeesDTO.value.reduce((sum, c) => sum + c.memberCount, 0),
   }))
 
   // Actions
@@ -371,6 +399,65 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     }
   }
 
+  // ===== NEW COMMITTEE DTO ACTIONS =====
+  const loadCommitteesDTO = async (forceRefresh = false) => {
+    // Skip loading if we have fresh data and not forcing refresh
+    if (hasCommitteesDTO.value && !isCommitteesDTOStale.value && !forceRefresh) {
+      console.log('Using cached DTO committees data')
+      return committeesDTO.value
+    }
+
+    try {
+      committeesLoadingDTO.value = true
+      committeesErrorDTO.value = null
+
+      console.log('Loading committees via DTO repository...')
+
+      const loadedCommittees = await committeeRepository.getAll()
+      committeesDTO.value = loadedCommittees
+      committeesLastUpdatedDTO.value = Date.now()
+
+      console.log(`DTO committees loaded: ${loadedCommittees.length} valid committees`)
+      return loadedCommittees
+    } catch (error_) {
+      console.error('Error loading DTO committees:', error_)
+      committeesErrorDTO.value = error_.message || 'Failed to load committees'
+      throw error_
+    } finally {
+      committeesLoadingDTO.value = false
+    }
+  }
+
+  const refreshCommitteesDTO = async () => {
+    return await loadCommitteesDTO(true)
+  }
+
+  const clearCommitteesDTO = () => {
+    committeesDTO.value = []
+    committeesLastUpdatedDTO.value = null
+    committeesErrorDTO.value = null
+  }
+
+  const searchCommitteesDTO = async searchText => {
+    try {
+      console.log(`Searching committees for: "${searchText}"`)
+      return await committeeRepository.search(searchText)
+    } catch (error_) {
+      console.error('Error searching DTO committees:', error_)
+      committeesErrorDTO.value = error_.message || 'Failed to search committees'
+      throw error_
+    }
+  }
+
+  const getCommitteesDTOStats = async () => {
+    try {
+      return await committeeRepository.getStats()
+    } catch (error_) {
+      console.error('Error getting DTO committees stats:', error_)
+      throw error_
+    }
+  }
+
   return {
     // ===== LEGACY API (classes and committees only) =====
     classes,
@@ -445,9 +532,28 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     searchStaffDTO,
     getStaffDTOStats,
 
+    // Committee DTO State
+    committeesDTO,
+    committeesLoadingDTO,
+    committeesErrorDTO,
+    committeesLastUpdatedDTO,
+
+    // Committee DTO Getters
+    isCommitteesDTOStale,
+    hasCommitteesDTO,
+    committeesDTOStats,
+
+    // Committee DTO Actions
+    loadCommitteesDTO,
+    refreshCommitteesDTO,
+    clearCommitteesDTO,
+    searchCommitteesDTO,
+    getCommitteesDTOStats,
+
     // Repository access (for advanced usage)
     studentRepository,
     parentRepository,
     staffRepository,
+    committeeRepository,
   }
 })

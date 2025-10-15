@@ -9,18 +9,17 @@
             :text="parentName"
           />
         </div>
-        <v-chip
-          v-if="showRole && role && role !== 'Member'"
-          class="me-2"
-          color="primary"
-          size="x-small"
-          variant="text"
-        >
-          {{ role }}
-        </v-chip>
       </div>
       <v-chip
-        v-if="showMemberType && memberType"
+        v-if="showRole && role"
+        :color="role === 'Chair' || role === 'Co-Chair' ? 'primary' : 'grey'"
+        size="x-small"
+        variant="outlined"
+      >
+        {{ role }}
+      </v-chip>
+      <v-chip
+        v-else-if="showMemberType && memberType"
         :color="memberType === 'staff' ? 'blue' : 'grey'"
         size="x-small"
         variant="outlined"
