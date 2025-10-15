@@ -413,39 +413,6 @@
     // are sent when sameAddressAsOther is true
   }
 
-  // Helper function to get committee IDs and roles that the parent belongs to
-  const getParentCommitteeIds = (parentEmail, committees) => {
-    if (!parentEmail || !committees) {
-      return []
-    }
-
-    const parentCommittees = []
-    const parentRoles = {}
-
-    for (const committee of committees) {
-      if (committee.members && committee.members.length > 0) {
-        const memberEntry = committee.members.find(member => member.email === parentEmail)
-        if (memberEntry) {
-          parentCommittees.push(committee.id)
-          // Convert English "Member" to French "Membre" for consistency
-          let role = memberEntry.role || 'Member'
-          if (role === 'Member') {
-            role = 'Membre'
-          }
-          parentRoles[committee.id] = role
-        }
-      }
-    }
-
-    console.log(`Parent ${parentEmail} belongs to committees:`, parentCommittees)
-    console.log(`Parent ${parentEmail} roles:`, parentRoles)
-
-    // Update form roles
-    form.value.committeeRoles = parentRoles
-
-    return parentCommittees
-  }
-
   // Handle committee checkbox change
   const handleCommitteeChange = committeeId => {
     if (form.value.committees.includes(committeeId)) {
@@ -591,9 +558,9 @@
       otherParentHasAddress.value = data.otherParentHasAddress || false
       otherParentInfo.value = data.otherParentInfo || null
 
-      // Get committee memberships and roles first
-      const parentCommittees = getParentCommitteeIds(data.parent.email, data.availableCommittees)
-      const currentRoles = { ...form.value.committeeRoles } // Preserve roles set by getParentCommitteeIds
+      // Use parent committee memberships from API response (no need to parse)
+      const parentCommittees = data.parentCommittees || []
+      const parentCommitteeRoles = data.parentCommitteeRoles || {}
 
       // Pre-fill form with existing data
       form.value = {
@@ -605,7 +572,7 @@
         postal_code: formatPostalCodeForDisplay(data.parent.postal_code || ''), // Format postal code for display
         sameAddressAsOther: false,
         committees: parentCommittees,
-        committeeRoles: currentRoles, // Use the roles populated by getParentCommitteeIds
+        committeeRoles: parentCommitteeRoles,
         interests: Array.isArray(data.parent.interests) ? data.parent.interests : [],
       }
     } catch (error_) {
