@@ -287,40 +287,6 @@ describe('StudentDTO', () => {
     })
   })
 
-  describe('school progression business logic', () => {
-    let student
-
-    beforeEach(() => {
-      student = new StudentDTO({
-        first_name: 'Marie',
-        last_name: 'Dupont',
-        className: '3A',
-        level: 3,
-      })
-    })
-
-    test('progressToNextYear updates level and class', () => {
-      const progressed = student.progressToNextYear(4, '4B')
-
-      expect(progressed.level).toBe(4)
-      expect(progressed.className).toBe('4B')
-      expect(progressed.first_name).toBe('Marie') // Other fields unchanged
-      expect(progressed).not.toBe(student) // New instance
-      expect(student.level).toBe(3) // Original unchanged
-    })
-
-    test('progressToNextYear validates input', () => {
-      expect(() => student.progressToNextYear('4', '4B')).toThrow('Level must be a number')
-      expect(() => student.progressToNextYear(4, '')).toThrow('Class name must be a non-empty string')
-      expect(() => student.progressToNextYear(4, null)).toThrow('Class name must be a non-empty string')
-    })
-
-    test('progressToNextYear trims class name', () => {
-      const progressed = student.progressToNextYear(4, '  4B  ')
-      expect(progressed.className).toBe('4B')
-    })
-  })
-
   describe('data transformation', () => {
     let student
 
@@ -361,15 +327,6 @@ describe('StudentDTO', () => {
       expect(searchableText).toContain('parent1_name_abc123')
       expect(searchableText).toContain('parent2_name_def456')
       expect(searchableText).toBe(searchableText.toLowerCase())
-    })
-
-    test('toNewStudentFirestoreData removes id for new student creation', () => {
-      student.id = 'existing-id'
-      const newStudentData = student.toNewStudentFirestoreData()
-
-      expect(newStudentData).not.toHaveProperty('id')
-      expect(newStudentData).toHaveProperty('first_name', 'Marie')
-      expect(newStudentData).toHaveProperty('createdAt')
     })
 
     test('toJSON creates complete serializable object', () => {

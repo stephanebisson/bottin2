@@ -57,15 +57,9 @@ The test suite covers the following high-priority algorithms:
 
 - **StudentDTO** (`src/dto/StudentDTO.test.js`)
   - Student data validation and sanitization
-  - School progression business logic
   - Parent relationship management
 
 ### School Management Algorithms ⭐⭐
-- **School Progression** (`functions/schoolProgression.test.js`)
-  - Grade-level progression rules (1→2, 3→4, 5→6, graduation)
-  - Orphaned parent cleanup algorithm
-  - Workflow state management and statistics
-
 - **Data Synchronization** (`scripts/sheets-sync.test.js`)
   - Google Sheets to Firestore transformation logic
   - Parent-student lookup algorithms
@@ -97,8 +91,6 @@ src/
 ├── dto/
 │   ├── ParentDTO.test.js           # Parent business logic tests
 │   └── StudentDTO.test.js          # Student business logic tests
-functions/
-└── schoolProgression.test.js       # School progression algorithm tests
 scripts/
 └── sheets-sync.test.js            # Data synchronization tests
 ```

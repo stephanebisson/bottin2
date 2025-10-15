@@ -83,45 +83,6 @@
           </v-card>
         </v-col>
 
-        <!-- School Year Progression -->
-        <v-col cols="12" lg="4" md="6">
-          <v-card
-            class="h-100 cursor-pointer admin-card"
-            hover
-            @click="handleProgressionClick"
-          >
-            <v-card-text class="text-center pa-6">
-              <v-icon class="mb-4" color="primary" size="64">mdi-school-sync</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.schoolProgressionWorkflow') }}</h3>
-              <p class="text-body-2 text-grey-darken-1">
-                {{ $t('admin.schoolProgressionDescription') }}
-              </p>
-
-              <!-- Quick Status -->
-              <div v-if="currentProgressionWorkflow" class="mt-4">
-                <v-chip
-                  :color="getWorkflowStatusColor(currentProgressionWorkflow.status)"
-                  size="small"
-                  variant="tonal"
-                >
-                  {{ $t(`admin.status.${currentProgressionWorkflow.status}`) }}
-                </v-chip>
-                <div class="text-body-2 mt-2">
-                  {{ $t('admin.studentsProgressing', {
-                    total: currentProgressionWorkflow.stats?.totalStudents || 0,
-                    needsAssignment: currentProgressionWorkflow.stats?.needsClassAssignment || 0
-                  }) }}
-                </div>
-              </div>
-              <div v-else class="mt-4">
-                <v-chip color="grey" size="small" variant="tonal">
-                  {{ $t('admin.noActiveProgressionWorkflow') }}
-                </v-chip>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-
         <!-- Parents Directory -->
         <v-col cols="12" lg="4" md="6">
           <v-card
@@ -191,7 +152,6 @@
   // State
   const loading = ref(false)
   const currentWorkflow = ref(null)
-  const currentProgressionWorkflow = ref(null)
 
   // Check if user is authorized using Firebase Custom Claims
   const isAuthorized = ref(false)
@@ -240,11 +200,6 @@
     router.push('/admin/annual-update')
   }
 
-  // Handle school progression card click
-  const handleProgressionClick = () => {
-    router.push('/admin/school-progression')
-  }
-
   // Handle parents directory card click
   const handleParentsClick = () => {
     router.push('/admin/parents')
@@ -278,36 +233,10 @@
     }
   }
 
-  // Load current progression workflow for dashboard overview
-  const loadProgressionWorkflowData = async () => {
-    try {
-      const baseUrl = getFunctionsBaseUrl()
-
-      const response = await fetch(`${baseUrl}/getProgressionStatusV2`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${await authStore.user.getIdToken()}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      currentProgressionWorkflow.value = data.current
-    } catch (error) {
-      console.error('Failed to load progression workflow data:', error)
-    }
-  }
-
   onMounted(async () => {
     await checkAdminStatus()
     if (isAuthorized.value) {
-      await Promise.all([
-        loadWorkflowData(),
-        loadProgressionWorkflowData(),
-      ])
+      await loadWorkflowData()
     }
   })
 
@@ -316,10 +245,7 @@
     if (newValue) {
       await checkAdminStatus()
       if (isAuthorized.value) {
-        await Promise.all([
-          loadWorkflowData(),
-          loadProgressionWorkflowData(),
-        ])
+        await loadWorkflowData()
       }
     } else {
       isAuthorized.value = false

@@ -110,17 +110,6 @@ class StudentDTO {
   }
 
   /**
-   * Prepare data for creating a new student with server timestamps
-   */
-  toNewStudentFirestoreData (FieldValue) {
-    const data = this.toFirestore()
-    // Override timestamps for new student creation
-    data.createdAt = FieldValue.serverTimestamp()
-    data.updatedAt = FieldValue.serverTimestamp()
-    return data
-  }
-
-  /**
    * Prepare data for updating an existing student with server timestamp
    */
   toUpdateFirestoreData (FieldValue) {
@@ -130,28 +119,6 @@ class StudentDTO {
     // Don't override createdAt on updates
     delete data.createdAt
     return data
-  }
-
-  /**
-   * Apply school progression changes
-   * @param {number} newLevel - New grade level
-   * @param {string} newClassName - New class name
-   * @returns {StudentDTO} New StudentDTO with updated level and class
-   */
-  progressToNextYear (newLevel, newClassName) {
-    if (typeof newLevel !== 'number') {
-      throw new TypeError('Level must be a number')
-    }
-    if (!newClassName || typeof newClassName !== 'string') {
-      throw new Error('Class name must be a non-empty string')
-    }
-
-    return new StudentDTO({
-      ...this.toFirestore(),
-      id: this.id,
-      level: newLevel,
-      className: newClassName.trim(),
-    })
   }
 
   /**

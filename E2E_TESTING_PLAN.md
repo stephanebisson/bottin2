@@ -49,8 +49,7 @@ tests/
 │   │   │   ├── staff-directory.spec.ts
 │   │   │   └── committee-operations.spec.ts
 │   │   └── admin/
-│   │       ├── annual-update.spec.ts
-│   │       └── school-progression.spec.ts
+│   │       └── annual-update.spec.ts
 │   ├── fixtures/
 │   │   ├── users.json
 │   │   ├── students.json
@@ -117,7 +116,7 @@ export default defineConfig({
 });
 ```
 
-## Critical User Journeys (12 Tests)
+## Critical User Journeys (11 Tests)
 
 ### 1. Authentication Flow (4 tests)
 
@@ -255,7 +254,7 @@ export default defineConfig({
 4. Remove members
 5. Archive/delete committee
 
-### 4. Admin Functions (2 tests)
+### 4. Admin Functions (1 test)
 
 #### 4.1 Annual Update Workflow
 **File**: `admin/annual-update.spec.ts`
@@ -267,17 +266,6 @@ export default defineConfig({
 4. Monitor sending progress
 5. Verify sample emails sent
 6. Check completion statistics
-
-#### 4.2 School Progression
-**File**: `admin/school-progression.spec.ts`
-**Duration**: ~120s
-**Steps**:
-1. Access school progression tool
-2. Review student advancement list
-3. Approve/modify grade transitions
-4. Execute progression batch
-5. Verify student records updated
-6. Check graduation handling
 
 ## Test Data Strategy
 

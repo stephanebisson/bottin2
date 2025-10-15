@@ -41,7 +41,7 @@ export class StudentDTO {
 
   /**
    * Validate required fields and data integrity
-   * Note: className is optional since students may not have a class assigned (e.g., after progression)
+   * Note: className is optional since students may not have a class assigned yet
    */
   isValid () {
     return this.first_name.length > 0
@@ -233,43 +233,6 @@ export class StudentDTO {
       ...this.toJSON(),
       ...updates,
     })
-  }
-
-  /**
-   * BUSINESS LOGIC METHODS - Based on actual mutations in schoolProgression.js
-   */
-
-  /**
-   * Apply school progression changes (mirrors schoolProgression.js batch.update)
-   * Updates both level and className simultaneously as done in the Cloud Function
-   * @param {number} newLevel - New grade level
-   * @param {string} newClassName - New class name
-   * @returns {StudentDTO} New StudentDTO with updated level and class
-   */
-  progressToNextYear (newLevel, newClassName) {
-    if (typeof newLevel !== 'number') {
-      throw new TypeError('Level must be a number')
-    }
-    if (!newClassName || typeof newClassName !== 'string') {
-      throw new Error('Class name must be a non-empty string')
-    }
-
-    return this.withUpdates({
-      level: newLevel,
-      className: newClassName.trim(),
-    })
-  }
-
-  /**
-   * Prepare data for creating a new student (mirrors schoolProgression.js batch.set)
-   * Returns the Firestore data that would be used for batch.set()
-   * @returns {Object} Firestore-ready data for new student creation
-   */
-  toNewStudentFirestoreData () {
-    const data = this.toFirestore()
-    // Remove id since this is for new student creation
-    delete data.id
-    return data
   }
 
   /**

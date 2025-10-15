@@ -200,11 +200,6 @@
             to: '/admin/annual-update',
           },
           {
-            title: t('admin.schoolProgression.title'),
-            icon: 'mdi-school-outline',
-            to: '/admin/school-progression',
-          },
-          {
             title: t('admin.parentsDirectory.title'),
             icon: 'mdi-account-heart-outline',
             to: '/admin/parents',
