@@ -1,10 +1,12 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { StudentDTO } from '@/dto/StudentDTO.js'
 import { db } from '@/firebase'
+import { generateStudentId } from '@/utils/parentIdGenerator.js'
 
 /**
  * Student Repository - Clean data access layer for student operations
  * Handles all Firestore interactions and returns StudentDTO objects
+ * Note: Students use structured IDs: firstname_lastname_ABC123 (see parentIdGenerator.js)
  */
 export class StudentRepository {
   constructor () {
@@ -108,6 +110,8 @@ export class StudentRepository {
 
   /**
    * Save student (create or update)
+   * Uses structured IDs (firstname_lastname_ABC123) via setDoc for new students
+   * Uses updateDoc for existing students
    */
   async save (studentDTO) {
     if (!(studentDTO instanceof StudentDTO)) {
@@ -130,8 +134,24 @@ export class StudentRepository {
         console.log(`StudentRepository: Updated student ${studentDTO.fullName}`)
         return studentDTO.id
       } else {
-        // Create new student
-        console.log(`StudentRepository: Creating new student ${studentDTO.fullName}...`)
+        // Create new student with structured ID, fallback to auto-generated ID on error
+        try {
+          const structuredId = generateStudentId({
+            first_name: studentDTO.first_name,
+            last_name: studentDTO.last_name,
+          })
+          console.log(`StudentRepository: Creating new student ${studentDTO.fullName} with structured ID ${structuredId}...`)
+          const docRef = doc(db, this.collectionName, structuredId)
+          await setDoc(docRef, firestoreData)
+          console.log(`StudentRepository: Created student ${studentDTO.fullName} with structured ID ${structuredId}`)
+          return structuredId
+        } catch (idError) {
+          console.warn(`StudentRepository: Failed to generate structured ID for ${studentDTO.fullName}, falling back to auto-generated ID:`, idError.message)
+          // Fall through to auto-generated ID
+        }
+
+        // Fallback: Create new student with auto-generated ID
+        console.log(`StudentRepository: Creating new student ${studentDTO.fullName} with auto-generated ID...`)
         const docRef = await addDoc(this.collectionRef, firestoreData)
         console.log(`StudentRepository: Created student ${studentDTO.fullName} with ID ${docRef.id}`)
         return docRef.id
@@ -143,7 +163,7 @@ export class StudentRepository {
   }
 
   /**
-   * Create new student
+   * Create new student with structured ID (firstname_lastname_ABC123)
    */
   async create (studentData) {
     const studentDTO = new StudentDTO(studentData)
