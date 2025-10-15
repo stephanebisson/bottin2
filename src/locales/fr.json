@@ -81,7 +81,13 @@
     "studentCount": "({count} élève)",
     "studentCountPlural": "({count} élèves)",
     "representative": "(R)",
-    "noParentInfoFound": "Aucune information parent trouvée"
+    "noParentInfoFound": "Aucune information parent trouvée",
+    "editClass": "Modifier la classe",
+    "className": "Nom de la classe",
+    "studentRep1": "Représentant étudiant (premier niveau)",
+    "studentRep2": "Représentant étudiant (deuxième niveau)",
+    "studentRep1Hint": "Sélectionner un élève du premier niveau de cette classe",
+    "studentRep2Hint": "Sélectionner un élève du deuxième niveau de cette classe"
   },
   "students": {
     "title": "Élèves",

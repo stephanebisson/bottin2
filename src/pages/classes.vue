@@ -49,10 +49,18 @@
                   {{ classItem.className }}
                 </h5>
               </div>
-              <div class="flex-shrink-0 ml-3">
+              <div class="flex-shrink-0 ml-3 d-flex align-center ga-2">
                 <span class="text-white text-body-2" style="white-space: nowrap;">
                   ({{ classItem.classCode }})
                 </span>
+                <v-btn
+                  v-if="isAdmin"
+                  color="white"
+                  icon="mdi-pencil"
+                  size="x-small"
+                  variant="text"
+                  @click="openEditDialog(classItem)"
+                />
               </div>
             </v-card-title>
 
@@ -369,12 +377,104 @@
       </v-row>
     </div>
 
+    <!-- Edit Class Dialog -->
+    <v-dialog
+      v-model="editDialog"
+      max-width="600px"
+      persistent
+    >
+      <v-card>
+        <v-card-title class="bg-primary text-white">
+          <span class="text-h5">{{ t('classes.editClass') }}</span>
+        </v-card-title>
+
+        <v-card-text class="pt-6">
+          <!-- Error Alert -->
+          <v-alert
+            v-if="editError"
+            class="mb-4"
+            closable
+            type="error"
+            @click:close="editError = null"
+          >
+            {{ editError }}
+          </v-alert>
+
+          <!-- Class Name Field -->
+          <v-text-field
+            v-model="editForm.className"
+            density="comfortable"
+            :label="t('classes.className')"
+            required
+            variant="outlined"
+          />
+
+          <!-- Parent Representative Field -->
+          <v-autocomplete
+            v-model="editForm.parent_rep"
+            clearable
+            density="comfortable"
+            :items="editingClass ? getClassParents(editingClass.classLetter) : []"
+            :label="t('classes.parentRepresentative')"
+            variant="outlined"
+          />
+
+          <!-- Student Representative 1 Field -->
+          <v-select
+            v-model="editForm.student_rep_1"
+            clearable
+            density="comfortable"
+            :hint="t('classes.studentRep1Hint')"
+            :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 0) : []"
+            :label="t('classes.studentRep1')"
+            persistent-hint
+            variant="outlined"
+          />
+
+          <!-- Student Representative 2 Field -->
+          <v-select
+            v-model="editForm.student_rep_2"
+            class="mt-2"
+            clearable
+            density="comfortable"
+            :hint="t('classes.studentRep2Hint')"
+            :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 1) : []"
+            :label="t('classes.studentRep2')"
+            persistent-hint
+            variant="outlined"
+          />
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="grey"
+            :disabled="savingClass"
+            variant="text"
+            @click="closeEditDialog"
+          >
+            {{ t('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="savingClass"
+            variant="elevated"
+            @click="saveClassChanges"
+          >
+            {{ t('common.save') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useI18n } from '@/composables/useI18n'
+  import { ClassRepository } from '@/repositories/ClassRepository.js'
+  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   // Feature flags
@@ -382,7 +482,127 @@
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
-  const { locale } = useI18n()
+  const authStore = useAuthStore()
+  const { locale, t } = useI18n()
+
+  // Admin state
+  const isAdmin = ref(false)
+  const classRepository = new ClassRepository()
+
+  // Edit dialog state
+  const editDialog = ref(false)
+  const editingClass = ref(null)
+  const editForm = ref({
+    className: '',
+    parent_rep: null,
+    student_rep_1: null,
+    student_rep_2: null,
+  })
+  const savingClass = ref(false)
+  const editError = ref(null)
+
+  // Check admin status
+  const checkAdminStatus = async () => {
+    if (!authStore.isAuthenticated || !authStore.user) {
+      isAdmin.value = false
+      return
+    }
+
+    try {
+      const idTokenResult = await authStore.user.getIdTokenResult(true)
+      isAdmin.value = !!idTokenResult.claims.admin
+    } catch (error) {
+      console.error('Failed to check admin status:', error)
+      isAdmin.value = false
+    }
+  }
+
+  // Get parents with children in a specific class
+  const getClassParents = computed(() => classLetter => {
+    const classStudents = getClassStudents(classLetter)
+    const parentIds = new Set()
+
+    for (const student of classStudents) {
+      if (student.parent1_id) parentIds.add(student.parent1_id)
+      if (student.parent2_id) parentIds.add(student.parent2_id)
+    }
+
+    return firebaseStore.parentsDTO
+      .filter(parent => parentIds.has(parent.id))
+      .map(parent => ({
+        value: parent.id,
+        title: parent.fullName,
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title))
+  })
+
+  // Get students by level in a class
+  const getStudentsByLevelForClass = (classLetter, levelIndex) => {
+    const classStudents = getClassStudents(classLetter)
+    const levels = [...new Set(classStudents.map(s => s.level).filter(level => level != null))]
+      .sort((a, b) => Number(a) - Number(b))
+
+    if (levelIndex >= levels.length) return []
+
+    const targetLevel = levels[levelIndex]
+    return classStudents
+      .filter(student => student.level === targetLevel)
+      .map(student => ({
+        value: student.id,
+        title: `${student.first_name} ${student.last_name}`,
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title))
+  }
+
+  // Open edit dialog
+  const openEditDialog = classItem => {
+    editingClass.value = classItem
+    editForm.value = {
+      className: classItem.className,
+      parent_rep: classItem.parent_rep || null,
+      student_rep_1: classItem.student_rep_1 || null,
+      student_rep_2: classItem.student_rep_2 || null,
+    }
+    editError.value = null
+    editDialog.value = true
+  }
+
+  // Close edit dialog
+  const closeEditDialog = () => {
+    editDialog.value = false
+    editingClass.value = null
+    editError.value = null
+  }
+
+  // Save class changes
+  const saveClassChanges = async () => {
+    if (!editingClass.value) return
+
+    try {
+      savingClass.value = true
+      editError.value = null
+
+      const updates = {
+        className: editForm.value.className,
+        parent_rep: editForm.value.parent_rep || '',
+        student_rep_1: editForm.value.student_rep_1 || '',
+        student_rep_2: editForm.value.student_rep_2 || '',
+      }
+
+      await classRepository.update(editingClass.value.classLetter, updates)
+
+      // Refresh classes data
+      await firebaseStore.loadAllData(true)
+
+      console.log(`Successfully updated class ${editingClass.value.classLetter}`)
+      closeEditDialog()
+    } catch (error) {
+      console.error('Failed to update class:', error)
+      editError.value = error.message || 'Failed to update class'
+    } finally {
+      savingClass.value = false
+    }
+  }
 
   // Helper functions
   const formatGradeLevel = level => {
@@ -636,6 +856,7 @@
 
   // Load data on component mount
   onMounted(async () => {
+    await checkAdminStatus()
     await Promise.all([
       firebaseStore.loadStudentsDTO(),
       firebaseStore.loadParentsDTO(),

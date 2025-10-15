@@ -154,4 +154,57 @@ export class ClassRepository {
       throw new Error(`Failed to load class ${classLetter}: ${error.message}`)
     }
   }
+
+  /**
+   * Update a class document
+   * @param {string} classLetter - The class letter (document ID)
+   * @param {Object} updates - Object containing fields to update
+   * @param {string} [updates.className] - Class name (e.g., "1A")
+   * @param {string} [updates.parent_rep] - Parent representative document ID
+   * @param {string} [updates.student_rep_1] - Student representative 1 document ID
+   * @param {string} [updates.student_rep_2] - Student representative 2 document ID
+   * @returns {Promise<Object>} Updated class object
+   */
+  async update (classLetter, updates) {
+    try {
+      console.log(`ClassRepository: Updating class ${classLetter}...`, updates)
+
+      const docRef = doc(db, this.classesCollectionName, classLetter)
+
+      // First check if document exists
+      const docSnap = await getDoc(docRef)
+      if (!docSnap.exists()) {
+        throw new Error(`Class ${classLetter} not found`)
+      }
+
+      // Prepare update data - only include provided fields
+      const updateData = {}
+      if (updates.className !== undefined) {
+        updateData.className = updates.className
+      }
+      if (updates.parent_rep !== undefined) {
+        updateData.parent_rep = updates.parent_rep
+      }
+      if (updates.student_rep_1 !== undefined) {
+        updateData.student_rep_1 = updates.student_rep_1
+      }
+      if (updates.student_rep_2 !== undefined) {
+        updateData.student_rep_2 = updates.student_rep_2
+      }
+
+      // Import updateDoc here
+      const { updateDoc } = await import('firebase/firestore')
+
+      // Update the document
+      await updateDoc(docRef, updateData)
+
+      console.log(`ClassRepository: Successfully updated class ${classLetter}`)
+
+      // Return the updated class
+      return await this.getClassByLetter(classLetter)
+    } catch (error) {
+      console.error(`ClassRepository: Error updating class ${classLetter}:`, error)
+      throw new Error(`Failed to update class ${classLetter}: ${error.message}`)
+    }
+  }
 }
