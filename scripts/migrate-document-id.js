@@ -12,9 +12,14 @@
  *   Production:  NODE_ENV=production node scripts/migrate-document-id.js <oldPath> <newPath>
  *
  * Examples:
- *   node scripts/migrate-document-id.js parents/old@email.com parents/new@email.com
- *   npm run migrate:dev -- parents/old@email.com parents/new@email.com
- *   npm run migrate:prod -- parents/old@email.com parents/new@email.com
+ *   Top-level documents:
+ *     node scripts/migrate-document-id.js parents/old@email.com parents/new@email.com
+ *     npm run migrate:dev -- parents/old@email.com parents/new@email.com
+ *     npm run migrate:prod -- parents/old@email.com parents/new@email.com
+ *
+ *   Subcollection documents:
+ *     node scripts/migrate-document-id.js parents/parent@email.com/students/oldId parents/parent@email.com/students/newId
+ *     npm run migrate:dev -- parents/parent@email.com/students/oldId parents/parent@email.com/students/newId
  */
 
 import { readFileSync } from 'node:fs'
@@ -72,12 +77,23 @@ async function initializeFirebase () {
 // Parse document path into collection and document ID
 function parsePath (path) {
   const parts = path.split('/')
-  if (parts.length !== 2) {
-    throw new Error(`Invalid document path: "${path}". Expected format: "collection/documentId"`)
+
+  // Firestore document paths must have an even number of segments
+  // Top-level: collection/doc (2 segments)
+  // Subcollection: collection/doc/subcollection/subdoc (4 segments)
+  // Nested: collection/doc/subcollection/subdoc/nested/nesteddoc (6 segments), etc.
+  if (parts.length < 2 || parts.length % 2 !== 0) {
+    throw new Error(
+      `Invalid document path: "${path}". `
+      + `Expected format: "collection/documentId" or "collection/doc/subcollection/subdoc" (even number of segments)`,
+    )
   }
+
+  // Return the collection path (all parts except last) and document ID (last part)
   return {
-    collection: parts[0],
-    documentId: parts[1],
+    collectionPath: parts.slice(0, -1).join('/'),
+    documentId: parts.at(-1),
+    fullPath: path,
   }
 }
 
@@ -95,12 +111,12 @@ async function migrateDocument (db, oldPath, newPath) {
       throw new Error('Old path and new path cannot be the same')
     }
 
-    console.log(`📍 Source: ${oldDoc.collection}/${oldDoc.documentId}`)
-    console.log(`📍 Target: ${newDoc.collection}/${newDoc.documentId}`)
+    console.log(`📍 Source: ${oldDoc.fullPath}`)
+    console.log(`📍 Target: ${newDoc.fullPath}`)
 
-    // Get document references
-    const oldDocRef = db.collection(oldDoc.collection).doc(oldDoc.documentId)
-    const newDocRef = db.collection(newDoc.collection).doc(newDoc.documentId)
+    // Get document references using the full path
+    const oldDocRef = db.doc(oldDoc.fullPath)
+    const newDocRef = db.doc(newDoc.fullPath)
 
     // Run the migration in a transaction
     const result = await db.runTransaction(async transaction => {
@@ -163,13 +179,16 @@ function validateArguments () {
     console.error('Usage:')
     console.error('  node scripts/migrate-document-id.js <oldPath> <newPath>')
     console.error('')
-    console.error('Examples:')
+    console.error('Examples (top-level):')
     console.error('  node scripts/migrate-document-id.js parents/old@email.com parents/new@email.com')
     console.error('  node scripts/migrate-document-id.js students/oldId students/newId')
     console.error('')
+    console.error('Examples (subcollections):')
+    console.error('  node scripts/migrate-document-id.js parents/parent@email.com/students/oldId parents/parent@email.com/students/newId')
+    console.error('')
     console.error('Via npm scripts:')
     console.error('  npm run migrate:dev -- parents/old@email.com parents/new@email.com')
-    console.error('  npm run migrate:prod -- parents/old@email.com parents/new@email.com')
+    console.error('  npm run migrate:prod -- parents/parent@email.com/students/oldId parents/parent@email.com/students/newId')
     process.exit(1)
   }
 
