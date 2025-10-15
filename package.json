@@ -41,7 +41,9 @@
     "emulator:with-admin": "firebase emulators:start --import=./backups/2025-09-18-175305-emulator-backup",
     "dev:auto": "node scripts/devStart.js",
     "migrate:doc:dev": "NODE_ENV=development node scripts/migrate-document-id.js",
-    "migrate:doc:prod": "NODE_ENV=production node scripts/migrate-document-id.js"
+    "migrate:doc:prod": "NODE_ENV=production node scripts/migrate-document-id.js",
+    "export:recent-parents": "node scripts/export-recent-parents.js",
+    "import:parents": "node scripts/import-parents-csv.js"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
