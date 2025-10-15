@@ -827,7 +827,7 @@
     return 'unknown'
   }
 
-  // Log error to Firebase Analytics for admin review
+  // Log event to Firebase Analytics for admin review
   const logErrorToAnalytics = async (eventName, errorDetails) => {
     try {
       // Enhanced error context
@@ -841,7 +841,13 @@
         sessionId: crypto.randomUUID(), // Unique session identifier
       }
 
-      console.error(`Analytics Error [${eventName}]:`, errorContext)
+      // Use appropriate console method based on event type
+      const isSuccessEvent = eventName.includes('success')
+      if (isSuccessEvent) {
+        console.log(`Analytics Event [${eventName}]:`, errorContext)
+      } else {
+        console.error(`Analytics Error [${eventName}]:`, errorContext)
+      }
 
       // Firebase Analytics implementation
       try {
@@ -873,14 +879,25 @@
       }
 
       // For now, we'll log to console with clear formatting for admin review
-      console.group(`🚨 FIREBASE ANALYTICS: ${eventName}`)
-      console.error('Event Data:', {
-        event_name: 'parent_update_error',
-        parameters: {
-          error_type: eventName,
-          ...errorContext,
-        },
-      })
+      const groupIcon = isSuccessEvent ? '✅' : '🚨'
+      console.group(`${groupIcon} FIREBASE ANALYTICS: ${eventName}`)
+      if (isSuccessEvent) {
+        console.log('Event Data:', {
+          event_name: 'parent_update_event',
+          parameters: {
+            event_type: eventName,
+            ...errorContext,
+          },
+        })
+      } else {
+        console.error('Event Data:', {
+          event_name: 'parent_update_error',
+          parameters: {
+            error_type: eventName,
+            ...errorContext,
+          },
+        })
+      }
       console.groupEnd()
     } catch (analyticsError) {
       console.error('Failed to log error to analytics:', analyticsError)
