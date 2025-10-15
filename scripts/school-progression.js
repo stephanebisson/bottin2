@@ -93,40 +93,6 @@ async function initializeFirebase () {
 }
 
 /**
- * Create a backup of the students collection
- */
-async function createBackup (db) {
-  try {
-    console.log('\n📦 Creating backup of students collection...')
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-    const backupRef = db.collection('backups').doc(`students_${timestamp}`)
-
-    const studentsSnapshot = await db.collection('students').get()
-    const studentsData = {}
-
-    for (const doc of studentsSnapshot.docs) {
-      studentsData[doc.id] = doc.data()
-    }
-
-    await backupRef.set({
-      collection: 'students',
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      count: studentsSnapshot.size,
-      data: studentsData,
-    })
-
-    console.log(`✅ Backup created: students_${timestamp}`)
-    console.log(`   Backed up ${studentsSnapshot.size} students`)
-
-    return `students_${timestamp}`
-  } catch (error) {
-    console.error('❌ Failed to create backup:', error.message)
-    throw error
-  }
-}
-
-/**
  * Determine progression action for a student
  */
 function determineProgression (student) {
@@ -294,13 +260,6 @@ async function progressStudents () {
   try {
     // Initialize Firebase
     const db = await initializeFirebase()
-
-    // Create backup if not dry run and in production
-    if (!isDryRun && !config.firebase.useEmulator) {
-      await createBackup(db)
-    } else if (!isDryRun) {
-      console.log('\n⚠️  Skipping backup in development environment')
-    }
 
     // Get all students
     console.log('\n📊 Fetching all students...')
