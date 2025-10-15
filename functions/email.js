@@ -74,7 +74,7 @@ function getEmailService () {
 
 function getEmailTemplate (parentName, updateUrl, schoolYear) {
   const currentYear = new Date().getFullYear()
-  const deadline = '13 octobre' // TODO: Make this configurable based on workflow settings
+  const deadline = '31 octobre' // TODO: Make this configurable based on workflow settings
   const templatePath = path.join(__dirname, 'annual-update-email.html')
 
   try {
