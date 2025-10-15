@@ -1,6 +1,7 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { ParentDTO } from '@/dto/ParentDTO.js'
 import { db } from '@/firebase'
+import { generateParentId } from '@/utils/parentIdGenerator.js'
 
 /**
  * Parent Repository - Clean data access layer for parent operations
@@ -129,8 +130,8 @@ export class ParentRepository {
 
   /**
    * Save parent (create or update)
-   * Note: If no ID is provided, auto-generates a Firestore ID
-   * For structured IDs (FirstName_LastName_ABC123), use setDoc with explicit ID
+   * Uses structured IDs (FirstName_LastName_ABC123) via setDoc for new parents
+   * Uses updateDoc for existing parents
    */
   async save (parentDTO) {
     if (!(parentDTO instanceof ParentDTO)) {
@@ -153,7 +154,23 @@ export class ParentRepository {
         console.log(`ParentRepository: Updated parent ${parentDTO.fullName}`)
         return parentDTO.id
       } else {
-        // Create new parent with auto-generated ID
+        // Create new parent with structured ID, fallback to auto-generated ID on error
+        try {
+          const structuredId = generateParentId({
+            first_name: parentDTO.first_name,
+            last_name: parentDTO.last_name,
+          })
+          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with structured ID ${structuredId}...`)
+          const docRef = doc(db, this.collectionName, structuredId)
+          await setDoc(docRef, firestoreData)
+          console.log(`ParentRepository: Created parent ${parentDTO.fullName} with structured ID ${structuredId}`)
+          return structuredId
+        } catch (idError) {
+          console.warn(`ParentRepository: Failed to generate structured ID for ${parentDTO.fullName}, falling back to auto-generated ID:`, idError.message)
+          // Fall through to auto-generated ID
+        }
+
+        // Fallback: Create new parent with auto-generated ID
         console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with auto-generated ID...`)
         const docRef = await addDoc(this.collectionRef, firestoreData)
         console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${docRef.id}`)
@@ -166,7 +183,7 @@ export class ParentRepository {
   }
 
   /**
-   * Create new parent
+   * Create new parent with structured ID (FirstName_LastName_ABC123)
    */
   async create (parentData) {
     const parentDTO = new ParentDTO(parentData)
