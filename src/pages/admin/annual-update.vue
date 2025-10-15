@@ -647,15 +647,27 @@
   const parentClassesLookup = computed(() => {
     const lookup = new Map()
 
-    for (const student of students.value) {
-      const parentEmails = [student.parent1_email, student.parent2_email].filter(Boolean)
+    // First, create a map from parent ID to parent email
+    const parentIdToEmail = new Map()
+    for (const parent of parents.value) {
+      if (parent.id && parent.email) {
+        parentIdToEmail.set(parent.id, parent.email)
+      }
+    }
 
-      for (const email of parentEmails) {
-        if (!lookup.has(email)) {
-          lookup.set(email, new Set())
-        }
-        if (student.className) {
-          lookup.get(email).add(student.className)
+    // Now map emails to classes based on students
+    for (const student of students.value) {
+      const parentIds = [student.parent1_id, student.parent2_id].filter(Boolean)
+
+      for (const parentId of parentIds) {
+        const email = parentIdToEmail.get(parentId)
+        if (email) {
+          if (!lookup.has(email)) {
+            lookup.set(email, new Set())
+          }
+          if (student.className) {
+            lookup.get(email).add(student.className)
+          }
         }
       }
     }
