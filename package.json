@@ -43,7 +43,11 @@
     "migrate:doc:dev": "NODE_ENV=development node scripts/migrate-document-id.js",
     "migrate:doc:prod": "NODE_ENV=production node scripts/migrate-document-id.js",
     "export:recent-parents": "node scripts/export-recent-parents.js",
-    "import:parents": "node scripts/import-parents-csv.js"
+    "import:parents": "node scripts/import-parents-csv.js",
+    "delete-orphans:dev": "NODE_ENV=development node scripts/delete-orphaned-parents.js",
+    "delete-orphans:prod": "NODE_ENV=production node scripts/delete-orphaned-parents.js",
+    "delete-orphans:dev:dry-run": "NODE_ENV=development node scripts/delete-orphaned-parents.js --dry-run",
+    "delete-orphans:prod:dry-run": "NODE_ENV=production node scripts/delete-orphaned-parents.js --dry-run"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",

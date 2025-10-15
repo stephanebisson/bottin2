@@ -122,19 +122,24 @@ exports.startAnnualUpdateV2 = onRequest({
 
     const startedAt = FieldValue.serverTimestamp()
 
-    // Get all parents for token generation
+    // Get all parents for token generation (only those with valid email)
     const parentsSnapshot = await db.collection('parents').get()
     const parents = []
 
     for (const doc of parentsSnapshot.docs) {
       const parentData = doc.data()
-      parents.push({
-        id: doc.id,
-        ...parentData,
-      })
+      // Only include parents who have an email in their profile
+      if (parentData.email) {
+        parents.push({
+          id: doc.id,
+          ...parentData,
+        })
+      } else {
+        console.log(`Skipping parent ${doc.id} - no email in profile`)
+      }
     }
 
-    console.log(`Found ${parents.length} parents for workflow ${workflowId}`)
+    console.log(`Found ${parents.length} parents with valid emails for workflow ${workflowId}`)
 
     // Generate tokens for all parents and store them in the participants subcollection
     const batch = db.batch()
@@ -166,6 +171,7 @@ exports.startAnnualUpdateV2 = onRequest({
     // Create participant documents in subcollection
     for (const parent of parents) {
       const token = generateUpdateToken()
+      // parent.email is guaranteed to exist because of filtering above
       const participantRef = workflowRef.collection('participants').doc(parent.email)
       batch.set(participantRef, {
         email: parent.email,
