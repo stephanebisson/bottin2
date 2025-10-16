@@ -106,10 +106,6 @@
                             <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
                           </div>
 
-                          <div v-if="getTeacherInfo(classItem.teacher).directory_table" class="mb-1">
-                            <strong>{{ $t('classes.directory') }}:</strong> {{ getTeacherInfo(classItem.teacher).directory_table }}
-                          </div>
-
                           <div v-if="getTeacherInfo(classItem.teacher).ce_role" class="mb-1">
                             <strong>{{ $t('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
                           </div>

@@ -11,9 +11,11 @@ export class StaffDTO {
     this.title = this.sanitizeString(data.title)
     this.email = this.sanitizeEmail(data.email)
     this.phone = this.sanitizePhone(data.phone)
-    this.directory_table = this.sanitizeString(data.directory_table)
     this.ce_role = this.sanitizeString(data.ce_role)
     this.ce_hierarchy = this.sanitizeString(data.ce_hierarchy)
+    this.group = this.sanitizeString(data.group)
+    this.subgroup = this.sanitizeString(data.subgroup)
+    this.order = this.sanitizeOrder(data.order)
 
     // Metadata (these fields might exist from Firestore)
     this.createdAt = data.createdAt || null
@@ -49,6 +51,21 @@ export class StaffDTO {
     }
     const email = value.trim().toLowerCase()
     return email.length > 0 && email.includes('@') ? email : ''
+  }
+
+  /**
+   * Sanitize order input - convert to number between 1-99, default to 99
+   */
+  sanitizeOrder (value) {
+    if (value === null || value === undefined || value === '') {
+      return 99
+    }
+    const num = Number(value)
+    if (Number.isNaN(num)) {
+      return 99
+    }
+    // Clamp between 1 and 99
+    return Math.max(1, Math.min(99, Math.floor(num)))
   }
 
   /**
@@ -133,13 +150,6 @@ export class StaffDTO {
   }
 
   /**
-   * Check if staff member should appear in directory
-   */
-  get inDirectory () {
-    return this.directory_table.length > 0
-  }
-
-  /**
    * Transform data for Firestore storage (removes id, adds computed fields)
    */
   toFirestore () {
@@ -149,9 +159,11 @@ export class StaffDTO {
       title: this.title,
       email: this.email,
       phone: this.phone,
-      directory_table: this.directory_table,
       ce_role: this.ce_role,
       ce_hierarchy: this.ce_hierarchy,
+      group: this.group,
+      subgroup: this.subgroup,
+      order: this.order,
 
       // Raw data only - no computed fields
 
@@ -172,7 +184,6 @@ export class StaffDTO {
       this.email,
       this.phone,
       this.ce_role,
-      this.directory_table,
     ].filter(text => text && String(text).trim().length > 0)
       .join(' ')
       .toLowerCase()
@@ -192,13 +203,14 @@ export class StaffDTO {
       email: this.email,
       phone: this.phone,
       displayPhone: this.displayPhone,
-      directory_table: this.directory_table,
       ce_role: this.ce_role,
       ce_hierarchy: this.ce_hierarchy,
+      group: this.group,
+      subgroup: this.subgroup,
+      order: this.order,
       hasContactInfo: this.hasContactInfo,
       hasCERole: this.hasCERole,
       ceInfo: this.ceInfo,
-      inDirectory: this.inDirectory,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     }

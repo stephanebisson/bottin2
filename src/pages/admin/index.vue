@@ -131,6 +131,47 @@
           </v-card>
         </v-col>
 
+        <!-- Staff Update -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card class="h-100 admin-card">
+            <v-card-text class="text-center pa-6">
+              <v-icon class="mb-4" color="primary" size="64">mdi-account-tie-outline</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.staffUpdate.title') }}</h3>
+              <p class="text-body-2 text-grey-darken-1">
+                {{ $t('admin.staffUpdate.description') }}
+              </p>
+
+              <!-- Staff Update Link -->
+              <div v-if="staffUpdateToken" class="mt-4">
+                <v-btn
+                  color="primary"
+                  prepend-icon="mdi-link"
+                  size="small"
+                  variant="tonal"
+                  @click="openStaffUpdateLink"
+                >
+                  {{ $t('admin.staffUpdate.openLink') }}
+                </v-btn>
+                <v-btn
+                  class="mt-2"
+                  color="grey"
+                  prepend-icon="mdi-content-copy"
+                  size="small"
+                  variant="text"
+                  @click="copyStaffUpdateLink"
+                >
+                  {{ $t('admin.staffUpdate.copyLink') }}
+                </v-btn>
+              </div>
+              <div v-else class="mt-4">
+                <v-chip color="grey" size="small" variant="tonal">
+                  {{ $t('admin.staffUpdate.noToken') }}
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
       </v-row>
     </div>
   </v-container>
@@ -152,6 +193,7 @@
   // State
   const loading = ref(false)
   const currentWorkflow = ref(null)
+  const staffUpdateToken = ref(null)
 
   // Check if user is authorized using Firebase Custom Claims
   const isAuthorized = ref(false)
@@ -233,10 +275,67 @@
     }
   }
 
+  // Load staff update token
+  const loadStaffUpdateToken = async () => {
+    try {
+      const baseUrl = getFunctionsBaseUrl()
+
+      const response = await fetch(`${baseUrl}/getStaffUpdateToken`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${await authStore.user.getIdToken()}`,
+        },
+      })
+
+      if (!response.ok) {
+        console.error('Failed to load staff update token:', response.status)
+        return
+      }
+
+      const data = await response.json()
+      staffUpdateToken.value = data.token
+    } catch (error) {
+      console.error('Failed to load staff update token:', error)
+    }
+  }
+
+  // Open staff update link in new tab
+  const openStaffUpdateLink = () => {
+    if (!staffUpdateToken.value) return
+    const baseUrl = window.location.origin
+    const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`
+    window.open(updateUrl, '_blank')
+  }
+
+  // Copy staff update link to clipboard
+  const copyStaffUpdateLink = async () => {
+    if (!staffUpdateToken.value) return
+    const baseUrl = window.location.origin
+    const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`
+
+    try {
+      await navigator.clipboard.writeText(updateUrl)
+      console.log('Staff update link copied to clipboard:', updateUrl)
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = updateUrl
+      document.body.append(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      textArea.remove()
+      console.log('Staff update link copied to clipboard (fallback):', updateUrl)
+    }
+  }
+
   onMounted(async () => {
     await checkAdminStatus()
     if (isAuthorized.value) {
-      await loadWorkflowData()
+      await Promise.all([
+        loadWorkflowData(),
+        loadStaffUpdateToken(),
+      ])
     }
   })
 
@@ -245,7 +344,10 @@
     if (newValue) {
       await checkAdminStatus()
       if (isAuthorized.value) {
-        await loadWorkflowData()
+        await Promise.all([
+          loadWorkflowData(),
+          loadStaffUpdateToken(),
+        ])
       }
     } else {
       isAuthorized.value = false

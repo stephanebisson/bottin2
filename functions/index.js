@@ -10,6 +10,7 @@ const { validateEmail, validateEmailV2 } = require('./auth')
 const { updateCommitteeMembersV2 } = require('./committees')
 const { sendParentEmailV2 } = require('./email')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
+const { generateStaffUpdateToken, getStaffUpdateToken, validateStaffUpdateToken, getStaffWithToken, updateStaffWithToken } = require('./staffUpdate')
 const { healthCheckV2 } = require('./utils')
 
 // Export all functions
@@ -29,3 +30,8 @@ exports.getAdminStatusV2 = getAdminStatusV2
 exports.listAdminsV2 = listAdminsV2
 exports.healthCheckV2 = healthCheckV2
 exports.updateCommitteeMembersV2 = updateCommitteeMembersV2
+exports.generateStaffUpdateToken = generateStaffUpdateToken
+exports.getStaffUpdateToken = getStaffUpdateToken
+exports.validateStaffUpdateToken = validateStaffUpdateToken
+exports.getStaffWithToken = getStaffWithToken
+exports.updateStaffWithToken = updateStaffWithToken

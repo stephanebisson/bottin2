@@ -96,7 +96,6 @@ const config = {
           'Titre': 'title',
           'Courriel': 'email',
           'Téléphone': 'phone',
-          'Table pour bottin': 'directory_table',
         },
         // No transformFunction = uses generic mapping only
       },

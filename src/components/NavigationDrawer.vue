@@ -209,6 +209,11 @@
             icon: 'mdi-account-school-outline',
             to: '/admin/students',
           },
+          {
+            title: t('admin.staffUpdate.title'),
+            icon: 'mdi-account-tie-outline',
+            to: '/admin/staff-update',
+          },
         ],
       })
     }

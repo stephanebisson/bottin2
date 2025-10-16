@@ -6,7 +6,7 @@
         :color="firebaseStore.staffLoadingDTO ? 'orange' : 'green'"
         :prepend-icon="firebaseStore.staffLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
       >
-        {{ firebaseStore.staffLoadingDTO ? $t('common.loading') : searchQuery ? $t('staff.staffFiltered', { filtered: filteredStaffGroups.reduce((acc, group) => acc + group.members.length, 0), total: firebaseStore.staffDTO.length }) : $t('staff.staffLoaded', { count: firebaseStore.staffDTO.length }) }}
+        {{ firebaseStore.staffLoadingDTO ? $t('common.loading') : searchQuery ? $t('staff.staffFiltered', { filtered: filteredStaffGroups.reduce((acc, group) => acc + group.subgroups.reduce((subAcc, subgroup) => subAcc + subgroup.members.length, 0), 0), total: firebaseStore.staffDTO.length }) : $t('staff.staffLoaded', { count: firebaseStore.staffDTO.length }) }}
       </v-chip>
     </div>
 
@@ -46,112 +46,103 @@
       </v-card>
 
       <!-- Staff Groups -->
-      <div v-for="group in filteredStaffGroups" :key="group.name" class="mb-6">
-        <!-- Group Header -->
-        <div class="d-flex align-center mb-3">
-          <v-icon class="me-3" color="primary" size="large">
-            {{ getGroupIcon(group.name) }}
-          </v-icon>
-          <div>
-            <h2 class="text-h5 font-weight-bold text-primary">
-              {{ group.name }}
-            </h2>
-            <p class="text-body-2 text-grey-darken-1 ma-0">
-              {{ $t('staff.memberCount', { count: group.members.length }) }}
-            </p>
+      <div v-for="group in filteredStaffGroups" :key="group.name" class="mb-8">
+        <!-- Group Header (h2) -->
+        <h2 class="text-h4 font-weight-bold text-primary mb-6">
+          {{ group.name }}
+        </h2>
+
+        <!-- Subgroups -->
+        <div v-for="subgroup in group.subgroups" :key="subgroup.name" class="mb-6">
+          <!-- Subgroup Header (h3) -->
+          <div class="d-flex align-center mb-3">
+            <v-icon class="me-3" color="primary" size="large">
+              {{ getGroupIcon(group.group, subgroup.subgroup) }}
+            </v-icon>
+            <div>
+              <h3 class="text-h5 font-weight-bold text-primary">
+                {{ subgroup.name }}
+              </h3>
+              <p class="text-body-2 text-grey-darken-1 ma-0">
+                {{ $t('staff.memberCount', { count: subgroup.members.length }) }}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <!-- Staff Members Grid -->
-        <v-row>
-          <v-col
-            v-for="member in group.members"
-            :key="member.id"
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <v-card class="d-flex flex-column" height="100%">
-              <!-- Staff Member Header -->
-              <v-card-title class="pb-2">
-                <div class="text-h6 font-weight-bold">
-                  <HighlightedText
-                    :query="searchQuery"
-                    :text="`${member.first_name} ${member.last_name}`"
-                  />
-                </div>
-              </v-card-title>
-
-              <v-card-text class="flex-grow-1 pt-0">
-                <!-- Title -->
-                <div v-if="member.title" class="mb-2">
-                  <v-chip
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                  >
-                    <HighlightedText :query="searchQuery" :text="member.title" />
-                  </v-chip>
-                </div>
-
-                <!-- Contact Information -->
-                <div class="mb-3">
-                  <div v-if="member.email" class="mb-2 d-flex align-center">
-                    <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
-                    <a class="text-decoration-none text-body-2" :href="`mailto:${member.email}`">
-                      <HighlightedText :query="searchQuery" :text="member.email" />
-                    </a>
+          <!-- Staff Members Grid -->
+          <v-row>
+            <v-col
+              v-for="member in subgroup.members"
+              :key="member.id"
+              cols="12"
+              lg="3"
+              md="4"
+              sm="6"
+            >
+              <v-card class="d-flex flex-column" height="100%">
+                <!-- Staff Member Header -->
+                <v-card-title class="pb-2">
+                  <div class="text-h6 font-weight-bold">
+                    <HighlightedText
+                      :query="searchQuery"
+                      :text="`${member.first_name} ${member.last_name}`"
+                    />
                   </div>
+                </v-card-title>
 
-                  <div v-if="member.phone" class="mb-2 d-flex align-center">
-                    <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
-                    <a class="text-decoration-none text-body-2" :href="`tel:${member.phone}`">
-                      {{ formatPhone(member.phone) }}
-                    </a>
-                  </div>
-                </div>
-
-                <!-- CE Information -->
-                <div v-if="member.ce_role || member.ce_hierarchy" class="mb-3">
-                  <v-divider class="mb-2" />
-                  <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
-                    <v-icon class="me-1" size="small">mdi-sitemap</v-icon>
-                    {{ $t('staff.ceInformation') }}
-                  </div>
-
-                  <div v-if="member.ce_role" class="text-body-2 mb-1">
-                    <strong>{{ $t('staff.role') }}:</strong> {{ member.ce_role }}
-                  </div>
-
-                  <div v-if="member.ce_hierarchy" class="text-body-2">
-                    <strong>{{ $t('staff.hierarchy') }}:</strong> {{ member.ce_hierarchy }}
-                  </div>
-                </div>
-
-                <!-- Classes Taught -->
-                <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
-                  <v-divider class="mb-2" />
-                  <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
-                    <v-icon class="me-1" size="small">mdi-school</v-icon>
-                    {{ $t('staff.classesTaught') }}
-                  </div>
-                  <div class="d-flex flex-wrap gap-1">
+                <v-card-text class="flex-grow-1 pt-0">
+                  <!-- Title -->
+                  <div v-if="member.title" class="mb-2">
                     <v-chip
-                      v-for="classLetter in getClassesTaught(member.id)"
-                      :key="classLetter"
-                      color="secondary"
-                      size="x-small"
+                      color="primary"
+                      size="small"
                       variant="outlined"
                     >
-                      {{ classLetter }}
+                      <HighlightedText :query="searchQuery" :text="member.title" />
                     </v-chip>
                   </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+
+                  <!-- Contact Information -->
+                  <div class="mb-3">
+                    <div v-if="member.email" class="mb-2 d-flex align-center">
+                      <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
+                      <a class="text-decoration-none text-body-2" :href="`mailto:${member.email}`">
+                        <HighlightedText :query="searchQuery" :text="member.email" />
+                      </a>
+                    </div>
+
+                    <div v-if="member.phone" class="mb-2 d-flex align-center">
+                      <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
+                      <a class="text-decoration-none text-body-2" :href="`tel:${member.phone}`">
+                        {{ formatPhone(member.phone) }}
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Classes Taught -->
+                  <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
+                    <v-divider class="mb-2" />
+                    <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
+                      <v-icon class="me-1" size="small">mdi-school</v-icon>
+                      {{ $t('staff.classesTaught') }}
+                    </div>
+                    <div class="d-flex flex-wrap gap-1">
+                      <v-chip
+                        v-for="classLetter in getClassesTaught(member.id)"
+                        :key="classLetter"
+                        color="secondary"
+                        size="x-small"
+                        variant="outlined"
+                      >
+                        {{ classLetter }}
+                      </v-chip>
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
       </div>
     </div>
   </v-container>
@@ -161,6 +152,7 @@
   import { computed, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import { useI18n } from '@/composables/useI18n'
+  import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
 
@@ -171,49 +163,103 @@
   const firebaseStore = useFirebaseDataStore()
 
   const groupedStaff = computed(() => {
-    // Group staff by directory_table
-    const groups = {}
+    // Create hierarchical group structure: groups contain subgroups
+    const hierarchicalGroups = []
 
-    for (const member of firebaseStore.staffDTO) {
-      const groupName = member.directory_table || t('staff.otherStaff')
+    // Process each group in the defined order (EF, SDG)
+    for (const group of STAFF_GROUPS) {
+      const subgroups = GROUP_SUBGROUP_MAPPING[group]
+      const groupSubgroups = []
 
-      if (!groups[groupName]) {
-        groups[groupName] = []
+      // Process each subgroup in order
+      for (const subgroup of subgroups) {
+        // Find staff members for this group/subgroup combination
+        const members = firebaseStore.staffDTO.filter(member =>
+          member.group === group && member.subgroup === subgroup,
+        )
+
+        if (members.length > 0) {
+          // Sort members by order field, then alphabetically by last name, first name
+          const sortedMembers = members.sort((a, b) => {
+            // Primary sort: by order field
+            const orderA = a.order || 99
+            const orderB = b.order || 99
+            if (orderA !== orderB) {
+              return orderA - orderB
+            }
+            // Secondary sort: alphabetically by name
+            const nameA = `${a.last_name}, ${a.first_name}`.toLowerCase()
+            const nameB = `${b.last_name}, ${b.first_name}`.toLowerCase()
+            return nameA.localeCompare(nameB)
+          })
+
+          groupSubgroups.push({
+            subgroup,
+            name: SUBGROUP_DISPLAY_NAMES[subgroup] || subgroup,
+            members: sortedMembers,
+          })
+        }
       }
 
-      groups[groupName].push(member)
+      // Only add group if it has subgroups with members
+      if (groupSubgroups.length > 0) {
+        hierarchicalGroups.push({
+          group,
+          name: GROUP_DISPLAY_NAMES[group] || group,
+          subgroups: groupSubgroups,
+        })
+      }
     }
 
-    // Convert to array and sort groups and members
-    return Object.entries(groups).map(([name, members]) => ({
-      name,
-      members: members.sort((a, b) => {
-        const nameA = `${a.last_name}, ${a.first_name}`.toLowerCase()
-        const nameB = `${b.last_name}, ${b.first_name}`.toLowerCase()
-        return nameA.localeCompare(nameB)
-      }),
-    })).sort((a, b) => {
-      // Put "Other Staff" at the end
-      if (a.name === 'Other Staff') return 1
-      if (b.name === 'Other Staff') return -1
-      return a.name.localeCompare(b.name)
-    })
+    // Add staff without group/subgroup at the end
+    const ungroupedMembers = firebaseStore.staffDTO.filter(member =>
+      !member.group || !member.subgroup,
+    )
+
+    if (ungroupedMembers.length > 0) {
+      hierarchicalGroups.push({
+        group: null,
+        name: t('staff.otherStaff'),
+        subgroups: [{
+          subgroup: null,
+          name: t('staff.otherStaff'),
+          members: ungroupedMembers.sort((a, b) => {
+            // Primary sort: by order field
+            const orderA = a.order || 99
+            const orderB = b.order || 99
+            if (orderA !== orderB) {
+              return orderA - orderB
+            }
+            // Secondary sort: alphabetically by name
+            const nameA = `${a.last_name}, ${a.first_name}`.toLowerCase()
+            const nameB = `${b.last_name}, ${b.first_name}`.toLowerCase()
+            return nameA.localeCompare(nameB)
+          }),
+        }],
+      })
+    }
+
+    return hierarchicalGroups
   })
 
   const filteredStaffGroups = computed(() => {
     return groupedStaff.value.map(group => ({
       ...group,
-      members: group.members.filter(member => {
-        const searchFields = [
-          member.fullName,
-          member.title || '',
-          member.email || '',
-          member.directory_table || '',
-        ]
+      subgroups: group.subgroups.map(subgroup => ({
+        ...subgroup,
+        members: subgroup.members.filter(member => {
+          const searchFields = [
+            member.fullName,
+            member.title || '',
+            member.email || '',
+            member.group || '',
+            member.subgroup || '',
+          ]
 
-        return matchesAnyField(searchFields, searchQuery.value)
-      }),
-    })).filter(group => group.members.length > 0)
+          return matchesAnyField(searchFields, searchQuery.value)
+        }),
+      })).filter(subgroup => subgroup.members.length > 0),
+    })).filter(group => group.subgroups.length > 0)
   })
 
   const getClassesTaught = staffId => {
@@ -223,24 +269,31 @@
       .sort()
   }
 
-  const getGroupIcon = groupName => {
-    const groupLower = groupName.toLowerCase()
-
-    if (groupLower.includes('administration') || groupLower.includes('direction')) {
-      return 'mdi-account-tie'
-    } else if (groupLower.includes('teacher') || groupLower.includes('enseignant')) {
-      return 'mdi-school'
-    } else if (groupLower.includes('support') || groupLower.includes('aide')) {
-      return 'mdi-account-heart'
-    } else if (groupLower.includes('maintenance') || groupLower.includes('entretien')) {
-      return 'mdi-tools'
-    } else if (groupLower.includes('secretary') || groupLower.includes('secrétaire')) {
-      return 'mdi-file-document'
-    } else if (groupLower.includes('specialist') || groupLower.includes('spécialiste')) {
-      return 'mdi-star'
-    } else {
-      return 'mdi-account-group'
+  const getGroupIcon = (group, subgroup) => {
+    // Icon mapping based on group/subgroup
+    if (group === 'EF') {
+      switch (subgroup) {
+        case 'admin': {
+          return 'mdi-account-tie'
+        }
+        case 'teacher': {
+          return 'mdi-school'
+        }
+        case 'specialist': {
+          return 'mdi-star'
+        }
+      // No default
+      }
+    } else if (group === 'SDG') {
+      if (subgroup === 'resp') {
+        return 'mdi-account-cog'
+      } else if (subgroup === 'edu') {
+        return 'mdi-teach'
+      }
     }
+
+    // Default icon for ungrouped staff
+    return 'mdi-account-group'
   }
 
   const formatPhone = phone => {

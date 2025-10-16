@@ -128,21 +128,12 @@ export class StaffRepository {
   }
 
   /**
-   * Get staff members in directory
+   * Get staff members in directory (returns all staff since directory_table field was removed)
    */
   async getInDirectory () {
     try {
-      console.log('StaffRepository: Loading staff in directory...')
-      const q = query(
-        this.collectionRef,
-        where('directory_table', '!=', ''),
-      )
-      const snapshot = await getDocs(q)
-
-      const staff = StaffDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StaffRepository: Loaded ${staff.length} staff members in directory`)
-
-      return staff
+      console.log('StaffRepository: Loading all staff for directory...')
+      return await this.getAll()
     } catch (error) {
       console.error('StaffRepository: Error loading staff in directory:', error)
       throw new Error(`Failed to load staff in directory: ${error.message}`)
@@ -276,7 +267,6 @@ export class StaffRepository {
 
       const titleStats = {}
       const ceRoleStats = {}
-      let inDirectoryCount = 0
       let withCERoleCount = 0
 
       for (const staffMember of allStaff) {
@@ -290,18 +280,12 @@ export class StaffRepository {
           ceRoleStats[staffMember.ce_role] = (ceRoleStats[staffMember.ce_role] || 0) + 1
           withCERoleCount++
         }
-
-        // Count directory members
-        if (staffMember.inDirectory) {
-          inDirectoryCount++
-        }
       }
 
       return {
         total: allStaff.length,
         withContactInfo: allStaff.filter(s => s.hasContactInfo).length,
         withCERole: withCERoleCount,
-        inDirectory: inDirectoryCount,
         byTitle: titleStats,
         byCERole: ceRoleStats,
         lastUpdated: new Date(),
