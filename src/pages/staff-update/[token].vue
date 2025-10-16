@@ -76,31 +76,6 @@
         </div>
       </v-alert>
 
-      <v-alert
-        v-else
-        class="mb-4"
-        closable
-        color="success"
-        icon="mdi-check-circle"
-        variant="tonal"
-      >
-        <div class="d-flex justify-space-between align-center">
-          <div>
-            <div class="text-body-1 font-weight-bold">You're using V2 (latest version)</div>
-            <div class="text-body-2">Need to go back to the previous version?</div>
-          </div>
-          <v-btn
-            color="grey"
-            prepend-icon="mdi-arrow-down"
-            size="small"
-            variant="text"
-            @click="switchToV1"
-          >
-            Switch to V1
-          </v-btn>
-        </div>
-      </v-alert>
-
       <!-- Render the appropriate form component -->
       <component :is="currentFormComponent" :token="token" />
     </div>
@@ -145,14 +120,6 @@
     router.push({
       path: route.path,
       query: { ...route.query, v: undefined }, // Remove v parameter to default to v2
-    })
-  }
-
-  // Switch to V1
-  const switchToV1 = () => {
-    router.push({
-      path: route.path,
-      query: { ...route.query, v: '1' },
     })
   }
 
