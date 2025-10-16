@@ -63,7 +63,8 @@ export class ClassRepository {
           teacherFirstName: teacherInfo?.first_name || '',
           teacherLastName: teacherInfo?.last_name || '',
           teacherEmail: teacherInfo?.email || classData.teacher,
-          parent_rep: classData.parent_rep,
+          parent_rep_1: classData.parent_rep_1,
+          parent_rep_2: classData.parent_rep_2,
         }
 
         classes.push(classItem)
@@ -144,7 +145,8 @@ export class ClassRepository {
         teacherFirstName: teacherInfo?.first_name || '',
         teacherLastName: teacherInfo?.last_name || '',
         teacherEmail: teacherInfo?.email || classData.teacher,
-        parent_rep: classData.parent_rep,
+        parent_rep_1: classData.parent_rep_1,
+        parent_rep_2: classData.parent_rep_2,
       }
 
       console.log(`ClassRepository: Loaded class ${classItem.classLetter} - ${classItem.teacherName}`)
@@ -160,7 +162,8 @@ export class ClassRepository {
    * @param {string} classLetter - The class letter (document ID)
    * @param {Object} updates - Object containing fields to update
    * @param {string} [updates.className] - Class name (e.g., "1A")
-   * @param {string} [updates.parent_rep] - Parent representative document ID
+   * @param {string} [updates.parent_rep_1] - Parent representative 1 document ID
+   * @param {string} [updates.parent_rep_2] - Parent representative 2 document ID
    * @param {string} [updates.student_rep_1] - Student representative 1 document ID
    * @param {string} [updates.student_rep_2] - Student representative 2 document ID
    * @returns {Promise<Object>} Updated class object
@@ -182,8 +185,11 @@ export class ClassRepository {
       if (updates.className !== undefined) {
         updateData.className = updates.className
       }
-      if (updates.parent_rep !== undefined) {
-        updateData.parent_rep = updates.parent_rep
+      if (updates.parent_rep_1 !== undefined) {
+        updateData.parent_rep_1 = updates.parent_rep_1
+      }
+      if (updates.parent_rep_2 !== undefined) {
+        updateData.parent_rep_2 = updates.parent_rep_2
       }
       if (updates.student_rep_1 !== undefined) {
         updateData.student_rep_1 = updates.student_rep_1

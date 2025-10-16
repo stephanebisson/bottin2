@@ -123,97 +123,188 @@
                 </div>
               </div>
 
-              <!-- Parent Representative -->
-              <div v-if="classItem.parent_rep" class="mb-3">
+              <!-- Parent Representatives -->
+              <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="mb-3">
                 <div class="d-flex align-center mb-1">
                   <v-icon class="me-2" color="primary">mdi-account-supervisor</v-icon>
-                  <span class="font-weight-medium">{{ $t('classes.parentRepresentative') }}</span>
+                  <span class="font-weight-medium">{{ $t('classes.parentRepresentatives') }}</span>
                 </div>
                 <div class="ms-6 text-body-2">
-                  <v-tooltip
-                    v-if="showPopups"
-                    location="top"
-                    max-width="450"
-                  >
-                    <template #activator="{ props }">
-                      <span
-                        v-bind="props"
-                        class="parent-name"
-                        style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
-                      >
-                        {{ getParentName(classItem.parent_rep) }}
-                      </span>
-                    </template>
-                    <template #default>
-                      <div class="pa-3" style="min-width: 350px;">
-                        <div v-if="getParentData(classItem.parent_rep)">
-                          <div class="text-h6 mb-3 text-white">
-                            {{ getParentData(classItem.parent_rep).first_name }} {{ getParentData(classItem.parent_rep).last_name }}
-                            <br>
-                            <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
-                          </div>
-
-                          <!-- Contact Information -->
-                          <div class="mb-3">
-                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
-
-                            <div class="mb-1">
-                              <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep).email }}
+                  <!-- Parent Rep 1 -->
+                  <div v-if="classItem.parent_rep_1" class="mb-2">
+                    <v-tooltip
+                      v-if="showPopups"
+                      location="top"
+                      max-width="450"
+                    >
+                      <template #activator="{ props }">
+                        <span
+                          v-bind="props"
+                          class="parent-name"
+                          style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
+                        >
+                          {{ getParentName(classItem.parent_rep_1) }}
+                        </span>
+                      </template>
+                      <template #default>
+                        <div class="pa-3" style="min-width: 350px;">
+                          <div v-if="getParentData(classItem.parent_rep_1)">
+                            <div class="text-h6 mb-3 text-white">
+                              {{ getParentData(classItem.parent_rep_1).first_name }} {{ getParentData(classItem.parent_rep_1).last_name }}
+                              <br>
+                              <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
                             </div>
 
-                            <div v-if="getParentData(classItem.parent_rep).phone" class="mb-1">
-                              <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep).phone) }}
-                            </div>
+                            <!-- Contact Information -->
+                            <div class="mb-3">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
 
-                            <div v-if="formatAddress(getParentData(classItem.parent_rep))" class="mb-1">
-                              <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep)) }}
-                            </div>
-                          </div>
+                              <div class="mb-1">
+                                <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_1).email }}
+                              </div>
 
-                          <!-- Interests Section -->
-                          <div v-if="getParentData(classItem.parent_rep).interests && getParentData(classItem.parent_rep).interests.length > 0" class="mb-3">
-                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
-                            <div class="text-body-2">
-                              {{ getParentData(classItem.parent_rep).interests.join(', ') }}
-                            </div>
-                          </div>
+                              <div v-if="getParentData(classItem.parent_rep_1).phone" class="mb-1">
+                                <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}
+                              </div>
 
-                          <!-- Children Section -->
-                          <div class="mb-2">
-                            <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
-
-                            <div v-if="getParentChildren(classItem.parent_rep).length > 0">
-                              <div
-                                v-for="child in getParentChildren(classItem.parent_rep)"
-                                :key="child.id"
-                                class="mb-1"
-                              >
-                                <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
-                                <div class="text-caption">
-                                  {{ $t('classes.class') }}: {{ child.className }}
-                                  <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
-                                  <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                    - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
-                                  </span>
-                                </div>
+                              <div v-if="formatAddress(getParentData(classItem.parent_rep_1))" class="mb-1">
+                                <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_1)) }}
                               </div>
                             </div>
 
-                            <div v-else class="text-caption text-grey">
-                              {{ $t('classes.noChildrenFound') }}
+                            <!-- Interests Section -->
+                            <div v-if="getParentData(classItem.parent_rep_1).interests && getParentData(classItem.parent_rep_1).interests.length > 0" class="mb-3">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
+                              <div class="text-body-2">
+                                {{ getParentData(classItem.parent_rep_1).interests.join(', ') }}
+                              </div>
+                            </div>
+
+                            <!-- Children Section -->
+                            <div class="mb-2">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
+
+                              <div v-if="getParentChildren(classItem.parent_rep_1).length > 0">
+                                <div
+                                  v-for="child in getParentChildren(classItem.parent_rep_1)"
+                                  :key="child.id"
+                                  class="mb-1"
+                                >
+                                  <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
+                                  <div class="text-caption">
+                                    {{ $t('classes.class') }}: {{ child.className }}
+                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
+                                    <span v-if="getTeacherName(getClassTeacher(child.className))">
+                                      - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div v-else class="text-caption text-grey">
+                                {{ $t('classes.noChildrenFound') }}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div v-else class="text-caption">
-                          {{ $t('classes.noParentInfo', { parent: classItem.parent_rep }) }}
+                          <div v-else class="text-caption">
+                            {{ $t('classes.noParentInfo', { parent: classItem.parent_rep_1 }) }}
+                          </div>
                         </div>
-                      </div>
-                    </template>
-                  </v-tooltip>
-                  <span v-else class="parent-name">
-                    {{ getParentName(classItem.parent_rep) }}
-                  </span>
+                      </template>
+                    </v-tooltip>
+                    <span v-else class="parent-name">
+                      {{ getParentName(classItem.parent_rep_1) }}
+                    </span>
+                  </div>
+
+                  <!-- Parent Rep 2 -->
+                  <div v-if="classItem.parent_rep_2">
+                    <v-tooltip
+                      v-if="showPopups"
+                      location="top"
+                      max-width="450"
+                    >
+                      <template #activator="{ props }">
+                        <span
+                          v-bind="props"
+                          class="parent-name"
+                          style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
+                        >
+                          {{ getParentName(classItem.parent_rep_2) }}
+                        </span>
+                      </template>
+                      <template #default>
+                        <div class="pa-3" style="min-width: 350px;">
+                          <div v-if="getParentData(classItem.parent_rep_2)">
+                            <div class="text-h6 mb-3 text-white">
+                              {{ getParentData(classItem.parent_rep_2).first_name }} {{ getParentData(classItem.parent_rep_2).last_name }}
+                              <br>
+                              <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="mb-3">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
+
+                              <div class="mb-1">
+                                <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_2).email }}
+                              </div>
+
+                              <div v-if="getParentData(classItem.parent_rep_2).phone" class="mb-1">
+                                <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}
+                              </div>
+
+                              <div v-if="formatAddress(getParentData(classItem.parent_rep_2))" class="mb-1">
+                                <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_2)) }}
+                              </div>
+                            </div>
+
+                            <!-- Interests Section -->
+                            <div v-if="getParentData(classItem.parent_rep_2).interests && getParentData(classItem.parent_rep_2).interests.length > 0" class="mb-3">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
+                              <div class="text-body-2">
+                                {{ getParentData(classItem.parent_rep_2).interests.join(', ') }}
+                              </div>
+                            </div>
+
+                            <!-- Children Section -->
+                            <div class="mb-2">
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
+
+                              <div v-if="getParentChildren(classItem.parent_rep_2).length > 0">
+                                <div
+                                  v-for="child in getParentChildren(classItem.parent_rep_2)"
+                                  :key="child.id"
+                                  class="mb-1"
+                                >
+                                  <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
+                                  <div class="text-caption">
+                                    {{ $t('classes.class') }}: {{ child.className }}
+                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
+                                    <span v-if="getTeacherName(getClassTeacher(child.className))">
+                                      - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div v-else class="text-caption text-grey">
+                                {{ $t('classes.noChildrenFound') }}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div v-else class="text-caption">
+                            {{ $t('classes.noParentInfo', { parent: classItem.parent_rep_2 }) }}
+                          </div>
+                        </div>
+                      </template>
+                    </v-tooltip>
+                    <span v-else class="parent-name">
+                      {{ getParentName(classItem.parent_rep_2) }}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -401,13 +492,24 @@
             variant="outlined"
           />
 
-          <!-- Parent Representative Field -->
+          <!-- Parent Representative 1 Field -->
           <v-autocomplete
-            v-model="editForm.parent_rep"
+            v-model="editForm.parent_rep_1"
             clearable
             density="comfortable"
-            :items="editingClass ? getClassParents(editingClass.classLetter) : []"
-            :label="t('classes.parentRepresentative')"
+            :items="getAllParents"
+            :label="t('classes.parentRepresentative1')"
+            variant="outlined"
+          />
+
+          <!-- Parent Representative 2 Field -->
+          <v-autocomplete
+            v-model="editForm.parent_rep_2"
+            class="mt-2"
+            clearable
+            density="comfortable"
+            :items="getAllParents"
+            :label="t('classes.parentRepresentative2')"
             variant="outlined"
           />
 
@@ -486,7 +588,8 @@
   const editingClass = ref(null)
   const editForm = ref({
     className: '',
-    parent_rep: null,
+    parent_rep_1: null,
+    parent_rep_2: null,
     student_rep_1: null,
     student_rep_2: null,
   })
@@ -528,6 +631,16 @@
       .sort((a, b) => a.title.localeCompare(b.title))
   })
 
+  // Get all parents for parent representative selection
+  const getAllParents = computed(() => {
+    return firebaseStore.parentsDTO
+      .map(parent => ({
+        value: parent.id,
+        title: parent.fullName,
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title))
+  })
+
   // Get students by level in a class
   const getStudentsByLevelForClass = (classLetter, levelIndex) => {
     const classStudents = getClassStudents(classLetter)
@@ -551,7 +664,8 @@
     editingClass.value = classItem
     editForm.value = {
       className: classItem.className,
-      parent_rep: classItem.parent_rep || null,
+      parent_rep_1: classItem.parent_rep_1 || null,
+      parent_rep_2: classItem.parent_rep_2 || null,
       student_rep_1: classItem.student_rep_1 || null,
       student_rep_2: classItem.student_rep_2 || null,
     }
@@ -576,7 +690,8 @@
 
       const updates = {
         className: editForm.value.className,
-        parent_rep: editForm.value.parent_rep || '',
+        parent_rep_1: editForm.value.parent_rep_1 || '',
+        parent_rep_2: editForm.value.parent_rep_2 || '',
         student_rep_1: editForm.value.student_rep_1 || '',
         student_rep_2: editForm.value.student_rep_2 || '',
       }

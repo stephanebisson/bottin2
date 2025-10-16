@@ -110,7 +110,7 @@ const config = {
           'Code': 'classCode',
           'Réprésenant(e) de classe 1': 'student_rep_1',
           'Réprésenant(e) de classe 2': 'student_rep_2',
-          'Répresentant(e) Parent': 'parent_rep',
+          'Répresentant(e) Parent': 'parent_rep_1',
         },
         transformFunction: 'transformClasses',
       },
@@ -398,9 +398,9 @@ function transformClasses (documents) {
     }
 
     // Lookup parent ID by name
-    if (doc.parent_rep) {
-      const parent = findParentByName(parentsData, doc.parent_rep)
-      doc.parent_rep = parent ? parent._docId : null // Replace name with parent ID
+    if (doc.parent_rep_1) {
+      const parent = findParentByName(parentsData, doc.parent_rep_1)
+      doc.parent_rep_1 = parent ? parent._docId : null // Replace name with parent ID
     }
 
     return doc
