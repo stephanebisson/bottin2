@@ -165,17 +165,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Legacy function for backward compatibility (simple validation only)
-  const validateEmailExists = async email => {
-    const result = await validateAndGetUserInfo(email)
-    return result.authorized
-  }
-
-  // Legacy function for backward compatibility (kept for existing components)
-  const getUserInfo = async email => {
-    return await validateAndGetUserInfo(email)
-  }
-
   const setLoading = value => {
     loading.value = value
   }
@@ -539,8 +528,6 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     sendVerificationEmail,
     refreshUser,
-    validateEmailExists, // Legacy - use validateAndGetUserInfo instead
-    getUserInfo, // Legacy - use validateAndGetUserInfo instead
     validateAndGetUserInfo,
     checkFirebaseHealth,
     clearError,

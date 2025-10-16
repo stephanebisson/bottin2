@@ -19,8 +19,7 @@ functions/
 ## Functions Overview
 
 ### Authentication (`auth.js`)
-- `validateEmail` - Validates if an email is authorized to create an account (v1 - deprecated)
-- `validateEmailV2` - Validates if an email is authorized to create an account (v2 - recommended)
+- `validateEmailV2` - Validates if an email is authorized to create an account
 
 ### Workflow Management (`workflow.js`)
 - `startAnnualUpdate` - Initiates the annual parent information update workflow
@@ -86,8 +85,7 @@ firebase deploy --only functions:startAnnualUpdate
 
 All functions are accessible via HTTPS endpoints:
 
-- `validateEmail` - POST - Validates email authorization (v1 - deprecated)
-- `validateEmailV2` - POST - Validates email authorization (v2 - recommended)
+- `validateEmailV2` - POST - Validates email authorization
 - `startAnnualUpdate` - POST - Starts workflow (requires admin auth)
 - `getWorkflowStatus` - GET - Gets workflow status (requires admin auth)
 - `sendUpdateEmails` - POST - Sends notification emails (requires admin auth)
