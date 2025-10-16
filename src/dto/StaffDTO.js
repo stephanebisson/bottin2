@@ -12,7 +12,6 @@ export class StaffDTO {
     this.email = this.sanitizeEmail(data.email)
     this.phone = this.sanitizePhone(data.phone)
     this.ce_role = this.sanitizeString(data.ce_role)
-    this.ce_hierarchy = this.sanitizeString(data.ce_hierarchy)
     this.group = this.sanitizeString(data.group)
     this.subgroup = this.sanitizeString(data.subgroup)
     this.order = this.sanitizeOrder(data.order)
@@ -135,7 +134,7 @@ export class StaffDTO {
    * Check if staff member has CE (Conseil d'établissement) role
    */
   get hasCERole () {
-    return this.ce_role.length > 0 || this.ce_hierarchy.length > 0
+    return this.ce_role.length > 0
   }
 
   /**
@@ -144,7 +143,6 @@ export class StaffDTO {
   get ceInfo () {
     return {
       role: this.ce_role,
-      hierarchy: this.ce_hierarchy,
       hasRole: this.hasCERole,
     }
   }
@@ -160,7 +158,6 @@ export class StaffDTO {
       email: this.email,
       phone: this.phone,
       ce_role: this.ce_role,
-      ce_hierarchy: this.ce_hierarchy,
       group: this.group,
       subgroup: this.subgroup,
       order: this.order,
@@ -204,7 +201,6 @@ export class StaffDTO {
       phone: this.phone,
       displayPhone: this.displayPhone,
       ce_role: this.ce_role,
-      ce_hierarchy: this.ce_hierarchy,
       group: this.group,
       subgroup: this.subgroup,
       order: this.order,
@@ -255,7 +251,6 @@ export class StaffDTO {
    * @param {Object} roleUpdates - Role updates object
    * @param {string} [roleUpdates.title] - New title
    * @param {string} [roleUpdates.ce_role] - New CE role
-   * @param {string} [roleUpdates.ce_hierarchy] - New CE hierarchy
    * @returns {StaffDTO} New StaffDTO with updated role info
    */
   updateRoleInfo (roleUpdates) {
@@ -266,9 +261,6 @@ export class StaffDTO {
     }
     if (roleUpdates.ce_role !== undefined) {
       updates.ce_role = this.sanitizeString(roleUpdates.ce_role)
-    }
-    if (roleUpdates.ce_hierarchy !== undefined) {
-      updates.ce_hierarchy = this.sanitizeString(roleUpdates.ce_hierarchy)
     }
 
     return this.withUpdates(updates)

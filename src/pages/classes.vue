@@ -109,10 +109,6 @@
                           <div v-if="getTeacherInfo(classItem.teacher).ce_role" class="mb-1">
                             <strong>{{ $t('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
                           </div>
-
-                          <div v-if="getTeacherInfo(classItem.teacher).ce_hierarchy" class="mb-1">
-                            <strong>{{ $t('classes.ceHierarchy') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_hierarchy }}
-                          </div>
                         </div>
 
                         <div v-else class="text-caption">
