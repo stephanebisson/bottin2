@@ -104,8 +104,8 @@
   const SUBGROUP_CONFIG = {
     'EF/admin': { isFixed: true },
     'EF/teacher': { isFixed: true },
-    'EF/specialist': { isFixed: true },
-    'SDG/resp': { isFixed: true },
+    'EF/specialist': { isFixed: false },
+    'SDG/resp': { isFixed: false },
     'SDG/edu': { isFixed: false },
   }
 
