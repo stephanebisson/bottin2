@@ -14,7 +14,7 @@
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { autoSetupAdmin } from './autoSetupAdmin.js' // eslint-disable-line no-unused-vars
+import { autoSetupAdmin } from './autoSetupAdmin.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -118,7 +118,7 @@ async function startDevelopment () {
 
     // 4. Auto-setup admin
     console.log('3️⃣  Setting up admin account...')
-    // await autoSetupAdmin()
+    await autoSetupAdmin()
 
     // Wait a bit more
     await new Promise(resolve => setTimeout(resolve, ADMIN_SETUP_DELAY))
