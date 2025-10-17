@@ -72,7 +72,6 @@ export class StaffDTO {
    */
   isValid () {
     return this.first_name.length > 0
-      && this.last_name.length > 0
       && this.id && this.id.length > 0
   }
 
@@ -83,9 +82,6 @@ export class StaffDTO {
     const errors = []
     if (!this.first_name) {
       errors.push('First name is required')
-    }
-    if (!this.last_name) {
-      errors.push('Last name is required')
     }
     if (!this.id) {
       errors.push('ID is required')
@@ -269,15 +265,15 @@ export class StaffDTO {
   /**
    * Update staff name information
    * @param {string} firstName - New first name
-   * @param {string} lastName - New last name
+   * @param {string} [lastName] - New last name (optional)
    * @returns {StaffDTO} New StaffDTO with updated name
    */
   updateName (firstName, lastName) {
     const first_name = this.sanitizeString(firstName)
     const last_name = this.sanitizeString(lastName)
 
-    if (!first_name || !last_name) {
-      throw new Error('Both first and last names are required')
+    if (!first_name) {
+      throw new Error('First name is required')
     }
 
     return this.withUpdates({

@@ -92,14 +92,8 @@
 
                 <v-card-text class="flex-grow-1 pt-0">
                   <!-- Title -->
-                  <div v-if="member.title" class="mb-2">
-                    <v-chip
-                      color="primary"
-                      size="small"
-                      variant="outlined"
-                    >
-                      <HighlightedText :query="searchQuery" :text="member.title" />
-                    </v-chip>
+                  <div v-if="member.title" class="staff-title mb-2">
+                    <HighlightedText :query="searchQuery" :text="member.title" />
                   </div>
 
                   <!-- Contact Information -->
@@ -328,5 +322,13 @@ a:hover {
 
 .gap-1 {
   gap: 0.25rem;
+}
+
+.staff-title {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: rgb(var(--v-theme-on-surface));
+  opacity: 0.7;
+  line-height: 1.4;
 }
 </style>
