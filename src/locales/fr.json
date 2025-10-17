@@ -535,6 +535,10 @@
       "aboutDescription": "Le lien de mise à jour du personnel permet aux membres du personnel de consulter et de mettre à jour leurs informations sans se connecter. Partagez ce lien avec tous les membres du personnel qui doivent mettre à jour leurs informations.",
       "securityNote": "Sécurité :",
       "securityNoteDescription": "Ce lien utilise un jeton sécurisé qui est stocké dans la base de données. Seuls les administrateurs peuvent générer et accéder à ce lien."
+    },
+    "directoryPrint": {
+      "title": "Bottin imprimable",
+      "description": "Version imprimable du bottin scolaire pour impression professionnelle"
     }
   },
   "updateForm": {

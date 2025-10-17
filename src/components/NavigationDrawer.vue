@@ -214,6 +214,11 @@
             icon: 'mdi-account-tie-outline',
             to: '/admin/staff-update',
           },
+          {
+            title: t('admin.directoryPrint.title'),
+            icon: 'mdi-printer',
+            to: '/admin/directory-print',
+          },
         ],
       })
     }
