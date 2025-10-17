@@ -1,8 +1,3 @@
-<route lang="yaml">
-meta:
-  layout: print
-</route>
-
 <template>
   <div v-if="!isAuthorized" class="access-denied">
     <div class="access-denied-content">

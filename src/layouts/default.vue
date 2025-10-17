@@ -1,14 +1,14 @@
 <template>
   <v-app>
-    <AppBar @toggle-drawer="drawer = !drawer" />
+    <AppBar v-if="!isPrintPage" @toggle-drawer="drawer = !drawer" />
 
-    <NavigationDrawer v-model="drawer" />
+    <NavigationDrawer v-if="!isPrintPage" v-model="drawer" />
 
     <v-main>
       <router-view />
     </v-main>
 
-    <AppFooter />
+    <AppFooter v-if="!isPrintPage" />
   </v-app>
 </template>
 
@@ -17,10 +17,16 @@
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import AppBar from '@/components/AppBar.vue'
+  import AppFooter from '@/components/AppFooter.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
 
   const { mobile } = useDisplay()
   const route = useRoute()
+
+  // Check if current route is a print page
+  const isPrintPage = computed(() => {
+    return route.path === '/admin/directory-print'
+  })
 
   // Check if current route is an update page that should have drawer collapsed
   const isUpdatePage = computed(() => {
