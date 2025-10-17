@@ -44,7 +44,7 @@ if (ENV === 'production') {
   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080'
 
   app = initializeApp({
-    projectId: 'demo-test',
+    projectId: 'bottin2-3b41d',
   })
 
   console.log('🧪 Connected to local emulator')
