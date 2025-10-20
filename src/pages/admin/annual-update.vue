@@ -724,6 +724,7 @@
     { title: 'All', value: null },
     { title: 'Pending', value: 'pending' },
     { title: 'Submitted', value: 'submitted' },
+    { title: 'Confirmed by Partner', value: 'confirmed_by_partner' },
     { title: 'Opted Out', value: 'opted_out' },
   ]
 
@@ -814,6 +815,16 @@
 
       const parentClasses = parentClassesLookup.value.get(participant.email) || []
 
+      // Determine form status based on priority
+      let formStatus = 'pending'
+      if (participant.formSubmitted) {
+        formStatus = 'submitted'
+      } else if (participant.confirmedByPartner) {
+        formStatus = 'confirmed_by_partner'
+      } else if (participant.optedOut) {
+        formStatus = 'opted_out'
+      }
+
       return {
         id: parentInfo.id || participant.email, // Use email as fallback ID
         email: participant.email,
@@ -827,10 +838,9 @@
         submittedAt: participant.submittedAt,
         token: participant.token, // Add token for update links
         optedOut: participant.optedOut || false,
+        confirmedByPartner: participant.confirmedByPartner || false,
         emailStatus: participant.emailSent ? 'sent' : 'not_sent',
-        formStatus: participant.formSubmitted
-          ? 'submitted'
-          : (participant.optedOut ? 'opted_out' : 'pending'),
+        formStatus,
         lastUpdated: participant.submittedAt || participant.emailSentAt,
       }
     })
@@ -867,11 +877,15 @@
     if (formStatusFilter.value) {
       switch (formStatusFilter.value) {
         case 'pending': {
-          filtered = filtered.filter(parent => !parent.formSubmitted && !parent.optedOut)
+          filtered = filtered.filter(parent => !parent.formSubmitted && !parent.confirmedByPartner && !parent.optedOut)
           break
         }
         case 'submitted': {
           filtered = filtered.filter(parent => parent.formSubmitted)
+          break
+        }
+        case 'confirmed_by_partner': {
+          filtered = filtered.filter(parent => parent.confirmedByPartner && !parent.formSubmitted)
           break
         }
         case 'opted_out': {
@@ -930,6 +944,8 @@
     switch (status) {
       case 'submitted': { return 'success'
       }
+      case 'confirmed_by_partner': { return 'info'
+      }
       case 'opted_out': { return 'warning'
       }
       case 'pending': { return 'grey'
@@ -943,6 +959,8 @@
     switch (status) {
       case 'submitted': { return 'mdi-check-circle'
       }
+      case 'confirmed_by_partner': { return 'mdi-account-check'
+      }
       case 'opted_out': { return 'mdi-cancel'
       }
       case 'pending': { return 'mdi-clock-outline'
@@ -955,6 +973,8 @@
   const getFormStatusText = status => {
     switch (status) {
       case 'submitted': { return t('admin.formSubmitted')
+      }
+      case 'confirmed_by_partner': { return 'Confirmed by Partner'
       }
       case 'opted_out': { return t('admin.optedOut')
       }
