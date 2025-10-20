@@ -15,11 +15,18 @@
   <div v-else class="print-directory">
     <!-- Title Page -->
     <section class="title-page page-break">
-      <div class="placeholder-section">
-        <h1>PAGE TITRE</h1>
-        <p class="placeholder-text">
-          [À REMPLIR : Logo de l'école, nom de l'école, année scolaire, date]
-        </p>
+      <div class="title-box">
+        <div class="title-content">
+          <h1 class="main-title">
+            <div class="title-word">Le</div>
+            <div class="title-word">Gros</div>
+            <div class="title-word">Bottin</div>
+          </h1>
+          <h2 class="subtitle">2025 2026</h2>
+        </div>
+        <div class="title-logo">
+          <img alt="École Francojeunesse Logo" src="@/assets/EF_logo.jpg">
+        </div>
       </div>
     </section>
 
@@ -621,7 +628,7 @@
   margin: 0 auto;
   background: white;
   color: black;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   line-height: 1.4;
 }
@@ -686,12 +693,75 @@
   align-items: center;
   justify-content: center;
   min-height: 10in;
+  padding: 8%;
 }
 
-.title-page h1 {
-  font-size: 36pt;
+.title-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  min-height: 8in;
+  border: 4px dotted #222;
+  padding: 3rem;
+  background: #fafafa;
+}
+
+.title-content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.main-title {
+  font-family: Didot, 'Bodoni MT', 'Bodoni 72', Georgia, serif;
+  font-size: 96pt;
+  font-weight: bold;
   text-align: center;
-  margin-bottom: 2rem;
+  line-height: 1.0;
+  margin: 0;
+  text-transform: uppercase;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.title-word {
+  display: block;
+}
+
+.subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 42pt;
+  font-weight: 300;
+  text-align: center;
+  margin: 2rem 0 0 0;
+  letter-spacing: 0.15em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.title-logo {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 3rem 0 0 0;
+}
+
+.title-logo img {
+  width: 50%;
+  max-height: 3in;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
 }
 
 /* Table of Contents */
@@ -1037,6 +1107,28 @@
 
   .page-break:first-child {
     page-break-before: auto;
+  }
+
+  /* Title page print optimization */
+  .title-page {
+    padding: 0.5in;
+  }
+
+  .title-box {
+    border: 4px dotted #222;
+    background: white;
+    padding: 2.5rem;
+  }
+
+  .main-title,
+  .subtitle {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .title-logo img {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   /* Hide placeholder backgrounds in print */

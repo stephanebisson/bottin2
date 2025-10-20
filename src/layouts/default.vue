@@ -25,7 +25,7 @@
 
   // Check if current route is a print page
   const isPrintPage = computed(() => {
-    return route.path === '/admin/directory-print'
+    return route.path === '/admin/print'
   })
 
   // Check if current route is an update page that should have drawer collapsed

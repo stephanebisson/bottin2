@@ -217,7 +217,7 @@
           {
             title: t('admin.directoryPrint.title'),
             icon: 'mdi-printer',
-            to: '/admin/directory-print',
+            to: '/admin/print',
           },
         ],
       })
