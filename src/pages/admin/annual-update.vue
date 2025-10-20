@@ -817,10 +817,10 @@
 
       // Determine form status based on priority
       let formStatus = 'pending'
-      if (participant.formSubmitted) {
-        formStatus = 'submitted'
-      } else if (participant.confirmedByPartner) {
+      if (participant.confirmedByPartner) {
         formStatus = 'confirmed_by_partner'
+      } else if (participant.formSubmitted) {
+        formStatus = 'submitted'
       } else if (participant.optedOut) {
         formStatus = 'opted_out'
       }
