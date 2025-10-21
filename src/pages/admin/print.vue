@@ -14,7 +14,7 @@
 
   <div v-else class="print-directory">
     <!-- Title Page -->
-    <section class="title-page page-break">
+    <section class="title-page page-break no-footer">
       <div class="title-box">
         <div class="title-content">
           <h1 class="main-title">
@@ -25,7 +25,7 @@
           <h2 class="subtitle">2025 2026</h2>
         </div>
         <div class="title-logo">
-          <img alt="École Francojeunesse Logo" src="@/assets/EF_logo.jpg">
+          <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
         </div>
       </div>
     </section>
@@ -37,33 +37,33 @@
         <div class="toc-item">
           <span class="toc-label">Personnel</span>
           <span class="toc-dots" />
-          <span class="toc-page">___</span>
+          <span class="toc-page" data-section="staff">___</span>
         </div>
         <div class="toc-item">
           <span class="toc-label">Comités</span>
           <span class="toc-dots" />
-          <span class="toc-page">___</span>
+          <span class="toc-page" data-section="committees">___</span>
         </div>
         <div class="toc-item">
           <span class="toc-label">Classes</span>
           <span class="toc-dots" />
-          <span class="toc-page">___</span>
+          <span class="toc-page" data-section="classes">___</span>
         </div>
         <div class="toc-item">
           <span class="toc-label">Familles</span>
           <span class="toc-dots" />
-          <span class="toc-page">___</span>
+          <span class="toc-page" data-section="families">___</span>
         </div>
         <div class="toc-item">
           <span class="toc-label">Annexes</span>
           <span class="toc-dots" />
-          <span class="toc-page">___</span>
+          <span class="toc-page" data-section="appendix">___</span>
         </div>
       </div>
     </section>
 
     <!-- Staff Section -->
-    <section class="staff-section page-break">
+    <section id="section-staff" class="staff-section page-break">
       <h1 class="section-title">Personnel</h1>
 
       <div v-for="group in groupedStaff" :key="group.group" class="staff-group">
@@ -94,7 +94,7 @@
     </section>
 
     <!-- Committees Section -->
-    <section class="committees-section page-break">
+    <section id="section-committees" class="committees-section page-break">
       <h1 class="section-title">Comités</h1>
 
       <div v-for="committee in enrichedCommittees" :key="committee.id" class="committee">
@@ -133,7 +133,7 @@
     </section>
 
     <!-- Classes Section -->
-    <section class="classes-section page-break">
+    <section id="section-classes" class="classes-section page-break">
       <h1 class="section-title">Classes</h1>
 
       <div v-for="classItem in firebaseStore.classes" :key="classItem.id" class="class-item">
@@ -184,7 +184,7 @@
     </section>
 
     <!-- Families Section -->
-    <section class="families-section page-break">
+    <section id="section-families" class="families-section page-break">
       <h1 class="section-title">Familles</h1>
 
       <div v-for="(family, index) in groupedFamilies" :key="`family-${index}`" class="family">
@@ -219,7 +219,7 @@
     </section>
 
     <!-- Appendixes -->
-    <section class="appendix-section page-break">
+    <section id="section-appendix" class="appendix-section page-break">
       <h1 class="section-title">Annexe A</h1>
       <div class="placeholder-section">
         <p class="placeholder-text">
@@ -254,6 +254,19 @@
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  // ============================================================================
+  // TABLE OF CONTENTS PAGE NUMBERS
+  // ============================================================================
+  // Update these numbers after doing a print preview to see actual page numbers
+  const TOC_PAGE_NUMBERS = {
+    staff: 3, // Personnel section
+    committees: 5, // Comités section
+    classes: 6, // Classes section
+    families: 8, // Familles section
+    appendix: 15, // Annexes section
+  }
+  // ============================================================================
 
   // Store references
   const authStore = useAuthStore()
@@ -610,10 +623,26 @@
     }
   }
 
+  // Populate TOC page numbers before print
+  const populateTOCPageNumbers = () => {
+    // Update TOC entries with the page numbers defined at the top of this file
+    for (const section of Object.keys(TOC_PAGE_NUMBERS)) {
+      const tocElement = document.querySelector(`[data-section="${section}"]`)
+      if (tocElement) {
+        tocElement.textContent = TOC_PAGE_NUMBERS[section]
+      }
+    }
+  }
+
   onMounted(async () => {
     await checkAdminStatus()
     if (isAuthorized.value) {
       await loadData()
+
+      // Wait for content to render, then populate TOC once
+      setTimeout(() => {
+        populateTOCPageNumbers()
+      }, 500)
     } else {
       loading.value = false
     }
@@ -692,8 +721,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 10in;
-  padding: 8%;
+  min-height: 9in;
+  max-height: 9in;
+  padding: 0.5in;
 }
 
 .title-box {
@@ -703,14 +733,13 @@
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  min-height: 8in;
   border: 4px dotted #222;
-  padding: 3rem;
+  padding: 2rem;
   background: #fafafa;
 }
 
 .title-content {
-  flex: 3;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -720,10 +749,10 @@
 
 .main-title {
   font-family: Didot, 'Bodoni MT', 'Bodoni 72', Georgia, serif;
-  font-size: 96pt;
+  font-size: 72pt;
   font-weight: bold;
   text-align: center;
-  line-height: 1.0;
+  line-height: 0.95;
   margin: 0;
   text-transform: uppercase;
   text-rendering: optimizeLegibility;
@@ -737,10 +766,10 @@
 
 .subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 42pt;
+  font-size: 36pt;
   font-weight: 300;
   text-align: center;
-  margin: 2rem 0 0 0;
+  margin: 1.5rem 0 0 0;
   letter-spacing: 0.15em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -748,17 +777,17 @@
 }
 
 .title-logo {
-  flex: 2;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 3rem 0 0 0;
+  padding: 1.5rem 0 0 0;
 }
 
 .title-logo img {
-  width: 50%;
-  max-height: 3in;
+  width: 40%;
+  max-height: 2.5in;
   height: auto;
   object-fit: contain;
   object-position: center;
@@ -1111,22 +1140,39 @@
 
   /* Title page print optimization */
   .title-page {
-    padding: 0.5in;
+    padding: 0.4in;
+    min-height: 9in;
+    max-height: 9in;
+    page-break-after: always;
   }
 
   .title-box {
     border: 4px dotted #222;
     background: white;
-    padding: 2.5rem;
+    padding: 1.5rem;
   }
 
-  .main-title,
-  .subtitle {
+  .main-title {
+    font-size: 72pt;
+    line-height: 0.95;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 
+  .subtitle {
+    font-size: 36pt;
+    margin: 1.5rem 0 0 0;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .title-logo {
+    padding: 1rem 0 0 0;
+  }
+
   .title-logo img {
+    width: 40%;
+    max-height: 2.5in;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
@@ -1141,6 +1187,34 @@
 /* Page setup for print */
 @page {
   size: letter;
-  margin: 0.75in;
+  margin: 0.75in 0.75in 1in 0.75in; /* Extra bottom margin for footer */
+
+  @bottom-center {
+    content: "Étoile filante - Le Gros Bottin | Page " counter(page);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 9pt;
+    color: #666;
+  }
+}
+
+/* Hide footer on first page (title page) */
+@page :first {
+  @bottom-center {
+    content: none;
+  }
+}
+</style>
+
+<style>
+/* Global styles (unscoped) to hide Firebase emulator banner in print */
+@media print {
+  /* Hide Firebase emulator warning banner */
+  .firebase-emulator-warning,
+  [class*="firebase-emulator"],
+  [class*="emulator-warning"],
+  iframe[src*="/__/"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
 </style>
