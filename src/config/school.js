@@ -19,7 +19,7 @@ export const SCHOOL_LOCATION = {
 }
 
 // Default map view settings
-export const MAP_DEFAULT_ZOOM = 13 // Medium zoom level (1-20 scale)
+export const MAP_DEFAULT_ZOOM = 16 // Medium zoom level (1-20 scale)
 export const MAP_MIN_ZOOM = 10
 export const MAP_MAX_ZOOM = 18
 

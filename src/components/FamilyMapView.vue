@@ -81,18 +81,26 @@
 
   // Custom icon for school
   const schoolIcon = L.divIcon({
-    html: '<div style="background-color: #1976d2; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+    html: `<div style="position: relative;">
+      <div style="background-color: white; width: 36px; height: 36px; border-radius: 50%; border: 3px solid #1976d2; box-shadow: 0 3px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+        <span class="mdi mdi-school" style="font-size: 20px; color: #1976d2;"></span>
+      </div>
+    </div>`,
     className: 'school-marker',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
   })
 
   // Custom icon for families
   const familyIcon = L.divIcon({
-    html: '<div style="background-color: #4CAF50; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>',
+    html: `<div style="position: relative;">
+      <div style="background-color: white; width: 28px; height: 28px; border-radius: 50%; border: 2px solid #4CAF50; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+        <span class="mdi mdi-home" style="font-size: 16px; color: #4CAF50;"></span>
+      </div>
+    </div>`,
     className: 'family-marker',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
   })
 
   const initializeMap = () => {
@@ -128,6 +136,8 @@
       disableClusteringAtZoom: CLUSTER_SETTINGS.disableClusteringAtZoom,
       showCoverageOnHover: CLUSTER_SETTINGS.showCoverageOnHover,
       animate: CLUSTER_SETTINGS.animate,
+      spiderfyOnMaxZoom: true,
+      removeOutsideVisibleBounds: false,
       iconCreateFunction: cluster => {
         const count = cluster.getChildCount()
         let size = 'small'
@@ -160,6 +170,13 @@
 
     map.value.addLayer(markerClusterGroup.value)
 
+    // Listen to zoom/move events to refresh cluster positions
+    map.value.on('zoomend moveend', () => {
+      if (markerClusterGroup.value) {
+        markerClusterGroup.value.refreshClusters()
+      }
+    })
+
     // Add family markers
     updateMarkers()
   }
@@ -176,13 +193,17 @@
     // Clear existing markers
     markerClusterGroup.value.clearLayers()
 
-    // Count families
-    totalFamiliesCount.value = props.families.length
+    // Only count families with complete addresses (address + postal code)
+    const familiesWithCompleteAddress = props.families.filter(f =>
+      f.address && f.postal_code,
+    )
+    totalFamiliesCount.value = familiesWithCompleteAddress.length
 
     // Group families by coordinates (same address)
     const locationGroups = new Map()
 
-    for (const family of props.families) {
+    for (const family of familiesWithCompleteAddress) {
+      // Only add to map if they have coordinates
       if (family.latitude && family.longitude) {
         // Create a key from coordinates (rounded to avoid floating point issues)
         const key = `${family.latitude.toFixed(6)},${family.longitude.toFixed(6)}`
@@ -202,7 +223,7 @@
       }
     }
 
-    geocodedFamiliesCount.value = props.families.filter(f => f.latitude && f.longitude).length
+    geocodedFamiliesCount.value = familiesWithCompleteAddress.filter(f => f.latitude && f.longitude).length
 
     // Create markers for each location
     for (const location of locationGroups.values()) {
@@ -259,8 +280,15 @@
         { icon: familyIcon },
       )
 
+      // Bind popup with autoPan option to ensure proper positioning
+      marker.bindPopup(popupContent, {
+        autoPan: true,
+        autoPanPadding: [50, 50],
+        closeButton: true,
+        maxWidth: 300,
+      })
+
       markerClusterGroup.value.addLayer(marker)
-      marker.bindPopup(popupContent)
     }
   }
 

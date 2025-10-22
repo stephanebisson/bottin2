@@ -38,9 +38,9 @@ const waitForRateLimit = async () => {
  * @returns {Promise<{latitude: number, longitude: number}|null>} Coordinates or null if not found
  */
 export const geocodeAddress = async (address, city, postalCode, country = 'Canada') => {
-  // Validate inputs
-  if (!address && !city && !postalCode) {
-    console.warn('Geocoding: No address components provided')
+  // Validate inputs - require at least address and postal code for accurate geocoding
+  if (!address || !postalCode) {
+    console.warn('Geocoding: Incomplete address - need at least street address and postal code')
     return null
   }
 

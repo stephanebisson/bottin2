@@ -647,8 +647,9 @@
     "noGeocodedFamilies": "Aucune famille n'a encore été géocodée. Les adresses doivent être converties en coordonnées cartographiques.",
     "familiesOnMap": "familles sur la carte",
     "aboutTitle": "À propos de la carte",
-    "aboutDescription": "Cette carte montre les emplacements des familles de la communauté scolaire. Les emplacements des familles sont déterminés à partir de leurs adresses.",
-    "familiesNeedGeocoding": "{count} familles ont encore besoin que leurs adresses soient géocodées pour apparaître sur la carte."
+    "aboutDescription": "Cette carte montre les emplacements des familles de la communauté scolaire. Seules les familles avec une adresse complète (adresse civique et code postal) peuvent être affichées sur la carte.",
+    "familiesNeedGeocoding": "{count} familles avec une adresse complète ont encore besoin d'être géocodées pour apparaître sur la carte.",
+    "familiesIncompleteAddress": "{count} familles ont une adresse incomplète (adresse civique ou code postal manquant) et ne peuvent pas être géocodées."
   },
   "footer": {
     "copyright": "&copy; 2025 Comité Bottin",

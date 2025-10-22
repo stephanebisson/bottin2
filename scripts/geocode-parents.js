@@ -53,6 +53,46 @@ async function waitForRateLimit () {
 }
 
 /**
+ * Normalize address by removing apartment/unit numbers and street type words
+ */
+function normalizeAddress (address) {
+  if (!address) {
+    return address
+  }
+
+  // Remove apartment/unit number patterns (case insensitive)
+  // Patterns to remove:
+  // - "app. 123", "app 123", "apt. 123", "apt 123"
+  // - "appt. 123", "appt 123", "appartement 123"
+  // - "unit 123", "unite 123", "unité 123"
+  // - "#123", "# 123"
+  // - "-123" at the end (dash followed by numbers)
+  // - Street type words: rue, ave, avenue, boul, boulevard, street
+  let normalized = address
+
+  // Remove apartment/unit prefixes with numbers
+  normalized = normalized.replace(/\b(app\.?|apt\.?|appt\.?|appartement|unit|unite|unité)\s*\.?\s*\d+\b/gi, '')
+
+  // Remove hash patterns
+  normalized = normalized.replace(/#\s*\d+\b/g, '')
+
+  // Remove trailing dash with numbers (e.g., "123 Main St-456" -> "123 Main St")
+  normalized = normalized.replace(/-\d+\s*$/g, '')
+
+  // Remove leading dash with numbers (e.g., "456-123 Main St" -> "123 Main St")
+  normalized = normalized.replace(/^\d+-/g, '')
+
+  // Remove street type words
+  normalized = normalized.replace(/\b(rue|av\.?|ave\.?|avenue|boul\.?|boulevard|street|st\.?)\b/gi, '')
+
+  // Clean up extra spaces and commas
+  normalized = normalized.replace(/\s+/g, ' ').trim()
+  normalized = normalized.replace(/,\s*,/g, ',').replace(/^,|,$/g, '')
+
+  return normalized
+}
+
+/**
  * Geocode an address using Nominatim API
  */
 async function geocodeAddress (address, city, postalCode, country = 'Canada') {
@@ -61,10 +101,17 @@ async function geocodeAddress (address, city, postalCode, country = 'Canada') {
     return null
   }
 
+  // Normalize address to remove apartment numbers
+  const normalizedAddress = normalizeAddress(address)
+
+  if (normalizedAddress !== address) {
+    console.log(`     🔧 Normalized address: "${address}" → "${normalizedAddress}"`)
+  }
+
   // Build search query
   const parts = []
-  if (address) {
-    parts.push(address)
+  if (normalizedAddress) {
+    parts.push(normalizedAddress)
   }
   if (city) {
     parts.push(city)
@@ -86,34 +133,52 @@ async function geocodeAddress (address, city, postalCode, country = 'Canada') {
     const params = new URLSearchParams({
       q: searchQuery,
       format: 'json',
-      limit: '1',
+      limit: '3', // Get top 3 results for debugging
       addressdetails: '1',
       countrycodes: 'ca', // Restrict to Canada for better results
     })
 
-    const response = await fetch(`${NOMINATIM_API_URL}?${params}`, {
+    const url = `${NOMINATIM_API_URL}?${params}`
+    console.log(`     🔗 API URL: ${url}`)
+
+    const response = await fetch(url, {
       headers: {
         'User-Agent': 'B2-School-Directory/1.0', // Required by Nominatim
       },
     })
 
     if (!response.ok) {
+      console.error(`     ❌ HTTP Error: ${response.status} ${response.statusText}`)
       throw new Error(`Nominatim API error: ${response.status}`)
     }
 
     const results = await response.json()
 
+    console.log(`     📊 Found ${results.length} result(s)`)
+
     if (!results || results.length === 0) {
+      console.log(`     ℹ️  No results found for query: "${searchQuery}"`)
       return null
     }
 
+    // Show all results for debugging
+    for (let i = 0; i < Math.min(results.length, 3); i++) {
+      const r = results[i]
+      console.log(`     ${i + 1}. ${r.display_name}`)
+      console.log(`        Type: ${r.type}, Class: ${r.class}`)
+      console.log(`        Lat/Lng: ${r.lat}, ${r.lon}`)
+      console.log(`        Importance: ${r.importance}`)
+    }
+
     const result = results[0]
+    console.log(`     ✓ Using first result: ${result.display_name}`)
+
     return {
       latitude: Number.parseFloat(result.lat),
       longitude: Number.parseFloat(result.lon),
     }
   } catch (error) {
-    console.error(`  ❌ Geocoding error: ${error.message}`)
+    console.error(`     ❌ Geocoding error: ${error.message}`)
     return null
   }
 }
@@ -192,58 +257,86 @@ async function main () {
     let geocoded = 0
     let failed = 0
 
-    // Process each parent
+    // Group parents by address to avoid duplicate geocoding
+    console.log('📋 Grouping parents by address...\n')
+    const addressGroups = new Map()
+
     for (const doc of snapshot.docs) {
       const parent = doc.data()
 
-      processed++
-
       // Skip if already has coordinates and not forcing
       if (!isForce && parent.latitude && parent.longitude) {
-        console.log(`[${processed}/${snapshot.size}] ⏭️  Skipping ${parent.first_name} ${parent.last_name} (already geocoded)`)
         skipped++
         continue
       }
 
-      // Skip if no address
-      if (!parent.address && !parent.city && !parent.postal_code) {
-        console.log(`[${processed}/${snapshot.size}] ⏭️  Skipping ${parent.first_name} ${parent.last_name} (no address)`)
+      // Skip if no complete address
+      if (!parent.address || !parent.postal_code) {
         skipped++
         continue
       }
 
-      console.log(`[${processed}/${snapshot.size}] 🔍 Geocoding ${parent.first_name} ${parent.last_name}...`)
-      console.log(`     Address: ${parent.address || 'N/A'}, ${parent.city || 'N/A'}, ${parent.postal_code || 'N/A'}`)
+      // Create a key for this address (normalize for matching)
+      const addressKey = `${parent.address}|${parent.city || ''}|${parent.postal_code}`.toLowerCase().trim()
 
-      // Geocode
+      if (!addressGroups.has(addressKey)) {
+        addressGroups.set(addressKey, {
+          address: parent.address,
+          city: parent.city,
+          postal_code: parent.postal_code,
+          parents: [],
+        })
+      }
+
+      addressGroups.get(addressKey).parents.push({
+        doc,
+        name: `${parent.first_name} ${parent.last_name}`,
+      })
+    }
+
+    console.log(`📍 Found ${addressGroups.size} unique addresses to geocode`)
+    console.log(`⏭️  Skipped ${skipped} parents (already geocoded or incomplete address)\n`)
+
+    // Process each unique address
+    let addressIndex = 0
+    for (const group of addressGroups.values()) {
+      addressIndex++
+      processed += group.parents.length
+
+      console.log(`\n[${addressIndex}/${addressGroups.size}] 🔍 Geocoding address: ${group.address}, ${group.city || 'N/A'}, ${group.postal_code}`)
+      console.log(`     👥 ${group.parents.length} parent(s) at this address: ${group.parents.map(p => p.name).join(', ')}`)
+
+      // Geocode the address once
       const coordinates = await geocodeAddress(
-        parent.address,
-        parent.city,
-        parent.postal_code,
+        group.address,
+        group.city,
+        group.postal_code,
         'Canada',
       )
 
       if (!coordinates) {
         console.log(`     ❌ Failed to geocode`)
-        failed++
+        failed += group.parents.length
         continue
       }
 
       console.log(`     ✅ Found coordinates: ${coordinates.latitude}, ${coordinates.longitude}`)
 
-      // Update Firestore
+      // Update all parents at this address
       if (isDryRun) {
-        console.log(`     🔍 Dry run - no changes made`)
+        console.log(`     🔍 Dry run - would update ${group.parents.length} parent(s)`)
       } else {
-        await doc.ref.update({
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-          updatedAt: new Date(),
-        })
-        console.log(`     💾 Updated in Firestore`)
+        for (const parent of group.parents) {
+          await parent.doc.ref.update({
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            updatedAt: new Date(),
+          })
+        }
+        console.log(`     💾 Updated ${group.parents.length} parent(s) in Firestore`)
       }
 
-      geocoded++
+      geocoded += group.parents.length
     }
 
     // Summary

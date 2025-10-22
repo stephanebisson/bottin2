@@ -47,6 +47,14 @@
         <v-card-text>
           <p class="mb-2">{{ $t('map.aboutDescription') }}</p>
           <v-alert
+            v-if="familiesWithIncompleteAddress > 0"
+            class="mt-4"
+            density="compact"
+            type="warning"
+          >
+            {{ $t('map.familiesIncompleteAddress', { count: familiesWithIncompleteAddress }) }}
+          </v-alert>
+          <v-alert
             v-if="familiesWithoutGeolocation > 0"
             class="mt-4"
             density="compact"
@@ -83,10 +91,17 @@
     return t('map.dataLoaded', { parents: parentsCount })
   })
 
-  // Count families without geolocation
+  // Count families with complete addresses that need geocoding
   const familiesWithoutGeolocation = computed(() => {
     return firebaseStore.parentsDTO.filter(parent =>
-      !parent.latitude || !parent.longitude,
+      parent.address && parent.postal_code && (!parent.latitude || !parent.longitude),
+    ).length
+  })
+
+  // Count families with incomplete addresses
+  const familiesWithIncompleteAddress = computed(() => {
+    return firebaseStore.parentsDTO.filter(parent =>
+      !parent.address || !parent.postal_code,
     ).length
   })
 
