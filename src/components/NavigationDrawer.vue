@@ -177,6 +177,11 @@
         to: '/families',
       },
       {
+        title: t('map.title'),
+        icon: 'mdi-map-marker-multiple',
+        to: '/map',
+      },
+      {
         title: t('nav.staff'),
         icon: 'mdi-account-tie',
         to: '/staff',

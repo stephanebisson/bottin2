@@ -52,7 +52,17 @@
     "delete-orphans:dev": "NODE_ENV=development node scripts/delete-orphaned-parents.js",
     "delete-orphans:prod": "NODE_ENV=production node scripts/delete-orphaned-parents.js",
     "delete-orphans:dev:dry-run": "NODE_ENV=development node scripts/delete-orphaned-parents.js --dry-run",
-    "delete-orphans:prod:dry-run": "NODE_ENV=production node scripts/delete-orphaned-parents.js --dry-run"
+    "delete-orphans:prod:dry-run": "NODE_ENV=production node scripts/delete-orphaned-parents.js --dry-run",
+    "geocode:dev": "NODE_ENV=development node scripts/geocode-parents.js",
+    "geocode:prod": "NODE_ENV=production node scripts/geocode-parents.js",
+    "geocode:dev:dry-run": "NODE_ENV=development node scripts/geocode-parents.js --dry-run",
+    "geocode:prod:dry-run": "NODE_ENV=production node scripts/geocode-parents.js --dry-run",
+    "geocode:dev:force": "NODE_ENV=development node scripts/geocode-parents.js --force",
+    "geocode:prod:force": "NODE_ENV=production node scripts/geocode-parents.js --force",
+    "export:staff:dev": "NODE_ENV=development node scripts/export-staff.js",
+    "export:staff:prod": "NODE_ENV=production node scripts/export-staff.js",
+    "export:staff:dev:dry-run": "NODE_ENV=development node scripts/export-staff.js --dry-run",
+    "export:staff:prod:dry-run": "NODE_ENV=production node scripts/export-staff.js --dry-run"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
@@ -61,6 +71,8 @@
     "firebase": "^12.2.1",
     "firebase-admin": "^13.0.1",
     "googleapis": "^159.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
     "vue-i18n": "^9.9.1",

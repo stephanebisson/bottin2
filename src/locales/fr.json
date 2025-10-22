@@ -637,6 +637,19 @@
     "contactSchool": "Si vous continuez à rencontrer des problèmes, veuillez contacter le bureau de l'école pour assistance.",
     "serverError": "Erreur serveur"
   },
+  "map": {
+    "title": "Carte des familles",
+    "dataLoaded": "{parents} familles chargées",
+    "loadingData": "Chargement de la carte...",
+    "errorLoadingData": "Erreur lors du chargement de la carte",
+    "noDataFound": "Aucune donnée de carte trouvée",
+    "loading": "Chargement de la carte...",
+    "noGeocodedFamilies": "Aucune famille n'a encore été géocodée. Les adresses doivent être converties en coordonnées cartographiques.",
+    "familiesOnMap": "familles sur la carte",
+    "aboutTitle": "À propos de la carte",
+    "aboutDescription": "Cette carte montre les emplacements des familles de la communauté scolaire. Les emplacements des familles sont déterminés à partir de leurs adresses.",
+    "familiesNeedGeocoding": "{count} familles ont encore besoin que leurs adresses soient géocodées pour apparaître sur la carte."
+  },
   "footer": {
     "copyright": "&copy; 2025 Comité Bottin",
     "organizationName": "Bottin Étoile Filante",

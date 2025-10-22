@@ -625,6 +625,19 @@
     "contactSchool": "If you continue to have issues, please contact the school office for assistance.",
     "serverError": "Server error"
   },
+  "map": {
+    "title": "Family Map",
+    "dataLoaded": "{parents} families loaded",
+    "loadingData": "Loading map data...",
+    "errorLoadingData": "Error loading map data",
+    "noDataFound": "No map data found",
+    "loading": "Loading map...",
+    "noGeocodedFamilies": "No families have been geocoded yet. Addresses need to be converted to map coordinates.",
+    "familiesOnMap": "families on map",
+    "aboutTitle": "About the Map",
+    "aboutDescription": "This map shows the locations of families in the school community. Family locations are determined from their addresses.",
+    "familiesNeedGeocoding": "{count} families still need their addresses geocoded to appear on the map."
+  },
   "footer": {
     "copyright": "&copy; 2025 Comité Bottin",
     "organizationName": "Bottin Étoile Filante",
