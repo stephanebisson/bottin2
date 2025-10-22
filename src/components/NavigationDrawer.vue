@@ -176,11 +176,12 @@
         icon: 'mdi-book-account',
         to: '/families',
       },
-      {
-        title: t('map.title'),
-        icon: 'mdi-map-marker-multiple',
-        to: '/map',
-      },
+      // Temporarily hidden while testing in production
+      // {
+      //   title: t('map.title'),
+      //   icon: 'mdi-map-marker-multiple',
+      //   to: '/map',
+      // },
       {
         title: t('nav.staff'),
         icon: 'mdi-account-tie',
