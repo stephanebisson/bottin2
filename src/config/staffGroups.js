@@ -30,7 +30,7 @@ export const GROUP_DISPLAY_NAMES = {
 export const SUBGROUP_DISPLAY_NAMES = {
   admin: 'Administration et personnel de soutien',
   teacher: 'Personnel enseignant',
-  specialist: 'Spécialistes',
+  specialist: 'Professionnels',
   resp: 'Responsables',
   edu: 'Éducateurs et surveillants',
 }

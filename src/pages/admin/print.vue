@@ -14,84 +14,143 @@
 
   <div v-else class="print-directory">
     <!-- Title Page -->
-    <section class="title-page page-break no-footer">
-      <div class="title-box">
-        <div class="title-content">
-          <h1 class="main-title">
-            <div class="title-word">Le</div>
-            <div class="title-word">Gros</div>
-            <div class="title-word">Bottin</div>
-          </h1>
-          <h2 class="subtitle">2025 2026</h2>
-        </div>
-        <div class="title-logo">
-          <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
-        </div>
-      </div>
-    </section>
-
-    <!-- Table of Contents -->
-    <section class="toc page-break">
-      <h1 class="section-title">Table des matières</h1>
-      <div class="toc-items">
-        <div class="toc-item">
-          <span class="toc-label">Personnel</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="staff">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Comités</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="committees">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Classes</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="classes">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Familles</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="families">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Annexes</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="appendix">___</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Staff Section -->
-    <section id="section-staff" class="staff-section page-break">
-      <h1 class="section-title">Personnel</h1>
-
-      <div v-for="group in groupedStaff" :key="group.group" class="staff-group">
-        <!-- Group Header -->
-        <h2 class="group-title">{{ group.name }}</h2>
-
-        <!-- Subgroups -->
-        <div v-for="subgroup in group.subgroups" :key="subgroup.subgroup" class="staff-subgroup">
-          <!-- Subgroup Header -->
-          <h3 class="subgroup-title">{{ subgroup.name }}</h3>
-
-          <!-- Staff Members -->
-          <div class="staff-list">
-            <div v-for="member in subgroup.members" :key="member.id" class="staff-member">
-              <div class="staff-name">{{ member.first_name }} {{ member.last_name }}</div>
-              <div v-if="member.title" class="staff-title">{{ member.title }}</div>
-              <div class="staff-contact">
-                <span v-if="member.email" class="staff-email">{{ member.email }}</span>
-                <span v-if="member.phone" class="staff-phone">{{ formatPhone(member.phone) }}</span>
-              </div>
-              <div v-if="getClassesTaught(member.id).length > 0" class="staff-classes">
-                Classes : {{ getClassesTaught(member.id).join(', ') }}
-              </div>
-            </div>
+    <PrintPage :first-page="true" :no-footer="true">
+      <div class="title-page">
+        <div class="title-box">
+          <div class="title-content">
+            <h1 class="main-title">
+              <div class="title-word">Le</div>
+              <div class="title-word">Gros</div>
+              <div class="title-word">Bottin</div>
+            </h1>
+            <h2 class="subtitle">2025 2026</h2>
+          </div>
+          <div class="title-logo">
+            <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
           </div>
         </div>
       </div>
-    </section>
+    </PrintPage>
+
+    <!-- Table of Contents -->
+    <PrintPage>
+      <div class="toc">
+        <h1 class="section-title">Table des matières</h1>
+        <div class="toc-items">
+          <div class="toc-item">
+            <span class="toc-label">Personnel</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="staff">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Comités</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="committees">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Classes</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="classes">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Familles</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="families">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Annexes</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="appendix">___</span>
+          </div>
+        </div>
+      </div>
+    </PrintPage>
+
+    <!-- Staff Section - EF -->
+    <PrintPage id="section-staff">
+      <div class="staff-page">
+        <div v-for="group in groupedStaff.filter(g => g.group === 'EF')" :key="group.group" class="staff-group">
+          <!-- Group Header with School Phone -->
+          <div class="group-header">
+            <h1 class="group-title">{{ group.name }}</h1>
+            <span class="school-phone">{{ schoolPhone }}</span>
+          </div>
+
+          <!-- Subgroups -->
+          <div v-for="subgroup in group.subgroups" :key="subgroup.subgroup" class="staff-subgroup">
+            <!-- Subgroup Header -->
+            <h2 class="subgroup-title">{{ subgroup.name }}</h2>
+
+            <!-- Staff Members - 3 Column Table -->
+            <table class="staff-table">
+              <tbody>
+                <tr v-for="member in subgroup.members" :key="member.id">
+                  <td class="staff-title-cell">{{ member.title || '' }}</td>
+                  <td class="staff-name-cell">{{ member.first_name }} {{ member.last_name }}</td>
+                  <td class="staff-email-cell">{{ member.email || '' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </PrintPage>
+
+    <!-- Staff Section - SDG -->
+    <PrintPage>
+      <div class="staff-page">
+        <div v-for="group in groupedStaff.filter(g => g.group === 'SDG')" :key="group.group" class="staff-group">
+          <!-- Group Header with SDG Phone -->
+          <div class="group-header">
+            <h1 class="group-title">{{ group.name }}</h1>
+            <span class="school-phone">{{ sdgPhone }}</span>
+          </div>
+
+          <!-- SDG Info Header -->
+          <div class="sdg-header">
+            <div class="sdg-logo-space">
+              <img alt="SDG Logo" class="sdg-logo" src="@/assets/SDG_logo.jpg">
+            </div>
+            <div class="sdg-info">
+              <div class="sdg-name">{{ SDG_INFO.name }}</div>
+              <div class="sdg-address">{{ SDG_INFO.addressLine1 }}</div>
+              <div class="sdg-address">{{ SDG_INFO.addressLine2 }}</div>
+              <div class="sdg-url">{{ SDG_INFO.url }}</div>
+            </div>
+          </div>
+
+          <!-- Subgroups -->
+          <div v-for="subgroup in group.subgroups" :key="subgroup.subgroup" class="staff-subgroup">
+            <!-- Subgroup Header -->
+            <h2 class="subgroup-title">{{ subgroup.name }}</h2>
+
+            <!-- Responsables: 3 columns (Name/Title, Phone, Email) -->
+            <table v-if="subgroup.subgroup === 'resp'" class="staff-table-sdg">
+              <tbody>
+                <tr v-for="member in subgroup.members" :key="member.id">
+                  <td class="sdg-name-title-cell">
+                    <div class="sdg-staff-name">{{ member.first_name }} {{ member.last_name }}</div>
+                    <div v-if="member.title" class="sdg-staff-title">{{ member.title }}</div>
+                  </td>
+                  <td class="sdg-phone-cell">{{ formatPhone(member.phone) || '' }}</td>
+                  <td class="sdg-email-cell">{{ member.email || '' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Éducateurs: 2 columns (Name, Title) -->
+            <table v-else-if="subgroup.subgroup === 'edu'" class="staff-table-sdg-edu">
+              <tbody>
+                <tr v-for="member in subgroup.members" :key="member.id">
+                  <td class="sdg-edu-name-cell">{{ member.first_name }} {{ member.last_name }}</td>
+                  <td class="sdg-edu-title-cell">{{ member.title || '' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </PrintPage>
 
     <!-- Committees Section -->
     <section id="section-committees" class="committees-section page-break">
@@ -251,6 +310,8 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { SCHOOL_LOCATION } from '@/config/school'
+  import { SDG_INFO } from '@/config/sdg'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
@@ -605,6 +666,12 @@
     return phone
   }
 
+  // Get formatted school phone
+  const schoolPhone = computed(() => formatPhone(SCHOOL_LOCATION.phone))
+
+  // Get formatted SDG phone
+  const sdgPhone = computed(() => formatPhone(SDG_INFO.phone))
+
   // Load all data
   const loadData = async () => {
     try {
@@ -721,9 +788,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 9in;
-  max-height: 9in;
-  padding: 0.5in;
+  width: 100%;
+  height: 100%;
 }
 
 .title-box {
@@ -795,7 +861,9 @@
 
 /* Table of Contents */
 .toc {
-  min-height: 8in;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .toc-items {
@@ -829,73 +897,219 @@
 }
 
 /* Staff Section */
+.staff-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .staff-group {
   margin-bottom: 1.5rem;
 }
 
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid black;
+}
+
 .group-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 20pt;
   font-weight: bold;
-  margin: 1rem 0 0.5rem 0;
+  margin: 0;
+  color: #000;
+}
+
+.school-phone {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14pt;
+  font-weight: 600;
   color: #333;
 }
 
 .staff-subgroup {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .subgroup-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14pt;
   font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
+  margin: 0 0 0.5rem 0;
   color: #555;
 }
 
-.staff-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-left: 1rem;
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 0.75rem;
 }
 
-.staff-member {
-  border-left: 2px solid #ddd;
-  padding-left: 0.5rem;
-  page-break-inside: avoid;
+.staff-table tbody tr {
+  border-bottom: 1px solid #ddd;
 }
 
-.staff-name {
+.staff-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.staff-table td {
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.staff-title-cell {
+  width: 30%;
+  color: #666;
+  font-style: italic;
+}
+
+.staff-name-cell {
+  width: 30%;
+  font-weight: 600;
+}
+
+.staff-email-cell {
+  width: 40%;
+  word-break: break-word;
+}
+
+/* SDG Header Section */
+.sdg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0 1.5rem 0;
+}
+
+.sdg-logo-space {
+  flex: 0 0 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sdg-logo {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.sdg-info {
+  flex: 0 0 55%;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.sdg-name {
+  font-size: 18pt;
   font-weight: bold;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.sdg-address {
   font-size: 11pt;
+  color: #333;
+  line-height: 1.4;
+}
+
+.sdg-phone {
+  font-size: 12pt;
+  font-weight: 600;
+  color: #333;
+}
+
+.sdg-url {
+  font-size: 10pt;
+  color: #666;
+  font-style: italic;
+}
+
+/* SDG Staff Table - Different Layout */
+.staff-table-sdg {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 0.75rem;
+}
+
+.staff-table-sdg tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.staff-table-sdg tbody tr:last-child {
+  border-bottom: none;
+}
+
+.staff-table-sdg td {
+  padding: 0.4rem 0.5rem;
+  vertical-align: top;
+}
+
+.sdg-name-title-cell {
+  width: 40%;
+}
+
+.sdg-staff-name {
+  font-weight: 600;
+  font-size: 10pt;
   margin-bottom: 0.1rem;
 }
 
-.staff-title {
+.sdg-staff-title {
   font-size: 9pt;
   color: #666;
   font-style: italic;
-  margin-bottom: 0.2rem;
 }
 
-.staff-contact {
+.sdg-phone-cell {
+  width: 30%;
+}
+
+.sdg-email-cell {
+  width: 30%;
+  word-break: break-word;
+}
+
+/* SDG Éducateurs Table - 2 Column Layout */
+.staff-table-sdg-edu {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 9pt;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.75rem;
 }
 
-.staff-email {
-  display: block;
+.staff-table-sdg-edu tbody tr {
+  border-bottom: 1px solid #ddd;
 }
 
-.staff-phone {
-  display: block;
+.staff-table-sdg-edu tbody tr:last-child {
+  border-bottom: none;
 }
 
-.staff-classes {
-  font-size: 8pt;
-  color: #888;
-  margin-top: 0.2rem;
+.staff-table-sdg-edu td {
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.sdg-edu-name-cell {
+  width: 50%;
+  font-weight: 600;
+}
+
+.sdg-edu-title-cell {
+  width: 50%;
+  color: #666;
+  font-style: italic;
 }
 
 /* Committees Section */
@@ -1140,10 +1354,8 @@
 
   /* Title page print optimization */
   .title-page {
-    padding: 0.4in;
-    min-height: 9in;
-    max-height: 9in;
-    page-break-after: always;
+    width: 100%;
+    height: 100%;
   }
 
   .title-box {

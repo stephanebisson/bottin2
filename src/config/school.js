@@ -12,6 +12,7 @@ export const SCHOOL_LOCATION = {
   postal_code: 'H4A 1R5', // TODO: Update with actual postal code
   province: 'QC',
   country: 'Canada',
+  phone: '5145965682',
 
   // Coordinates for map center
   latitude: 45.472_694_449_225_56,
