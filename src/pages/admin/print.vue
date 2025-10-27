@@ -153,40 +153,142 @@
     </PrintPage>
 
     <!-- Committees Section -->
-    <section id="section-committees" class="committees-section page-break">
-      <h1 class="section-title">Comités</h1>
+    <!-- Conseil d'établissement - Full Page -->
+    <PrintPage v-if="conseilEtablissement" id="section-committees">
+      <div class="committee-full-page">
+        <!-- Committee Header -->
+        <div class="committee-header">
+          <h1 class="committee-title">{{ conseilEtablissement.name }}</h1>
+          <span v-if="conseilEtablissement.email" class="committee-email">{{ conseilEtablissement.email }}</span>
+        </div>
 
-      <div v-for="committee in enrichedCommittees" :key="committee.id" class="committee">
-        <!-- Committee Name -->
-        <h2 class="committee-name">{{ committee.name }}</h2>
+        <!-- Parent Members Section -->
+        <div v-if="conseilEtablissement.parentMembers.length > 0" class="committee-section">
+          <h2 class="section-subtitle">Parents</h2>
+          <table class="committee-table">
+            <tbody>
+              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.parentMembers)" :key="roleGroup.role">
+                <!-- Role header row -->
+                <tr class="role-header-row">
+                  <td colspan="3" class="role-header-cell">
+                    {{ roleGroup.role || 'Membre' }}
+                  </td>
+                </tr>
+                <!-- Member rows -->
+                <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                  <td class="member-name-cell">
+                    {{ member.fullName }}
+                  </td>
+                  <td class="phone-cell">
+                    {{ formatPhone(member.phone) || '' }}
+                  </td>
+                  <td class="email-cell">
+                    {{ member.email || '' }}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Staff Members Section -->
+        <div v-if="conseilEtablissement.staffMembers.length > 0" class="committee-section">
+          <h2 class="section-subtitle">Personnel</h2>
+          <table class="committee-table">
+            <tbody>
+              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.staffMembers)" :key="roleGroup.role">
+                <!-- Role header row -->
+                <tr class="role-header-row">
+                  <td colspan="3" class="role-header-cell">
+                    {{ roleGroup.role || 'Membre' }}
+                  </td>
+                </tr>
+                <!-- Member rows -->
+                <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                  <td class="member-name-cell">
+                    {{ member.fullName }}
+                  </td>
+                  <td class="phone-cell">
+                    {{ formatPhone(member.phone) || '' }}
+                  </td>
+                  <td class="email-cell">
+                    {{ member.email || '' }}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </PrintPage>
+
+    <!-- Other Committees -->
+    <section v-if="otherCommittees.length > 0" class="committees-section page-break">
+      <h1 class="section-title">Autres comités</h1>
+
+      <div v-for="committee in otherCommittees" :key="committee.id" class="committee">
+        <!-- Committee Name and Email -->
+        <div class="committee-header-inline">
+          <h2 class="committee-name">{{ committee.name }}</h2>
+          <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+        </div>
 
         <!-- Parent Members -->
-        <div v-if="committee.parentMembers.length > 0" class="committee-members">
-          <div v-for="member in committee.parentMembers" :key="member.email" class="committee-member">
-            <div class="member-name">
-              {{ member.fullName }}
-              <span v-if="member.role" class="member-role">({{ member.role }})</span>
-            </div>
-            <div class="member-contact">
-              <span v-if="member.email" class="member-email">{{ member.email }}</span>
-              <span v-if="member.phone" class="member-phone">{{ formatPhone(member.phone) }}</span>
-            </div>
-          </div>
+        <div v-if="committee.parentMembers.length > 0" class="committee-section-compact">
+          <h3 class="section-subtitle-compact">Parents</h3>
+          <table class="committee-table-compact">
+            <tbody>
+              <template v-for="roleGroup in groupMembersByRole(committee.parentMembers)" :key="roleGroup.role">
+                <!-- Role header row -->
+                <tr class="role-header-row">
+                  <td colspan="3" class="role-header-cell">
+                    {{ roleGroup.role || 'Membre' }}
+                  </td>
+                </tr>
+                <!-- Member rows -->
+                <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                  <td class="member-name-cell">
+                    {{ member.fullName }}
+                  </td>
+                  <td class="phone-cell">
+                    {{ formatPhone(member.phone) || '' }}
+                  </td>
+                  <td class="email-cell">
+                    {{ member.email || '' }}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
         </div>
 
         <!-- Staff Members -->
-        <div v-if="committee.staffMembers.length > 0" class="committee-members">
-          <div v-if="committee.parentMembers.length > 0" class="member-section-divider">Personnel</div>
-          <div v-for="member in committee.staffMembers" :key="member.email" class="committee-member">
-            <div class="member-name">
-              {{ member.fullName }}
-              <span v-if="member.role" class="member-role">({{ member.role }})</span>
-            </div>
-            <div class="member-contact">
-              <span v-if="member.email" class="member-email">{{ member.email }}</span>
-              <span v-if="member.phone" class="member-phone">{{ formatPhone(member.phone) }}</span>
-            </div>
-          </div>
+        <div v-if="committee.staffMembers.length > 0" class="committee-section-compact">
+          <h3 class="section-subtitle-compact">Personnel</h3>
+          <table class="committee-table-compact">
+            <tbody>
+              <template v-for="roleGroup in groupMembersByRole(committee.staffMembers)" :key="roleGroup.role">
+                <!-- Role header row -->
+                <tr class="role-header-row">
+                  <td colspan="3" class="role-header-cell">
+                    {{ roleGroup.role || 'Membre' }}
+                  </td>
+                </tr>
+                <!-- Member rows -->
+                <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                  <td class="member-name-cell">
+                    {{ member.fullName }}
+                  </td>
+                  <td class="phone-cell">
+                    {{ formatPhone(member.phone) || '' }}
+                  </td>
+                  <td class="email-cell">
+                    {{ member.email || '' }}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -496,6 +598,37 @@
       }
     }).sort((a, b) => a.name.localeCompare(b.name))
   })
+
+  // Conseil d'établissement (special treatment - full page)
+  const conseilEtablissement = computed(() => {
+    return enrichedCommittees.value.find(c => c.name === "Conseil d'établissement") || null
+  })
+
+  // Other committees (not Conseil d'établissement)
+  const otherCommittees = computed(() => {
+    return enrichedCommittees.value.filter(c => c.name !== "Conseil d'établissement")
+  })
+
+  // Helper: Group members by role
+  const groupMembersByRole = members => {
+    // Group members by role
+    const grouped = members.reduce((acc, member) => {
+      const role = member.role || ''
+      if (!acc[role]) {
+        acc[role] = []
+      }
+      acc[role].push(member)
+      return acc
+    }, {})
+
+    // Convert to array and sort by role name
+    return Object.keys(grouped)
+      .sort()
+      .map(role => ({
+        role,
+        members: grouped[role],
+      }))
+  }
 
   // Helper: Get classes taught by a staff member
   const getClassesTaught = staffId => {
@@ -1112,65 +1245,153 @@
   font-style: italic;
 }
 
-/* Committees Section */
+/* Committees Section - Full Page Layout */
+.committee-full-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.committee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid black;
+}
+
+.committee-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 24pt;
+  font-weight: bold;
+  margin: 0;
+}
+
+.committee-email {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12pt;
+  font-weight: 500;
+  color: #333;
+}
+
+.committee-section {
+  margin-bottom: 2rem;
+}
+
+.section-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16pt;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #555;
+}
+
+.committee-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+.committee-table tbody tr {
+  border-bottom: none;
+}
+
+.committee-table td {
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+/* Role header row */
+.role-header-row {
+  border-top: 1px solid #ddd;
+}
+
+.role-header-row:first-child {
+  border-top: none;
+}
+
+.role-header-cell {
+  font-weight: 600;
+  font-size: 10pt;
+  color: #333;
+  padding: 0.4rem 0.75rem !important;
+}
+
+/* Member rows */
+.member-row {
+  border-bottom: none;
+}
+
+.member-name-cell {
+  width: 40%;
+  font-size: 10pt;
+  line-height: 1.4;
+}
+
+.phone-cell {
+  width: 25%;
+}
+
+.email-cell {
+  width: 35%;
+  word-break: break-word;
+}
+
+/* Committees Section - Compact Layout (for other committees) */
 .committee {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   page-break-inside: avoid;
+}
+
+.committee-header-inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #999;
 }
 
 .committee-name {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14pt;
   font-weight: bold;
-  margin: 0 0 0.5rem 0;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid #999;
+  margin: 0;
 }
 
-.committee-members {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.committee-member {
-  border-left: 2px solid #ddd;
-  padding-left: 0.5rem;
-  page-break-inside: avoid;
-}
-
-.member-name {
-  font-weight: bold;
+.committee-email-inline {
   font-size: 10pt;
-  margin-bottom: 0.1rem;
-}
-
-.member-role {
-  font-weight: normal;
-  font-style: italic;
+  font-weight: 500;
   color: #666;
 }
 
-.member-contact {
-  font-size: 9pt;
+.committee-section-compact {
+  margin-bottom: 1rem;
 }
 
-.member-email {
-  display: block;
-}
-
-.member-phone {
-  display: block;
-}
-
-.member-section-divider {
-  grid-column: 1 / -1;
-  font-weight: 600;
+.section-subtitle-compact {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 11pt;
-  margin: 0.5rem 0 0.25rem 0;
-  padding-top: 0.5rem;
-  border-top: 1px solid #ddd;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #555;
+}
+
+.committee-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 0.5rem;
+}
+
+.committee-table-compact tbody tr {
+  border-bottom: none;
+}
+
+.committee-table-compact td {
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
 }
 
 /* Classes Section */
