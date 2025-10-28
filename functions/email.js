@@ -89,7 +89,7 @@ function getEmailTemplate (parentName, updateUrl, schoolYear) {
       .replace(/{{DEADLINE}}/g, deadline)
 
     return {
-      subject: `Rappel: ${schoolYear} - Mise à jour annuelle des informations`,
+      subject: `Dernière chance: ${schoolYear} - Mise à jour annuelle des informations`,
       html,
     }
   } catch (error) {
