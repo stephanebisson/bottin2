@@ -112,7 +112,7 @@ async function analyzeCommitteeRoles () {
       }
 
       // Store unique roles for this committee
-      const rolesArray = Array.from(committeeRoles).sort()
+      const rolesArray = Array.from(committeeRoles).toSorted()
 
       // If committee only has "Member" role, provide better defaults
       if (rolesArray.length === 1 && rolesArray[0] === 'Member') {
@@ -128,11 +128,11 @@ async function analyzeCommitteeRoles () {
     console.log(`   Total committees: ${committeesSnapshot.size}`)
     console.log(`   Committees with members: ${committeesWithMembers}`)
     console.log(`   Total members: ${totalMembers}`)
-    console.log(`   Unique roles across all committees: [${Array.from(allRoles).sort().join(', ')}]`)
+    console.log(`   Unique roles across all committees: [${Array.from(allRoles).toSorted().join(', ')}]`)
 
     return {
       rolesByCommittee,
-      allRoles: Array.from(allRoles).sort(),
+      allRoles: Array.from(allRoles).toSorted(),
       stats: {
         totalCommittees: committeesSnapshot.size,
         committeesWithMembers,

@@ -597,7 +597,7 @@
   const editError = ref(null)
 
   // Check admin status
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAdmin.value = false
       return
@@ -628,7 +628,7 @@
         value: parent.id,
         title: parent.fullName,
       }))
-      .sort((a, b) => a.title.localeCompare(b.title))
+      .toSorted((a, b) => a.title.localeCompare(b.title))
   })
 
   // Get all parents for parent representative selection
@@ -638,14 +638,14 @@
         value: parent.id,
         title: parent.fullName,
       }))
-      .sort((a, b) => a.title.localeCompare(b.title))
+      .toSorted((a, b) => a.title.localeCompare(b.title))
   })
 
   // Get students by level in a class
-  const getStudentsByLevelForClass = (classLetter, levelIndex) => {
+  function getStudentsByLevelForClass (classLetter, levelIndex) {
     const classStudents = getClassStudents(classLetter)
     const levels = [...new Set(classStudents.map(s => s.level).filter(level => level != null))]
-      .sort((a, b) => Number(a) - Number(b))
+      .toSorted((a, b) => Number(a) - Number(b))
 
     if (levelIndex >= levels.length) return []
 
@@ -656,11 +656,11 @@
         value: student.id,
         title: `${student.first_name} ${student.last_name}`,
       }))
-      .sort((a, b) => a.title.localeCompare(b.title))
+      .toSorted((a, b) => a.title.localeCompare(b.title))
   }
 
   // Open edit dialog
-  const openEditDialog = classItem => {
+  function openEditDialog (classItem) {
     editingClass.value = classItem
     editForm.value = {
       className: classItem.className,
@@ -674,14 +674,14 @@
   }
 
   // Close edit dialog
-  const closeEditDialog = () => {
+  function closeEditDialog () {
     editDialog.value = false
     editingClass.value = null
     editError.value = null
   }
 
   // Save class changes
-  const saveClassChanges = async () => {
+  async function saveClassChanges () {
     if (!editingClass.value) return
 
     try {
@@ -712,7 +712,7 @@
   }
 
   // Helper functions
-  const formatGradeLevel = level => {
+  function formatGradeLevel (level) {
     // Handle special cases
     if (!level || level === 'Unknown') return level
 
@@ -756,21 +756,21 @@
     }
   }
 
-  const getStudentName = studentId => {
+  function getStudentName (studentId) {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     return student ? student.fullName : studentId
   }
 
-  const getStudentLevel = studentId => {
+  function getStudentLevel (studentId) {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     return student ? student.level : null
   }
 
-  const getStudentData = studentId => {
+  function getStudentData (studentId) {
     return firebaseStore.studentsDTO.find(s => s.id === studentId) || null
   }
 
-  const getStudentParentById = (studentId, parentNumber) => {
+  function getStudentParentById (studentId, parentNumber) {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     if (!student) return null
 
@@ -782,7 +782,7 @@
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  const getStudentSiblingsById = studentId => {
+  function getStudentSiblingsById (studentId) {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
     if (!student || (!student.parent1_id && !student.parent2_id)) return []
 
@@ -795,16 +795,16 @@
     )
   }
 
-  const getParentName = parentId => {
+  function getParentName (parentId) {
     const parent = firebaseStore.parentsDTO.find(p => p.id === parentId)
     return parent ? parent.fullName : parentId
   }
 
-  const getParentData = parentId => {
+  function getParentData (parentId) {
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  const getParentChildren = parentId => {
+  function getParentChildren (parentId) {
     if (!parentId) return []
 
     // Find all students where this parent is either parent1 or parent2
@@ -813,7 +813,7 @@
     )
   }
 
-  const formatAddress = parent => {
+  function formatAddress (parent) {
     if (!parent) return ''
 
     const addressParts = []
@@ -825,7 +825,7 @@
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   }
 
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
 
     const cleaned = phone.toString().replace(/\D/g, '')
@@ -837,20 +837,20 @@
     return phone
   }
 
-  const getTeacherName = teacherId => {
+  function getTeacherName (teacherId) {
     const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
     return teacher ? teacher.fullName : teacherId
   }
 
-  const getTeacherInfo = teacherId => {
+  function getTeacherInfo (teacherId) {
     return firebaseStore.staffDTO.find(s => s.id === teacherId) || null
   }
 
-  const getClassStudents = classLetter => {
+  function getClassStudents (classLetter) {
     return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
   }
 
-  const getStudentsByLevel = classLetter => {
+  function getStudentsByLevel (classLetter) {
     const classStudents = getClassStudents(classLetter)
 
     // Group students by level, ensuring levels are treated as numbers
@@ -875,13 +875,13 @@
     return grouped
   }
 
-  const getLevelPairs = classLetter => {
+  function getLevelPairs (classLetter) {
     const levelData = getStudentsByLevel(classLetter)
 
     // Convert to array and sort by level number
     const sortedLevels = Object.keys(levelData)
       .filter(level => level !== 'Unknown')
-      .sort((a, b) => {
+      .toSorted((a, b) => {
         const numA = Number.parseInt(a)
         const numB = Number.parseInt(b)
         return numA - numB
@@ -912,7 +912,7 @@
     return pairs
   }
 
-  const getStudentParent = (student, parentNumber) => {
+  function getStudentParent (student, parentNumber) {
     const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
     const parentId = student[parentIdField]
 
@@ -921,7 +921,7 @@
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  const getStudentSiblings = student => {
+  function getStudentSiblings (student) {
     if (!student.parent1_id && !student.parent2_id) return []
 
     // Find siblings by matching parent IDs (excluding the student themselves)
@@ -933,26 +933,26 @@
     )
   }
 
-  const isStudentRepresentative = (studentId, classLetter) => {
+  function isStudentRepresentative (studentId, classLetter) {
     const classItem = firebaseStore.classes.find(c => c.classLetter === classLetter)
     if (!classItem) return false
 
     return classItem.student_rep_1 === studentId || classItem.student_rep_2 === studentId
   }
 
-  const getClassTeacher = classLetter => {
+  function getClassTeacher (classLetter) {
     const classItem = firebaseStore.classes.find(c => c.classLetter === classLetter)
     return classItem ? classItem.teacher : null
   }
 
-  const getClassLevelRange = classLetter => {
+  function getClassLevelRange (classLetter) {
     const classStudents = getClassStudents(classLetter)
 
     if (classStudents.length === 0) return 'No students'
 
     // Get all unique levels for this class
     const levels = [...new Set(classStudents.map(s => s.level).filter(level => level != null))]
-      .sort((a, b) => Number(a) - Number(b))
+      .toSorted((a, b) => Number(a) - Number(b))
 
     if (levels.length === 0) return 'No levels'
     if (levels.length === 1) return levels[0].toString()

@@ -177,9 +177,7 @@ export class StaffDTO {
       this.email,
       this.phone,
       this.ce_role,
-    ].filter(text => text && String(text).trim().length > 0)
-      .join(' ')
-      .toLowerCase()
+    ].filter(text => text && String(text).trim().length > 0).join(' ').toLowerCase()
   }
 
   /**

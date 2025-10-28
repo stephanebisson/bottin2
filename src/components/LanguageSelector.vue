@@ -64,7 +64,7 @@
     return 'mdi-translate'
   })
 
-  const setLanguage = langCode => {
+  function setLanguage (langCode) {
     locale.value = langCode
 
     // Save to localStorage

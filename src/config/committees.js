@@ -102,7 +102,7 @@ export const COMMITTEE_ROLES = {
  * @param {string} committeeName - Name of the committee
  * @returns {string[]} Array of valid role names
  */
-export const getCommitteeRoles = committeeName => {
+export function getCommitteeRoles (committeeName) {
   if (!committeeName) {
     return DEFAULT_ROLES
   }
@@ -120,7 +120,7 @@ export const getCommitteeRoles = committeeName => {
  * Get all configured committee names
  * @returns {string[]} Array of committee names that have specific role configurations
  */
-export const getConfiguredCommitteeNames = () => {
+export function getConfiguredCommitteeNames () {
   return Object.keys(COMMITTEE_ROLES).filter(name => name !== '*')
 }
 
@@ -130,7 +130,7 @@ export const getConfiguredCommitteeNames = () => {
  * @param {string} role - Role to validate
  * @returns {boolean} True if role is valid for the committee
  */
-export const isValidRole = (committeeName, role) => {
+export function isValidRole (committeeName, role) {
   const validRoles = getCommitteeRoles(committeeName)
   return validRoles.includes(role)
 }
@@ -139,10 +139,12 @@ export const isValidRole = (committeeName, role) => {
  * Get statistics about the committee configuration
  * @returns {Object} Configuration statistics
  */
-export const getConfigStats = () => ({
+export function getConfigStats () {
+  return {
   totalCommittees: 16,
   committeesWithMembers: 15,
   totalMembers: 107,
   uniqueRoles: 14,
   generatedAt: '2025-09-21T19:28:38.272Z',
-})
+}
+}

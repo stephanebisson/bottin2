@@ -8,7 +8,7 @@
  * @param {string} url - The API URL to validate
  * @param {string} name - Name of the API for error messages
  */
-const validateHttpsUrl = (url, name = 'API') => {
+function validateHttpsUrl (url, name = 'API') {
   if (import.meta.env.PROD && !url.startsWith('https://')) {
     throw new Error(`${name} must use HTTPS in production. Current URL: ${url}`)
   }
@@ -18,7 +18,7 @@ const validateHttpsUrl = (url, name = 'API') => {
  * Gets the Firebase Functions base URL with HTTPS enforcement
  * @returns {string} The validated base URL
  */
-export const getFunctionsBaseUrl = () => {
+export function getFunctionsBaseUrl () {
   const baseUrl = import.meta.env.PROD
     ? 'https://northamerica-northeast1-bottin2-3b41d.cloudfunctions.net'
     : 'http://localhost:5001/bottin2-3b41d/us-central1'
@@ -30,7 +30,7 @@ export const getFunctionsBaseUrl = () => {
 /**
  * Security headers for fetch requests
  */
-export const getSecurityHeaders = () => {
+export function getSecurityHeaders () {
   return {
     'X-Requested-With': 'XMLHttpRequest',
     'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const getSecurityHeaders = () => {
  * @param {Object} options - Fetch options
  * @returns {Promise} Fetch promise
  */
-export const secureFetch = async (url, options = {}) => {
+export async function secureFetch (url, options = {}) {
   // Validate HTTPS in production
   if (import.meta.env.PROD && !url.startsWith('https://')) {
     throw new Error(`All requests must use HTTPS in production. URL: ${url}`)
@@ -92,7 +92,7 @@ export const secureFetch = async (url, options = {}) => {
 /**
  * Content Security Policy configuration for the app
  */
-export const getCSPConfig = () => {
+export function getCSPConfig () {
   const isDev = import.meta.env.DEV
 
   return {
@@ -135,7 +135,7 @@ export const getCSPConfig = () => {
 /**
  * Validates environment configuration for security
  */
-export const validateSecurityConfig = () => {
+export function validateSecurityConfig () {
   const errors = []
 
   // Check Firebase configuration
@@ -170,7 +170,7 @@ export const validateSecurityConfig = () => {
 /**
  * Initialize security configuration
  */
-export const initSecurity = () => {
+export function initSecurity () {
   try {
     validateSecurityConfig()
 

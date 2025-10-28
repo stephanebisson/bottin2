@@ -9,7 +9,7 @@ import en from '@/locales/en.json'
 import fr from '@/locales/fr.json'
 
 // Get saved language from localStorage or default to French (Canadian school context)
-const getSavedLocale = () => {
+function getSavedLocale () {
   const saved = localStorage.getItem('bottin-locale')
   if (saved && ['en', 'fr'].includes(saved)) {
     return saved

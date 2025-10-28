@@ -407,14 +407,14 @@
   const token = computed(() => route.params.token)
 
   // Handle same address toggle
-  const handleSameAddressToggle = () => {
+  function handleSameAddressToggle () {
     // Don't clear address fields - they should remain populated for user reference
     // The actual address saving logic is handled in submitForm where empty values
     // are sent when sameAddressAsOther is true
   }
 
   // Handle committee checkbox change
-  const handleCommitteeChange = committeeId => {
+  function handleCommitteeChange (committeeId) {
     if (form.value.committees.includes(committeeId)) {
       // Committee was checked, set default role if not already set
       if (!form.value.committeeRoles[committeeId]) {
@@ -429,28 +429,28 @@
   }
 
   // Phone formatting methods
-  const formatPhoneOnBlur = () => {
+  function formatPhoneOnBlur () {
     if (form.value.phone) {
       // Format for display when user finishes editing
       form.value.phone = formatPhoneForDisplay(formatPhoneForStorage(form.value.phone))
     }
   }
 
-  const handlePhoneInput = event => {
+  function handlePhoneInput (event) {
     // Allow users to type freely, validation happens on blur/submit
     const value = event.target ? event.target.value : event
     form.value.phone = value
   }
 
   // Postal code formatting methods
-  const formatPostalCodeOnBlur = () => {
+  function formatPostalCodeOnBlur () {
     if (form.value.postal_code) {
       // Format for display when user finishes editing
       form.value.postal_code = formatPostalCodeForDisplay(formatPostalCodeForStorage(form.value.postal_code))
     }
   }
 
-  const handlePostalCodeInput = event => {
+  function handlePostalCodeInput (event) {
     // Allow users to type freely, auto-format with space
     const value = event.target ? event.target.value : event
     const alphanumeric = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
@@ -463,7 +463,7 @@
   }
 
   // Load parent data using token with friendly error handling
-  const loadParentData = async () => {
+  async function loadParentData () {
     try {
       loading.value = true
       error.value = null
@@ -599,7 +599,7 @@
   }
 
   // Handle opt-out confirmation
-  const confirmOptOut = async () => {
+  async function confirmOptOut () {
     try {
       optingOut.value = true
 
@@ -670,7 +670,7 @@
   }
 
   // Submit form
-  const submitForm = async () => {
+  async function submitForm () {
     try {
       // Validate form
       const { valid } = await formRef.value.validate()
@@ -758,13 +758,13 @@
   }
 
   // Retry loading data
-  const retryLoad = async () => {
+  async function retryLoad () {
     retryCount.value++
     await loadParentData()
   }
 
   // Get user-friendly error title
-  const getErrorTitle = () => {
+  function getErrorTitle () {
     switch (error.value) {
       case 'missing_token':
       case 'invalid_token':
@@ -790,7 +790,7 @@
   }
 
   // Get user-friendly error message
-  const getErrorMessage = () => {
+  function getErrorMessage () {
     switch (error.value) {
       case 'missing_token':
       case 'invalid_token': {
@@ -818,7 +818,7 @@
   }
 
   // Categorize errors for Firebase Analytics
-  const getErrorCategory = eventName => {
+  function getErrorCategory (eventName) {
     if (eventName.includes('token')) return 'authentication'
     if (eventName.includes('network') || eventName.includes('fetch')) return 'network'
     if (eventName.includes('submission')) return 'form_processing'
@@ -828,7 +828,7 @@
   }
 
   // Log event to Firebase Analytics for admin review
-  const logErrorToAnalytics = async (eventName, errorDetails) => {
+  async function logErrorToAnalytics (eventName, errorDetails) {
     try {
       // Enhanced error context
       const errorContext = {

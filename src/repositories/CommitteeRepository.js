@@ -9,7 +9,6 @@ import { db } from '@/firebase'
  */
 export class CommitteeRepository {
   constructor () {
-    this.collectionName = 'committees'
     this.collectionRef = collection(db, this.collectionName)
   }
 
@@ -348,4 +347,5 @@ export class CommitteeRepository {
       throw new Error(`Failed to get committee statistics: ${error.message}`)
     }
   }
+  collectionName = 'committees';
 }

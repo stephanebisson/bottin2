@@ -675,7 +675,7 @@
     // Convert Sets to sorted Arrays
     const result = new Map()
     for (const [email, classesSet] of lookup) {
-      result.set(email, Array.from(classesSet).sort())
+      result.set(email, Array.from(classesSet).toSorted())
     }
 
     return result
@@ -736,7 +736,7 @@
         classes.add(student.className)
       }
     }
-    const sortedClasses = Array.from(classes).sort()
+    const sortedClasses = Array.from(classes).toSorted()
     return [
       { title: 'All', value: null },
       ...sortedClasses.map(className => ({ title: className, value: className })),
@@ -744,7 +744,7 @@
   })
 
   // Workflow status helpers
-  const getWorkflowStatusType = status => {
+  function getWorkflowStatusType (status) {
     switch (status) {
       case 'pending': { return 'warning'
       }
@@ -757,7 +757,7 @@
     }
   }
 
-  const getWorkflowStatusColor = status => {
+  function getWorkflowStatusColor (status) {
     switch (status) {
       case 'pending': { return 'warning'
       }
@@ -770,7 +770,7 @@
     }
   }
 
-  const getWorkflowStatusIcon = status => {
+  function getWorkflowStatusIcon (status) {
     switch (status) {
       case 'pending': { return 'mdi-clock-outline'
       }
@@ -783,7 +783,7 @@
     }
   }
 
-  const getWorkflowStatusMessage = workflow => {
+  function getWorkflowStatusMessage (workflow) {
     const totalParents = workflow.stats?.totalParents || 0
     const formsSubmitted = workflow.stats?.formsSubmitted || 0
     const completionRate = totalParents > 0
@@ -798,7 +798,7 @@
     })
   }
 
-  const formatDate = timestamp => {
+  function formatDate (timestamp) {
     if (!timestamp) return ''
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
     return date.toLocaleDateString()
@@ -906,7 +906,7 @@
   })
 
   // Email status helpers
-  const getEmailStatusColor = status => {
+  function getEmailStatusColor (status) {
     switch (status) {
       case 'sent': { return 'success'
       }
@@ -917,7 +917,7 @@
     }
   }
 
-  const getEmailStatusIcon = status => {
+  function getEmailStatusIcon (status) {
     switch (status) {
       case 'sent': { return 'mdi-email-check'
       }
@@ -928,7 +928,7 @@
     }
   }
 
-  const getEmailStatusText = status => {
+  function getEmailStatusText (status) {
     switch (status) {
       case 'sent': { return t('admin.emailSent')
       }
@@ -940,7 +940,7 @@
   }
 
   // Form status helpers
-  const getFormStatusColor = status => {
+  function getFormStatusColor (status) {
     switch (status) {
       case 'submitted': { return 'success'
       }
@@ -955,7 +955,7 @@
     }
   }
 
-  const getFormStatusIcon = status => {
+  function getFormStatusIcon (status) {
     switch (status) {
       case 'submitted': { return 'mdi-check-circle'
       }
@@ -970,7 +970,7 @@
     }
   }
 
-  const getFormStatusText = status => {
+  function getFormStatusText (status) {
     switch (status) {
       case 'submitted': { return t('admin.formSubmitted')
       }
@@ -985,25 +985,25 @@
     }
   }
 
-  const formatEmailDate = timestamp => {
+  function formatEmailDate (timestamp) {
     if (!timestamp) return ''
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
   // Selected parents list helpers
-  const removeFromSelection = parent => {
+  function removeFromSelection (parent) {
     const index = selectedParentRows.value.findIndex(p => p.email === parent.email)
     if (index !== -1) {
       selectedParentRows.value.splice(index, 1)
     }
   }
 
-  const isParentBeingProcessed = parent => {
+  function isParentBeingProcessed (parent) {
     return emailProgress.value.parentStatuses.get(parent.email) === 'sending'
   }
 
-  const getParentCardColor = parent => {
+  function getParentCardColor (parent) {
     const status = emailProgress.value.parentStatuses.get(parent.email)
     if (status === 'sending') return 'primary'
     if (status === 'sent' || parent.emailSent) return 'success'
@@ -1011,7 +1011,7 @@
     return ''
   }
 
-  const getParentStatusColor = parent => {
+  function getParentStatusColor (parent) {
     const status = emailProgress.value.parentStatuses.get(parent.email)
     if (status === 'sending') return 'primary'
     if (status === 'sent' || parent.emailSent) return 'success'
@@ -1020,7 +1020,7 @@
     return getEmailStatusColor(parent.emailStatus)
   }
 
-  const getParentStatusIcon = parent => {
+  function getParentStatusIcon (parent) {
     const status = emailProgress.value.parentStatuses.get(parent.email)
     if (status === 'sending') return 'mdi-loading'
     if (status === 'sent' || parent.emailSent) return 'mdi-check-circle'
@@ -1029,7 +1029,7 @@
     return getEmailStatusIcon(parent.emailStatus)
   }
 
-  const getParentStatusText = parent => {
+  function getParentStatusText (parent) {
     const status = emailProgress.value.parentStatuses.get(parent.email)
     if (status === 'sending') return 'Sending...'
     if (status === 'sent') return 'Just sent'
@@ -1039,19 +1039,19 @@
   }
 
   // Table functions
-  const updateTableOptions = options => {
+  function updateTableOptions (options) {
     tableOptions.value = options
   }
 
-  const selectAllVisibleParents = () => {
+  function selectAllVisibleParents () {
     selectedParentRows.value = [...filteredAndSortedParents.value]
   }
 
-  const clearSelection = () => {
+  function clearSelection () {
     selectedParentRows.value = []
   }
 
-  const clearAllFilters = () => {
+  function clearAllFilters () {
     nameFilter.value = ''
     emailStatusFilter.value = null
     formStatusFilter.value = null
@@ -1059,14 +1059,14 @@
   }
 
   // Update link functions
-  const openUpdateLink = token => {
+  function openUpdateLink (token) {
     if (!token) return
     const baseUrl = window.location.origin
     const updateUrl = `${baseUrl}/update/${token}`
     window.open(updateUrl, '_blank')
   }
 
-  const copyUpdateLink = async token => {
+  async function copyUpdateLink (token) {
     if (!token) return
     const baseUrl = window.location.origin
     const updateUrl = `${baseUrl}/update/${token}`
@@ -1089,7 +1089,7 @@
   }
 
   // Email sending functions
-  const sendEmailToParent = async parent => {
+  async function sendEmailToParent (parent) {
     if (!currentWorkflow.value) return
 
     try {
@@ -1103,12 +1103,12 @@
     }
   }
 
-  const resendEmailToParent = async parent => {
+  async function resendEmailToParent (parent) {
     await sendEmailToParent(parent)
   }
 
   // Start a new annual update workflow
-  const startWorkflow = async () => {
+  async function startWorkflow () {
     try {
       loading.value = true
       error.value = null
@@ -1159,7 +1159,7 @@
   }
 
   // Load parents data
-  const loadParents = async () => {
+  async function loadParents () {
     try {
       // Load parents from the store (it handles caching and loading from Firestore)
       await firebaseStore.loadParentsDTO()
@@ -1183,7 +1183,7 @@
   }
 
   // Load students data for class information
-  const loadStudents = async () => {
+  async function loadStudents () {
     try {
       // Load students from the store (it handles caching and loading from Firestore)
       await firebaseStore.loadStudentsDTO()
@@ -1204,7 +1204,7 @@
   }
 
   // Load current workflow and history
-  const loadWorkflowData = async () => {
+  async function loadWorkflowData () {
     try {
       const baseUrl = getFunctionsBaseUrl()
 
@@ -1270,7 +1270,7 @@
   }
 
   // Send single email to a parent
-  const sendSingleEmail = async parentEmail => {
+  async function sendSingleEmail (parentEmail) {
     const baseUrl = getFunctionsBaseUrl()
 
     const response = await fetch(`${baseUrl}/sendParentEmailV2`, {
@@ -1295,7 +1295,7 @@
   }
 
   // Send emails to selected parents sequentially
-  const sendSelectedEmails = async () => {
+  async function sendSelectedEmails () {
     if (!currentWorkflow.value || selectedParentRows.value.length === 0) return
 
     try {
@@ -1398,7 +1398,7 @@
   }
 
   // Update workflow progress in Firestore
-  const updateWorkflowProgress = async (current, total, status, currentEmail = null, errorMessage = null) => {
+  async function updateWorkflowProgress (current, total, status, currentEmail = null, errorMessage = null) {
     try {
       const progressData = {
         current,
@@ -1441,19 +1441,19 @@
   }
 
   // Resume email sending after error
-  const resumeEmailSending = () => {
+  function resumeEmailSending () {
     emailProgress.value.isPaused = false
     emailProgress.value.error = null
     sendSelectedEmails()
   }
 
   // Pause email sending
-  const pauseEmailSending = () => {
+  function pauseEmailSending () {
     emailProgress.value.isPaused = true
   }
 
   // Reset email progress
-  const resetEmailProgress = () => {
+  function resetEmailProgress () {
     emailProgress.value = { current: 0, total: 0, currentEmail: '', isPaused: false, error: null, parentStatuses: new Map() }
     sendingEmails.value = false
   }

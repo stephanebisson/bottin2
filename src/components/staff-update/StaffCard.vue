@@ -171,19 +171,19 @@
   })
 
   // Methods
-  const updateField = (field, value) => {
+  function updateField (field, value) {
     emit('change', {
       ...props.staff,
       [field]: value,
     })
   }
 
-  const handleDelete = () => {
+  function handleDelete () {
     emit('delete', props.staff.id)
   }
 
   // Phone formatting methods
-  const formatPhoneOnBlur = () => {
+  function formatPhoneOnBlur () {
     if (props.staff.phone) {
       // Format for display when user finishes editing
       const formatted = formatPhoneForDisplay(formatPhoneForStorage(props.staff.phone))
@@ -191,7 +191,7 @@
     }
   }
 
-  const handlePhoneInput = event => {
+  function handlePhoneInput (event) {
     // Allow users to type freely, validation happens on blur/submit
     const value = event.target ? event.target.value : event
     updateField('phone', value)

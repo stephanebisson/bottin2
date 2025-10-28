@@ -170,8 +170,7 @@ exports.sendParentEmailV2 = onRequest({
     }
 
     // Get participant from subcollection
-    const participantDoc = await db.collection('workflows').doc(workflowId)
-      .collection('participants').doc(parentEmail).get()
+    const participantDoc = await db.collection('workflows').doc(workflowId).collection('participants').doc(parentEmail).get()
 
     if (!participantDoc.exists) {
       return res.status(404).json({

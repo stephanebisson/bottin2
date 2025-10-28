@@ -123,7 +123,7 @@
   const email = computed(() => route.query.email || '')
 
   // Navigation methods
-  const goToAccountCreation = () => {
+  function goToAccountCreation () {
     router.push({
       path: '/auth',
       query: {
@@ -134,7 +134,7 @@
     })
   }
 
-  const goToLogin = () => {
+  function goToLogin () {
     router.push({
       path: '/auth',
       query: {
@@ -144,7 +144,7 @@
     })
   }
 
-  const goHome = () => {
+  function goHome () {
     router.push('/')
   }
 

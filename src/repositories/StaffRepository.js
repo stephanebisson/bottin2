@@ -9,7 +9,6 @@ import { db } from '@/firebase'
  */
 export class StaffRepository {
   constructor () {
-    this.collectionName = 'staff'
     this.collectionRef = collection(db, this.collectionName)
   }
 
@@ -295,4 +294,5 @@ export class StaffRepository {
       throw new Error(`Failed to get staff statistics: ${error.message}`)
     }
   }
+  collectionName = 'staff';
 }

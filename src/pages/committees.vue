@@ -226,7 +226,7 @@
 
   // Check if user is admin
   const isAdmin = ref(false)
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAdmin.value = false
       return
@@ -280,7 +280,8 @@
             phone: null,
             memberType: 'unknown',
           }
-        }).sort((a, b) => {
+        })
+        .toSorted((a, b) => {
           // First sort by member type (parents first, then staff)
           if (a.memberType !== b.memberType) {
             if (a.memberType === 'parent' && b.memberType === 'staff') return -1
@@ -306,7 +307,7 @@
         unknownMembers,
         hasMixedMemberTypes: parentMembers.length > 0 && staffMembers.length > 0,
       }
-    }).sort((a, b) => a.name.localeCompare(b.name))
+    }).toSorted((a, b) => a.name.localeCompare(b.name))
   })
 
   const filteredCommittees = computed(() => {
@@ -317,19 +318,19 @@
   })
 
   // Open edit dialog for committee
-  const openEditDialog = committee => {
+  function openEditDialog (committee) {
     selectedCommittee.value = committee
     editDialogOpen.value = true
   }
 
   // Close edit dialog
-  const closeEditDialog = () => {
+  function closeEditDialog () {
     editDialogOpen.value = false
     selectedCommittee.value = null
   }
 
   // Handle committee updated
-  const handleCommitteeUpdated = async () => {
+  async function handleCommitteeUpdated () {
     // Refresh committee data to show updated members
     await firebaseStore.refreshCommitteesDTO()
     closeEditDialog()

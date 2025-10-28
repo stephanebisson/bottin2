@@ -198,9 +198,7 @@ export class StudentDTO {
       this.displayLevel,
       this.parent1_id,
       this.parent2_id,
-    ].filter(text => text && String(text).trim().length > 0)
-      .join(' ')
-      .toLowerCase()
+    ].filter(text => text && String(text).trim().length > 0).join(' ').toLowerCase()
   }
 
   /**

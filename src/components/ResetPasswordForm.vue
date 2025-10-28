@@ -89,7 +89,7 @@
   ]
 
   // Handle password reset
-  const handleReset = async () => {
+  async function handleReset () {
     if (!formValid.value) return
 
     try {

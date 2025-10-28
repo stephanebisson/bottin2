@@ -152,7 +152,7 @@
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   })
 
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
 
     const cleaned = phone.toString().replace(/\D/g, '')

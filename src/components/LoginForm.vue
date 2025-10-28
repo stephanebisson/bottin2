@@ -100,7 +100,7 @@
   ]
 
   // Handle login
-  const handleLogin = async () => {
+  async function handleLogin () {
     if (!formValid.value) return
 
     try {

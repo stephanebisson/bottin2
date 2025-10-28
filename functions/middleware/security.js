@@ -9,7 +9,7 @@
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function (optional for Firebase Functions)
  */
-const setSecurityHeaders = (req, res, next) => {
+function setSecurityHeaders (req, res, next) {
   // Force HTTPS with HSTS (HTTP Strict Transport Security)
   // max-age: 1 year, includeSubDomains: apply to all subdomains, preload: submit to HSTS preload list
   res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
@@ -74,7 +74,7 @@ const setSecurityHeaders = (req, res, next) => {
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function (optional)
  */
-const setApiSecurityHeaders = (req, res, next) => {
+function setApiSecurityHeaders (req, res, next) {
   // HSTS for HTTPS enforcement
   res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
 
@@ -107,7 +107,7 @@ const setApiSecurityHeaders = (req, res, next) => {
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
-const enforceHttps = (req, res, next) => {
+function enforceHttps (req, res, next) {
   // Skip HTTPS enforcement in development/emulator
   if (process.env.NODE_ENV === 'development'
     || process.env.FUNCTIONS_EMULATOR === 'true'
@@ -135,7 +135,7 @@ const enforceHttps = (req, res, next) => {
  * @param {Array} allowedOrigins - List of allowed origins
  * @returns {Function} Middleware function
  */
-const validateOrigin = (allowedOrigins = []) => {
+function validateOrigin (allowedOrigins = []) {
   return (req, res, next) => {
     const origin = req.headers.origin
 
@@ -173,7 +173,7 @@ const validateOrigin = (allowedOrigins = []) => {
  * @param {Object} options - Rate limiting options
  * @returns {Function} Middleware function
  */
-const rateLimit = (options = {}) => {
+function rateLimit (options = {}) {
   const {
     windowMs = 60 * 1000, // 1 minute
     maxRequests = 60, // Max 60 requests per minute
@@ -233,7 +233,7 @@ const rateLimit = (options = {}) => {
  * @param {Object} options - Security options
  * @returns {Function} Middleware function
  */
-const applySecurity = (options = {}) => {
+function applySecurity (options = {}) {
   const {
     enforceHttpsInProd = true,
     useApiHeaders = true,

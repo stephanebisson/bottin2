@@ -241,9 +241,7 @@ export class ParentDTO {
       this.phone,
       this.city,
       ...this.interests,
-    ].filter(text => text && String(text).trim().length > 0)
-      .join(' ')
-      .toLowerCase()
+    ].filter(text => text && String(text).trim().length > 0).join(' ').toLowerCase()
   }
 
   /**

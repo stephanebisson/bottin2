@@ -202,7 +202,7 @@
   const isBlockedAccess = ref(route.query.blocked === 'true')
 
   // Auto-check for email verification every 30 seconds
-  const startAutoCheck = () => {
+  function startAutoCheck () {
     // Initial check after 10 seconds (give email service time to deliver)
     setTimeout(checkVerificationStatus, 10_000)
 
@@ -213,7 +213,7 @@
     startCountdown()
   }
 
-  const startCountdown = () => {
+  function startCountdown () {
     timeLeft.value = 30
     countdownInterval.value = setInterval(() => {
       timeLeft.value--
@@ -223,7 +223,7 @@
     }, 1000)
   }
 
-  const stopAutoCheck = () => {
+  function stopAutoCheck () {
     if (autoCheckInterval.value) {
       clearInterval(autoCheckInterval.value)
       autoCheckInterval.value = null
@@ -234,7 +234,7 @@
     }
   }
 
-  const checkVerificationStatus = async () => {
+  async function checkVerificationStatus () {
     if (checkingVerification.value) return // Prevent multiple simultaneous checks
 
     try {
@@ -263,7 +263,7 @@
     }
   }
 
-  const resendVerification = async () => {
+  async function resendVerification () {
     try {
       await authStore.sendVerificationEmail()
       verificationSent.value = true
@@ -276,7 +276,7 @@
     }
   }
 
-  const manualRefresh = async () => {
+  async function manualRefresh () {
     console.log('👆 Manual refresh button clicked')
 
     // Clear any existing errors
@@ -335,7 +335,7 @@
     stopAutoCheck()
   })
 
-  const signOut = async () => {
+  async function signOut () {
     try {
       await authStore.logout()
       router.push('/auth')
@@ -345,7 +345,7 @@
   }
 
   // Debug function for development
-  const debugUserState = async () => {
+  async function debugUserState () {
     console.log('🔧 === DEBUG USER STATE ===')
     console.log('Current route query:', route.query)
     console.log('Auth store user:', authStore.user)

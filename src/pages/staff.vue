@@ -174,7 +174,7 @@
 
         if (members.length > 0) {
           // Sort members by order field, then alphabetically by last name, first name
-          const sortedMembers = members.sort((a, b) => {
+          const sortedMembers = members.toSorted((a, b) => {
             // Primary sort: by order field
             const orderA = a.order || 99
             const orderB = b.order || 99
@@ -217,7 +217,7 @@
         subgroups: [{
           subgroup: null,
           name: t('staff.otherStaff'),
-          members: ungroupedMembers.sort((a, b) => {
+          members: ungroupedMembers.toSorted((a, b) => {
             // Primary sort: by order field
             const orderA = a.order || 99
             const orderB = b.order || 99
@@ -256,14 +256,14 @@
     })).filter(group => group.subgroups.length > 0)
   })
 
-  const getClassesTaught = staffId => {
+  function getClassesTaught (staffId) {
     return firebaseStore.classes
       .filter(classItem => classItem.teacher === staffId)
       .map(classItem => classItem.classLetter)
-      .sort()
+      .toSorted()
   }
 
-  const getGroupIcon = (group, subgroup) => {
+  function getGroupIcon (group, subgroup) {
     // Icon mapping based on group/subgroup
     if (group === 'EF') {
       switch (subgroup) {
@@ -290,7 +290,7 @@
     return 'mdi-account-group'
   }
 
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
 
     const cleaned = phone.toString().replace(/\D/g, '')

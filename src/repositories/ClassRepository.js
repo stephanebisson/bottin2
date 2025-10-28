@@ -7,8 +7,6 @@ import { db } from '@/firebase'
  */
 export class ClassRepository {
   constructor () {
-    this.classesCollectionName = 'classes'
-    this.staffCollectionName = 'staff'
     this.classesCollectionRef = collection(db, this.classesCollectionName)
     this.staffCollectionRef = collection(db, this.staffCollectionName)
   }
@@ -213,4 +211,6 @@ export class ClassRepository {
       throw new Error(`Failed to update class ${classLetter}: ${error.message}`)
     }
   }
+  classesCollectionName = 'classes';
+  staffCollectionName = 'staff';
 }

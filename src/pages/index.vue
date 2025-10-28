@@ -171,7 +171,7 @@
   ])
 
   // Navigation functions
-  const navigateTo = route => {
+  function navigateTo (route) {
     router.push(route)
   }
 

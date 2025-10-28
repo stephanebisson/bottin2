@@ -256,7 +256,7 @@
   })
 
   // Handle registration
-  const handleRegister = async () => {
+  async function handleRegister () {
     if (!formValid.value) return
 
     try {

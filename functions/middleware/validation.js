@@ -9,7 +9,7 @@
  * @param {Object} options - Validation options
  * @returns {Function} Middleware function for validation
  */
-const validateRequest = (schema, options = {}) => {
+function validateRequest (schema, options = {}) {
   const defaultOptions = {
     abortEarly: false, // Return all validation errors
     stripUnknown: true, // Remove unknown properties
@@ -56,7 +56,7 @@ const validateRequest = (schema, options = {}) => {
  * @param {String} functionName - Name of the function for logging
  * @returns {Object} Validated data or throws error
  */
-const validateFunctionData = (schema, data, functionName = 'unknown') => {
+function validateFunctionData (schema, data, functionName = 'unknown') {
   const { error, value } = schema.validate(data, {
     abortEarly: false,
     stripUnknown: true,
@@ -92,7 +92,7 @@ const validateFunctionData = (schema, data, functionName = 'unknown') => {
  * @param {String} functionName - Name of the function for logging
  * @returns {Object} Validated data or throws HttpsError
  */
-const validateCallableData = (schema, data, functionName = 'unknown') => {
+function validateCallableData (schema, data, functionName = 'unknown') {
   const { error, value } = schema.validate(data, {
     abortEarly: false,
     stripUnknown: true,
@@ -126,7 +126,7 @@ const validateCallableData = (schema, data, functionName = 'unknown') => {
  * @param {String} input - String to sanitize
  * @returns {String} Sanitized string
  */
-const sanitizeString = input => {
+function sanitizeString (input) {
   if (typeof input !== 'string') {
     return input
   }
@@ -144,7 +144,7 @@ const sanitizeString = input => {
  * @param {Object} obj - Object to sanitize
  * @returns {Object} Sanitized object
  */
-const sanitizeObject = obj => {
+function sanitizeObject (obj) {
   if (!obj || typeof obj !== 'object') {
     return obj
   }

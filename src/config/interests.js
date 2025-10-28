@@ -128,7 +128,7 @@ export const PARENT_INTERESTS = [
  * Get all available interests
  * @returns {Object[]} Array of interest objects with id and name
  */
-export const getAvailableInterests = () => {
+export function getAvailableInterests () {
   return PARENT_INTERESTS
 }
 
@@ -137,7 +137,7 @@ export const getAvailableInterests = () => {
  * @param {string} interestId - ID of the interest
  * @returns {Object|null} Interest object or null if not found
  */
-export const getInterestById = interestId => {
+export function getInterestById (interestId) {
   return PARENT_INTERESTS.find(interest => interest.id === interestId) || null
 }
 
@@ -146,7 +146,7 @@ export const getInterestById = interestId => {
  * @param {string[]} interestIds - Array of interest IDs
  * @returns {string[]} Array of interest names
  */
-export const getInterestNames = (interestIds = []) => {
+export function getInterestNames (interestIds = []) {
   return interestIds
     .map(id => getInterestById(id))
     .filter(interest => interest !== null)
@@ -158,6 +158,6 @@ export const getInterestNames = (interestIds = []) => {
  * @param {string[]} interestIds - Array of interest IDs to validate
  * @returns {boolean} True if all IDs are valid
  */
-export const validateInterestIds = (interestIds = []) => {
+export function validateInterestIds (interestIds = []) {
   return interestIds.every(id => getInterestById(id) !== null)
 }

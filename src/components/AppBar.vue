@@ -136,11 +136,11 @@
     return date.toLocaleTimeString()
   })
 
-  const refreshData = async () => {
+  async function refreshData () {
     await firebaseStore.refreshData()
   }
 
-  const handleLogout = async () => {
+  async function handleLogout () {
     try {
       await authStore.logout()
       router.push('/auth')

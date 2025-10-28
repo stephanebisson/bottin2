@@ -103,7 +103,7 @@
     iconAnchor: [14, 14],
   })
 
-  const initializeMap = () => {
+  function initializeMap () {
     // Create map centered on school
     map.value = L.map('map').setView(
       [schoolLocation.latitude, schoolLocation.longitude],
@@ -181,13 +181,13 @@
     updateMarkers()
   }
 
-  const getStudentsForParent = parentId => {
+  function getStudentsForParent (parentId) {
     return props.students.filter(student =>
       student.parent1_id === parentId || student.parent2_id === parentId,
     )
   }
 
-  const updateMarkers = () => {
+  function updateMarkers () {
     if (!markerClusterGroup.value || !map.value) return
 
     // Clear existing markers
@@ -251,7 +251,7 @@
       if (allStudents.size > 0) {
         popupContent += '<div style="margin-bottom: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 4px;">'
         popupContent += '<div style="font-weight: bold; margin-bottom: 4px; color: #1976d2;">Students:</div>'
-        const sortedStudents = Array.from(allStudents).sort((a, b) =>
+        const sortedStudents = Array.from(allStudents).toSorted((a, b) =>
           `${a.last_name} ${a.first_name}`.localeCompare(`${b.last_name} ${b.first_name}`),
         )
         for (const student of sortedStudents) {
@@ -292,7 +292,7 @@
     }
   }
 
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
     const cleaned = phone.toString().replace(/\D/g, '')
     if (cleaned.length === 10) {

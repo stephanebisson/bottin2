@@ -43,7 +43,7 @@ export const CLUSTER_SETTINGS = {
  * Get the school location
  * @returns {Object} School location object with address and coordinates
  */
-export const getSchoolLocation = () => {
+export function getSchoolLocation () {
   return SCHOOL_LOCATION
 }
 
@@ -51,6 +51,6 @@ export const getSchoolLocation = () => {
  * Get full school address as string
  * @returns {string} Formatted school address
  */
-export const getSchoolAddress = () => {
+export function getSchoolAddress () {
   return `${SCHOOL_LOCATION.address}, ${SCHOOL_LOCATION.city}, ${SCHOOL_LOCATION.province} ${SCHOOL_LOCATION.postal_code}`
 }

@@ -89,9 +89,7 @@ class ParentDTO {
       this.last_name,
       this.email,
       this.phone,
-    ].filter(text => text && String(text).trim().length > 0)
-      .join(' ')
-      .toLowerCase()
+    ].filter(text => text && String(text).trim().length > 0).join(' ').toLowerCase()
   }
 
   /**

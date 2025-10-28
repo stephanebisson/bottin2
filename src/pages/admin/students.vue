@@ -343,7 +343,7 @@
   const isAuthorized = ref(false)
 
   // Check admin status using custom claims
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
@@ -409,7 +409,7 @@
   ])
 
   // Get color for class chips
-  const getClassColor = className => {
+  function getClassColor (className) {
     // Generate a consistent color based on class name
     const colors = ['blue', 'green', 'orange', 'purple', 'red', 'teal', 'indigo', 'pink']
     const hash = className.split('').reduce((a, b) => {
@@ -420,7 +420,7 @@
   }
 
   // Get level options for a given class
-  const getLevelOptions = classLetter => {
+  function getLevelOptions (classLetter) {
     const validLevels = getValidLevelsForClass(classLetter)
     return validLevels.map(level => ({
       title: level.toString(),
@@ -429,7 +429,7 @@
   }
 
   // Load students data
-  const loadStudents = async () => {
+  async function loadStudents () {
     try {
       loading.value = true
       error.value = null
@@ -440,7 +440,7 @@
       // Sort by level, class, first name, last name (all ascending)
       // Students without a level or class are sorted at the end
       // StudentRepository.getAll() returns StudentDTO instances
-      students.value = studentDTOs.sort((a, b) => {
+      students.value = studentDTOs.toSorted((a, b) => {
         // First sort by level (ascending) - null values go to end
         const levelA = a.level === null ? Number.MAX_SAFE_INTEGER : a.level
         const levelB = b.level === null ? Number.MAX_SAFE_INTEGER : b.level
@@ -474,7 +474,7 @@
   }
 
   // Load class options for dropdowns
-  const loadClassOptions = async () => {
+  async function loadClassOptions () {
     try {
       const classRepository = new ClassRepository()
       classOptions.value = await classRepository.getClassDropdownOptions()
@@ -485,7 +485,7 @@
   }
 
   // Load parent options for dropdowns
-  const loadParentOptions = async () => {
+  async function loadParentOptions () {
     try {
       const parentRepository = new ParentRepository()
       const parents = await parentRepository.getAll()
@@ -500,14 +500,14 @@
   }
 
   // Get parent display name from ID
-  const getParentDisplayName = parentId => {
+  function getParentDisplayName (parentId) {
     if (!parentId) return null
     const parent = parentOptions.value.find(p => p.id === parentId)
     return parent ? parent.fullName : parentId
   }
 
   // Start editing a student row
-  const startEditing = studentDTO => {
+  function startEditing (studentDTO) {
     // Store original values for cancel functionality using DTO's toJSON method
     studentDTO._originalValues = {
       first_name: studentDTO.first_name,
@@ -521,7 +521,7 @@
   }
 
   // Cancel new student creation
-  const cancelNewStudent = () => {
+  function cancelNewStudent () {
     if (newStudent.value) {
       editingRows.value.delete(newStudent.value.id)
       newStudent.value = null
@@ -529,7 +529,7 @@
   }
 
   // Cancel editing and restore original values
-  const cancelEditing = studentDTO => {
+  function cancelEditing (studentDTO) {
     // Check if this is a new student being cancelled
     if (newStudent.value && studentDTO.id === newStudent.value.id) {
       cancelNewStudent()
@@ -549,7 +549,7 @@
   }
 
   // Create new student row
-  const createNewStudent = () => {
+  function createNewStudent () {
     if (newStudent.value) {
       // Already creating a new student
       return
@@ -572,7 +572,7 @@
   }
 
   // Save new student
-  const saveNewStudent = async () => {
+  async function saveNewStudent () {
     if (!newStudent.value) return
 
     try {
@@ -639,7 +639,7 @@
   }
 
   // Save student changes
-  const saveStudent = async studentDTO => {
+  async function saveStudent (studentDTO) {
     // Check if this is a new student being saved
     if (newStudent.value && studentDTO.id === newStudent.value.id) {
       await saveNewStudent()
@@ -693,7 +693,7 @@
     return deleteConfirmationText.value.trim().toUpperCase() === expectedText
   })
 
-  const openDeleteStudentDialog = student => {
+  function openDeleteStudentDialog (student) {
     studentToDelete.value = student
     deleteConfirmationText.value = ''
     deleteConfirmationError.value = false
@@ -701,7 +701,7 @@
     showDeleteDialog.value = true
   }
 
-  const cancelDeleteStudent = () => {
+  function cancelDeleteStudent () {
     showDeleteDialog.value = false
     studentToDelete.value = null
     deleteConfirmationText.value = ''
@@ -709,7 +709,7 @@
     deleteConfirmationErrorMessage.value = ''
   }
 
-  const confirmDeleteStudent = async () => {
+  async function confirmDeleteStudent () {
     if (!isDeleteConfirmed.value) {
       deleteConfirmationError.value = true
       deleteConfirmationErrorMessage.value = t('admin.parentsDirectory.deleteStudentMismatch')

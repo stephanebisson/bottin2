@@ -98,15 +98,15 @@
   const emit = defineEmits(['change', 'delete', 'add'])
 
   // Methods
-  const handleChange = updatedStaff => {
+  function handleChange (updatedStaff) {
     emit('change', updatedStaff)
   }
 
-  const handleDelete = staffId => {
+  function handleDelete (staffId) {
     emit('delete', staffId)
   }
 
-  const handleAdd = () => {
+  function handleAdd () {
     emit('add', {
       group: props.group,
       subgroup: props.subgroup,

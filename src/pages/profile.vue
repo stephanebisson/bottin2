@@ -245,7 +245,7 @@
     const parentId = parentProfile.value.id
     return firebaseStore.studentsDTO.filter(student =>
       student.parent1_id === parentId || student.parent2_id === parentId,
-    ).sort((a, b) => {
+    ).toSorted((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
       return aName.localeCompare(bName)
@@ -273,7 +273,7 @@
           role: member?.role || 'Member',
         }
       })
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .toSorted((a, b) => a.name.localeCompare(b.name))
   })
 
   // Computed properties for formatting
@@ -294,13 +294,13 @@
   })
 
   // Utility functions
-  const getInitials = (firstName, lastName) => {
+  function getInitials (firstName, lastName) {
     const first = firstName ? firstName.charAt(0).toUpperCase() : ''
     const last = lastName ? lastName.charAt(0).toUpperCase() : ''
     return `${first}${last}` || '?'
   }
 
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
     const cleaned = phone.toString().replace(/\D/g, '')
     if (cleaned.length === 10) {
@@ -309,7 +309,7 @@
     return phone
   }
 
-  const getTeacherName = className => {
+  function getTeacherName (className) {
     if (!className) return null
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null

@@ -44,7 +44,7 @@
     return { ...lang, name: lang.name() }
   })
 
-  const toggleLanguage = () => {
+  function toggleLanguage () {
     locale.value = otherLanguage.value.code
   }
 </script>

@@ -110,7 +110,7 @@
   }
 
   // Icon mapping
-  const getSubgroupIcon = (group, subgroup) => {
+  function getSubgroupIcon (group, subgroup) {
     if (group === 'EF') {
       switch (subgroup) {
         case 'admin': { return 'mdi-account-tie'
@@ -149,7 +149,7 @@
         )
 
         // Sort members by order field
-        const sortedMembers = members.sort((a, b) => {
+        const sortedMembers = members.toSorted((a, b) => {
           const orderA = a.order || 99
           const orderB = b.order || 99
           if (orderA !== orderB) {
@@ -184,7 +184,7 @@
   })
 
   // Load all staff using shared composable
-  const loadStaff = async () => {
+  async function loadStaff () {
     try {
       staffList.value = await loadStaffData()
     } catch {
@@ -193,7 +193,7 @@
   }
 
   // Handle staff change
-  const handleChange = updatedStaff => {
+  function handleChange (updatedStaff) {
     // Find and update the staff member in the list
     const index = staffList.value.findIndex(s => s.id === updatedStaff.id)
     if (index !== -1) {
@@ -206,7 +206,7 @@
   }
 
   // Handle staff deletion
-  const handleDelete = staffId => {
+  function handleDelete (staffId) {
     const staff = staffList.value.find(s => s.id === staffId)
     if (staff) {
       // Remove from list
@@ -226,7 +226,7 @@
   }
 
   // Handle adding new staff member
-  const handleAdd = ({ group, subgroup }) => {
+  function handleAdd ({ group, subgroup }) {
     // Find the highest order in this subgroup to add the new member at the end
     const membersInSubgroup = staffList.value.filter(
       s => s.group === group && s.subgroup === subgroup,
@@ -255,7 +255,7 @@
   }
 
   // Save all changes using shared composable
-  const saveAllChanges = async () => {
+  async function saveAllChanges () {
     try {
       // Auto-assign order based on position in organized structure
       let orderCounter = 1

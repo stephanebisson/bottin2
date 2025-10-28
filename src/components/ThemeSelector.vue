@@ -102,7 +102,7 @@
     return themeData ? themeData.icon : 'mdi-palette'
   })
 
-  const setTheme = themeName => {
+  function setTheme (themeName) {
     const targetTheme = isDarkMode.value ? `${themeName}Dark` : themeName
     theme.global.name.value = targetTheme
 
@@ -111,7 +111,7 @@
     localStorage.setItem('bottin-theme-dark', isDarkMode.value.toString())
   }
 
-  const toggleDarkMode = darkMode => {
+  function toggleDarkMode (darkMode) {
     const baseTheme = currentTheme.value
     const targetTheme = darkMode ? `${baseTheme}Dark` : baseTheme
     theme.global.name.value = targetTheme

@@ -170,7 +170,7 @@
               <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.parentMembers)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
-                  <td colspan="3" class="role-header-cell">
+                  <td class="role-header-cell" colspan="3">
                     {{ roleGroup.role || 'Membre' }}
                   </td>
                 </tr>
@@ -199,7 +199,7 @@
               <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.staffMembers)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
-                  <td colspan="3" class="role-header-cell">
+                  <td class="role-header-cell" colspan="3">
                     {{ roleGroup.role || 'Membre' }}
                   </td>
                 </tr>
@@ -241,7 +241,7 @@
               <template v-for="roleGroup in groupMembersByRole(committee.parentMembers)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
-                  <td colspan="3" class="role-header-cell">
+                  <td class="role-header-cell" colspan="3">
                     {{ roleGroup.role || 'Membre' }}
                   </td>
                 </tr>
@@ -270,7 +270,7 @@
               <template v-for="roleGroup in groupMembersByRole(committee.staffMembers)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
-                  <td colspan="3" class="role-header-cell">
+                  <td class="role-header-cell" colspan="3">
                     {{ roleGroup.role || 'Membre' }}
                   </td>
                 </tr>
@@ -440,7 +440,7 @@
   const loading = ref(true)
 
   // Check admin status
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
@@ -473,7 +473,7 @@
 
         if (members.length > 0) {
           // Sort members by order field, then alphabetically by last name, first name
-          const sortedMembers = members.sort((a, b) => {
+          const sortedMembers = members.toSorted((a, b) => {
             // Primary sort: by order field
             const orderA = a.order || 99
             const orderB = b.order || 99
@@ -516,7 +516,7 @@
         subgroups: [{
           subgroup: null,
           name: 'Autre Personnel',
-          members: ungroupedMembers.sort((a, b) => {
+          members: ungroupedMembers.toSorted((a, b) => {
             const orderA = a.order || 99
             const orderB = b.order || 99
             if (orderA !== orderB) {
@@ -572,7 +572,8 @@
             phone: null,
             memberType: 'unknown',
           }
-        }).sort((a, b) => {
+        })
+        .toSorted((a, b) => {
           // First sort by member type (parents first, then staff)
           if (a.memberType !== b.memberType) {
             if (a.memberType === 'parent' && b.memberType === 'staff') return -1
@@ -596,7 +597,7 @@
         staffMembers,
         unknownMembers,
       }
-    }).sort((a, b) => a.name.localeCompare(b.name))
+    }).toSorted((a, b) => a.name.localeCompare(b.name))
   })
 
   // Conseil d'établissement (special treatment - full page)
@@ -610,7 +611,7 @@
   })
 
   // Helper: Group members by role
-  const groupMembersByRole = members => {
+  function groupMembersByRole (members) {
     // Group members by role
     const grouped = members.reduce((acc, member) => {
       const role = member.role || ''
@@ -623,7 +624,7 @@
 
     // Convert to array and sort by role name
     return Object.keys(grouped)
-      .sort()
+      .toSorted()
       .map(role => ({
         role,
         members: grouped[role],
@@ -631,32 +632,32 @@
   }
 
   // Helper: Get classes taught by a staff member
-  const getClassesTaught = staffId => {
+  function getClassesTaught (staffId) {
     return firebaseStore.classes
       .filter(classItem => classItem.teacher === staffId)
       .map(classItem => classItem.classLetter)
-      .sort()
+      .toSorted()
   }
 
   // Helper: Get teacher name
-  const getTeacherName = teacherId => {
+  function getTeacherName (teacherId) {
     const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
     return teacher ? teacher.fullName : teacherId
   }
 
   // Helper: Get parent name
-  const getParentName = parentId => {
+  function getParentName (parentId) {
     const parent = firebaseStore.parentsDTO.find(p => p.id === parentId)
     return parent ? parent.fullName : parentId
   }
 
   // Helper: Get parent data
-  const getParentData = parentId => {
+  function getParentData (parentId) {
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
   // Helper: Get students by level for a class
-  const getStudentsByLevel = classLetter => {
+  function getStudentsByLevel (classLetter) {
     const classStudents = firebaseStore.studentsDTO.filter(student => student.className === classLetter)
 
     // Group students by level
@@ -681,7 +682,7 @@
     // Convert to array and sort by level number
     const sortedLevels = Object.keys(grouped)
       .filter(level => level !== 'Unknown')
-      .sort((a, b) => Number.parseInt(a) - Number.parseInt(b))
+      .toSorted((a, b) => Number.parseInt(a) - Number.parseInt(b))
       .map(level => ({
         level,
         students: grouped[level],
@@ -699,7 +700,7 @@
   }
 
   // Helper: Format grade level
-  const formatGradeLevel = level => {
+  function formatGradeLevel (level) {
     if (!level || level === 'Unknown') return level
 
     const numLevel = Number(level)
@@ -720,7 +721,7 @@
     const processed = new Set()
     const groups = []
 
-    const sortedStudents = [...firebaseStore.studentsDTO].sort((a, b) => {
+    const sortedStudents = [...firebaseStore.studentsDTO].toSorted((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
       return aName.localeCompare(bName)
@@ -764,7 +765,7 @@
   })
 
   // Helper: Get student's parent
-  const getStudentParent = (student, parentNumber) => {
+  function getStudentParent (student, parentNumber) {
     const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
     const parentId = student[parentIdField]
 
@@ -774,7 +775,7 @@
   }
 
   // Helper: Format address
-  const formatAddress = parent => {
+  function formatAddress (parent) {
     if (!parent) return ''
 
     const addressParts = []
@@ -787,7 +788,7 @@
   }
 
   // Helper: Format phone number
-  const formatPhone = phone => {
+  function formatPhone (phone) {
     if (!phone) return ''
 
     const cleaned = phone.toString().replace(/\D/g, '')
@@ -806,7 +807,7 @@
   const sdgPhone = computed(() => formatPhone(SDG_INFO.phone))
 
   // Load all data
-  const loadData = async () => {
+  async function loadData () {
     try {
       loading.value = true
       await Promise.all([
@@ -824,7 +825,7 @@
   }
 
   // Populate TOC page numbers before print
-  const populateTOCPageNumbers = () => {
+  function populateTOCPageNumbers () {
     // Update TOC entries with the page numbers defined at the top of this file
     for (const section of Object.keys(TOC_PAGE_NUMBERS)) {
       const tocElement = document.querySelector(`[data-section="${section}"]`)

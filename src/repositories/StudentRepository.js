@@ -10,7 +10,6 @@ import { generateStudentId } from '@/utils/parentIdGenerator.js'
  */
 export class StudentRepository {
   constructor () {
-    this.collectionName = 'students'
     this.collectionRef = collection(db, this.collectionName)
   }
 
@@ -323,4 +322,5 @@ export class StudentRepository {
       throw new Error(`Failed to get student statistics: ${error.message}`)
     }
   }
+  collectionName = 'students';
 }

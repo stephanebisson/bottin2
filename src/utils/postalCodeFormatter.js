@@ -10,7 +10,7 @@
  * @param {string} postalCode - Postal code in any format
  * @returns {string} Only letters and digits, uppercased
  */
-export const extractAlphanumeric = postalCode => {
+export function extractAlphanumeric (postalCode) {
   if (!postalCode || typeof postalCode !== 'string') {
     return ''
   }
@@ -30,7 +30,7 @@ export const extractAlphanumeric = postalCode => {
  * @param {string} postalCode - Postal code in any format
  * @returns {string} 6-character postal code in A9A9A9 format or empty string if invalid
  */
-export const formatPostalCodeForStorage = postalCode => {
+export function formatPostalCodeForStorage (postalCode) {
   const alphanumeric = extractAlphanumeric(postalCode)
 
   // Handle empty input
@@ -57,7 +57,7 @@ export const formatPostalCodeForStorage = postalCode => {
  * @param {string} postalCode - 6-character postal code
  * @returns {string} Formatted as H1A 2B3 or original if invalid
  */
-export const formatPostalCodeForDisplay = postalCode => {
+export function formatPostalCodeForDisplay (postalCode) {
   const alphanumeric = extractAlphanumeric(postalCode)
 
   if (alphanumeric.length === 6) {
@@ -75,7 +75,7 @@ export const formatPostalCodeForDisplay = postalCode => {
  * @param {string} postalCode - Postal code in any format
  * @returns {boolean} True if will be valid after formatting
  */
-export const isValidPostalCodeFormat = postalCode => {
+export function isValidPostalCodeFormat (postalCode) {
   if (!postalCode) {
     return true
   } // Empty is allowed
@@ -91,7 +91,7 @@ export const isValidPostalCodeFormat = postalCode => {
  * @param {Function} t - Translation function from i18n
  * @returns {string} User-friendly error message
  */
-export const getPostalCodeValidationMessage = (postalCode, t) => {
+export function getPostalCodeValidationMessage (postalCode, t) {
   const alphanumeric = extractAlphanumeric(postalCode)
 
   if (!postalCode) {
@@ -126,7 +126,7 @@ export const getPostalCodeValidationMessage = (postalCode, t) => {
  * @param {number} cursorPos - Current cursor position
  * @returns {object} { value: formatted value, cursorPos: new cursor position }
  */
-export const formatPostalCodeInput = (input, cursorPos = 0) => {
+export function formatPostalCodeInput (input, cursorPos = 0) {
   const alphanumeric = extractAlphanumeric(input)
 
   // Don't format if too many characters
@@ -181,7 +181,7 @@ export const SAMPLE_POSTAL_CODES = [
  * Gets a random sample postal code for placeholder text
  * @returns {string} Sample Canadian postal code
  */
-export const getSamplePostalCode = () => {
+export function getSamplePostalCode () {
   return SAMPLE_POSTAL_CODES[Math.floor(Math.random() * SAMPLE_POSTAL_CODES.length)]
 }
 
@@ -190,7 +190,7 @@ export const getSamplePostalCode = () => {
  * @param {string} postalCode - Postal code being typed
  * @returns {boolean} True if format is valid or potentially valid
  */
-export const isPostalCodeFormatValid = postalCode => {
+export function isPostalCodeFormatValid (postalCode) {
   if (!postalCode) {
     return true
   } // Empty is valid
@@ -214,7 +214,7 @@ export const isPostalCodeFormatValid = postalCode => {
  * @param {Function} t - Translation function from i18n
  * @returns {object} Reactive postal code formatting utilities
  */
-export const usePostalCodeFormatter = (postalCodeRef, t) => {
+export function usePostalCodeFormatter (postalCodeRef, t) {
   const formatForDisplay = () => {
     if (postalCodeRef.value) {
       postalCodeRef.value = formatPostalCodeForDisplay(postalCodeRef.value)

@@ -148,9 +148,7 @@ export class CommitteeDTO {
       this.name,
       ...this.members.map(m => m.email).filter(Boolean),
       ...this.members.map(m => m.role),
-    ].filter(text => text && String(text).trim().length > 0)
-      .join(' ')
-      .toLowerCase()
+    ].filter(text => text && String(text).trim().length > 0).join(' ').toLowerCase()
   }
 
   /**

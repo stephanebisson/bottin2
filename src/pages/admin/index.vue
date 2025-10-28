@@ -200,7 +200,7 @@
   const adminStatus = ref(null)
 
   // Check admin status using custom claims
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
@@ -224,7 +224,7 @@
   }
 
   // Workflow status helpers (for dashboard overview)
-  const getWorkflowStatusColor = status => {
+  function getWorkflowStatusColor (status) {
     switch (status) {
       case 'pending': { return 'warning'
       }
@@ -238,22 +238,22 @@
   }
 
   // Handle annual update card click
-  const handleAnnualUpdateClick = () => {
+  function handleAnnualUpdateClick () {
     router.push('/admin/annual-update')
   }
 
   // Handle parents directory card click
-  const handleParentsClick = () => {
+  function handleParentsClick () {
     router.push('/admin/parents')
   }
 
   // Handle students table card click
-  const handleStudentsClick = () => {
+  function handleStudentsClick () {
     router.push('/admin/students')
   }
 
   // Load current workflow for dashboard overview
-  const loadWorkflowData = async () => {
+  async function loadWorkflowData () {
     try {
       const baseUrl = getFunctionsBaseUrl()
 
@@ -276,7 +276,7 @@
   }
 
   // Load staff update token
-  const loadStaffUpdateToken = async () => {
+  async function loadStaffUpdateToken () {
     try {
       const baseUrl = getFunctionsBaseUrl()
 
@@ -300,7 +300,7 @@
   }
 
   // Open staff update link in new tab
-  const openStaffUpdateLink = () => {
+  function openStaffUpdateLink () {
     if (!staffUpdateToken.value) return
     const baseUrl = window.location.origin
     const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`
@@ -308,7 +308,7 @@
   }
 
   // Copy staff update link to clipboard
-  const copyStaffUpdateLink = async () => {
+  async function copyStaffUpdateLink () {
     if (!staffUpdateToken.value) return
     const baseUrl = window.location.origin
     const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`

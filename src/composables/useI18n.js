@@ -16,7 +16,7 @@ const messages = {
 }
 
 // Get translation value from nested object path
-const getNestedValue = (obj, path) => {
+function getNestedValue (obj, path) {
   return path.split('.').reduce((current, key) => current?.[key], obj)
 }
 

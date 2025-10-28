@@ -185,7 +185,7 @@
   })
 
   // Check admin status
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
@@ -201,7 +201,7 @@
   }
 
   // Load staff update token
-  const loadStaffUpdateToken = async () => {
+  async function loadStaffUpdateToken () {
     try {
       loading.value = true
 
@@ -238,7 +238,7 @@
   }
 
   // Generate new staff update token
-  const generateToken = async () => {
+  async function generateToken () {
     try {
       generating.value = true
 
@@ -274,13 +274,13 @@
   }
 
   // Open staff update link in new tab
-  const openStaffUpdateLink = () => {
+  function openStaffUpdateLink () {
     if (!staffUpdateToken.value) return
     window.open(staffUpdateUrl.value, '_blank')
   }
 
   // Copy staff update link to clipboard
-  const copyStaffUpdateLink = async () => {
+  async function copyStaffUpdateLink () {
     if (!staffUpdateToken.value) return
 
     try {
@@ -302,7 +302,7 @@
   }
 
   // Format date helper
-  const formatDate = timestamp => {
+  function formatDate (timestamp) {
     if (!timestamp) return ''
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

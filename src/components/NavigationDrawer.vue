@@ -134,7 +134,7 @@
   const isAdmin = ref(false)
 
   // Check admin status using Firebase Custom Claims
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAdmin.value = false
       return

@@ -10,7 +10,7 @@
  * @param {string} phone - Phone number in any format
  * @returns {string} Only the digits
  */
-export const extractDigits = phone => {
+export function extractDigits (phone) {
   if (!phone || typeof phone !== 'string') {
     return ''
   }
@@ -31,7 +31,7 @@ export const extractDigits = phone => {
  * @param {string} phone - Phone number in any format
  * @returns {string} 10-digit phone number or empty string if invalid
  */
-export const formatPhoneForStorage = phone => {
+export function formatPhoneForStorage (phone) {
   const digits = extractDigits(phone)
 
   // Handle empty input
@@ -58,7 +58,7 @@ export const formatPhoneForStorage = phone => {
  * @param {string} phone - 10-digit phone number
  * @returns {string} Formatted as (123) 456-7890 or original if invalid
  */
-export const formatPhoneForDisplay = phone => {
+export function formatPhoneForDisplay (phone) {
   const digits = extractDigits(phone)
 
   if (digits.length === 10) {
@@ -73,7 +73,7 @@ export const formatPhoneForDisplay = phone => {
  * @param {string} phone - Phone number in any format
  * @returns {boolean} True if will be valid after formatting
  */
-export const isValidPhoneFormat = phone => {
+export function isValidPhoneFormat (phone) {
   if (!phone) {
     return true
   } // Empty is allowed
@@ -88,7 +88,7 @@ export const isValidPhoneFormat = phone => {
  * @param {Function} t - Translation function from i18n
  * @returns {string} User-friendly error message
  */
-export const getPhoneValidationMessage = (phone, t) => {
+export function getPhoneValidationMessage (phone, t) {
   const digits = extractDigits(phone)
 
   if (!phone) {
@@ -121,7 +121,7 @@ export const getPhoneValidationMessage = (phone, t) => {
  * @param {number} cursorPos - Current cursor position
  * @returns {object} { value: formatted value, cursorPos: new cursor position }
  */
-export const formatPhoneInput = (input, cursorPos = 0) => {
+export function formatPhoneInput (input, cursorPos = 0) {
   const digits = extractDigits(input)
 
   // Don't format if too many digits
@@ -175,7 +175,7 @@ export const formatPhoneInput = (input, cursorPos = 0) => {
  * @param {Function} t - Translation function from i18n
  * @returns {object} Reactive phone formatting utilities
  */
-export const usePhoneFormatter = (phoneRef, t) => {
+export function usePhoneFormatter (phoneRef, t) {
   const formatForDisplay = () => {
     if (phoneRef.value) {
       phoneRef.value = formatPhoneForDisplay(phoneRef.value)

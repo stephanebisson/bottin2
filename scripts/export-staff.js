@@ -101,10 +101,12 @@ function formatPhone (phone) {
 function formatStaffMember (staff) {
   const lines = []
 
-  lines.push(`Nom: ${staff.first_name} ${staff.last_name}`)
-  lines.push(`Titre: ${staff.title || ''}`)
-  lines.push(`Courriel: ${staff.email || ''}`)
-  lines.push(`Téléphone: ${formatPhone(staff.phone)}`)
+  lines.push(
+    `Nom: ${staff.first_name} ${staff.last_name}`,
+    `Titre: ${staff.title || ''}`,
+    `Courriel: ${staff.email || ''}`,
+    `Téléphone: ${formatPhone(staff.phone)}`,
+  )
 
   return lines.join('\n')
 }
@@ -192,45 +194,46 @@ function organizeStaffByGroups (staffList) {
 function generateOutput (organizedStaff) {
   const lines = []
 
-  lines.push('='.repeat(70))
-  lines.push('RÉPERTOIRE DU PERSONNEL')
-  lines.push('='.repeat(70))
-  lines.push('')
-  lines.push('Veuillez mettre à jour les informations ci-dessous et répondre à ce courriel.')
-  lines.push('')
-  lines.push('='.repeat(70))
-  lines.push('')
+  lines.push(
+    '='.repeat(70),
+    'RÉPERTOIRE DU PERSONNEL',
+    '='.repeat(70),
+    '',
+    'Veuillez mettre à jour les informations ci-dessous et répondre à ce courriel.',
+    '',
+    '='.repeat(70),
+    '',
+  )
 
   // Sort groups alphabetically
-  const sortedGroups = Object.keys(organizedStaff).sort()
+  const sortedGroups = Object.keys(organizedStaff).toSorted()
 
   for (const group of sortedGroups) {
-    lines.push(`--- ${group.toUpperCase()} ---`)
-    lines.push('')
+    lines.push(`--- ${group.toUpperCase()} ---`, '')
 
     const subgroups = organizedStaff[group]
-    const sortedSubgroups = Object.keys(subgroups).sort()
+    const sortedSubgroups = Object.keys(subgroups).toSorted()
 
     for (const subgroup of sortedSubgroups) {
       if (subgroup) {
-        lines.push(`  [${subgroup}]`)
-        lines.push('')
+        lines.push(`  [${subgroup}]`, '')
       }
 
       const staffMembers = subgroups[subgroup]
 
       for (const staff of staffMembers) {
-        lines.push(formatStaffMember(staff))
-        lines.push('')
+        lines.push(formatStaffMember(staff), '')
       }
     }
 
     lines.push('')
   }
 
-  lines.push('='.repeat(70))
-  lines.push('FIN DU RÉPERTOIRE DU PERSONNEL')
-  lines.push('='.repeat(70))
+  lines.push(
+    '='.repeat(70),
+    'FIN DU RÉPERTOIRE DU PERSONNEL',
+    '='.repeat(70),
+  )
 
   return lines.join('\n')
 }

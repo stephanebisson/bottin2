@@ -16,7 +16,7 @@ const parentRepository = new ParentRepository()
  * @param {Object} parent - Parent object or DTO
  * @returns {Promise<{success: boolean, coordinates: Object|null, error: string|null}>}
  */
-export const geocodeAndUpdateParent = async (parentId, parent) => {
+export async function geocodeAndUpdateParent (parentId, parent) {
   try {
     console.log(`Geocoding address for parent ${parentId}...`)
 
@@ -71,7 +71,7 @@ export const geocodeAndUpdateParent = async (parentId, parent) => {
  * @param {Object} newParent - New parent data
  * @returns {boolean} True if address has changed
  */
-export const hasAddressChanged = (oldParent, newParent) => {
+export function hasAddressChanged (oldParent, newParent) {
   return oldParent.address !== newParent.address
     || oldParent.city !== newParent.city
     || oldParent.postal_code !== newParent.postal_code
@@ -87,7 +87,7 @@ export const hasAddressChanged = (oldParent, newParent) => {
  * @param {Object} newParent - New parent data
  * @returns {Promise<{success: boolean, geocoded: boolean, coordinates: Object|null}>}
  */
-export const geocodeIfAddressChanged = async (parentId, oldParent, newParent) => {
+export async function geocodeIfAddressChanged (parentId, oldParent, newParent) {
   if (!hasAddressChanged(oldParent, newParent)) {
     console.log(`Address unchanged for parent ${parentId}, skipping geocoding`)
     return {

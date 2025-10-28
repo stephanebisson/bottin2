@@ -4,7 +4,7 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
 
 // Validate environment variables
-const validateEnvironment = () => {
+function validateEnvironment () {
   const requiredVars = [
     'VITE_FIREBASE_API_KEY',
     'VITE_FIREBASE_AUTH_DOMAIN',
@@ -64,7 +64,7 @@ const auth = getAuth(app)
 
 // Initialize Analytics (only in production or when explicitly enabled)
 let _analytics = null
-const initAnalytics = async () => {
+async function initAnalytics () {
   try {
     // Check if Analytics is supported (won't work in emulator or some browsers)
     const analyticsSupported = await isSupported()

@@ -14,14 +14,14 @@ export const PROJECT_ID = 'bottin2-3b41d'
  * @param {string} url - URL to validate
  * @param {string} context - Context for error messages
  */
-const validateHttpsUrl = (url, context = 'API') => {
+function validateHttpsUrl (url, context = 'API') {
   if (import.meta.env.PROD && !url.startsWith('https://')) {
     throw new Error(`${context} must use HTTPS in production. Current URL: ${url}`)
   }
 }
 
 // Base URLs for Firebase Functions with HTTPS enforcement
-export const getFunctionsBaseUrl = () => {
+export function getFunctionsBaseUrl () {
   const baseUrl = import.meta.env.DEV
     ? `http://localhost:5001/${PROJECT_ID}/${FUNCTIONS_REGION}` // Emulator uses same region as production
     : `https://${FUNCTIONS_REGION}-${PROJECT_ID}.cloudfunctions.net` // Production uses Montreal
@@ -35,7 +35,7 @@ export const getFunctionsBaseUrl = () => {
 /**
  * Security headers for API requests
  */
-export const getApiHeaders = () => {
+export function getApiHeaders () {
   return {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
@@ -48,7 +48,7 @@ export const getApiHeaders = () => {
  * @param {Object} options - Fetch options
  * @returns {Promise} Fetch promise
  */
-export const secureFetch = async (url, options = {}) => {
+export async function secureFetch (url, options = {}) {
   // Validate HTTPS in production
   validateHttpsUrl(url, 'API Request')
 

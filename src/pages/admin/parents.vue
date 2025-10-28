@@ -232,25 +232,25 @@
   const studentRepository = new StudentRepository()
 
   // Helper function to get unique identifier for a parent
-  const getParentKey = parent => {
+  function getParentKey (parent) {
     return parent._tempEmail || parent.id || parent.email
   }
 
   // Helper functions for teacher information
-  const getTeacherName = teacherId => {
+  function getTeacherName (teacherId) {
     if (!teacherId || !firebaseStore.staffDTO) return ''
     const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
     return teacher ? teacher.fullName : ''
   }
 
-  const getClassTeacher = className => {
+  function getClassTeacher (className) {
     if (!className || !firebaseStore.classes) return null
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     return classItem ? classItem.teacher : null
   }
 
   // Check admin status using custom claims
-  const checkAdminStatus = async () => {
+  async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
@@ -325,7 +325,7 @@
     })
 
     // Sort by first name, then last name (ascending)
-    return parentsWithChildren.sort((a, b) => {
+    return parentsWithChildren.toSorted((a, b) => {
       const firstNameCompare = a.first_name.localeCompare(b.first_name)
       if (firstNameCompare !== 0) return firstNameCompare
       return a.last_name.localeCompare(b.last_name)
@@ -341,7 +341,7 @@
   })
 
   // Get row props for highlighting parents without children
-  const getRowProps = ({ item }) => {
+  function getRowProps ({ item }) {
     // Don't highlight new parents being created
     if (item._isNew) return {}
     // Highlight parents with no children in orange
@@ -353,7 +353,7 @@
   }
 
   // Load all data
-  const loadData = async () => {
+  async function loadData () {
     loading.value = true
     error.value = null
 
@@ -385,7 +385,7 @@
   }
 
   // Start editing a parent row
-  const startEditing = parentDTO => {
+  function startEditing (parentDTO) {
     // Store original values for cancel functionality
     parentDTO._originalValues = {
       first_name: parentDTO.first_name,
@@ -397,7 +397,7 @@
   }
 
   // Cancel new parent creation
-  const cancelNewParent = () => {
+  function cancelNewParent () {
     if (newParent.value) {
       editingRows.value.delete(getParentKey(newParent.value))
       newParent.value = null
@@ -405,7 +405,7 @@
   }
 
   // Cancel editing and restore original values
-  const cancelEditing = parentDTO => {
+  function cancelEditing (parentDTO) {
     // Check if this is a new parent being cancelled
     if (newParent.value && getParentKey(parentDTO) === getParentKey(newParent.value)) {
       cancelNewParent()
@@ -423,7 +423,7 @@
   }
 
   // Create new parent row
-  const createNewParent = () => {
+  function createNewParent () {
     if (newParent.value) {
       // Already creating a new parent
       return
@@ -447,7 +447,7 @@
   }
 
   // Save new parent
-  const saveNewParent = async () => {
+  async function saveNewParent () {
     if (!newParent.value) return
 
     try {
@@ -515,7 +515,7 @@
   }
 
   // Save parent changes
-  const saveParent = async parentDTO => {
+  async function saveParent (parentDTO) {
     // Check if this is a new parent being saved
     if (newParent.value && (getParentKey(parentDTO) === getParentKey(newParent.value) || parentDTO._isNew)) {
       await saveNewParent()

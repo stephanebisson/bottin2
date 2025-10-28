@@ -246,7 +246,7 @@
   const hasChanges = computed(() => changedItems.value.size > 0 || deletedItems.value.size > 0)
 
   // Get available subgroups for a staff member based on their group
-  const getSubgroupOptions = item => {
+  function getSubgroupOptions (item) {
     if (!item.group) {
       return []
     }
@@ -254,7 +254,7 @@
   }
 
   // Handle group change - clear subgroup if it's no longer valid
-  const onGroupChange = item => {
+  function onGroupChange (item) {
     const validSubgroups = getSubgroupOptions(item)
 
     // Clear subgroup if it's not valid for the new group
@@ -266,7 +266,7 @@
   }
 
   // Sort staff list by group, subgroup, order, and name
-  const sortStaffList = () => {
+  function sortStaffList () {
     staffList.value.sort((a, b) => {
       // Get group order from STAFF_GROUPS array
       const groupOrderA = STAFF_GROUPS.indexOf(a.group)
@@ -322,7 +322,7 @@
   ])
 
   // Load all staff using shared composable
-  const loadStaff = async () => {
+  async function loadStaff () {
     try {
       staffList.value = await loadStaffData()
       // Sort the staff list
@@ -333,14 +333,14 @@
   }
 
   // Mark item as changed
-  const markAsChanged = item => {
+  function markAsChanged (item) {
     if (!item._isNew) {
       changedItems.value.add(item.id)
     }
   }
 
   // Add new row
-  const addNewRow = () => {
+  function addNewRow () {
     const newId = `new_${Date.now()}`
     staffList.value.push({
       id: newId,
@@ -359,7 +359,7 @@
   }
 
   // Delete row
-  const deleteRow = item => {
+  function deleteRow (item) {
     const index = staffList.value.findIndex(s => s.id === item.id)
     if (index !== -1) {
       staffList.value.splice(index, 1)
@@ -375,7 +375,7 @@
   }
 
   // Save all changes using shared composable
-  const saveAllChanges = async () => {
+  async function saveAllChanges () {
     try {
       // Prepare updates array (items that changed)
       const updates = []

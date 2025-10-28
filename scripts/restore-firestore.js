@@ -164,7 +164,7 @@ function listBackups () {
         modified: stats.mtime,
       }
     })
-    .sort((a, b) => b.modified - a.modified)
+    .toSorted((a, b) => b.modified - a.modified)
 
   return jsonBackups
 }

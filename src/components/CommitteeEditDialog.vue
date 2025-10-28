@@ -211,7 +211,7 @@
   })
 
   // Initialize members data
-  const initializeMembers = async () => {
+  async function initializeMembers () {
     try {
       loading.value = true
       error.value = null
@@ -245,7 +245,7 @@
   }
 
   // Search for users (parents and staff)
-  const searchUsers = async query => {
+  async function searchUsers (query) {
     if (!query || query.length < 2) {
       availableUsers.value = []
       return
@@ -294,7 +294,7 @@
   }
 
   // Add new member
-  const addMember = () => {
+  function addMember () {
     const selectedUser = availableUsers.value.find(u => u.email === newMemberEmail.value)
     if (!selectedUser) return
 
@@ -312,7 +312,7 @@
   }
 
   // Cancel adding member
-  const cancelAddMember = () => {
+  function cancelAddMember () {
     showAddMember.value = false
     newMemberEmail.value = ''
     newMemberRole.value = availableRoles.value[0] || ''
@@ -320,18 +320,18 @@
   }
 
   // Remove member
-  const removeMember = index => {
+  function removeMember (index) {
     members.value.splice(index, 1)
     markAsModified()
   }
 
   // Mark as modified
-  const markAsModified = () => {
+  function markAsModified () {
     hasChanges.value = JSON.stringify(members.value) !== JSON.stringify(originalMembers.value)
   }
 
   // Save changes
-  const saveChanges = async () => {
+  async function saveChanges () {
     try {
       saving.value = true
       error.value = null

@@ -264,7 +264,7 @@
       firebaseStore.studentsDTO
         .map(s => s.className)
         .filter(Boolean),
-    )].sort()
+    )].toSorted()
 
     return classes.map(className => {
       const classItem = firebaseStore.classes.find(c => c.classLetter === className)
@@ -289,7 +289,7 @@
     const processed = new Set()
     const groups = []
 
-    const sortedStudents = [...firebaseStore.studentsDTO].sort((a, b) => {
+    const sortedStudents = [...firebaseStore.studentsDTO].toSorted((a, b) => {
       const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
       const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
       return aName.localeCompare(bName)
@@ -348,7 +348,7 @@
       return { parent, children }
     })
 
-    return parentsWithChildren.sort((a, b) => {
+    return parentsWithChildren.toSorted((a, b) => {
       const aName = `${a.parent.last_name}, ${a.parent.first_name}`.toLowerCase()
       const bName = `${b.parent.last_name}, ${b.parent.first_name}`.toLowerCase()
       return aName.localeCompare(bName)
@@ -426,7 +426,7 @@
   })
 
   // Helper functions
-  const getStudentParent = (student, parentNumber) => {
+  function getStudentParent (student, parentNumber) {
     const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
     const parentId = student[parentIdField]
 
@@ -435,7 +435,7 @@
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  const getTeacherName = className => {
+  function getTeacherName (className) {
     const classItem = firebaseStore.classes.find(c => c.classLetter === className)
     if (!classItem) return null
 
@@ -443,7 +443,7 @@
     return teacher ? teacher.first_name : null
   }
 
-  const getParentCommittees = parentId => {
+  function getParentCommittees (parentId) {
     if (!parentId) return []
 
     return firebaseStore.committees
@@ -454,7 +454,7 @@
       .map(committee => committee.name)
   }
 
-  const onSearchInput = () => {
+  function onSearchInput () {
     // Force reactivity update
   }
 

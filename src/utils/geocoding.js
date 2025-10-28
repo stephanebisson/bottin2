@@ -19,7 +19,7 @@ let lastRequestTime = 0
 /**
  * Wait for rate limit delay
  */
-const waitForRateLimit = async () => {
+async function waitForRateLimit () {
   const now = Date.now()
   const timeSinceLastRequest = now - lastRequestTime
   if (timeSinceLastRequest < REQUEST_DELAY_MS) {
@@ -37,7 +37,7 @@ const waitForRateLimit = async () => {
  * @param {string} country - Country (default: 'Canada')
  * @returns {Promise<{latitude: number, longitude: number}|null>} Coordinates or null if not found
  */
-export const geocodeAddress = async (address, city, postalCode, country = 'Canada') => {
+export async function geocodeAddress (address, city, postalCode, country = 'Canada') {
   // Validate inputs - require at least address and postal code for accurate geocoding
   if (!address || !postalCode) {
     console.warn('Geocoding: Incomplete address - need at least street address and postal code')
@@ -108,7 +108,7 @@ export const geocodeAddress = async (address, city, postalCode, country = 'Canad
  * @param {Object} parent - Parent object or DTO with address fields
  * @returns {Promise<{latitude: number, longitude: number}|null>} Coordinates or null
  */
-export const geocodeParentAddress = async parent => {
+export async function geocodeParentAddress (parent) {
   return geocodeAddress(
     parent.address,
     parent.city,
@@ -124,7 +124,7 @@ export const geocodeParentAddress = async parent => {
  * @param {Function} onProgress - Optional callback for progress updates (index, total, result)
  * @returns {Promise<Array<{latitude: number, longitude: number}|null>>} Array of coordinates (null for failed geocoding)
  */
-export const batchGeocodeAddresses = async (addresses, onProgress = null) => {
+export async function batchGeocodeAddresses (addresses, onProgress = null) {
   const results = []
 
   for (let i = 0; i < addresses.length; i++) {
@@ -152,7 +152,7 @@ export const batchGeocodeAddresses = async (addresses, onProgress = null) => {
  * @param {number} longitude - Longitude value
  * @returns {boolean} True if coordinates are valid
  */
-export const isValidCoordinates = (latitude, longitude) => {
+export function isValidCoordinates (latitude, longitude) {
   return (
     latitude !== null
     && longitude !== null

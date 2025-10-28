@@ -116,7 +116,7 @@
   })
 
   // Switch to latest version (V2)
-  const switchToLatest = () => {
+  function switchToLatest () {
     router.push({
       path: route.path,
       query: { ...route.query, v: undefined }, // Remove v parameter to default to v2
@@ -124,7 +124,7 @@
   }
 
   // Validate token with backend
-  const validateToken = async () => {
+  async function validateToken () {
     try {
       loading.value = true
       error.value = null
@@ -189,13 +189,13 @@
   }
 
   // Retry loading data
-  const retryLoad = async () => {
+  async function retryLoad () {
     retryCount.value++
     await validateToken()
   }
 
   // Get user-friendly error title
-  const getErrorTitle = () => {
+  function getErrorTitle () {
     switch (error.value) {
       case 'missing_token':
       case 'invalid_token':
@@ -215,7 +215,7 @@
   }
 
   // Get user-friendly error message
-  const getErrorMessage = () => {
+  function getErrorMessage () {
     switch (error.value) {
       case 'missing_token':
       case 'invalid_token': {

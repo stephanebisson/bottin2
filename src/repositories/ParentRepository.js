@@ -10,7 +10,6 @@ import { generateParentId } from '@/utils/parentIdGenerator.js'
  */
 export class ParentRepository {
   constructor () {
-    this.collectionName = 'parents'
     this.collectionRef = collection(db, this.collectionName)
   }
 
@@ -287,4 +286,5 @@ export class ParentRepository {
       throw new Error(`Failed to get parent statistics: ${error.message}`)
     }
   }
+  collectionName = 'parents';
 }

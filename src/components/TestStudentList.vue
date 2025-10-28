@@ -230,7 +230,7 @@
   })
 
   // Load data using DTO approach
-  const loadDTOData = async () => {
+  async function loadDTOData () {
     try {
       dtoLoading.value = true
       dtoError.value = null
@@ -250,7 +250,7 @@
   }
 
   // Load data using existing store approach
-  const loadStoreData = async () => {
+  async function loadStoreData () {
     try {
       storeLoading.value = true
       storeError.value = null
@@ -271,7 +271,7 @@
   }
 
   // Compare data between approaches
-  const compareData = () => {
+  function compareData () {
     const issues = []
     let dtoValidationPassed = 0
     let storeValidationPassed = 0
@@ -317,7 +317,7 @@
   }
 
   // Test repository methods
-  const testRepository = async () => {
+  async function testRepository () {
     try {
       testLoading.value = true
       const tests = []
@@ -405,7 +405,7 @@
   }
 
   // Test parent lookup functionality
-  const testParentLookup = async () => {
+  async function testParentLookup () {
     try {
       parentTestLoading.value = true
       const tests = []
