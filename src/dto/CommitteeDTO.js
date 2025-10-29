@@ -7,7 +7,9 @@ export class CommitteeDTO {
   constructor (data = {}) {
     this.id = data.id || null
     this.name = this.sanitizeString(data.name)
+    this.description = data.description ? this.sanitizeString(data.description) : ''
     this.email = data.email ? this.sanitizeString(data.email).toLowerCase() : ''
+    this.url = data.url ? this.sanitizeString(data.url) : ''
     this.members = this.sanitizeMembers(data.members)
 
     // Metadata
@@ -123,7 +125,9 @@ export class CommitteeDTO {
   toFirestore () {
     return {
       name: this.name,
+      description: this.description,
       email: this.email,
+      url: this.url,
       updatedAt: new Date(),
       createdAt: this.createdAt || new Date(),
     }
@@ -158,7 +162,9 @@ export class CommitteeDTO {
     return {
       id: this.id,
       name: this.name,
+      description: this.description,
       email: this.email,
+      url: this.url,
       members: this.members,
       memberCount: this.memberCount,
       parentMembers: this.parentMembers,

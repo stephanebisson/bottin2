@@ -222,52 +222,21 @@
       </div>
     </PrintPage>
 
-    <!-- Other Committees -->
-    <section v-if="otherCommittees.length > 0" class="committees-section page-break">
-      <h1 class="section-title">Autres comités</h1>
-
-      <div v-for="committee in otherCommittees" :key="committee.id" class="committee">
-        <!-- Committee Name and Email -->
-        <div class="committee-header-inline">
-          <h2 class="committee-name">{{ committee.name }}</h2>
-          <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+    <!-- Fondation - Full Page -->
+    <PrintPage v-if="fondation">
+      <div class="committee-full-page">
+        <!-- Committee Header -->
+        <div class="committee-header">
+          <h1 class="committee-title">{{ fondation.name }}</h1>
+          <span v-if="fondation.url" class="committee-url">{{ fondation.url }}</span>
+          <span v-else-if="fondation.email" class="committee-email">{{ fondation.email }}</span>
         </div>
 
-        <!-- Parent Members -->
-        <div v-if="committee.parentMembers.length > 0" class="committee-section-compact">
-          <h3 class="section-subtitle-compact">Parents</h3>
-          <table class="committee-table-compact">
+        <!-- Members (no parent/staff grouping) -->
+        <div v-if="fondation.enrichedMembers.length > 0" class="committee-section">
+          <table class="committee-table">
             <tbody>
-              <template v-for="roleGroup in groupMembersByRole(committee.parentMembers)" :key="roleGroup.role">
-                <!-- Role header row -->
-                <tr class="role-header-row">
-                  <td class="role-header-cell" colspan="3">
-                    {{ roleGroup.role || 'Membre' }}
-                  </td>
-                </tr>
-                <!-- Member rows -->
-                <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
-                  <td class="member-name-cell">
-                    {{ member.fullName }}
-                  </td>
-                  <td class="phone-cell">
-                    {{ formatPhone(member.phone) || '' }}
-                  </td>
-                  <td class="email-cell">
-                    {{ member.email || '' }}
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Staff Members -->
-        <div v-if="committee.staffMembers.length > 0" class="committee-section-compact">
-          <h3 class="section-subtitle-compact">Personnel</h3>
-          <table class="committee-table-compact">
-            <tbody>
-              <template v-for="roleGroup in groupMembersByRole(committee.staffMembers)" :key="roleGroup.role">
+              <template v-for="roleGroup in groupMembersByRole(fondation.enrichedMembers)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
                   <td class="role-header-cell" colspan="3">
@@ -291,53 +260,291 @@
           </table>
         </div>
       </div>
+    </PrintPage>
+
+    <!-- Other Committees - Page 1 -->
+    <section class="committees-section page-break">
+      <h1 class="section-title">Comités</h1>
+
+      <!-- En lien avec le projet éducatif -->
+      <h2 class="committee-category-title">En lien avec le projet éducatif</h2>
+      <div v-for="committee in getCommitteesByNames(['Admissions', 'CAMPÉR'])" :key="committee.id" class="committee">
+        <!-- Committee Name and Email/URL -->
+        <div class="committee-header-inline">
+          <h3 class="committee-name">
+            {{ committee.name }}
+            <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+          </h3>
+          <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+          <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+        </div>
+
+        <!-- Members (no parent/staff grouping, no role grouping) -->
+        <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+          <table class="committee-table-compact">
+            <tbody>
+              <!-- Member rows (no role grouping, bold porte-parole) -->
+              <tr v-for="member in committee.enrichedMembers" :key="member.memberId" class="member-row" :class="{ 'member-bold': member.isPorteParole }">
+                <td class="member-name-cell">
+                  {{ member.fullName }}
+                </td>
+                <td class="phone-cell">
+                  {{ formatPhone(member.phone) || '' }}
+                </td>
+                <td class="email-cell">
+                  {{ member.email || '' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Communications -->
+      <h2 class="committee-category-title">Communications</h2>
+      <div v-for="committee in getCommitteesByNames(['Bottin', 'Groupe Facebook', 'OPP'])" :key="committee.id" class="committee">
+        <!-- Committee Name and Email/URL -->
+        <div class="committee-header-inline">
+          <h3 class="committee-name">
+            {{ committee.name }}
+            <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+          </h3>
+          <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+          <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+        </div>
+
+        <!-- Members (no parent/staff grouping, no role grouping) -->
+        <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+          <table class="committee-table-compact">
+            <tbody>
+              <!-- Member rows (no role grouping, bold porte-parole) -->
+              <tr v-for="member in committee.enrichedMembers" :key="member.memberId" class="member-row" :class="{ 'member-bold': member.isPorteParole }">
+                <td class="member-name-cell">
+                  {{ member.fullName }}
+                </td>
+                <td class="phone-cell">
+                  {{ formatPhone(member.phone) || '' }}
+                </td>
+                <td class="email-cell">
+                  {{ member.email || '' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
-    <!-- Classes Section -->
-    <section id="section-classes" class="classes-section page-break">
-      <h1 class="section-title">Classes</h1>
+    <!-- Other Committees - Page 2 -->
+    <section class="committees-section page-break">
+      <!-- Activités à l'école -->
+      <h2 class="committee-category-title">Activités à l'école</h2>
+      <div v-for="committee in getCommitteesByNames(['Ateliers', 'Bazar', 'Bibliothèque'])" :key="committee.id" class="committee">
+        <!-- Committee Name and Email/URL -->
+        <div class="committee-header-inline">
+          <h3 class="committee-name">
+            {{ committee.name }}
+            <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+          </h3>
+          <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+          <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+        </div>
 
-      <div v-for="classItem in firebaseStore.classes" :key="classItem.id" class="class-item">
-        <!-- Class Header -->
-        <h2 class="class-name">{{ classItem.className }}</h2>
+        <!-- Members (no parent/staff grouping, no role grouping) -->
+        <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+          <table class="committee-table-compact">
+            <tbody>
+              <!-- Member rows (no role grouping, bold porte-parole) -->
+              <tr v-for="member in committee.enrichedMembers" :key="member.memberId" class="member-row" :class="{ 'member-bold': member.isPorteParole }">
+                <td class="member-name-cell">
+                  {{ member.fullName }}
+                </td>
+                <td class="phone-cell">
+                  {{ formatPhone(member.phone) || '' }}
+                </td>
+                <td class="email-cell">
+                  {{ member.email || '' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other Committees - Page 3 -->
+    <section class="committees-section page-break">
+      <div v-for="committee in getCommitteesByNames(['JEDI', 'FEVES', 'Comité des usagers SDG'])" :key="committee.id" class="committee">
+        <!-- Committee Name and Email/URL -->
+        <div class="committee-header-inline">
+          <h3 class="committee-name">
+            {{ committee.name }}
+            <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+          </h3>
+          <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+          <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+        </div>
+
+        <!-- Members (no parent/staff grouping, no role grouping) -->
+        <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+          <table class="committee-table-compact">
+            <tbody>
+              <!-- Member rows (no role grouping, bold porte-parole) -->
+              <tr v-for="member in committee.enrichedMembers" :key="member.memberId" class="member-row" :class="{ 'member-bold': member.isPorteParole }">
+                <td class="member-name-cell">
+                  {{ member.fullName }}
+                </td>
+                <td class="phone-cell">
+                  {{ formatPhone(member.phone) || '' }}
+                </td>
+                <td class="email-cell">
+                  {{ member.email || '' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Classes Section - Page 1: 1e-2e -->
+    <section id="section-classes" class="classes-section page-break">
+      <div class="class-page-header">
+        <h1 class="section-title">Liste des classes</h1>
+        <span class="class-level-badge">1<sup>e</sup>-2<sup>e</sup></span>
+      </div>
+
+      <div v-for="classItem in getClassesByLevelRange([1, 2])" :key="classItem.id" class="class-block">
+        <!-- Class Name -->
+        <h2 class="class-title">{{ classItem.className }}</h2>
 
         <!-- Teacher -->
-        <div v-if="classItem.teacher" class="class-teacher">
+        <div v-if="classItem.teacher" class="class-info-line">
           <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
         </div>
 
         <!-- Parent Reps -->
-        <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps">
+        <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
           <strong>Représentants des parents :</strong>
-          <div class="parent-reps-list">
-            <div v-if="classItem.parent_rep_1" class="parent-rep">
-              <span class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</span>
-              <span v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-contact">
-                <span v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</span>
-                <span v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</span>
-              </span>
+          <div class="parent-reps-grid">
+            <div v-if="classItem.parent_rep_1" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
+              </div>
             </div>
-            <div v-if="classItem.parent_rep_2" class="parent-rep">
-              <span class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</span>
-              <span v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-contact">
-                <span v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</span>
-                <span v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</span>
-              </span>
+            <div v-if="classItem.parent_rep_2" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Students by Level -->
-        <div class="class-students">
-          <strong>Élèves :</strong>
-          <div class="students-by-level">
-            <div v-for="levelData in getStudentsByLevel(classItem.classLetter)" :key="levelData.level" class="level-group">
-              <div class="level-title">{{ formatGradeLevel(levelData.level) }}</div>
-              <div class="student-list">
-                <span v-for="(student, index) in levelData.students" :key="student.id">
-                  {{ student.first_name }} {{ student.last_name }}<template v-if="index < levelData.students.length - 1">, </template>
-                </span>
+        <!-- Students in 2 columns -->
+        <div class="class-students-section">
+          <div class="students-two-columns">
+            <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+              {{ student.first_name }} {{ student.last_name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Classes Section - Page 2: 3e-4e -->
+    <section class="classes-section page-break">
+      <div class="class-page-header">
+        <h1 class="section-title">Liste des classes</h1>
+        <span class="class-level-badge">3<sup>e</sup>-4<sup>e</sup></span>
+      </div>
+
+      <div v-for="classItem in getClassesByLevelRange([3, 4])" :key="classItem.id" class="class-block">
+        <!-- Class Name -->
+        <h2 class="class-title">{{ classItem.className }}</h2>
+
+        <!-- Teacher -->
+        <div v-if="classItem.teacher" class="class-info-line">
+          <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
+        </div>
+
+        <!-- Parent Reps -->
+        <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
+          <strong>Représentants des parents :</strong>
+          <div class="parent-reps-grid">
+            <div v-if="classItem.parent_rep_1" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
               </div>
+            </div>
+            <div v-if="classItem.parent_rep_2" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Students in 2 columns -->
+        <div class="class-students-section">
+          <div class="students-two-columns">
+            <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+              {{ student.first_name }} {{ student.last_name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Classes Section - Page 3: 5e-6e -->
+    <section class="classes-section page-break">
+      <div class="class-page-header">
+        <h1 class="section-title">Liste des classes</h1>
+        <span class="class-level-badge">5<sup>e</sup>-6<sup>e</sup></span>
+      </div>
+
+      <div v-for="classItem in getClassesByLevelRange([5, 6])" :key="classItem.id" class="class-block">
+        <!-- Class Name -->
+        <h2 class="class-title">{{ classItem.className }}</h2>
+
+        <!-- Teacher -->
+        <div v-if="classItem.teacher" class="class-info-line">
+          <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
+        </div>
+
+        <!-- Parent Reps -->
+        <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
+          <strong>Représentants des parents :</strong>
+          <div class="parent-reps-grid">
+            <div v-if="classItem.parent_rep_1" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
+              </div>
+            </div>
+            <div v-if="classItem.parent_rep_2" class="parent-rep-card">
+              <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
+              <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
+                <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
+                <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Students in 2 columns -->
+        <div class="class-students-section">
+          <div class="students-two-columns">
+            <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+              {{ student.first_name }} {{ student.last_name }}
             </div>
           </div>
         </div>
@@ -549,6 +756,7 @@
                 fullName: parentMatch.fullName,
                 phone: parentMatch.phone,
                 memberType: 'parent',
+                isPorteParole: member.role?.toLowerCase() === 'porte-parole',
               }
             }
           } else if (member.member_type === 'staff') {
@@ -560,6 +768,7 @@
                 fullName: staffMatch.fullName,
                 phone: staffMatch.phone,
                 memberType: 'staff',
+                isPorteParole: member.role?.toLowerCase() === 'porte-parole',
               }
             }
           }
@@ -571,6 +780,7 @@
             fullName: `[${member.memberId}]`,
             phone: null,
             memberType: 'unknown',
+            isPorteParole: member.role?.toLowerCase() === 'porte-parole',
           }
         })
         .toSorted((a, b) => {
@@ -605,10 +815,48 @@
     return enrichedCommittees.value.find(c => c.name === "Conseil d'établissement") || null
   })
 
-  // Other committees (not Conseil d'établissement)
-  const otherCommittees = computed(() => {
-    return enrichedCommittees.value.filter(c => c.name !== "Conseil d'établissement")
+  // Fondation (special treatment - full page)
+  const fondation = computed(() => {
+    return enrichedCommittees.value.find(c => c.name === "Fondation") || null
   })
+
+  // Other committees (not Conseil d'établissement or Fondation)
+  const otherCommittees = computed(() => {
+    return enrichedCommittees.value.filter(c =>
+      c.name !== "Conseil d'établissement" && c.name !== "Fondation"
+    )
+  })
+
+  // Helper: Get committees by names
+  function getCommitteesByNames (names) {
+    return enrichedCommittees.value.filter(c => names.includes(c.name))
+  }
+
+  // Helper: Get classes by level range
+  function getClassesByLevelRange (levels) {
+    return firebaseStore.classes.filter(classItem => {
+      // Get students in this class to determine levels
+      const students = firebaseStore.studentsDTO.filter(s => s.className === classItem.classLetter)
+      // Check if any student in this class has a level in the specified range
+      return students.some(s => levels.includes(Number(s.level)))
+    })
+  }
+
+  // Helper: Get students for a class (sorted alphabetically)
+  function getClassStudents (classLetter) {
+    return firebaseStore.studentsDTO
+      .filter(s => s.className === classLetter)
+      .toSorted((a, b) => {
+        const nameA = `${a.first_name} ${a.last_name}`.toLowerCase()
+        const nameB = `${b.first_name} ${b.last_name}`.toLowerCase()
+        return nameA.localeCompare(nameB)
+      })
+  }
+
+  // Helper: Check if student is a student rep
+  function isStudentRep (studentId, classItem) {
+    return classItem.student_rep_1 === studentId || classItem.student_rep_2 === studentId
+  }
 
   // Helper: Group members by role
   function groupMembersByRole (members) {
@@ -1276,6 +1524,13 @@
   color: #333;
 }
 
+.committee-url {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12pt;
+  font-weight: 500;
+  color: #333;
+}
+
 .committee-section {
   margin-bottom: 2rem;
 }
@@ -1340,6 +1595,14 @@
 }
 
 /* Committees Section - Compact Layout (for other committees) */
+.committee-category-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16pt;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem 0;
+  color: #444;
+}
+
 .committee {
   margin-bottom: 2rem;
   page-break-inside: avoid;
@@ -1361,7 +1624,20 @@
   margin: 0;
 }
 
+.committee-description {
+  font-weight: normal;
+  font-style: italic;
+  color: #666;
+  margin-left: 0.25rem;
+}
+
 .committee-email-inline {
+  font-size: 10pt;
+  font-weight: 500;
+  color: #666;
+}
+
+.committee-url-inline {
   font-size: 10pt;
   font-weight: 500;
   color: #666;
@@ -1395,77 +1671,88 @@
   vertical-align: top;
 }
 
+.member-bold {
+  font-weight: 700;
+}
+
 /* Classes Section */
-.class-item {
+.class-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid black;
+}
+
+.class-level-badge {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18pt;
+  font-weight: 600;
+  color: #333;
+}
+
+.class-block {
+  margin-bottom: 2rem;
   page-break-inside: avoid;
 }
 
-.class-name {
+.class-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 16pt;
   font-weight: bold;
-  margin: 0 0 0.5rem 0;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid #999;
+  margin: 0 0 0.75rem 0;
+  color: #000;
 }
 
-.class-teacher {
+.class-info-line {
   font-size: 10pt;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.class-parent-reps {
+.class-parent-reps-section {
   font-size: 10pt;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-.parent-reps-list {
-  margin-left: 1rem;
-  margin-top: 0.25rem;
+.parent-reps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.parent-rep {
-  margin-bottom: 0.25rem;
+.parent-rep-card {
+  font-size: 9pt;
 }
 
 .parent-rep-name {
   font-weight: 600;
-  display: block;
+  margin-bottom: 0.25rem;
 }
 
-.parent-rep-contact {
+.parent-rep-details {
+  line-height: 1.4;
+}
+
+.class-students-section {
+  margin-top: 0.75rem;
+}
+
+.students-two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem 1rem;
   font-size: 9pt;
-  margin-left: 1rem;
+  line-height: 1.4;
 }
 
-.parent-rep-contact span {
-  display: block;
+.student-item {
+  page-break-inside: avoid;
 }
 
-.class-students {
-  font-size: 10pt;
-}
-
-.students-by-level {
-  margin-left: 1rem;
-  margin-top: 0.25rem;
-}
-
-.level-group {
-  margin-bottom: 0.5rem;
-}
-
-.level-title {
-  font-weight: 600;
-  font-size: 10pt;
-  margin-bottom: 0.1rem;
-}
-
-.student-list {
-  font-size: 9pt;
-  line-height: 1.3;
-  margin-left: 0.5rem;
+.student-rep {
+  font-weight: 700;
 }
 
 /* Families Section */
