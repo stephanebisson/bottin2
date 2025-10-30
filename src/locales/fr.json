@@ -703,7 +703,7 @@
   "footer": {
     "copyright": "&copy; 2025 Comité Bottin",
     "organizationName": "Bottin Étoile Filante",
-    "sendFeedback": "Envoyer des commentaires",
+    "sendFeedback": "Commentaires",
     "switchLanguage": "Basculer vers {language}"
   },
   "languageSelector": {
