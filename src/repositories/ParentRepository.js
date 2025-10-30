@@ -128,6 +128,35 @@ export class ParentRepository {
   }
 
   /**
+   * Get parent by email
+   * @param {string} email - Parent email address
+   */
+  async getByEmail (email) {
+    try {
+      const emailLower = email.toLowerCase().trim()
+      console.log(`ParentRepository: Loading parent with email ${emailLower}...`)
+      const q = query(
+        this.collectionRef,
+        where('email', '==', emailLower),
+      )
+      const snapshot = await getDocs(q)
+
+      if (snapshot.empty) {
+        console.log(`ParentRepository: No parent found with email ${emailLower}`)
+        return null
+      }
+
+      const parent = ParentDTO.fromFirestore(snapshot.docs[0])
+      console.log(`ParentRepository: Loaded parent ${parent.fullName}`)
+
+      return parent
+    } catch (error) {
+      console.error(`ParentRepository: Error loading parent by email ${email}:`, error)
+      throw new Error(`Failed to load parent by email ${email}: ${error.message}`)
+    }
+  }
+
+  /**
    * Save parent (create or update)
    * Uses structured IDs (FirstName_LastName_ABC123) via setDoc for new parents
    * Uses updateDoc for existing parents

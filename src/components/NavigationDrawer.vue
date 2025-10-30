@@ -225,6 +225,11 @@
             icon: 'mdi-printer',
             to: '/admin/print',
           },
+          {
+            title: t('feedback.admin.title'),
+            icon: 'mdi-message-text',
+            to: '/admin/feedback',
+          },
         ],
       })
     }

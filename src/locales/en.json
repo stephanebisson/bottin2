@@ -43,6 +43,7 @@
     "chooseLanguage": "Choose Language",
     "cancel": "Cancel",
     "save": "Save",
+    "delete": "Delete",
     "actions": "Actions",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -639,9 +640,58 @@
     "familiesNeedGeocoding": "{count} families with complete addresses still need geocoding to appear on the map.",
     "familiesIncompleteAddress": "{count} families have incomplete addresses (missing street address or postal code) and cannot be geocoded."
   },
+  "feedback": {
+    "title": "Send Feedback",
+    "description": "Share your thoughts, suggestions, or questions about the school directory.",
+    "messageLabel": "Your message",
+    "messagePlaceholder": "Tell us what you think, report an issue, or ask a question...",
+    "privacyNote": "Your feedback will be reviewed by the administrators. Your contact information will be included so we can follow up if needed.",
+    "submitButton": "Send Feedback",
+    "success": "Thank you for your feedback! We'll review it and get back to you if needed.",
+    "validation": {
+      "messageRequired": "Please enter your feedback message",
+      "messageTooShort": "Message must be at least 10 characters",
+      "messageTooLong": "Message must be less than 5000 characters"
+    },
+    "error": {
+      "parentNotFound": "Unable to identify your account. Please make sure you're logged in.",
+      "submitFailed": "Failed to submit feedback. Please try again."
+    },
+    "admin": {
+      "title": "Feedback Management",
+      "totalFeedback": "Total feedback",
+      "pendingFeedback": "Pending",
+      "resolvedFeedback": "Resolved",
+      "filterByStatus": "Filter by status",
+      "allFeedback": "All feedback",
+      "pendingOnly": "Pending only",
+      "resolvedOnly": "Resolved only",
+      "date": "Date",
+      "parent": "Parent",
+      "message": "Message",
+      "status": "Status",
+      "fullMessage": "Full Message",
+      "adminNotes": "Admin Notes",
+      "noAdminNotes": "No admin notes yet",
+      "editNotes": "Edit admin notes",
+      "adminNotesLabel": "Admin notes",
+      "adminNotesPlaceholder": "Add internal notes about this feedback...",
+      "markAsResolved": "Mark as resolved",
+      "markAsPending": "Mark as pending",
+      "confirmDelete": "Confirm Delete",
+      "deleteWarning": "Are you sure you want to permanently delete this feedback? This action cannot be undone.",
+      "unknownParent": "Unknown parent",
+      "error": {
+        "updateFailed": "Failed to update feedback status",
+        "saveFailed": "Failed to save admin notes",
+        "deleteFailed": "Failed to delete feedback"
+      }
+    }
+  },
   "footer": {
     "copyright": "&copy; 2025 Comité Bottin",
     "organizationName": "Bottin Étoile Filante",
+    "sendFeedback": "Send feedback",
     "switchLanguage": "Switch to {language}"
   },
   "languageSelector": {
