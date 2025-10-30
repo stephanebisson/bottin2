@@ -1058,7 +1058,7 @@
       }
 
       // Sort letters alphabetically and join with hyphens
-      const letterRange = [...letters].sort().join('-')
+      const letterRange = [...letters].toSorted().join('-')
 
       pages.push({
         families: pageFamilies,
@@ -1167,6 +1167,16 @@
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   line-height: 1.4;
+}
+
+/* Screen-only: Document viewer background */
+@media screen {
+  .print-directory {
+    background: #525252;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
 }
 
 /* Access Denied */
@@ -1918,7 +1928,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 10in;
+  height: 100%;
 }
 
 .back-page h1 {
