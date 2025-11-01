@@ -1,8 +1,9 @@
 <template>
   <v-navigation-drawer
+    v-if="isOpen"
     v-model="isOpen"
     location="right"
-    style="height: calc(100vh - 64); max-height: calc(100vh - 64px);"
+    style="height: calc(100vh - 64px); max-height: calc(100vh - 64px);"
     temporary
     :width="isMobile ? '90%' : panelWidth"
   >
