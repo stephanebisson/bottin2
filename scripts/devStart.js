@@ -24,7 +24,7 @@ const RESTORE_DELAY = 5000 // Wait 5 seconds after restore
 const ADMIN_SETUP_DELAY = 3000 // Wait 3 seconds after admin setup
 
 // Configure which backup to use
-const BACKUP_FILE = '2025-10-17T12-05-44-production-backup.json'
+const BACKUP_FILE = '2025-11-01T01-07-51-production-backup.json'
 
 let emulatorProcess
 let viteProcess
