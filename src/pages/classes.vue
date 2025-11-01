@@ -455,6 +455,25 @@
                 </div>
               </div>
             </v-card-text>
+
+            <!-- Card Actions -->
+            <v-card-actions v-if="false" class="pa-3 pt-0">
+              <v-spacer />
+              <MessageButton
+                v-if="authStore.isAuthenticated && getClassParentEmails(classItem.classLetter).length > 0"
+                color="primary"
+                :context-id="`class-${classItem.classLetter}`"
+                :context-label="{
+                  en: `${classItem.className} Parents`,
+                  fr: `Parents de ${classItem.className}`
+                }"
+                :participant-names="getClassParentNames(classItem.classLetter)"
+                :participants="getClassParentEmails(classItem.classLetter)"
+                type="class"
+                variant="elevated"
+                @start-conversation="handleStartConversation"
+              />
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -565,7 +584,8 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, inject, onMounted, ref } from 'vue'
+  import MessageButton from '@/components/messaging/MessageButton.vue'
   import { useI18n } from '@/composables/useI18n'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
@@ -573,6 +593,9 @@
 
   // Feature flags
   const showPopups = ref(false)
+
+  // Get messaging shell reference
+  const messagingShell = inject('messagingShell', null)
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
@@ -848,6 +871,59 @@
 
   function getClassStudents (classLetter) {
     return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
+  }
+
+  // Get all unique parent emails for a class
+  function getClassParentEmails (classLetter) {
+    const students = getClassStudents(classLetter)
+    const emailSet = new Set()
+
+    for (const student of students) {
+      if (student.parent1_id) {
+        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
+        if (parent && parent.email) {
+          emailSet.add(parent.email)
+        }
+      }
+      if (student.parent2_id) {
+        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
+        if (parent && parent.email) {
+          emailSet.add(parent.email)
+        }
+      }
+    }
+
+    return Array.from(emailSet)
+  }
+
+  // Get parent names map for a class
+  function getClassParentNames (classLetter) {
+    const students = getClassStudents(classLetter)
+    const namesMap = {}
+
+    for (const student of students) {
+      if (student.parent1_id) {
+        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
+        if (parent && parent.email) {
+          namesMap[parent.email] = `${parent.first_name} ${parent.last_name}`
+        }
+      }
+      if (student.parent2_id) {
+        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
+        if (parent && parent.email) {
+          namesMap[parent.email] = `${parent.first_name} ${parent.last_name}`
+        }
+      }
+    }
+
+    return namesMap
+  }
+
+  // Handle starting a conversation
+  function handleStartConversation (conversationData) {
+    if (messagingShell?.value) {
+      messagingShell.value.createConversation(conversationData)
+    }
   }
 
   function getStudentsByLevel (classLetter) {

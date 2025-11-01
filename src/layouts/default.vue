@@ -1,6 +1,10 @@
 <template>
   <v-app>
-    <AppBar v-if="!isPrintPage" @toggle-drawer="drawer = !drawer" />
+    <AppBar
+      v-if="!isPrintPage"
+      :messaging-shell-ref="messagingShellRef"
+      @toggle-drawer="drawer = !drawer"
+    />
 
     <NavigationDrawer v-if="!isPrintPage" v-model="drawer" />
 
@@ -9,19 +13,37 @@
     </v-main>
 
     <AppFooter v-if="!isPrintPage" />
+
+    <!-- Messaging System -->
+    <MessagingShell
+      v-if="!isPrintPage && authStore.isAuthenticated"
+      ref="messagingShellRef"
+      :current-user-email="authStore.userEmail"
+      :current-user-name="authStore.userDisplayName"
+    />
   </v-app>
 </template>
 
 <script setup>
-  import { computed, ref, watch } from 'vue'
+  import { computed, provide, ref, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import AppBar from '@/components/AppBar.vue'
   import AppFooter from '@/components/AppFooter.vue'
+  import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
+  import { useAuthStore } from '@/stores/auth'
+
+  const authStore = useAuthStore()
 
   const { mobile } = useDisplay()
   const route = useRoute()
+
+  // Reference to MessagingShell component
+  const messagingShellRef = ref(null)
+
+  // Provide to all child components
+  provide('messagingShell', messagingShellRef)
 
   // Check if current route is a print page
   const isPrintPage = computed(() => {

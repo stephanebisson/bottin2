@@ -138,26 +138,34 @@
                 <ParentInfo
                   v-if="group.parent1"
                   :committees="getParentCommittees(group.parent1.id)"
+                  :current-user-email="authStore.userEmail"
+                  :current-user-name="authStore.userDisplayName"
                   :parent="group.parent1"
                   :search-query="searchQuery"
                   show-address
                   show-committees
                   show-contact
                   show-interests
+                  :show-message-button="authStore.isAuthenticated"
                   variant="detailed"
+                  @start-conversation="handleStartConversation"
                 />
               </v-col>
               <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent2"
                   :committees="getParentCommittees(group.parent2.id)"
+                  :current-user-email="authStore.userEmail"
+                  :current-user-name="authStore.userDisplayName"
                   :parent="group.parent2"
                   :search-query="searchQuery"
                   show-address
                   show-committees
                   show-contact
                   show-interests
+                  :show-message-button="authStore.isAuthenticated"
                   variant="detailed"
+                  @start-conversation="handleStartConversation"
                 />
               </v-col>
             </v-row>
@@ -187,10 +195,14 @@
             >
               <td class="py-3">
                 <ParentInfo
+                  :current-user-email="authStore.userEmail"
+                  :current-user-name="authStore.userDisplayName"
                   :parent="parentData.parent"
                   :search-query="searchQuery"
                   show-contact
+                  :show-message-button="authStore.isAuthenticated"
                   variant="minimal"
+                  @start-conversation="handleStartConversation"
                 />
               </td>
               <td class="py-3">
@@ -231,14 +243,18 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, inject, onMounted, ref } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
   import { useI18n } from '@/composables/useI18n'
+  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
 
   const { t } = useI18n()
+
+  // Get messaging shell reference
+  const messagingShell = inject('messagingShell', null)
 
   // Reactive state
   const searchQuery = ref('')
@@ -247,6 +263,7 @@
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
+  const authStore = useAuthStore()
 
   // Loading status computed
   const loadingStatus = computed(() => {
@@ -456,6 +473,13 @@
 
   function onSearchInput () {
     // Force reactivity update
+  }
+
+  // Handle starting a conversation
+  function handleStartConversation (conversationData) {
+    if (messagingShell?.value) {
+      messagingShell.value.createConversation(conversationData)
+    }
   }
 
   onMounted(async () => {

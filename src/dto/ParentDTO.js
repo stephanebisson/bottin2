@@ -19,6 +19,9 @@ export class ParentDTO {
     this.latitude = this.sanitizeCoordinate(data.latitude)
     this.longitude = this.sanitizeCoordinate(data.longitude)
 
+    // Chat opt-in feature flag
+    this.chat = this.sanitizeBoolean(data.chat)
+
     // Metadata (these fields might exist from Firestore)
     this.createdAt = data.createdAt || null
     this.updatedAt = data.updatedAt || null
@@ -83,6 +86,16 @@ export class ParentDTO {
     }
     const num = Number(value)
     return Number.isNaN(num) ? null : num
+  }
+
+  /**
+   * Sanitize boolean value - ensure it's a proper boolean (defaults to false)
+   */
+  sanitizeBoolean (value) {
+    if (value === true || value === 'true') {
+      return true
+    }
+    return false
   }
 
   /**
@@ -197,6 +210,13 @@ export class ParentDTO {
   }
 
   /**
+   * Check if parent has opted into chat feature
+   */
+  get hasChatEnabled () {
+    return this.chat === true
+  }
+
+  /**
    * Get geolocation as object
    * @returns {{latitude: number, longitude: number}|null} Coordinates or null if not available
    */
@@ -223,6 +243,9 @@ export class ParentDTO {
       // Geolocation
       latitude: this.latitude,
       longitude: this.longitude,
+
+      // Chat opt-in
+      chat: this.chat,
 
       // Metadata
       updatedAt: new Date(),
@@ -268,6 +291,8 @@ export class ParentDTO {
       longitude: this.longitude,
       hasGeolocation: this.hasGeolocation,
       geolocation: this.geolocation,
+      chat: this.chat,
+      hasChatEnabled: this.hasChatEnabled,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     }

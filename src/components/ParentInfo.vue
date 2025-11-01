@@ -63,21 +63,41 @@
     </div>
 
     <!-- Interests (if showInterests) -->
-    <div v-if="showInterests && parent.interests?.length" class="text-body-2 d-flex align-center">
+    <div v-if="showInterests && parent.interests?.length" class="text-body-2 d-flex align-center mb-2">
       <v-icon class="me-1" size="16">mdi-heart</v-icon>
       <span>{{ displayedInterests }}</span>
+    </div>
+
+    <!-- Message Button (if showMessageButton and parent has email and chat enabled) -->
+    <div v-if="showMessageButton && parent.email && parent.hasChatEnabled && currentUserEmail && parent.email !== currentUserEmail" class="mt-2">
+      <MessageButton
+        :participant-names="{
+          [parent.email]: parentName,
+          [currentUserEmail]: currentUserName
+        }"
+        :participants="[parent.email, currentUserEmail]"
+        :show-participant-count="false"
+        size="small"
+        type="direct"
+        :variant="variant === 'compact' ? 'text' : 'outlined'"
+        @start-conversation="handleStartConversation"
+      />
     </div>
 
   </div>
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { computed, inject } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import MessageButton from '@/components/messaging/MessageButton.vue'
   import { useI18n } from '@/composables/useI18n'
   import { getInterestNames } from '@/config/interests'
 
   const { t } = useI18n()
+
+  // Get messaging shell reference
+  const messagingShell = inject('messagingShell', null)
 
   const props = defineProps({
     parent: {
@@ -117,6 +137,10 @@
       type: Boolean,
       default: false,
     },
+    showMessageButton: {
+      type: Boolean,
+      default: false,
+    },
     committees: {
       type: Array,
       default: () => [],
@@ -128,6 +152,14 @@
     role: {
       type: String,
       default: null,
+    },
+    currentUserEmail: {
+      type: String,
+      default: '',
+    },
+    currentUserName: {
+      type: String,
+      default: '',
     },
   })
 
@@ -168,6 +200,13 @@
     if (!props.parent.interests?.length) return ''
     return getInterestNames(props.parent.interests).join(', ')
   })
+
+  // Handle starting a conversation
+  function handleStartConversation (conversationData) {
+    if (messagingShell?.value) {
+      messagingShell.value.createConversation(conversationData)
+    }
+  }
 </script>
 
 <style scoped>

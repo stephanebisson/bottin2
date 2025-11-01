@@ -7,3 +7,9 @@
 <script setup>
   //
 </script>
+
+<style>
+  .firebase-emulator-warning {
+      display: none;
+    }
+</style>

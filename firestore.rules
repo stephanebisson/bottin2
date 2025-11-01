@@ -48,6 +48,74 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
     }
 
+    match /conversations/{conversationId} {
+      // Helper function to check if user is in conversation
+      function isParticipant() {
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email in resource.data.participants;
+      }
+
+      function isParticipantInNew() {
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email in request.resource.data.participants;
+      }
+
+      // Read: if user is a participant
+      allow read: if isParticipant();
+
+      // Create: if user is verified and is in the participants list
+      allow create: if isParticipantInNew();
+
+      // Update: if user is a participant (for marking as read, updating last message, etc.)
+      allow update: if isParticipant();
+
+      // Delete: admins only
+      allow delete: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+    }
+
+    match /messages/{messageId} {
+      // Helper function to check if user is in the conversation
+      function isInConversation() {
+        let conversation = get(/databases/$(database)/documents/conversations/$(resource.data.conversationId));
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email in conversation.data.participants;
+      }
+
+      function isInConversationNew() {
+        let conversation = get(/databases/$(database)/documents/conversations/$(request.resource.data.conversationId));
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email in conversation.data.participants;
+      }
+
+      function isSender() {
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email == resource.data.senderId;
+      }
+
+      function isSenderNew() {
+        return request.auth != null
+          && request.auth.token.email_verified
+          && request.auth.token.email == request.resource.data.senderId;
+      }
+
+      // Read: if user is in the conversation
+      allow read: if isInConversation();
+
+      // Create: if user is verified, is the sender, and is in the conversation
+      allow create: if isInConversationNew() && isSenderNew();
+
+      // Update: if user is in the conversation (for marking as read) or is the sender (for editing)
+      allow update: if isInConversation();
+
+      // Delete: admins only or sender can delete their own messages
+      allow delete: if (request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true) || isSender();
+    }
+
     // Deny all other access by default
     match /{document=**} {
       allow read, write: if false;

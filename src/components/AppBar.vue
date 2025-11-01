@@ -11,14 +11,29 @@
       {{ pageTitle }}
     </v-toolbar-title>
 
-    <div style="flex-grow: 0.5" />
+    <v-spacer />
+
+    <!-- Messaging Icon (when authenticated and chat enabled) -->
+    <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
+      <v-badge
+        color="error"
+        :content="unreadCount"
+        :model-value="unreadCount > 0"
+      >
+        <v-btn
+          icon="mdi-forum"
+          variant="text"
+          @click="handleToggleMessaging"
+        />
+      </v-badge>
+    </template>
 
     <!-- User Menu (when authenticated) -->
     <template v-if="authStore.isAuthenticated">
       <v-menu>
-        <template #activator="{ props }">
+        <template #activator="{ props: menuProps }">
           <v-btn
-            v-bind="props"
+            v-bind="menuProps"
             icon
             variant="text"
           >
@@ -64,9 +79,9 @@
     <!-- Login Button (when not authenticated) -->
     <template v-else>
       <v-tooltip location="bottom">
-        <template #activator="{ props }">
+        <template #activator="{ props: tooltipProps }">
           <v-btn
-            v-bind="props"
+            v-bind="tooltipProps"
             icon
             variant="text"
             @click="$router.push('/auth')"
@@ -88,6 +103,13 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
+  const props = defineProps({
+    messagingShellRef: {
+      type: Object,
+      default: null,
+    },
+  })
+
   defineEmits(['toggle-drawer'])
 
   const route = useRoute()
@@ -98,6 +120,33 @@
   const firebaseStore = useFirebaseDataStore()
   const { dataStats } = firebaseStore
   const authStore = useAuthStore()
+
+  // Check if current user has chat enabled
+  const currentUserHasChat = computed(() => {
+    if (!authStore.isAuthenticated || !authStore.userEmail) return false
+    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+    return currentParent?.hasChatEnabled || false
+  })
+
+  // Computed property to safely access messaging shell's unread count
+  const unreadCount = computed(() => {
+    try {
+      if (!props.messagingShellRef) return 0
+      // The ref might not be set yet, or the component might not expose totalUnreadCount
+      const count = props.messagingShellRef.totalUnreadCount
+      if (typeof count === 'number') return count
+      if (count?.value !== undefined) return count.value
+      return 0
+    } catch {
+      return 0
+    }
+  })
+
+  function handleToggleMessaging() {
+    if (props.messagingShellRef?.toggleMessaging) {
+      props.messagingShellRef.toggleMessaging()
+    }
+  }
 
   const pageTitle = computed(() => {
     const routeName = route.name
