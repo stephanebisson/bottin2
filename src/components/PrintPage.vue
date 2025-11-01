@@ -8,7 +8,20 @@
       'has-overflow': hasOverflow
     }"
   >
-    <slot />
+    <!-- Optional header slot -->
+    <div v-if="$slots.header" class="print-page-header">
+      <slot name="header" />
+    </div>
+
+    <!-- Main content area - fills remaining space -->
+    <div class="print-page-content">
+      <slot />
+    </div>
+
+    <!-- Optional footer slot -->
+    <div v-if="$slots.footer" class="print-page-footer">
+      <slot name="footer" />
+    </div>
   </section>
 </template>
 
@@ -96,6 +109,25 @@
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   line-height: 1.4;
+
+  /* Flexbox layout for header/content/footer structure */
+  display: flex;
+  flex-direction: column;
+}
+
+.print-page-header {
+  flex-shrink: 0;
+}
+
+.print-page-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.print-page-footer {
+  flex-shrink: 0;
 }
 
 /* Screen-only: Document viewer styling */

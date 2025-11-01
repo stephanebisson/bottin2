@@ -415,12 +415,14 @@
 
     <!-- Classes Section - Page 1: 1e-2e -->
     <PrintPage id="section-classes">
-      <div class="classes-section">
+      <template #header>
         <div class="class-page-header">
           <h1 class="section-title">Liste des classes</h1>
           <span class="class-level-badge">1<sup>e</sup>-2<sup>e</sup></span>
         </div>
+      </template>
 
+      <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([1, 2])" :key="classItem.id" class="class-block">
           <!-- Class Name -->
           <h2 class="class-title">{{ classItem.className }}</h2>
@@ -465,12 +467,14 @@
 
     <!-- Classes Section - Page 2: 3e-4e -->
     <PrintPage>
-      <div class="classes-section">
+      <template #header>
         <div class="class-page-header">
           <h1 class="section-title">Liste des classes</h1>
           <span class="class-level-badge">3<sup>e</sup>-4<sup>e</sup></span>
         </div>
+      </template>
 
+      <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([3, 4])" :key="classItem.id" class="class-block">
           <!-- Class Name -->
           <h2 class="class-title">{{ classItem.className }}</h2>
@@ -515,12 +519,14 @@
 
     <!-- Classes Section - Page 3: 5e-6e -->
     <PrintPage>
-      <div class="classes-section">
+      <template #header>
         <div class="class-page-header">
           <h1 class="section-title">Liste des classes</h1>
           <span class="class-level-badge">5<sup>e</sup>-6<sup>e</sup></span>
         </div>
+      </template>
 
+      <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([5, 6])" :key="classItem.id" class="class-block">
           <!-- Class Name -->
           <h2 class="class-title">{{ classItem.className }}</h2>
@@ -565,42 +571,40 @@
 
     <!-- Families Section - Dynamic Pages -->
     <PrintPage v-for="(page, pageIndex) in paginatedFamilies" :id="page.isFirstPage ? 'section-families' : undefined" :key="`family-page-${pageIndex}`">
-      <div class="families-section">
+      <template #header>
         <!-- Section title only on first page -->
         <h1 v-if="page.isFirstPage" class="section-title">Liste alphabétique des enfants</h1>
 
         <!-- Letter range header -->
         <h1 class="families-letter-header">{{ page.letterRange }}</h1>
+      </template>
 
-        <!-- 4 families per page, each taking 25% height -->
-        <div class="families-page-grid">
-          <div v-for="(family, index) in page.families" :key="`family-${pageIndex}-${index}`" class="family">
-            <!-- Students in this family -->
-            <div class="family-students">
-              <span v-for="(student, sIndex) in family.students" :key="student.id">
-                <strong>{{ student.last_name }}, {{ student.first_name }}</strong>
-                <span class="student-class">({{ student.className }}{{ student.level ? ', ' + student.level : '' }})</span><template v-if="sIndex < family.students.length - 1"> · </template>
-              </span>
+      <!-- 4 families per page, each taking 25% height -->
+      <div v-for="(family, index) in page.families" :key="`family-${pageIndex}-${index}`" class="family">
+        <!-- Students in this family -->
+        <div class="family-students">
+          <span v-for="(student, sIndex) in family.students" :key="student.id">
+            <strong>{{ student.last_name }}, {{ student.first_name }}</strong>
+            <span class="student-class">({{ student.className }}{{ student.level ? ', ' + student.level : '' }})</span><template v-if="sIndex < family.students.length - 1"> · </template>
+          </span>
+        </div>
+
+        <!-- Parents -->
+        <div class="family-parents">
+          <div v-if="family.parent1" class="family-parent">
+            <div class="parent-name">{{ family.parent1.fullName }}</div>
+            <div class="parent-contact">
+              <span v-if="family.parent1.email" class="parent-email">{{ family.parent1.email }}</span>
+              <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhone(family.parent1.phone) }}</span>
+              <span v-if="formatAddress(family.parent1)" class="parent-address">{{ formatAddress(family.parent1) }}</span>
             </div>
-
-            <!-- Parents -->
-            <div class="family-parents">
-              <div v-if="family.parent1" class="family-parent">
-                <div class="parent-name">{{ family.parent1.fullName }}</div>
-                <div class="parent-contact">
-                  <span v-if="family.parent1.email" class="parent-email">{{ family.parent1.email }}</span>
-                  <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhone(family.parent1.phone) }}</span>
-                  <span v-if="formatAddress(family.parent1)" class="parent-address">{{ formatAddress(family.parent1) }}</span>
-                </div>
-              </div>
-              <div v-if="family.parent2" class="family-parent">
-                <div class="parent-name">{{ family.parent2.fullName }}</div>
-                <div class="parent-contact">
-                  <span v-if="family.parent2.email" class="parent-email">{{ family.parent2.email }}</span>
-                  <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhone(family.parent2.phone) }}</span>
-                  <span v-if="formatAddress(family.parent2)" class="parent-address">{{ formatAddress(family.parent2) }}</span>
-                </div>
-              </div>
+          </div>
+          <div v-if="family.parent2" class="family-parent">
+            <div class="parent-name">{{ family.parent2.fullName }}</div>
+            <div class="parent-contact">
+              <span v-if="family.parent2.email" class="parent-email">{{ family.parent2.email }}</span>
+              <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhone(family.parent2.phone) }}</span>
+              <span v-if="formatAddress(family.parent2)" class="parent-address">{{ formatAddress(family.parent2) }}</span>
             </div>
           </div>
         </div>
@@ -1220,7 +1224,14 @@
   font-weight: bold;
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
+  border-top: 3px solid black;
   border-bottom: 2px solid black;
+}
+
+/* All h1 elements should have top border */
+h1 {
+  border-top: 3px solid black;
+  padding-top: 0.5rem;
 }
 
 /* Page breaks */
@@ -1748,9 +1759,16 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 1.5rem;
+  padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid black;
+  border-top: 3px solid black;
+  border-bottom: none;
+}
+
+.class-page-header .section-title {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .class-level-badge {
@@ -1760,9 +1778,23 @@
   color: #333;
 }
 
+.classes-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .class-block {
-  margin-bottom: 2rem;
-  page-break-inside: avoid;
+  height: 50%;
+  min-height: 50%;
+  max-height: 50%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.class-block:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 .class-title {
@@ -1770,6 +1802,8 @@
   font-size: 16pt;
   font-weight: bold;
   margin: 0 0 0.75rem 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid black;
   color: #000;
 }
 
@@ -1828,19 +1862,13 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 24pt;
   font-weight: bold;
-  margin: 1rem 0 1.5rem 0;
+  margin: 0;
   text-align: center;
   color: #000;
 }
 
-.families-page-grid {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 5rem); /* Account for header space */
-}
-
-.families-section .section-title + .families-letter-header {
-  margin-top: 0;
+.section-title + .families-letter-header {
+  margin-top: 1rem;
 }
 
 .family {
