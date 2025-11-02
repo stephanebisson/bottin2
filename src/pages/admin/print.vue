@@ -38,29 +38,69 @@
         <h1 class="section-title">Table des matières</h1>
         <div class="toc-items">
           <div class="toc-item">
-            <span class="toc-label">Personnel</span>
+            <span class="toc-label">Personnel (École Étoile filante)</span>
             <span class="toc-dots" />
             <span class="toc-page" data-section="staff">___</span>
           </div>
           <div class="toc-item">
-            <span class="toc-label">Comités</span>
+            <span class="toc-label">Personnel (Service de garde)</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="sdg">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Conseil d'établissement</span>
             <span class="toc-dots" />
             <span class="toc-page" data-section="committees">___</span>
           </div>
           <div class="toc-item">
-            <span class="toc-label">Classes</span>
+            <span class="toc-label">Fondation de l'école Étoile filante</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="fondation">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Comités</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="comites">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Centre de services scolaire de Montréal</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="cssdm">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">REPAQ</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="repaq">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Liste des classes (1<sup>e</sup>-2<sup>e</sup>)</span>
             <span class="toc-dots" />
             <span class="toc-page" data-section="classes">___</span>
           </div>
           <div class="toc-item">
-            <span class="toc-label">Familles</span>
+            <span class="toc-label">Liste des classes (3<sup>e</sup>-4<sup>e</sup>)</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="classes-34">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Liste des classes (5<sup>e</sup>-6<sup>e</sup>)</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="classes-56">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Liste alphabétique des enfants</span>
             <span class="toc-dots" />
             <span class="toc-page" data-section="families">___</span>
           </div>
           <div class="toc-item">
-            <span class="toc-label">Annexes</span>
+            <span class="toc-label">Annexe A</span>
             <span class="toc-dots" />
             <span class="toc-page" data-section="appendix">___</span>
+          </div>
+          <div class="toc-item">
+            <span class="toc-label">Annexe B</span>
+            <span class="toc-dots" />
+            <span class="toc-page" data-section="appendix-b">___</span>
           </div>
         </div>
       </div>
@@ -97,7 +137,7 @@
     </PrintPage>
 
     <!-- Staff Section - SDG -->
-    <PrintPage>
+    <PrintPage id="section-sdg">
       <div class="staff-page">
         <div v-for="group in groupedStaff.filter(g => g.group === 'SDG')" :key="group.group" class="staff-group">
           <!-- Group Header with SDG Phone -->
@@ -223,7 +263,7 @@
     </PrintPage>
 
     <!-- Fondation - Full Page -->
-    <PrintPage v-if="fondation">
+    <PrintPage v-if="fondation" id="section-fondation">
       <div class="committee-full-page">
         <!-- Committee Header -->
         <div class="committee-header">
@@ -263,7 +303,7 @@
     </PrintPage>
 
     <!-- Other Committees - Page 1 -->
-    <PrintPage>
+    <PrintPage id="section-comites">
       <div class="committees-section">
         <h1 class="section-title">Comités</h1>
 
@@ -414,7 +454,7 @@
     </PrintPage>
 
     <!-- CSSDM Committees Page -->
-    <PrintPage>
+    <PrintPage id="section-cssdm">
       <div class="committees-section">
         <!-- CSSDM Header -->
         <h1 class="section-title">Centre de services scolaire de Montréal</h1>
@@ -472,7 +512,7 @@
         </div>
 
         <!-- Second Half: REPAQ -->
-        <div class="cssdm-committee-section">
+        <div id="section-repaq" class="cssdm-committee-section">
           <div v-for="committee in getCommitteesByNames(['REPAQ'])" :key="committee.id" class="committee">
             <!-- Committee Header -->
             <div class="committee-header-repaq">
@@ -572,7 +612,7 @@
     </PrintPage>
 
     <!-- Classes Section - Page 2: 3e-4e -->
-    <PrintPage>
+    <PrintPage id="section-classes-34">
       <template #header>
         <div class="class-page-header">
           <h1 class="section-title">Liste des classes</h1>
@@ -630,7 +670,7 @@
     </PrintPage>
 
     <!-- Classes Section - Page 3: 5e-6e -->
-    <PrintPage>
+    <PrintPage id="section-classes-56">
       <template #header>
         <div class="class-page-header">
           <h1 class="section-title">Liste des classes</h1>
@@ -745,7 +785,7 @@
       </div>
     </PrintPage>
 
-    <PrintPage>
+    <PrintPage id="section-appendix-b">
       <div class="appendix-section">
         <h1 class="section-title">Annexe B</h1>
         <div class="placeholder-section">
@@ -785,11 +825,19 @@
   // ============================================================================
   // Update these numbers after doing a print preview to see actual page numbers
   const TOC_PAGE_NUMBERS = {
-    staff: 3, // Personnel section
-    committees: 5, // Comités section
-    classes: 6, // Classes section
-    families: 8, // Familles section
-    appendix: 15, // Annexes section
+    staff: 3, // Personnel (École Étoile filante)
+    sdg: 4, // Personnel (Service de garde)
+    committees: 5, // Conseil d'établissement
+    fondation: 6, // Fondation de l'école Étoile filante
+    comites: 7, // Comités section (pages 7-9)
+    cssdm: 10, // Centre de services scolaire de Montréal
+    repaq: 10, // REPAQ (on same page as CSSDM)
+    classes: 11, // Liste des classes (1e-2e)
+    'classes-34': 12, // Liste des classes (3e-4e)
+    'classes-56': 13, // Liste des classes (5e-6e)
+    families: 14, // Liste alphabétique des enfants (pages 14+, depends on # of families)
+    appendix: 21, // Annexe A (estimate, adjust after print preview)
+    'appendix-b': 22, // Annexe B (estimate, adjust after print preview)
   }
   // ============================================================================
 
