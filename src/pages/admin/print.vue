@@ -697,14 +697,18 @@
         <h1 class="families-letter-header">{{ page.letterRange }}</h1>
       </template>
 
-      <!-- 4 families per page, each taking 25% height -->
+      <!-- 5 families per page, each taking 20% height -->
       <div v-for="(family, index) in page.families" :key="`family-${pageIndex}-${index}`" class="family">
         <!-- Students in this family -->
         <div class="family-students">
-          <span v-for="(student, sIndex) in family.students" :key="student.id">
-            <strong>{{ student.last_name }}, {{ student.first_name }}</strong>
-            <span class="student-class">({{ student.className }}{{ student.level ? ', ' + student.level : '' }})</span><template v-if="sIndex < family.students.length - 1"> · </template>
-          </span>
+          <div v-for="student in family.students" :key="student.id" class="family-student-row">
+            <div class="family-student-left">
+              <h2 class="student-name">{{ student.last_name }}, {{ student.first_name }}</h2>
+            </div>
+            <div class="family-student-right">
+              {{ getStudentTeacherName(student) }}{{ student.level ? ', ' + formatGradeLevel(student.level) : '' }}
+            </div>
+          </div>
         </div>
 
         <!-- Parents -->
@@ -1200,13 +1204,13 @@
     return groups
   })
 
-  // Paginated families (4 families per page with letter range headers)
+  // Paginated families (5 families per page with letter range headers)
   const paginatedFamilies = computed(() => {
     const families = groupedFamilies.value
     const pages = []
 
-    for (let i = 0; i < families.length; i += 4) {
-      const pageFamilies = families.slice(i, i + 4)
+    for (let i = 0; i < families.length; i += 5) {
+      const pageFamilies = families.slice(i, i + 5)
 
       // Get all unique first letters from student last names on this page
       const letters = new Set()
@@ -1239,6 +1243,15 @@
     if (!parentId) return null
 
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
+  }
+
+  // Helper: Get student's teacher name
+  function getStudentTeacherName (student) {
+    const classItem = firebaseStore.classes.find(c => c.classLetter === student.className)
+    if (!classItem || !classItem.teacher) return ''
+
+    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
+    return teacher ? teacher.fullName : ''
   }
 
   // Helper: Format address
@@ -1539,7 +1552,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14pt;
   font-weight: 600;
-  color: #333;
+  color: #000;
 }
 
 .staff-subgroup {
@@ -1551,7 +1564,7 @@
   font-size: 14pt;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: #555;
+  color: #000;
 }
 
 .staff-table {
@@ -1576,7 +1589,7 @@
 
 .staff-title-cell {
   width: 30%;
-  color: #666;
+  color: #000;
   font-style: italic;
 }
 
@@ -1599,7 +1612,7 @@
 }
 
 .sdg-logo-space {
-  flex: 0 0 40%;
+  flex: 0 0 32%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1612,7 +1625,7 @@
 }
 
 .sdg-info {
-  flex: 0 0 55%;
+  flex: 0 0 63%;
   text-align: right;
   display: flex;
   flex-direction: column;
@@ -1629,19 +1642,19 @@
 
 .sdg-address {
   font-size: 11pt;
-  color: #333;
+  color: #000;
   line-height: 1.4;
 }
 
 .sdg-phone {
   font-size: 12pt;
   font-weight: 600;
-  color: #333;
+  color: #000;
 }
 
 .sdg-url {
   font-size: 10pt;
-  color: #666;
+  color: #000;
   font-style: italic;
 }
 
@@ -1678,7 +1691,7 @@
 
 .sdg-staff-title {
   font-size: 9pt;
-  color: #666;
+  color: #000;
   font-style: italic;
 }
 
@@ -1719,7 +1732,7 @@
 
 .sdg-edu-title-cell {
   width: 50%;
-  color: #666;
+  color: #000;
   font-style: italic;
 }
 
@@ -1751,14 +1764,14 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 500;
-  color: #333;
+  color: #000;
 }
 
 .committee-url {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 500;
-  color: #333;
+  color: #000;
 }
 
 .committee-section {
@@ -1773,7 +1786,7 @@
   font-size: 16pt;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: #555;
+  color: #000;
 }
 
 .committee-table {
@@ -1804,7 +1817,7 @@
 .role-header-cell {
   font-weight: 600;
   font-size: 10pt;
-  color: #333;
+  color: #000;
   padding: 0.4rem 0.75rem !important;
 }
 
@@ -1834,7 +1847,7 @@
   font-size: 16pt;
   font-weight: 600;
   margin: 1.5rem 0 1rem 0;
-  color: #444;
+  color: #000;
 }
 
 .committee {
@@ -1861,20 +1874,20 @@
 .committee-description {
   font-weight: normal;
   font-style: italic;
-  color: #666;
+  color: #000;
   margin-left: 0.25rem;
 }
 
 .committee-email-inline {
   font-size: 10pt;
   font-weight: 500;
-  color: #666;
+  color: #000;
 }
 
 .committee-url-inline {
   font-size: 10pt;
   font-weight: 500;
-  color: #666;
+  color: #000;
 }
 
 .committee-section-compact {
@@ -1886,7 +1899,7 @@
   font-size: 11pt;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: #555;
+  color: #000;
 }
 
 .committee-table-compact {
@@ -1918,26 +1931,26 @@
 
 .cssdm-address {
   font-size: 11pt;
-  color: #333;
+  color: #000;
   line-height: 1.5;
 }
 
 .cssdm-phone {
   font-size: 11pt;
   font-weight: 600;
-  color: #333;
+  color: #000;
   margin-top: 0.5rem;
 }
 
 .cssdm-email {
   font-size: 10pt;
-  color: #333;
+  color: #000;
   margin-top: 0.25rem;
 }
 
 .cssdm-url {
   font-size: 10pt;
-  color: #666;
+  color: #000;
   font-style: italic;
   margin-top: 0.25rem;
 }
@@ -1983,7 +1996,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 18pt;
   font-weight: 600;
-  color: #333;
+  color: #000;
 }
 
 .classes-content {
@@ -2026,13 +2039,13 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13pt;
   font-weight: 600;
-  color: #666;
+  color: #000;
 }
 
 .class-teacher-name {
   font-size: 10.5pt;
   font-style: italic;
-  color: #555;
+  color: #000;
   margin-bottom: 0.5rem;
 }
 
@@ -2098,7 +2111,7 @@
 .grade-label {
   font-size: 8.5pt;
   font-weight: bold;
-  color: #333;
+  color: #000;
   margin-bottom: 0.35rem;
   padding-bottom: 0.2rem;
   border-bottom: 1px solid #ddd;
@@ -2136,18 +2149,14 @@
 }
 
 .family {
-  height: 25%;
-  min-height: 25%;
-  max-height: 25%;
+  height: 20%;
+  min-height: 20%;
+  max-height: 20%;
   display: flex;
   flex-direction: column;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
   overflow: hidden;
-}
-
-.family:last-child {
-  border-bottom: none;
 }
 
 .family-students {
@@ -2156,10 +2165,39 @@
   line-height: 1.4;
 }
 
+.family-student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.2rem;
+}
+
+.family-student-left {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.student-name {
+  font-size: 11pt;
+  font-weight: bold;
+  margin: 0;
+  display: inline;
+}
+
+.family-student-right {
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 9pt;
+  color: #000;
+  margin-left: 1rem;
+}
+
 .student-class {
   font-weight: normal;
   font-size: 9pt;
-  color: #666;
+  color: #000;
 }
 
 .family-parents {
@@ -2170,12 +2208,13 @@
 }
 
 .family-parent {
-  font-size: 9pt;
+  font-size: 10pt;
 }
 
 .parent-name {
   font-weight: 600;
   margin-bottom: 0.1rem;
+  font-size: 10pt;
 }
 
 .parent-contact span {
@@ -2184,16 +2223,18 @@
 }
 
 .parent-email {
-  color: #333;
+  color: #000;
+  font-size: 10pt;
 }
 
 .parent-phone {
-  color: #333;
+  color: #000;
+  font-size: 10pt;
 }
 
 .parent-address {
-  color: #666;
-  font-size: 8pt;
+  color: #000;
+  font-size: 9pt;
 }
 
 /* Placeholder sections */
@@ -2210,7 +2251,7 @@
 }
 
 .placeholder-text {
-  color: #666;
+  color: #000;
   font-style: italic;
   font-size: 12pt;
 }
@@ -2297,7 +2338,7 @@
     content: "Étoile filante - Le Gros Bottin | Page " counter(page);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 9pt;
-    color: #666;
+    color: #000;
   }
 }
 

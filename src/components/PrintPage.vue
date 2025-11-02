@@ -179,8 +179,11 @@
   .print-page {
     /* Remove screen-only styling */
     margin: 0;
-
+    box-shadow: none;
     border: 0;
+
+    /* Remove padding - the @page margins handle spacing */
+    padding: 0;
 
     /* Ensure exact page sizing */
     width: 100%;
@@ -196,6 +199,10 @@
 
   .print-page.first-page {
     page-break-before: avoid;
+  }
+
+  .print-page.no-footer {
+    padding-bottom: 0;
   }
 }
 </style>
