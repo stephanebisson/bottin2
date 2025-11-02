@@ -831,6 +831,13 @@
     content: none;
   }
 }
+
+/* Hide footer on last page (back page) */
+@page :last {
+  @bottom-center {
+    content: none;
+  }
+}
 </style>
 
 <style>
