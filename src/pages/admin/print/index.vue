@@ -136,6 +136,9 @@
     <!-- Families Pages -->
     <FamiliesPages :paginated-families="paginatedFamiliesWithTeachers" />
 
+    <!-- Référentiel -->
+    <Referentiel />
+
     <!-- Appendixes -->
     <AppendixPage placeholder-text="[À REMPLIR : Contenu de l'annexe A]" section-id="section-appendix" title="Annexe A" />
     <AppendixPage placeholder-text="[À REMPLIR : Contenu de l'annexe B]" section-id="section-appendix-b" title="Annexe B" />
@@ -160,6 +163,7 @@
   import CommitteeTable from './components/CommitteeTable.vue'
   import CssdmPage from './CssdmPage.vue'
   import FamiliesPages from './FamiliesPages.vue'
+  import Referentiel from './Referentiel.vue'
   import StaffSection from './StaffSection.vue'
   import TableOfContents from './TableOfContents.vue'
   import TitlePage from './TitlePage.vue'
@@ -180,6 +184,7 @@
     'classes-34': 12, // Liste des classes (3e-4e)
     'classes-56': 13, // Liste des classes (5e-6e)
     families: 14, // Liste alphabétique des enfants (pages 14+, depends on # of families)
+    referentiel: 20, // Référentiel (estimate, adjust after print preview)
     appendix: 21, // Annexe A (estimate, adjust after print preview)
     'appendix-b': 22, // Annexe B (estimate, adjust after print preview)
   }

@@ -59,6 +59,11 @@
           <span class="toc-page" data-section="families">___</span>
         </div>
         <div class="toc-item">
+          <span class="toc-label">Référentiel</span>
+          <span class="toc-dots" />
+          <span class="toc-page" data-section="referentiel">___</span>
+        </div>
+        <div class="toc-item">
           <span class="toc-label">Annexe A</span>
           <span class="toc-dots" />
           <span class="toc-page" data-section="appendix">___</span>
