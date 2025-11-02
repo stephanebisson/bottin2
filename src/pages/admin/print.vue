@@ -164,10 +164,10 @@
 
         <!-- Parent Members Section -->
         <div v-if="conseilEtablissement.parentMembers.length > 0" class="committee-section">
-          <h2 class="section-subtitle">Parents</h2>
+          <h2 class="section-subtitle">Équipe parents</h2>
           <table class="committee-table">
             <tbody>
-              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.parentMembers)" :key="roleGroup.role">
+              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.parentMembers, conseilEtablissement.name)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
                   <td class="role-header-cell" colspan="3">
@@ -193,10 +193,10 @@
 
         <!-- Staff Members Section -->
         <div v-if="conseilEtablissement.staffMembers.length > 0" class="committee-section">
-          <h2 class="section-subtitle">Personnel</h2>
+          <h2 class="section-subtitle">Équipe école</h2>
           <table class="committee-table">
             <tbody>
-              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.staffMembers)" :key="roleGroup.role">
+              <template v-for="roleGroup in groupMembersByRole(conseilEtablissement.staffMembers, conseilEtablissement.name)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
                   <td class="role-header-cell" colspan="3">
@@ -227,7 +227,7 @@
       <div class="committee-full-page">
         <!-- Committee Header -->
         <div class="committee-header">
-          <h1 class="committee-title">{{ fondation.name }}</h1>
+          <h1 class="committee-title">Fondation de l'école Étoile filante</h1>
           <span v-if="fondation.url" class="committee-url">{{ fondation.url }}</span>
           <span v-else-if="fondation.email" class="committee-email">{{ fondation.email }}</span>
         </div>
@@ -236,7 +236,7 @@
         <div v-if="fondation.enrichedMembers.length > 0" class="committee-section">
           <table class="committee-table">
             <tbody>
-              <template v-for="roleGroup in groupMembersByRole(fondation.enrichedMembers)" :key="roleGroup.role">
+              <template v-for="roleGroup in groupMembersByRole(fondation.enrichedMembers, fondation.name)" :key="roleGroup.role">
                 <!-- Role header row -->
                 <tr class="role-header-row">
                   <td class="role-header-cell" colspan="3">
@@ -379,7 +379,7 @@
     <!-- Other Committees - Page 3 -->
     <PrintPage>
       <div class="committees-section">
-        <div v-for="committee in getCommitteesByNames(['JEDI', 'FEVES', 'Comité des usagers SDG'])" :key="committee.id" class="committee">
+        <div v-for="committee in getCommitteesByNames(['JEDI', 'Feves', 'Comité des usagers SDG'])" :key="committee.id" class="committee">
           <!-- Committee Name and Email/URL -->
           <div class="committee-header-inline">
             <h3 class="committee-name">
@@ -408,6 +408,106 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </PrintPage>
+
+    <!-- CSSDM Committees Page -->
+    <PrintPage>
+      <div class="committees-section">
+        <!-- CSSDM Header -->
+        <h1 class="section-title">Centre de services scolaire de Montréal</h1>
+
+        <!-- CSSDM Address Information -->
+        <div class="cssdm-info">
+          <div v-if="CSSDM_INFO.addressLine1" class="cssdm-address">{{ CSSDM_INFO.addressLine1 }}</div>
+          <div v-if="CSSDM_INFO.addressLine2" class="cssdm-address">{{ CSSDM_INFO.addressLine2 }}</div>
+          <div v-if="CSSDM_INFO.phone" class="cssdm-phone">{{ formatPhone(CSSDM_INFO.phone) }}</div>
+          <div v-if="CSSDM_INFO.email" class="cssdm-email">{{ CSSDM_INFO.email }}</div>
+          <div v-if="CSSDM_INFO.url" class="cssdm-url">{{ CSSDM_INFO.url }}</div>
+        </div>
+
+        <!-- First Half: Comité des parents CSSDM -->
+        <div class="cssdm-committee-section">
+          <div v-for="committee in getCommitteesByNames(['Comité des parents CSSDM'])" :key="committee.id" class="committee">
+            <!-- Committee Name and Email/URL -->
+            <div class="committee-header-inline">
+              <h3 class="committee-name">
+                {{ committee.name }}
+                <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+              </h3>
+              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+              <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+            </div>
+
+            <!-- Members grouped by role -->
+            <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+              <table class="committee-table-compact">
+                <tbody>
+                  <template v-for="roleGroup in groupMembersByRole(committee.enrichedMembers, committee.name)" :key="roleGroup.role">
+                    <!-- Role header row -->
+                    <tr class="role-header-row">
+                      <td class="role-header-cell" colspan="3">
+                        {{ roleGroup.role || 'Membre' }}
+                      </td>
+                    </tr>
+                    <!-- Member rows -->
+                    <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                      <td class="member-name-cell">
+                        {{ member.fullName }}
+                      </td>
+                      <td class="phone-cell">
+                        {{ formatPhone(member.phone) || '' }}
+                      </td>
+                      <td class="email-cell">
+                        {{ member.email || '' }}
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Half: REPAQ -->
+        <div class="cssdm-committee-section">
+          <div v-for="committee in getCommitteesByNames(['REPAQ'])" :key="committee.id" class="committee">
+            <!-- Committee Header -->
+            <div class="committee-header-repaq">
+              <h1 class="committee-title-repaq">{{ committee.name }}</h1>
+              <span v-if="committee.url" class="committee-url">{{ committee.url }}</span>
+              <span v-else-if="committee.email" class="committee-email">{{ committee.email }}</span>
+            </div>
+
+            <!-- Members grouped by role -->
+            <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+              <table class="committee-table-compact">
+                <tbody>
+                  <template v-for="roleGroup in groupMembersByRole(committee.enrichedMembers, committee.name)" :key="roleGroup.role">
+                    <!-- Role header row -->
+                    <tr class="role-header-row">
+                      <td class="role-header-cell" colspan="3">
+                        {{ roleGroup.role || 'Membre' }}
+                      </td>
+                    </tr>
+                    <!-- Member rows -->
+                    <tr v-for="member in roleGroup.members" :key="member.memberId" class="member-row">
+                      <td class="member-name-cell">
+                        {{ member.fullName }}
+                      </td>
+                      <td class="phone-cell">
+                        {{ formatPhone(member.phone) || '' }}
+                      </td>
+                      <td class="email-cell">
+                        {{ member.email || '' }}
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -650,6 +750,8 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { getCommitteeRoleDisplayOrder } from '@/config/committees'
+  import { CSSDM_INFO } from '@/config/cssdm'
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
@@ -711,7 +813,15 @@
 
         if (members.length > 0) {
           // Sort members by order field, then alphabetically by last name, first name
+          // Exception: 'edu' subgroup is sorted by title
           const sortedMembers = members.toSorted((a, b) => {
+            // Special case for 'edu' subgroup: sort by title
+            if (subgroup === 'edu') {
+              const titleA = (a.title || '').toLowerCase()
+              const titleB = (b.title || '').toLowerCase()
+              return titleA.localeCompare(titleB)
+            }
+
             // Primary sort: by order field
             const orderA = a.order || 99
             const orderB = b.order || 99
@@ -890,7 +1000,7 @@
   }
 
   // Helper: Group members by role
-  function groupMembersByRole (members) {
+  function groupMembersByRole (members, committeeName = null) {
     // Group members by role
     const grouped = members.reduce((acc, member) => {
       const role = member.role || ''
@@ -901,13 +1011,42 @@
       return acc
     }, {})
 
-    // Convert to array and sort by role name
-    return Object.keys(grouped)
-      .toSorted()
-      .map(role => ({
-        role,
-        members: grouped[role],
-      }))
+    // Get display order for this committee if available
+    const displayOrder = committeeName ? getCommitteeRoleDisplayOrder(committeeName) : null
+
+    let sortedRoles
+    if (displayOrder) {
+      // Sort roles according to the specified display order
+      const roleKeys = Object.keys(grouped)
+      const orderedRoles = []
+      const unorderedRoles = []
+
+      // First, add roles that are in the display order
+      for (const role of displayOrder) {
+        if (roleKeys.includes(role)) {
+          orderedRoles.push(role)
+        }
+      }
+
+      // Then, add any remaining roles alphabetically
+      for (const role of roleKeys) {
+        if (!displayOrder.includes(role)) {
+          unorderedRoles.push(role)
+        }
+      }
+      unorderedRoles.sort()
+
+      sortedRoles = [...orderedRoles, ...unorderedRoles]
+    } else {
+      // Default: sort alphabetically
+      sortedRoles = Object.keys(grouped).toSorted()
+    }
+
+    // Convert to array
+    return sortedRoles.map(role => ({
+      role,
+      members: grouped[role],
+    }))
   }
 
   // Helper: Get classes taught by a staff member
@@ -1224,14 +1363,7 @@
   font-weight: bold;
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
-  border-top: 3px solid black;
   border-bottom: 2px solid black;
-}
-
-/* All h1 elements should have top border */
-h1 {
-  border-top: 3px solid black;
-  padding-top: 0.5rem;
 }
 
 /* Page breaks */
@@ -1584,9 +1716,10 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid black;
+  flex-shrink: 0;
 }
 
 .committee-title {
@@ -1611,14 +1744,17 @@ h1 {
 }
 
 .committee-section {
-  margin-bottom: 2rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
 .section-subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16pt;
   font-weight: 600;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.5rem 0;
   color: #555;
 }
 
@@ -1626,6 +1762,7 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   font-size: 10pt;
+  line-height: 1.2;
 }
 
 .committee-table tbody tr {
@@ -1633,7 +1770,7 @@ h1 {
 }
 
 .committee-table td {
-  padding: 0.5rem 0.75rem;
+  padding: 0.35rem 0.75rem;
   vertical-align: top;
 }
 
@@ -1661,7 +1798,7 @@ h1 {
 .member-name-cell {
   width: 40%;
   font-size: 10pt;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
 .phone-cell {
@@ -1752,6 +1889,59 @@ h1 {
 
 .member-bold {
   font-weight: 700;
+}
+
+/* CSSDM Section */
+.cssdm-info {
+  margin: 1.5rem 0 2rem 0;
+  padding: 1rem 1.5rem;
+  text-align: right;
+}
+
+.cssdm-address {
+  font-size: 11pt;
+  color: #333;
+  line-height: 1.5;
+}
+
+.cssdm-phone {
+  font-size: 11pt;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0.5rem;
+}
+
+.cssdm-email {
+  font-size: 10pt;
+  color: #333;
+  margin-top: 0.25rem;
+}
+
+.cssdm-url {
+  font-size: 10pt;
+  color: #666;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+.cssdm-committee-section {
+  margin-bottom: 2rem;
+}
+
+.committee-header-repaq {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid black;
+}
+
+.committee-title-repaq {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 20pt;
+  font-weight: bold;
+  margin: 0;
 }
 
 /* Classes Section */

@@ -98,6 +98,42 @@ export const COMMITTEE_ROLES = {
 }
 
 /**
+ * Display order for roles in specific committees (for print layout)
+ * Key: committee name
+ * Value: array of role names in the order they should be displayed
+ * Roles not listed will appear after the ordered roles in alphabetical order
+ */
+export const COMMITTEE_ROLE_DISPLAY_ORDER = {
+  'Conseil d\'établissement': [
+    // TODO: Fill in the desired order
+    'Président',
+    'Vice-Président',
+    'Secrétaire',
+    'Membre Parent',
+    'Enseignant(e)',
+    'SDG',
+    'Substitut',
+    'Membre non votants direction',
+  ],
+  'Fondation': [
+    'Co-Présidente',
+    'Secrétaire',
+    'Trésorier',
+    'Administratrices et administrateurs',
+    'Observateur',
+  ],
+}
+
+/**
+ * Get display order for roles in a specific committee
+ * @param {string} committeeName - Name of the committee
+ * @returns {string[] | null} Array of role names in display order, or null if no order is specified
+ */
+export function getCommitteeRoleDisplayOrder (committeeName) {
+  return COMMITTEE_ROLE_DISPLAY_ORDER[committeeName] || null
+}
+
+/**
  * Get valid roles for a specific committee
  * @param {string} committeeName - Name of the committee
  * @returns {string[]} Array of valid role names
