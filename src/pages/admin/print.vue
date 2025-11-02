@@ -524,40 +524,46 @@
 
       <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([1, 2])" :key="classItem.id" class="class-block">
-          <!-- Class Name -->
-          <h2 class="class-title">{{ classItem.className }}</h2>
+          <!-- Class Name and Code -->
+          <div class="class-header-row">
+            <h2 class="class-title">{{ classItem.className }}</h2>
+            <span class="class-code">{{ classItem.classCode }}</span>
+          </div>
 
           <!-- Teacher -->
-          <div v-if="classItem.teacher" class="class-info-line">
-            <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
+          <div v-if="classItem.teacher" class="class-teacher-name">
+            {{ getTeacherName(classItem.teacher) }}
           </div>
 
           <!-- Parent Reps -->
           <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
             <strong>Représentants des parents :</strong>
-            <div class="parent-reps-grid">
-              <div v-if="classItem.parent_rep_1" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
-                </div>
-              </div>
-              <div v-if="classItem.parent_rep_2" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
-                </div>
-              </div>
-            </div>
+            <table class="parent-reps-table">
+              <tbody>
+                <tr v-if="classItem.parent_rep_1">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_1) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_1) ? formatPhone(getParentData(classItem.parent_rep_1).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_1) ? getParentData(classItem.parent_rep_1).email : '' }}</td>
+                </tr>
+                <tr v-if="classItem.parent_rep_2">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_2) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_2) ? formatPhone(getParentData(classItem.parent_rep_2).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_2) ? getParentData(classItem.parent_rep_2).email : '' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <!-- Students in 2 columns -->
+          <!-- Students by Grade Level -->
           <div class="class-students-section">
-            <div class="students-two-columns">
-              <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
-                {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+            <div class="students-by-grade">
+              <div v-for="gradeGroup in getStudentsByLevel(classItem.classLetter)" :key="gradeGroup.level" class="grade-column">
+                <div class="grade-label">{{ formatGradeLevel(gradeGroup.level) }}</div>
+                <div class="grade-students">
+                  <div v-for="student in gradeGroup.students" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+                    {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -576,40 +582,46 @@
 
       <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([3, 4])" :key="classItem.id" class="class-block">
-          <!-- Class Name -->
-          <h2 class="class-title">{{ classItem.className }}</h2>
+          <!-- Class Name and Code -->
+          <div class="class-header-row">
+            <h2 class="class-title">{{ classItem.className }}</h2>
+            <span class="class-code">{{ classItem.classCode }}</span>
+          </div>
 
           <!-- Teacher -->
-          <div v-if="classItem.teacher" class="class-info-line">
-            <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
+          <div v-if="classItem.teacher" class="class-teacher-name">
+            {{ getTeacherName(classItem.teacher) }}
           </div>
 
           <!-- Parent Reps -->
           <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
             <strong>Représentants des parents :</strong>
-            <div class="parent-reps-grid">
-              <div v-if="classItem.parent_rep_1" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
-                </div>
-              </div>
-              <div v-if="classItem.parent_rep_2" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
-                </div>
-              </div>
-            </div>
+            <table class="parent-reps-table">
+              <tbody>
+                <tr v-if="classItem.parent_rep_1">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_1) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_1) ? formatPhone(getParentData(classItem.parent_rep_1).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_1) ? getParentData(classItem.parent_rep_1).email : '' }}</td>
+                </tr>
+                <tr v-if="classItem.parent_rep_2">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_2) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_2) ? formatPhone(getParentData(classItem.parent_rep_2).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_2) ? getParentData(classItem.parent_rep_2).email : '' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <!-- Students in 2 columns -->
+          <!-- Students by Grade Level -->
           <div class="class-students-section">
-            <div class="students-two-columns">
-              <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
-                {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+            <div class="students-by-grade">
+              <div v-for="gradeGroup in getStudentsByLevel(classItem.classLetter)" :key="gradeGroup.level" class="grade-column">
+                <div class="grade-label">{{ formatGradeLevel(gradeGroup.level) }}</div>
+                <div class="grade-students">
+                  <div v-for="student in gradeGroup.students" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+                    {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -628,40 +640,46 @@
 
       <div class="classes-content">
         <div v-for="classItem in getClassesByLevelRange([5, 6])" :key="classItem.id" class="class-block">
-          <!-- Class Name -->
-          <h2 class="class-title">{{ classItem.className }}</h2>
+          <!-- Class Name and Code -->
+          <div class="class-header-row">
+            <h2 class="class-title">{{ classItem.className }}</h2>
+            <span class="class-code">{{ classItem.classCode }}</span>
+          </div>
 
           <!-- Teacher -->
-          <div v-if="classItem.teacher" class="class-info-line">
-            <strong>Enseignant :</strong> {{ getTeacherName(classItem.teacher) }}
+          <div v-if="classItem.teacher" class="class-teacher-name">
+            {{ getTeacherName(classItem.teacher) }}
           </div>
 
           <!-- Parent Reps -->
           <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-parent-reps-section">
             <strong>Représentants des parents :</strong>
-            <div class="parent-reps-grid">
-              <div v-if="classItem.parent_rep_1" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_1) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_1)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_1).phone">{{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_1).email">{{ getParentData(classItem.parent_rep_1).email }}</div>
-                </div>
-              </div>
-              <div v-if="classItem.parent_rep_2" class="parent-rep-card">
-                <div class="parent-rep-name">{{ getParentName(classItem.parent_rep_2) }}</div>
-                <div v-if="getParentData(classItem.parent_rep_2)" class="parent-rep-details">
-                  <div v-if="getParentData(classItem.parent_rep_2).phone">{{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}</div>
-                  <div v-if="getParentData(classItem.parent_rep_2).email">{{ getParentData(classItem.parent_rep_2).email }}</div>
-                </div>
-              </div>
-            </div>
+            <table class="parent-reps-table">
+              <tbody>
+                <tr v-if="classItem.parent_rep_1">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_1) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_1) ? formatPhone(getParentData(classItem.parent_rep_1).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_1) ? getParentData(classItem.parent_rep_1).email : '' }}</td>
+                </tr>
+                <tr v-if="classItem.parent_rep_2">
+                  <td class="parent-rep-name-cell">{{ getParentName(classItem.parent_rep_2) }}</td>
+                  <td class="parent-rep-phone-cell">{{ getParentData(classItem.parent_rep_2) ? formatPhone(getParentData(classItem.parent_rep_2).phone) : '' }}</td>
+                  <td class="parent-rep-email-cell">{{ getParentData(classItem.parent_rep_2) ? getParentData(classItem.parent_rep_2).email : '' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <!-- Students in 2 columns -->
+          <!-- Students by Grade Level -->
           <div class="class-students-section">
-            <div class="students-two-columns">
-              <div v-for="student in getClassStudents(classItem.classLetter)" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
-                {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+            <div class="students-by-grade">
+              <div v-for="gradeGroup in getStudentsByLevel(classItem.classLetter)" :key="gradeGroup.level" class="grade-column">
+                <div class="grade-label">{{ formatGradeLevel(gradeGroup.level) }}</div>
+                <div class="grade-students">
+                  <div v-for="student in gradeGroup.students" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id, classItem) }">
+                    {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id, classItem)"> (R)</template>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1987,59 +2005,115 @@
   margin-bottom: 1rem;
 }
 
+.class-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 0.4rem;
+  border-top: 1px solid black;
+  margin-bottom: 0.4rem;
+}
+
 .class-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: 15pt;
   font-weight: bold;
-  margin: 0 0 0.75rem 0;
-  padding-top: 0.5rem;
-  border-top: 1px solid black;
+  margin: 0;
   color: #000;
 }
 
-.class-info-line {
-  font-size: 10pt;
-  margin-bottom: 0.75rem;
+.class-code {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13pt;
+  font-weight: 600;
+  color: #666;
+}
+
+.class-teacher-name {
+  font-size: 10.5pt;
+  font-style: italic;
+  color: #555;
+  margin-bottom: 0.5rem;
 }
 
 .class-parent-reps-section {
-  font-size: 10pt;
-  margin-bottom: 1rem;
+  font-size: 9.5pt;
+  margin-bottom: 0.6rem;
 }
 
-.parent-reps-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-top: 0.5rem;
+.parent-reps-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.3rem;
+  font-size: 8.5pt;
 }
 
-.parent-rep-card {
-  font-size: 9pt;
+.parent-reps-table tbody tr {
+  border-bottom: none;
 }
 
-.parent-rep-name {
+.parent-reps-table td {
+  padding: 0.2rem 0.4rem;
+  vertical-align: top;
+}
+
+.parent-rep-name-cell {
+  width: 33%;
   font-weight: 600;
-  margin-bottom: 0.25rem;
 }
 
-.parent-rep-details {
-  line-height: 1.4;
+.parent-rep-phone-cell {
+  width: 33%;
+}
+
+.parent-rep-email-cell {
+  width: 34%;
+  word-break: break-word;
 }
 
 .class-students-section {
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
+  flex: 1;
+  overflow: hidden;
 }
 
-.students-two-columns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.25rem 1rem;
-  font-size: 9pt;
-  line-height: 1.4;
+.students-by-grade {
+  display: flex;
+  gap: 0.75rem;
+  height: 100%;
+}
+
+.grade-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #999;
+  padding-right: 0.6rem;
+}
+
+.grade-column:last-child {
+  border-right: none;
+}
+
+.grade-label {
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.grade-students {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .student-item {
+  font-size: 8.5pt;
+  line-height: 1.35;
   page-break-inside: avoid;
 }
 
