@@ -30,6 +30,7 @@
 
 <script setup>
   import CommitteeTable from './components/CommitteeTable.vue'
+  import PrintPage from './PrintPage.vue'
 
   const props = defineProps({
     committee: {

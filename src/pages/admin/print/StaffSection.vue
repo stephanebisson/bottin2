@@ -60,6 +60,7 @@
 <script setup>
   import { SDG_INFO } from '@/config/sdg'
   import StaffTable from './components/StaffTable.vue'
+  import PrintPage from './PrintPage.vue'
 
   const props = defineProps({
     group: {

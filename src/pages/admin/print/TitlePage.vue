@@ -18,6 +18,10 @@
   </PrintPage>
 </template>
 
+<script setup>
+  import PrintPage from './PrintPage.vue'
+</script>
+
 <style scoped>
 /* Title Page */
 .title-page {

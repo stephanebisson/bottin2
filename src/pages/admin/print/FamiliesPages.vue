@@ -15,6 +15,7 @@
 
 <script setup>
   import FamilyBlock from './components/FamilyBlock.vue'
+  import PrintPage from './PrintPage.vue'
 
   const props = defineProps({
     paginatedFamilies: {
@@ -25,16 +26,6 @@
 </script>
 
 <style scoped>
-/* Section titles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
-
 /* Families Section */
 .families-letter-header {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

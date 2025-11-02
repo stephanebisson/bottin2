@@ -1,7 +1,9 @@
 <template>
   <PrintPage id="section-referentiel" class="referentiel-page">
-    <h1>Notre référentiel pédagogique</h1>
-    
+    <div class="page-header">
+      <h1 class="section-title">Notre référentiel pédagogique</h1>
+    </div>
+
     <h2>Les valeurs</h2>
     
     <p>Les valeurs sont ces qualités qui mettent en mots notre vision, nos aspirations
@@ -52,6 +54,8 @@
 </template>
 
 <script setup>
+  import PrintPage from './PrintPage.vue'
+
 // No props or logic needed for now
 </script>
 
@@ -59,12 +63,6 @@
 .referentiel-page {
   font-size: 12pt;
   line-height: 1.3;
-}
-
-h1 {
-  font-size: 20pt;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
 }
 
 h2 {

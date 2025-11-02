@@ -139,9 +139,12 @@
     <!-- Référentiel -->
     <Referentiel />
 
-    <!-- Appendixes -->
-    <AppendixPage placeholder-text="[À REMPLIR : Contenu de l'annexe A]" section-id="section-appendix" title="Annexe A" />
-    <AppendixPage placeholder-text="[À REMPLIR : Contenu de l'annexe B]" section-id="section-appendix-b" title="Annexe B" />
+    <!-- Implication -->
+    <Implication />
+
+    <!-- FAQ (2 pages) -->
+    <FAQ1 />
+    <FAQ2 />
 
     <!-- Back Page -->
     <BackPage />
@@ -156,13 +159,16 @@
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-  import AppendixPage from './AppendixPage.vue'
   import BackPage from './BackPage.vue'
   import ClassesPage from './ClassesPage.vue'
   import CommitteeFullPage from './CommitteeFullPage.vue'
   import CommitteeTable from './components/CommitteeTable.vue'
   import CssdmPage from './CssdmPage.vue'
   import FamiliesPages from './FamiliesPages.vue'
+  import FAQ1 from './FAQ1.vue'
+  import FAQ2 from './FAQ2.vue'
+  import Implication from './Implication.vue'
+  import PrintPage from './PrintPage.vue'
   import Referentiel from './Referentiel.vue'
   import StaffSection from './StaffSection.vue'
   import TableOfContents from './TableOfContents.vue'
@@ -185,8 +191,9 @@
     'classes-56': 13, // Liste des classes (5e-6e)
     families: 14, // Liste alphabétique des enfants (pages 14+, depends on # of families)
     referentiel: 20, // Référentiel (estimate, adjust after print preview)
-    appendix: 21, // Annexe A (estimate, adjust after print preview)
-    'appendix-b': 22, // Annexe B (estimate, adjust after print preview)
+    implication: 21, // Implication (estimate, adjust after print preview)
+    faq1: 22, // FAQ page 1 (estimate, adjust after print preview)
+    faq2: 23, // FAQ page 2 (estimate, adjust after print preview)
   }
   // ============================================================================
 
@@ -745,15 +752,6 @@
 }
 
 /* Committees compact styles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
-
 .committee-category-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16pt;

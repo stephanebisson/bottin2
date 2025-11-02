@@ -56,6 +56,7 @@
 <script setup>
   import { CSSDM_INFO } from '@/config/cssdm'
   import CommitteeTable from './components/CommitteeTable.vue'
+  import PrintPage from './PrintPage.vue'
 
   const props = defineProps({
     comiteParents: {
@@ -91,16 +92,6 @@
 </script>
 
 <style scoped>
-/* Section titles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
-
 /* CSSDM Section */
 .cssdm-info {
   margin: 1.5rem 0 2rem 0;

@@ -12,6 +12,8 @@
 </template>
 
 <script setup>
+  import PrintPage from './PrintPage.vue'
+
   const props = defineProps({
     title: {
       type: String,
@@ -29,16 +31,6 @@
 </script>
 
 <style scoped>
-/* Section titles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
-
 /* Placeholder sections */
 .placeholder-section {
   padding: 2rem;

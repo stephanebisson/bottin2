@@ -64,31 +64,25 @@
           <span class="toc-page" data-section="referentiel">___</span>
         </div>
         <div class="toc-item">
-          <span class="toc-label">Annexe A</span>
+          <span class="toc-label">Implication</span>
           <span class="toc-dots" />
-          <span class="toc-page" data-section="appendix">___</span>
+          <span class="toc-page" data-section="implication">___</span>
         </div>
         <div class="toc-item">
-          <span class="toc-label">Annexe B</span>
+          <span class="toc-label">Trucs et astuces pour les périodes de coéducation</span>
           <span class="toc-dots" />
-          <span class="toc-page" data-section="appendix-b">___</span>
+          <span class="toc-page" data-section="faq1">___</span>
         </div>
       </div>
     </div>
   </PrintPage>
 </template>
 
-<style scoped>
-/* Section titles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
+<script setup>
+  import PrintPage from './PrintPage.vue'
+</script>
 
+<style scoped>
 /* Table of Contents */
 .toc {
   height: 100%;

@@ -23,6 +23,7 @@
 
 <script setup>
   import ClassBlock from './components/ClassBlock.vue'
+  import PrintPage from './PrintPage.vue'
 
   const props = defineProps({
     classesData: {
@@ -41,16 +42,6 @@
 </script>
 
 <style scoped>
-/* Section titles */
-.section-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid black;
-}
-
 /* Classes Section */
 .class-page-header {
   display: flex;
@@ -58,8 +49,6 @@
   align-items: baseline;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-  border-top: 3px solid black;
-  border-bottom: none;
 }
 
 .class-page-header .section-title {

@@ -11,6 +11,10 @@
   </PrintPage>
 </template>
 
+<script setup>
+  import PrintPage from './PrintPage.vue'
+</script>
+
 <style scoped>
 /* Back Page */
 .back-page {
