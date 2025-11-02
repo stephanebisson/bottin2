@@ -77,6 +77,17 @@
             </div>
           </v-card>
         </v-col>
+
+        <!-- Easter Egg: Tic-Tac-Toe Game -->
+        <v-col
+          v-if="showEasterEgg"
+          class="d-flex"
+          cols="12"
+          md="4"
+          sm="6"
+        >
+          <TicTacToeCard />
+        </v-col>
       </v-row>
     </div>
   </v-container>
@@ -85,6 +96,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
+  import TicTacToeCard from '@/components/TicTacToeCard.vue'
   import { useI18n } from '@/composables/useI18n'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -95,6 +107,19 @@
   // Welcome message state
   const showWelcomeMessage = ref(false)
 
+  // Easter egg state
+  const showEasterEgg = ref(false)
+
+  // Check if Easter egg should appear (only with URL parameter)
+  function checkEasterEgg () {
+    // Only show if URL parameter is present
+    if (route.query.easteregg === 'true' || route.query.easteregg === '1') {
+      return true
+    }
+
+    return false
+  }
+
   // Check for welcome query parameter on mount
   onMounted(() => {
     if (route.query.welcome === 'verified') {
@@ -102,6 +127,9 @@
       // Clean up the URL
       router.replace({ path: '/', query: {} })
     }
+
+    // Check if Easter egg should appear
+    showEasterEgg.value = checkEasterEgg()
   })
 
   // Use centralized data store

@@ -783,5 +783,14 @@
     "showLess": "Afficher moins",
     "scrollToBottom": "Défiler vers le bas",
     "newMessagesBelow": "Nouveaux messages ci-dessous"
+  },
+  "easterEgg": {
+    "ticTacToe": "Tic-Tac-Toe",
+    "takeABreak": "Prenez une petite pause!",
+    "yourTurn": "Votre tour (X)",
+    "youWin": "Vous avez gagné!",
+    "computerWins": "L'ordinateur gagne!",
+    "draw": "Match nul!",
+    "newGame": "Nouvelle partie"
   }
 }

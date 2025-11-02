@@ -771,5 +771,14 @@
     "showLess": "Show less",
     "scrollToBottom": "Scroll to bottom",
     "newMessagesBelow": "New messages below"
+  },
+  "easterEgg": {
+    "ticTacToe": "Tic-Tac-Toe",
+    "takeABreak": "Take a quick break!",
+    "yourTurn": "Your turn (X)",
+    "youWin": "You win!",
+    "computerWins": "Computer wins!",
+    "draw": "It's a draw!",
+    "newGame": "New game"
   }
 }
