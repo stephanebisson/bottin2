@@ -9,8 +9,12 @@
 </script>
 
 <style>
-  .firebase-emulator-warning {
-    display: none;
+  /* Hide Firebase emulator warning globally */
+  .firebase-emulator-warning,
+  [class*="firebase-emulator"],
+  [class*="emulator-warning"],
+  iframe[src*="/__/"] {
+    display: none !important;
   }
 
   /* Native mobile app viewport handling */
@@ -49,6 +53,22 @@
   @media (max-width: 600px) {
     body {
       overscroll-behavior-y: none;
+    }
+  }
+
+  /* Print styles - hide UI elements and remove padding */
+  @media print {
+    /* Hide all app UI components */
+    .v-app-bar,
+    .v-navigation-drawer,
+    .v-footer {
+      display: none !important;
+    }
+
+    /* Remove all padding from main content for print */
+    .v-main,
+    .main-content {
+      padding: 0 !important;
     }
   }
 </style>

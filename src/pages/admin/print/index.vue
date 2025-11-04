@@ -827,15 +827,4 @@
   counter-reset: manual-page 0;
 }
 
-/* Hide Firebase emulator banner in print */
-@media print {
-  /* Hide Firebase emulator warning banner */
-  .firebase-emulator-warning,
-  [class*="firebase-emulator"],
-  [class*="emulator-warning"],
-  iframe[src*="/__/"] {
-    display: none !important;
-    visibility: hidden !important;
-  }
-}
 </style>

@@ -8,7 +8,7 @@
 
     <NavigationDrawer v-if="!isPrintPage" v-model="drawer" />
 
-    <v-main class="main-content">
+    <v-main :class="{ 'main-content': !isPrintPage }">
       <router-view />
     </v-main>
 
