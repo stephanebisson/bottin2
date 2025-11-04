@@ -108,6 +108,10 @@
       type: String,
       required: true,
     },
+    chatEnabled: {
+      type: Boolean,
+      default: false,
+    },
   })
 
   const emit = defineEmits(['select-conversation'])
@@ -258,7 +262,10 @@
   }
 
   onMounted(() => {
-    loadConversations()
+    // Only load conversations if chat is enabled
+    if (props.chatEnabled) {
+      loadConversations()
+    }
   })
 
   onUnmounted(() => {

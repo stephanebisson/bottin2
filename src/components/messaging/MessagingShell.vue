@@ -16,6 +16,7 @@
 
     <ConversationList
       v-if="!activeConversation"
+      :chat-enabled="chatEnabled"
       :current-user-email="currentUserEmail"
       @select-conversation="openConversation"
     />
@@ -44,6 +45,10 @@
     currentUserName: {
       type: String,
       required: true,
+    },
+    chatEnabled: {
+      type: Boolean,
+      default: false,
     },
   })
 
@@ -155,6 +160,9 @@
 
   onMounted(() => {
     try {
+      // Only load unread count if chat is enabled
+      if (!props.chatEnabled) return
+
       loadUnreadCount()
 
       // Reload unread count every 30 seconds

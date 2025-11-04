@@ -16,8 +16,9 @@
 
     <!-- Messaging System -->
     <MessagingShell
-      v-if="!isPrintPage && authStore.isAuthenticated"
+      v-if="!isPrintPage && authStore.isAuthenticated && currentUserHasChat"
       ref="messagingShellRef"
+      :chat-enabled="currentUserHasChat"
       :current-user-email="authStore.userEmail"
       :current-user-name="authStore.userDisplayName"
     />
@@ -33,8 +34,10 @@
   import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
   import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
 
   const { mobile } = useDisplay()
   const route = useRoute()
@@ -44,6 +47,13 @@
 
   // Provide to all child components
   provide('messagingShell', messagingShellRef)
+
+  // Check if current user has chat enabled
+  const currentUserHasChat = computed(() => {
+    if (!authStore.isAuthenticated || !authStore.userEmail) return false
+    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+    return currentParent?.hasChatEnabled || false
+  })
 
   // Check if current route is a print page
   const isPrintPage = computed(() => {
