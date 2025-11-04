@@ -1,17 +1,18 @@
 <template>
   <v-app-bar
-    app
+    class="app-bar-fixed"
+    :class="{ 'mobile-app-bar': mobile }"
     color="primary"
     dark
-    elevation="4"
+    elevation="2"
   >
     <v-app-bar-nav-icon @click="$emit('toggle-drawer')" />
 
-    <v-toolbar-title>
+    <v-toolbar-title class="app-title">
       {{ pageTitle }}
     </v-toolbar-title>
 
-    <v-spacer />
+    <v-spacer v-if="!mobile" />
 
     <!-- Messaging Icon (when authenticated and chat enabled) -->
     <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
@@ -98,6 +99,7 @@
 <script setup>
   import { computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
   import ThemeSelector from '@/components/ThemeSelector.vue'
   import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
@@ -115,6 +117,7 @@
   const route = useRoute()
   const router = useRouter()
   const { t } = useI18n()
+  const { mobile } = useDisplay()
 
   // Access stores
   const firebaseStore = useFirebaseDataStore()
@@ -198,3 +201,38 @@
     }
   }
 </script>
+
+<style scoped>
+  /* Fixed app bar - Vuetify 3 removed the app prop */
+  .app-bar-fixed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+
+  /* Native mobile app styling */
+  .mobile-app-bar {
+    /* Support safe areas for notched devices (iPhone X+, etc) */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* App title responsive handling */
+  .app-title {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* On mobile, reduce title size and ensure proper spacing */
+  @media (max-width: 600px) {
+    .app-title {
+      font-size: 1.1rem !important;
+      max-width: calc(100vw - 200px);
+    }
+  }
+</style>

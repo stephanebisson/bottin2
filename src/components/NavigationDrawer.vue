@@ -1,7 +1,6 @@
 <template>
   <v-navigation-drawer
     v-model="drawerModel"
-    app
     :permanent="!mobile"
     :temporary="mobile"
     width="280"
@@ -94,6 +93,20 @@
     <template #append>
       <v-divider />
       <v-list>
+        <!-- Language Switcher (visible on mobile) -->
+        <v-list-item
+          v-if="mobile"
+          :prepend-icon="'mdi-translate'"
+          :title="$t('footer.switchLanguage', { language: otherLanguage.name })"
+          @click="toggleLanguage"
+        >
+          <template #append>
+            <v-chip size="small" variant="tonal">
+              {{ otherLanguage.code.toUpperCase() }}
+            </v-chip>
+          </template>
+        </v-list-item>
+
         <v-list-item
           class="text-caption"
           prepend-icon="mdi-information-outline"
@@ -127,8 +140,23 @@
     set: value => emit('update:modelValue', value),
   })
 
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const authStore = useAuthStore()
+
+  // Language switcher (for mobile)
+  const languages = [
+    { code: 'fr', name: () => t('languageSelector.french') },
+    { code: 'en', name: () => t('languageSelector.english') },
+  ]
+
+  const otherLanguage = computed(() => {
+    const lang = languages.find(lang => lang.code !== locale.value)
+    return { ...lang, name: lang.name() }
+  })
+
+  function toggleLanguage () {
+    locale.value = otherLanguage.value.code
+  }
 
   // Admin status tracking
   const isAdmin = ref(false)

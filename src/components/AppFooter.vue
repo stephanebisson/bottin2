@@ -1,5 +1,5 @@
 <template>
-  <v-footer app class="footer-two-row">
+  <v-footer class="footer-two-row">
     <!-- Top Row: Actions (Feedback + Language) -->
     <div class="footer-actions d-flex align-center px-6 py-2" style="gap: 3rem;">
       <!-- Left: Feedback -->

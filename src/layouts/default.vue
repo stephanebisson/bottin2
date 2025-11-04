@@ -8,11 +8,11 @@
 
     <NavigationDrawer v-if="!isPrintPage" v-model="drawer" />
 
-    <v-main>
+    <v-main class="main-content">
       <router-view />
     </v-main>
 
-    <AppFooter v-if="!isPrintPage" />
+    <AppFooter v-if="!isPrintPage && !mobile" />
 
     <!-- Messaging System -->
     <MessagingShell
@@ -88,3 +88,10 @@
     }
   })
 </script>
+
+<style scoped>
+  /* Add padding to account for fixed app bar */
+  .main-content {
+    padding-top: 64px !important;
+  }
+</style>
