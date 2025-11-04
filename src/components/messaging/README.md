@@ -252,7 +252,7 @@ provide('messagingShell', messagingShellRef)
     <MessagingShell
       ref="messagingShellRef"
       :current-user-email="authStore.userEmail"
-      :current-user-name="authStore.userDisplayName"
+      :current-user-name="currentUserFullName"
     />
   </v-app>
 </template>
@@ -267,8 +267,8 @@ provide('messagingShell', messagingShellRef)
 | `type` | String | Yes | `'direct'`, `'class'`, or `'committee'` |
 | `contextId` | String | No | Context identifier for class/committee (e.g., `'class-3a'`) |
 | `contextLabel` | Object | No | Bilingual labels: `{ en: '...', fr: '...' }` |
-| `participants` | Array | Yes | Array of participant emails |
-| `participantNames` | Object | No | Map of emails to names: `{ 'email': 'Name' }` |
+| `participants` | Array | Yes | Array of participant parent IDs |
+| `participantNames` | Object | No | Map of parent IDs to names: `{ 'parentId': 'Full Name' }` |
 | `label` | String | No | Custom button label (uses default based on type if not provided) |
 | `icon` | String | No | Button icon (default: `'mdi-message'`) |
 | `variant` | String | No | Vuetify button variant (default: `'outlined'`) |

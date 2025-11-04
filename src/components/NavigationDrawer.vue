@@ -25,7 +25,7 @@
           </template>
 
           <v-list-item-title class="font-weight-bold text-body-2">
-            {{ authStore.userDisplayName }}
+            {{ currentUserFullName }}
           </v-list-item-title>
           <v-list-item-subtitle class="text-caption">
             {{ authStore.userEmail }}
@@ -100,6 +100,7 @@
   import { useDisplay } from 'vuetify'
   import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const props = defineProps({
     modelValue: {
@@ -119,6 +120,14 @@
 
   const { t } = useI18n()
   const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
+
+  // Get current user's full name from parent record
+  const currentUserFullName = computed(() => {
+    if (!authStore.userEmail) return authStore.userDisplayName || ''
+    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+    return currentParent?.fullName || authStore.userDisplayName || ''
+  })
 
   // Admin status tracking
   const isAdmin = ref(false)
