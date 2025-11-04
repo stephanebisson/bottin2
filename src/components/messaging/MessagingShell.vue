@@ -2,8 +2,8 @@
   <v-navigation-drawer
     v-if="isOpen"
     v-model="isOpen"
+    class="messaging-drawer-fixed"
     location="right"
-    style="height: calc(100vh - 64px); max-height: calc(100vh - 64px);"
     temporary
     :width="isMobile ? '90%' : panelWidth"
   >
@@ -188,6 +188,17 @@
 </script>
 
 <style scoped>
+/* Fixed messaging drawer - ensures it stays viewport-height and fixed position */
+.messaging-drawer-fixed {
+  position: fixed !important;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 1001;
+}
+
 .resize-handle {
   position: absolute;
   left: 0;

@@ -65,6 +65,16 @@
             <v-list-item-title>{{ $t('nav.profile') }}</v-list-item-title>
           </v-list-item>
 
+          <!-- Feedback -->
+          <v-list-item
+            prepend-icon="mdi-message-text"
+            @click="$router.push('/feedback')"
+          >
+            <v-list-item-title>{{ $t('footer.sendFeedback') }}</v-list-item-title>
+          </v-list-item>
+
+          <v-divider />
+
           <!-- Logout -->
           <v-list-item
             :loading="authStore.loading"

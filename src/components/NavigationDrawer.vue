@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="drawerModel"
+    class="navigation-drawer-fixed"
     :permanent="!mobile"
     :temporary="mobile"
     width="280"
@@ -90,31 +91,7 @@
       </template>
     </v-list>
 
-    <template #append>
-      <v-divider />
-      <v-list>
-        <!-- Language Switcher (visible on mobile) -->
-        <v-list-item
-          v-if="mobile"
-          :prepend-icon="'mdi-translate'"
-          :title="$t('footer.switchLanguage', { language: otherLanguage.name })"
-          @click="toggleLanguage"
-        >
-          <template #append>
-            <v-chip size="small" variant="tonal">
-              {{ otherLanguage.code.toUpperCase() }}
-            </v-chip>
-          </template>
-        </v-list-item>
 
-        <v-list-item
-          class="text-caption"
-          prepend-icon="mdi-information-outline"
-          :subtitle="$t('nav.schoolDirectorySystem')"
-          :title="$t('nav.about')"
-        />
-      </v-list>
-    </template>
   </v-navigation-drawer>
 </template>
 
@@ -140,23 +117,8 @@
     set: value => emit('update:modelValue', value),
   })
 
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const authStore = useAuthStore()
-
-  // Language switcher (for mobile)
-  const languages = [
-    { code: 'fr', name: () => t('languageSelector.french') },
-    { code: 'en', name: () => t('languageSelector.english') },
-  ]
-
-  const otherLanguage = computed(() => {
-    const lang = languages.find(lang => lang.code !== locale.value)
-    return { ...lang, name: lang.name() }
-  })
-
-  function toggleLanguage () {
-    locale.value = otherLanguage.value.code
-  }
 
   // Admin status tracking
   const isAdmin = ref(false)
@@ -265,3 +227,16 @@
     return baseItems
   })
 </script>
+
+<style scoped>
+  /* Fixed navigation drawer - ensures it stays viewport-height and fixed position */
+  .navigation-drawer-fixed {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 999;
+  }
+</style>
