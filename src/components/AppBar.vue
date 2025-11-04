@@ -14,95 +14,97 @@
 
     <v-spacer v-if="!mobile" />
 
-    <!-- Messaging Icon (when authenticated and chat enabled) -->
-    <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
-      <v-badge
-        color="error"
-        :content="unreadCount"
-        :model-value="unreadCount > 0"
-      >
-        <v-btn
-          icon="mdi-forum"
-          variant="text"
-          @click="handleToggleMessaging"
-        />
-      </v-badge>
-    </template>
-
-    <!-- User Menu (when authenticated) -->
-    <template v-if="authStore.isAuthenticated">
-      <v-menu>
-        <template #activator="{ props: menuProps }">
+    <div class="d-flex align-center" :class="{ 'ml-auto': mobile }">
+      <!-- Messaging Icon (when authenticated and chat enabled) -->
+      <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
+        <v-badge
+          color="error"
+          :content="unreadCount"
+          :model-value="unreadCount > 0"
+        >
           <v-btn
-            v-bind="menuProps"
-            icon
+            icon="mdi-forum"
             variant="text"
-          >
-            <v-avatar color="primary" size="32">
-              <v-icon>mdi-account</v-icon>
-            </v-avatar>
-          </v-btn>
-        </template>
+            @click="handleToggleMessaging"
+          />
+        </v-badge>
+      </template>
 
-        <v-list>
-          <!-- User Info -->
-          <v-list-item>
-            <v-list-item-title class="font-weight-bold">
-              {{ authStore.userDisplayName }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ authStore.userEmail }}
-            </v-list-item-subtitle>
-          </v-list-item>
+      <!-- User Menu (when authenticated) -->
+      <template v-if="authStore.isAuthenticated">
+        <v-menu>
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              icon
+              variant="text"
+            >
+              <v-avatar color="primary" size="32">
+                <v-icon>mdi-account</v-icon>
+              </v-avatar>
+            </v-btn>
+          </template>
 
-          <v-divider />
+          <v-list>
+            <!-- User Info -->
+            <v-list-item>
+              <v-list-item-title class="font-weight-bold">
+                {{ authStore.userDisplayName }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ authStore.userEmail }}
+              </v-list-item-subtitle>
+            </v-list-item>
 
-          <!-- Profile -->
-          <v-list-item
-            prepend-icon="mdi-account-edit"
-            @click="$router.push('/profile')"
-          >
-            <v-list-item-title>{{ $t('nav.profile') }}</v-list-item-title>
-          </v-list-item>
+            <v-divider />
 
-          <!-- Feedback -->
-          <v-list-item
-            prepend-icon="mdi-message-text"
-            @click="$router.push('/feedback')"
-          >
-            <v-list-item-title>{{ $t('footer.sendFeedback') }}</v-list-item-title>
-          </v-list-item>
+            <!-- Profile -->
+            <v-list-item
+              prepend-icon="mdi-account-edit"
+              @click="$router.push('/profile')"
+            >
+              <v-list-item-title>{{ $t('nav.profile') }}</v-list-item-title>
+            </v-list-item>
 
-          <v-divider />
+            <!-- Feedback -->
+            <v-list-item
+              prepend-icon="mdi-message-text"
+              @click="$router.push('/feedback')"
+            >
+              <v-list-item-title>{{ $t('footer.sendFeedback') }}</v-list-item-title>
+            </v-list-item>
 
-          <!-- Logout -->
-          <v-list-item
-            :loading="authStore.loading"
-            prepend-icon="mdi-logout"
-            @click="handleLogout"
-          >
-            <v-list-item-title>{{ $t('auth.logout') }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </template>
+            <v-divider />
 
-    <!-- Login Button (when not authenticated) -->
-    <template v-else>
-      <v-tooltip location="bottom">
-        <template #activator="{ props: tooltipProps }">
-          <v-btn
-            v-bind="tooltipProps"
-            icon
-            variant="text"
-            @click="$router.push('/auth')"
-          >
-            <v-icon>mdi-account-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>{{ $t('auth.login') }}</span>
-      </v-tooltip>
-    </template>
+            <!-- Logout -->
+            <v-list-item
+              :loading="authStore.loading"
+              prepend-icon="mdi-logout"
+              @click="handleLogout"
+            >
+              <v-list-item-title>{{ $t('auth.logout') }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+
+      <!-- Login Button (when not authenticated) -->
+      <template v-else>
+        <v-tooltip location="bottom">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              @click="$router.push('/auth')"
+            >
+              <v-icon>mdi-account-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ $t('auth.login') }}</span>
+        </v-tooltip>
+      </template>
+    </div>
   </v-app-bar>
 </template>
 
