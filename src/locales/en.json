@@ -780,5 +780,9 @@
     "computerWins": "Computer wins!",
     "draw": "It's a draw!",
     "newGame": "New game"
+  },
+  "pwa": {
+    "updateAvailable": "A new version is available",
+    "update": "Update"
   }
 }

@@ -792,5 +792,9 @@
     "computerWins": "L'ordinateur gagne!",
     "draw": "Match nul!",
     "newGame": "Nouvelle partie"
+  },
+  "pwa": {
+    "updateAvailable": "Une nouvelle version est disponible",
+    "update": "Mettre à jour"
   }
 }

@@ -22,6 +22,9 @@
       :current-user-email="authStore.userEmail"
       :current-user-name="authStore.userDisplayName"
     />
+
+    <!-- PWA Update Prompt -->
+    <UpdatePrompt />
   </v-app>
 </template>
 
@@ -33,6 +36,7 @@
   import AppFooter from '@/components/AppFooter.vue'
   import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
+  import UpdatePrompt from '@/components/UpdatePrompt.vue'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
