@@ -194,8 +194,8 @@
   top: 0;
   bottom: 0;
   right: 0;
-  height: 100vh !important;
-  max-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
   z-index: 1001;
 }
 

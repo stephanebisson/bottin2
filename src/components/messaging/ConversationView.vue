@@ -11,16 +11,11 @@
         </div>
       </v-toolbar-title>
 
-      <v-spacer />
-
       <v-menu>
         <template #activator="{ props: menuProps }">
           <v-btn icon="mdi-dots-vertical" v-bind="menuProps" />
         </template>
         <v-list>
-          <v-list-item @click="viewParticipants">
-            <v-list-item-title>{{ $t('messages.viewParticipants') }}</v-list-item-title>
-          </v-list-item>
           <v-list-item @click="archiveConversation">
             <v-list-item-title>{{ $t('messages.archive') }}</v-list-item-title>
           </v-list-item>
@@ -353,11 +348,6 @@
         messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
       }
     })
-  }
-
-  function viewParticipants () {
-    // TODO: Show participants dialog
-    console.log('View participants:', props.conversation.participantNames)
   }
 
   async function archiveConversation () {
