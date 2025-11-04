@@ -44,7 +44,7 @@
       <v-list-item
         v-for="conversation in filteredConversations"
         :key="conversation.id"
-        :class="{ 'bg-blue-lighten-5': conversation.hasUnreadMessages(currentUserEmail) }"
+        :class="{ 'bg-blue-lighten-5': conversation.hasUnreadMessages(currentUserParentId) }"
         @click="selectConversation(conversation)"
       >
         <!-- Avatar/Icon -->
@@ -56,16 +56,16 @@
 
         <!-- Title & Preview -->
         <v-list-item-title class="d-flex align-center">
-          <span :class="{ 'font-weight-bold': conversation.hasUnreadMessages(currentUserEmail) }">
+          <span :class="{ 'font-weight-bold': conversation.hasUnreadMessages(currentUserParentId) }">
             {{ getConversationLabel(conversation) }}
           </span>
           <v-chip
-            v-if="conversation.hasUnreadMessages(currentUserEmail)"
+            v-if="conversation.hasUnreadMessages(currentUserParentId)"
             class="ml-2"
             color="error"
             size="x-small"
           >
-            {{ conversation.getUnreadCountForUser(currentUserEmail) }}
+            {{ conversation.getUnreadCountForUser(currentUserParentId) }}
           </v-chip>
         </v-list-item-title>
 
@@ -104,7 +104,7 @@
   import { ConversationRepository } from '@/repositories/ConversationRepository'
 
   const props = defineProps({
-    currentUserEmail: {
+    currentUserParentId: {
       type: String,
       required: true,
     },
@@ -141,7 +141,7 @@
     if (conversation.isDirect) {
       // For direct messages, show the other participant's name
       const otherParticipant = conversation.participants.find(
-        email => email !== props.currentUserEmail,
+        parentId => parentId !== props.currentUserParentId,
       )
       return conversation.participantNames[otherParticipant] || otherParticipant
     }
@@ -227,7 +227,7 @@
       // Set up real-time listener
       const q = query(
         collection(db, 'conversations'),
-        where('participants', 'array-contains', props.currentUserEmail),
+        where('participants', 'array-contains', props.currentUserParentId),
         where('archived', '==', false),
         orderBy('lastMessageAt', 'desc'),
       )

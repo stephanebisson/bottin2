@@ -99,7 +99,7 @@ export class ConversationDTO {
       errors.push('At least 2 participants are required')
     }
     if (!this.createdBy) {
-      errors.push('Creator email is required')
+      errors.push('Creator parent ID is required')
     }
     if (this.type !== 'direct' && !this.contextId) {
       errors.push('Context ID is required for class and committee conversations')
@@ -147,18 +147,18 @@ export class ConversationDTO {
 
   /**
    * Get unread count for a specific user
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    */
-  getUnreadCountForUser (userEmail) {
-    return this.unreadCount[userEmail] || 0
+  getUnreadCountForUser (parentId) {
+    return this.unreadCount[parentId] || 0
   }
 
   /**
    * Check if user has unread messages
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    */
-  hasUnreadMessages (userEmail) {
-    return this.getUnreadCountForUser(userEmail) > 0
+  hasUnreadMessages (parentId) {
+    return this.getUnreadCountForUser(parentId) > 0
   }
 
   /**
@@ -259,7 +259,7 @@ export class ConversationDTO {
   /**
    * Update last message info
    * @param {string} preview - Message preview text
-   * @param {string} senderId - Sender's email
+   * @param {string} senderId - Sender's parent ID
    * @returns {ConversationDTO} New ConversationDTO with updated message info
    */
   updateLastMessage (preview, senderId) {
@@ -272,15 +272,15 @@ export class ConversationDTO {
 
   /**
    * Increment unread count for specific users
-   * @param {string[]} userEmails - Array of user emails to increment
-   * @param {string} senderEmail - Email of the sender (excluded from increment)
+   * @param {string[]} parentIds - Array of parent IDs to increment
+   * @param {string} senderParentId - Parent ID of the sender (excluded from increment)
    * @returns {ConversationDTO} New ConversationDTO with updated unread counts
    */
-  incrementUnreadFor (userEmails, senderEmail) {
+  incrementUnreadFor (parentIds, senderParentId) {
     const newUnreadCount = { ...this.unreadCount }
-    for (const email of userEmails) {
-      if (email !== senderEmail) {
-        newUnreadCount[email] = (newUnreadCount[email] || 0) + 1
+    for (const parentId of parentIds) {
+      if (parentId !== senderParentId) {
+        newUnreadCount[parentId] = (newUnreadCount[parentId] || 0) + 1
       }
     }
     return this.withUpdates({ unreadCount: newUnreadCount })
@@ -288,12 +288,12 @@ export class ConversationDTO {
 
   /**
    * Reset unread count for a specific user
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    * @returns {ConversationDTO} New ConversationDTO with reset unread count
    */
-  markAsReadBy (userEmail) {
+  markAsReadBy (parentId) {
     const newUnreadCount = { ...this.unreadCount }
-    newUnreadCount[userEmail] = 0
+    newUnreadCount[parentId] = 0
     return this.withUpdates({ unreadCount: newUnreadCount })
   }
 
@@ -315,7 +315,7 @@ export class ConversationDTO {
 
   /**
    * Add participants to conversation
-   * @param {string[]} newParticipants - Array of participant emails to add
+   * @param {string[]} newParticipants - Array of participant parent IDs to add
    * @returns {ConversationDTO} New ConversationDTO with added participants
    */
   addParticipants (newParticipants) {
@@ -325,12 +325,12 @@ export class ConversationDTO {
 
   /**
    * Remove participants from conversation
-   * @param {string[]} participantsToRemove - Array of participant emails to remove
+   * @param {string[]} participantsToRemove - Array of participant parent IDs to remove
    * @returns {ConversationDTO} New ConversationDTO with removed participants
    */
   removeParticipants (participantsToRemove) {
     const updatedParticipants = this.participants.filter(
-      email => !participantsToRemove.includes(email),
+      parentId => !participantsToRemove.includes(parentId),
     )
     return this.withUpdates({ participants: updatedParticipants })
   }

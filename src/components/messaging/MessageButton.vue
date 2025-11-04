@@ -38,12 +38,12 @@
       type: Object,
       default: () => ({ en: '', fr: '' }),
     },
-    // Array of participant emails
+    // Array of participant parent IDs
     participants: {
       type: Array,
       required: true,
     },
-    // Object mapping emails to names { 'email@example.com': 'Jane Doe' }
+    // Object mapping parent IDs to names { 'parentId123': 'Jane Doe' }
     participantNames: {
       type: Object,
       default: () => ({}),

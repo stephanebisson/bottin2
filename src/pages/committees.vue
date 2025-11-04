@@ -99,7 +99,7 @@
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-grey-lighten-4'"
                     :current-user-email="authStore.userEmail"
-                    :current-user-name="authStore.userDisplayName"
+                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -128,7 +128,7 @@
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-blue-lighten-5'"
                     :current-user-email="authStore.userEmail"
-                    :current-user-name="authStore.userDisplayName"
+                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -157,7 +157,7 @@
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-orange-lighten-5'"
                     :current-user-email="authStore.userEmail"
-                    :current-user-name="authStore.userDisplayName"
+                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -183,7 +183,7 @@
                     class="member-item-compact mb-2 rounded"
                     :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-grey-lighten-4'"
                     :current-user-email="authStore.userEmail"
-                    :current-user-name="authStore.userDisplayName"
+                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -242,6 +242,13 @@
   // Use centralized data store
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
+
+  // Get current user's full name from parent record
+  const currentUserFullName = computed(() => {
+    if (!authStore.userEmail) return authStore.userDisplayName || ''
+    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+    return currentParent?.fullName || authStore.userDisplayName || ''
+  })
 
   // Check if user is admin
   const isAdmin = ref(false)

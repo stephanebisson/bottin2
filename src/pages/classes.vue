@@ -905,13 +905,13 @@
       if (student.parent1_id) {
         const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
         if (parent && parent.email) {
-          namesMap[parent.email] = `${parent.first_name} ${parent.last_name}`
+          namesMap[parent.email] = parent.fullName
         }
       }
       if (student.parent2_id) {
         const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
         if (parent && parent.email) {
-          namesMap[parent.email] = `${parent.first_name} ${parent.last_name}`
+          namesMap[parent.email] = parent.fullName
         }
       }
     }

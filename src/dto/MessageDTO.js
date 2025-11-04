@@ -81,10 +81,10 @@ export class MessageDTO {
 
   /**
    * Check if message has been read by specific user
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    */
-  isReadBy (userEmail) {
-    return this.readBy.includes(userEmail)
+  isReadBy (parentId) {
+    return this.readBy.includes(parentId)
   }
 
   /**
@@ -96,10 +96,10 @@ export class MessageDTO {
 
   /**
    * Check if this is the sender's own message
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    */
-  isOwnMessage (userEmail) {
-    return this.senderId === userEmail
+  isOwnMessage (parentId) {
+    return this.senderId === parentId
   }
 
   /**
@@ -192,15 +192,15 @@ export class MessageDTO {
 
   /**
    * Mark message as read by a user
-   * @param {string} userEmail - User's email address
+   * @param {string} parentId - Parent's ID
    * @returns {MessageDTO} New MessageDTO with updated readBy array
    */
-  markAsReadBy (userEmail) {
-    if (this.isReadBy(userEmail)) {
+  markAsReadBy (parentId) {
+    if (this.isReadBy(parentId)) {
       return this // Already read, no changes needed
     }
     return this.withUpdates({
-      readBy: [...this.readBy, userEmail],
+      readBy: [...this.readBy, parentId],
     })
   }
 

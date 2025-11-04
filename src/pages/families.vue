@@ -139,7 +139,7 @@
                   v-if="group.parent1"
                   :committees="getParentCommittees(group.parent1.id)"
                   :current-user-email="authStore.userEmail"
-                  :current-user-name="authStore.userDisplayName"
+                  :current-user-name="currentUserFullName"
                   :parent="group.parent1"
                   :search-query="searchQuery"
                   show-address
@@ -156,7 +156,7 @@
                   v-if="group.parent2"
                   :committees="getParentCommittees(group.parent2.id)"
                   :current-user-email="authStore.userEmail"
-                  :current-user-name="authStore.userDisplayName"
+                  :current-user-name="currentUserFullName"
                   :parent="group.parent2"
                   :search-query="searchQuery"
                   show-address
@@ -196,7 +196,7 @@
               <td class="py-3">
                 <ParentInfo
                   :current-user-email="authStore.userEmail"
-                  :current-user-name="authStore.userDisplayName"
+                  :current-user-name="currentUserFullName"
                   :parent="parentData.parent"
                   :search-query="searchQuery"
                   show-contact
@@ -264,6 +264,13 @@
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
   const authStore = useAuthStore()
+
+  // Get current user's full name from parent record
+  const currentUserFullName = computed(() => {
+    if (!authStore.userEmail) return authStore.userDisplayName || ''
+    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+    return currentParent?.fullName || authStore.userDisplayName || ''
+  })
 
   // Loading status computed
   const loadingStatus = computed(() => {

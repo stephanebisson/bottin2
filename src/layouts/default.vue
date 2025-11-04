@@ -20,7 +20,7 @@
       ref="messagingShellRef"
       :chat-enabled="currentUserHasChat"
       :current-user-email="authStore.userEmail"
-      :current-user-name="authStore.userDisplayName"
+      :current-user-name="currentUserFullName"
     />
 
     <!-- PWA Update Prompt -->
@@ -52,11 +52,20 @@
   // Provide to all child components
   provide('messagingShell', messagingShellRef)
 
+  // Get current parent
+  const currentParent = computed(() => {
+    if (!authStore.isAuthenticated || !authStore.userEmail) return null
+    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+  })
+
   // Check if current user has chat enabled
   const currentUserHasChat = computed(() => {
-    if (!authStore.isAuthenticated || !authStore.userEmail) return false
-    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-    return currentParent?.hasChatEnabled || false
+    return currentParent.value?.hasChatEnabled || false
+  })
+
+  // Get current user's full name from parent record
+  const currentUserFullName = computed(() => {
+    return currentParent.value?.fullName || authStore.userDisplayName || ''
   })
 
   // Check if current route is a print page
