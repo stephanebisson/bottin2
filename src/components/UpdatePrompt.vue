@@ -15,7 +15,7 @@
       <v-btn
         size="small"
         variant="text"
-        @click="updateServiceWorker"
+        @click="updateServiceWorker(true)"
       >
         {{ $t('pwa.update') }}
       </v-btn>
