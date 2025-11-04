@@ -811,37 +811,23 @@
     margin: 0;
   }
 }
-
-/* Page setup for print */
-@page {
-  size: letter;
-  margin: 0.75in 0.75in 1in 0.75in; /* Extra bottom margin for footer */
-
-  @bottom-center {
-    content: "Étoile filante - Le Gros Bottin | Page " counter(page);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 9pt;
-    color: #000;
-  }
-}
-
-/* Hide footer on first page (title page) */
-@page :first {
-  @bottom-center {
-    content: none;
-  }
-}
-
-/* Hide footer on last page (back page) */
-@page :last {
-  @bottom-center {
-    content: none;
-  }
-}
 </style>
 
 <style>
-/* Global styles (unscoped) to hide Firebase emulator banner in print */
+/* Global unscoped styles for @page rules and print */
+
+/* Page setup for print - no @page margins, we handle everything manually */
+@page {
+  size: letter;
+  margin: 0.75in; /* Equal margins all around */
+}
+
+/* CSS counter for manual page numbering */
+.print-directory {
+  counter-reset: manual-page 0;
+}
+
+/* Hide Firebase emulator banner in print */
 @media print {
   /* Hide Firebase emulator warning banner */
   .firebase-emulator-warning,

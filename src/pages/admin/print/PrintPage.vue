@@ -1,8 +1,8 @@
 <template>
   <section
     ref="pageRef"
-    class="print-page"
     :class="{
+      'print-page': true,
       'no-footer': noFooter,
       'first-page': firstPage,
       'has-overflow': hasOverflow
@@ -16,6 +16,11 @@
     <!-- Main content area - fills remaining space -->
     <div class="print-page-content">
       <slot />
+    </div>
+
+    <!-- Manual page footer (replaces @page @bottom-center) -->
+    <div v-if="!noFooter" class="page-footer">
+      <span class="footer-text">Étoile filante - Le Gros Bottin | Page <span class="page-number" /></span>
     </div>
 
     <!-- Optional footer slot -->
@@ -113,6 +118,9 @@
   /* Flexbox layout for header/content/footer structure */
   display: flex;
   flex-direction: column;
+
+  /* Position relative for absolute footer positioning */
+  position: relative;
 }
 
 .print-page-header {
@@ -175,6 +183,28 @@
   padding-bottom: 0.75in;
 }
 
+/* Manual page footer */
+.page-footer {
+  position: absolute;
+  bottom: 0.5in;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 9pt;
+  color: #000;
+}
+
+/* Increment counter for each page */
+.print-page {
+  counter-increment: manual-page;
+}
+
+/* Display counter in footer */
+.page-number::before {
+  content: counter(manual-page);
+}
+
 @media print {
   .print-page {
     /* Remove screen-only styling */
@@ -195,6 +225,9 @@
     page-break-before: always;
     page-break-after: always;
     page-break-inside: avoid;
+
+    /* Keep position relative for footer */
+    position: relative;
   }
 
   .print-page.first-page {
@@ -203,6 +236,20 @@
 
   .print-page.no-footer {
     padding-bottom: 0;
+  }
+
+  /* Ensure footer is visible and positioned correctly in print */
+  .page-footer {
+    position: absolute;
+    bottom: 0.25in;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 9pt;
+    color: #000;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
 
