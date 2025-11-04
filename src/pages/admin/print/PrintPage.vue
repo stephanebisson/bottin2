@@ -20,7 +20,9 @@
 
     <!-- Manual page footer (replaces @page @bottom-center) -->
     <div v-if="!noFooter" class="page-footer">
-      <span class="footer-text">Étoile filante - Le Gros Bottin | Page <span class="page-number" /></span>
+      <span class="page-number-left"><span class="page-number" /></span>
+      <span class="footer-center">Étoile filante - Le Gros Bottin</span>
+      <span class="page-number-right"><span class="page-number" /></span>
     </div>
 
     <!-- Optional footer slot -->
@@ -189,10 +191,24 @@
   bottom: 0.5in;
   left: 0;
   right: 0;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 9pt;
   color: #000;
+  padding: 0 0.75in;
+}
+
+.footer-center {
+  flex: 1;
+  text-align: center;
+}
+
+.page-number-left,
+.page-number-right {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* Increment counter for each page */
@@ -203,6 +219,16 @@
 /* Display counter in footer */
 .page-number::before {
   content: counter(manual-page);
+}
+
+/* Even pages (2, 4, 6...) - page number on LEFT */
+.print-page:nth-child(even) .page-number-right {
+  display: none;
+}
+
+/* Odd pages (1, 3, 5...) - page number on RIGHT */
+.print-page:nth-child(odd) .page-number-left {
+  display: none;
 }
 
 @media print {
@@ -244,12 +270,36 @@
     bottom: 0.25in;
     left: 0;
     right: 0;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.75in;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 9pt;
     color: #000;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  .footer-center {
+    flex: 1;
+    text-align: center;
+  }
+
+  .page-number-left,
+  .page-number-right {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Even pages - page number on LEFT */
+  .print-page:nth-child(even) .page-number-right {
+    display: none;
+  }
+
+  /* Odd pages - page number on RIGHT */
+  .print-page:nth-child(odd) .page-number-left {
+    display: none;
   }
 }
 
