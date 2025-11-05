@@ -30,6 +30,7 @@ credentials/
 !jsconfig.json
 !src/locales/*.json
 !firebase.json
+!firestore.indexes.json
 !.eslintrc-auto-import.json
 !vite.config.mjs
 !eslint.config.js
