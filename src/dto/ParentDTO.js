@@ -134,6 +134,13 @@ export class ParentDTO {
   }
 
   /**
+   * Get name in "Last, First" format
+   */
+  get lastNameFirst () {
+    return `${this.last_name}, ${this.first_name}`.trim()
+  }
+
+  /**
    * Get display-friendly phone number with formatting
    */
   get displayPhone () {

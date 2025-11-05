@@ -71,6 +71,13 @@ export class StudentDTO {
   }
 
   /**
+   * Get name in "Last, First" format
+   */
+  get lastNameFirst () {
+    return `${this.last_name}, ${this.first_name}`.trim()
+  }
+
+  /**
    * Get display-friendly class name (handle edge cases)
    */
   get displayClassName () {

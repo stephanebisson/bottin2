@@ -136,6 +136,9 @@
     <!-- Families Pages -->
     <FamiliesPages :paginated-families="paginatedFamiliesWithTeachers" />
 
+    <!-- Parents Alphabetical List -->
+    <ParentsListPages :paginated-parents="paginatedParentsWithChildren" />
+
     <!-- Référentiel -->
     <Referentiel />
 
@@ -168,6 +171,7 @@
   import FAQ1 from './FAQ1.vue'
   import FAQ2 from './FAQ2.vue'
   import Implication from './Implication.vue'
+  import ParentsListPages from './ParentsListPages.vue'
   import PrintPage from './PrintPage.vue'
   import Referentiel from './Referentiel.vue'
   import StaffSection from './StaffSection.vue'
@@ -190,10 +194,11 @@
     'classes-34': 12, // Liste des classes (3e-4e)
     'classes-56': 13, // Liste des classes (5e-6e)
     families: 14, // Liste alphabétique des enfants (pages 14+, depends on # of families)
-    referentiel: 20, // Référentiel (estimate, adjust after print preview)
-    implication: 21, // Implication (estimate, adjust after print preview)
-    faq1: 22, // FAQ page 1 (estimate, adjust after print preview)
-    faq2: 23, // FAQ page 2 (estimate, adjust after print preview)
+    parents: 20, // Liste alphabétique des parents (estimate, adjust after print preview)
+    referentiel: 22, // Référentiel (estimate, adjust after print preview)
+    implication: 23, // Implication (estimate, adjust after print preview)
+    faq1: 24, // FAQ page 1 (estimate, adjust after print preview)
+    faq2: 25, // FAQ page 2 (estimate, adjust after print preview)
   }
   // ============================================================================
 
@@ -591,6 +596,21 @@
     return teacher ? teacher.fullName : ''
   }
 
+  // Helper: Get student's teacher first name only
+  function getTeacherFirstName (student) {
+    const classItem = firebaseStore.classes.find(c => c.classLetter === student.className)
+    if (!classItem || !classItem.teacher) return ''
+
+    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
+    return teacher ? teacher.first_name : ''
+  }
+
+  // Helper: Format level in compact form (1e, 2e, etc.)
+  function formatLevelCompact (level) {
+    if (!level || level === 'Unknown') return ''
+    return `${level}e`
+  }
+
   // Paginated families with teacher names added
   const paginatedFamiliesWithTeachers = computed(() => {
     const families = groupedFamilies.value
@@ -629,6 +649,135 @@
     }
 
     return pages
+  })
+
+  // Parents alphabetically with children
+  const paginatedParentsWithChildren = computed(() => {
+    // Create a map of parent -> children
+    const parentChildrenMap = new Map()
+
+    // Iterate through all students and map to their parents
+    for (const student of firebaseStore.studentsDTO) {
+      const parent1 = getStudentParent(student, 1)
+      const parent2 = getStudentParent(student, 2)
+
+      if (parent1) {
+        if (!parentChildrenMap.has(parent1.id)) {
+          parentChildrenMap.set(parent1.id, {
+            id: parent1.id,
+            first_name: parent1.first_name,
+            last_name: parent1.last_name,
+            fullName: parent1.fullName,
+            lastNameFirst: parent1.lastNameFirst,
+            children: [],
+          })
+        }
+        // Enrich student with teacher info and lastNameFirst
+        const enrichedStudent = {
+          ...student,
+          lastNameFirst: student.lastNameFirst,
+          teacherFirstName: getTeacherFirstName(student),
+          levelDisplay: formatLevelCompact(student.level),
+        }
+        parentChildrenMap.get(parent1.id).children.push(enrichedStudent)
+      }
+
+      if (parent2) {
+        if (!parentChildrenMap.has(parent2.id)) {
+          parentChildrenMap.set(parent2.id, {
+            id: parent2.id,
+            first_name: parent2.first_name,
+            last_name: parent2.last_name,
+            fullName: parent2.fullName,
+            lastNameFirst: parent2.lastNameFirst,
+            children: [],
+          })
+        }
+        // Enrich student with teacher info and lastNameFirst
+        const enrichedStudent = {
+          ...student,
+          lastNameFirst: student.lastNameFirst,
+          teacherFirstName: getTeacherFirstName(student),
+          levelDisplay: formatLevelCompact(student.level),
+        }
+        parentChildrenMap.get(parent2.id).children.push(enrichedStudent)
+      }
+    }
+
+    // Convert map to array and sort alphabetically by parent last name, then first name
+    const sortedParents = [...parentChildrenMap.values()].toSorted((a, b) => {
+      const lastNameA = a.last_name.toLowerCase()
+      const lastNameB = b.last_name.toLowerCase()
+      if (lastNameA !== lastNameB) {
+        return lastNameA.localeCompare(lastNameB)
+      }
+      // If last names are the same, sort by first name
+      const firstNameA = a.first_name.toLowerCase()
+      const firstNameB = b.first_name.toLowerCase()
+      return firstNameA.localeCompare(firstNameB)
+    })
+
+    // Sort each parent's children by last name, then first name
+    for (const parent of sortedParents) {
+      parent.children.sort((a, b) => {
+        const lastNameA = a.last_name.toLowerCase()
+        const lastNameB = b.last_name.toLowerCase()
+        if (lastNameA !== lastNameB) {
+          return lastNameA.localeCompare(lastNameB)
+        }
+        const firstNameA = a.first_name.toLowerCase()
+        const firstNameB = b.first_name.toLowerCase()
+        return firstNameA.localeCompare(firstNameB)
+      })
+    }
+
+    // Paginate: smart pagination based on student count (~22 students per page)
+    // Each parent entry shows all their children, so we count total student lines
+    const pages = []
+    const maxStudentsPerPage = 22
+    let currentPage = []
+    let currentStudentCount = 0
+
+    for (const parent of sortedParents) {
+      const studentCount = parent.children.length
+
+      // Check if adding this parent would exceed the page limit
+      if (currentStudentCount > 0 && currentStudentCount + studentCount > maxStudentsPerPage) {
+        // Start a new page
+        pages.push(currentPage)
+        currentPage = [parent]
+        currentStudentCount = studentCount
+      } else {
+        // Add to current page
+        currentPage.push(parent)
+        currentStudentCount += studentCount
+      }
+    }
+
+    // Add the last page if it has content
+    if (currentPage.length > 0) {
+      pages.push(currentPage)
+    }
+
+    // Format pages with letter ranges
+    return pages.map((pageParents, index) => {
+      // Get all unique first letters from parent last names on this page
+      const letters = new Set()
+      for (const parent of pageParents) {
+        if (parent.last_name && parent.last_name.length > 0) {
+          letters.add(parent.last_name.charAt(0).toUpperCase())
+        }
+      }
+
+      // Sort letters alphabetically and join with hyphens
+      const letterRange = [...letters].toSorted().join('-')
+
+      return {
+        parents: pageParents,
+        letterRange,
+        isFirstPage: index === 0,
+      }
+    })
   })
 
   // Helper: Format phone number
