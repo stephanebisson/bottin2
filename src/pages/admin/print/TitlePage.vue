@@ -25,9 +25,6 @@
 <style scoped>
 /* Title Page */
 .title-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   height: 100%;
 }
@@ -103,10 +100,12 @@
 @media print {
   .title-page {
     width: 100%;
-    height: 100%;
+    height: 9.5in; /* 11in page - 0.75in top padding - 0.75in bottom padding */
   }
 
   .title-box {
+    width: 100%;
+    height: 100%;
     border: 4px dotted #222;
     background: white;
     padding: 1.5rem;

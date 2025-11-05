@@ -238,8 +238,8 @@
     box-shadow: none;
     border: 0;
 
-    /* Remove padding - the @page margins handle spacing */
-    padding: 0;
+    /* Same padding as screen mode - we control all spacing */
+    padding: 0.75in 0.75in 1in 0.75in;
 
     /* Ensure exact page sizing */
     width: 100%;
@@ -261,13 +261,13 @@
   }
 
   .print-page.no-footer {
-    padding-bottom: 0;
+    padding: 0.75in;
   }
 
   /* Ensure footer is visible and positioned correctly in print */
   .page-footer {
     position: absolute;
-    bottom: 0.25in;
+    bottom: 0.5in;
     left: 0;
     right: 0;
     display: flex;

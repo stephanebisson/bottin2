@@ -965,10 +965,10 @@
 <style>
 /* Global unscoped styles for @page rules and print */
 
-/* Page setup for print - no @page margins, we handle everything manually */
+/* Page setup for print - zero margins, we handle spacing inside PrintPage component */
 @page {
   size: letter;
-  margin: 0.75in; /* Equal margins all around */
+  margin: 0;
 }
 
 /* CSS counter for manual page numbering */
