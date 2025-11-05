@@ -13,7 +13,7 @@
 
 // If the loader is already loaded, just stop.
 if (!self.define) {
-  const registry = {};
+  let registry = {};
 
   // Used for `eval` and `importScripts` where we can't get script URL by other means.
   // In both cases, it's safe to use a global var because those functions are synchronous.
@@ -27,8 +27,8 @@ if (!self.define) {
           if ("document" in self) {
             const script = document.createElement("script");
             script.src = uri;
-            script.addEventListener('load', resolve);
-            document.head.append(script);
+            script.onload = resolve;
+            document.head.appendChild(script);
           } else {
             nextDefineUri = uri;
             importScripts(uri);
@@ -37,7 +37,7 @@ if (!self.define) {
         })
       
       .then(() => {
-        const promise = registry[uri];
+        let promise = registry[uri];
         if (!promise) {
           throw new Error(`Module ${uri} didn’t register its module`);
         }
@@ -52,7 +52,7 @@ if (!self.define) {
       // Module is already loading or loaded.
       return;
     }
-    const exports = {};
+    let exports = {};
     const require = depUri => singleRequire(depUri, uri);
     const specialDeps = {
       module: { uri },
@@ -82,7 +82,7 @@ define(['./workbox-634587ff'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.7c5701ib818"
+    "revision": "0.nr5986gb4e8"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -92,7 +92,7 @@ define(['./workbox-634587ff'], (function (workbox) { 'use strict';
     "cacheName": "firestore-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 50,
-      maxAgeSeconds: 604_800
+      maxAgeSeconds: 604800
     }), new workbox.CacheableResponsePlugin({
       statuses: [0, 200]
     })]
@@ -108,14 +108,14 @@ define(['./workbox-634587ff'], (function (workbox) { 'use strict';
     "cacheName": "google-fonts-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 10,
-      maxAgeSeconds: 31_536_000
+      maxAgeSeconds: 31536000
     })]
   }), 'GET');
   workbox.registerRoute(/^https:\/\/.*\.tile\.openstreetmap\.org\/.*/i, new workbox.CacheFirst({
     "cacheName": "map-tiles-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 500,
-      maxAgeSeconds: 2_592_000
+      maxAgeSeconds: 2592000
     })]
   }), 'GET');
 

@@ -68,6 +68,8 @@
     return currentParent.value?.fullName || authStore.userDisplayName || ''
   })
 
+  // Note: currentUserEmail is passed directly from authStore.userEmail to MessagingShell
+
   // Check if current route is a print page
   const isPrintPage = computed(() => {
     return route.path === '/admin/print'

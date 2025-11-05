@@ -16,15 +16,15 @@
 
     <ConversationList
       v-if="!activeConversation"
-      :chat-enabled="chatEnabled"
-      :current-user-email="currentUserEmail"
+      :chat-enabled="props.chatEnabled"
+      :current-user-email="props.currentUserEmail"
       @select-conversation="openConversation"
     />
     <ConversationView
       v-else
       :conversation="activeConversation"
-      :current-user-email="currentUserEmail"
-      :current-user-name="currentUserName"
+      :current-user-email="props.currentUserEmail"
+      :current-user-name="props.currentUserName"
       @close="closeConversation"
     />
   </v-navigation-drawer>

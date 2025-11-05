@@ -177,7 +177,7 @@
       type: Object,
       required: true,
     },
-    currentUserParentId: {
+    currentUserEmail: {
       type: String,
       required: true,
     },
@@ -205,7 +205,7 @@
   const conversationTitle = computed(() => {
     if (props.conversation.isDirect) {
       const otherParticipant = props.conversation.participants.find(
-        parentId => parentId !== props.currentUserParentId,
+        parentId => parentId !== props.currentUserEmail,
       )
       return props.conversation.participantNames[otherParticipant] || otherParticipant
     }
@@ -246,7 +246,7 @@
   })
 
   function isOwnMessage (message) {
-    return message.senderId === props.currentUserParentId
+    return message.senderId === props.currentUserEmail
   }
 
   function getInitials (name) {
@@ -305,24 +305,24 @@
       // Create message
       await messageRepo.create({
         conversationId: props.conversation.id,
-        senderId: props.currentUserParentId,
+        senderId: props.currentUserEmail,
         senderName: props.currentUserName,
         text: messageText,
-        readBy: [props.currentUserParentId],
+        readBy: [props.currentUserEmail],
       })
 
       // Update conversation
       await conversationRepo.updateLastMessage(
         props.conversation.id,
         messageText.slice(0, 100),
-        props.currentUserParentId,
+        props.currentUserEmail,
       )
 
       // Increment unread count for other participants
       await conversationRepo.incrementUnreadCount(
         props.conversation.id,
         props.conversation.participants,
-        props.currentUserParentId,
+        props.currentUserEmail,
       )
 
       scrollToBottom()
@@ -406,15 +406,15 @@
   async function markMessagesAsRead () {
     try {
       const unreadMessages = messages.value.filter(
-        msg => !msg.readBy.includes(props.currentUserParentId) && msg.senderId !== props.currentUserParentId,
+        msg => !msg.readBy.includes(props.currentUserEmail) && msg.senderId !== props.currentUserEmail,
       )
 
       for (const message of unreadMessages) {
-        await messageRepo.markAsRead(message.id, props.currentUserParentId)
+        await messageRepo.markAsRead(message.id, props.currentUserEmail)
       }
 
       if (unreadMessages.length > 0) {
-        await conversationRepo.markAsRead(props.conversation.id, props.currentUserParentId)
+        await conversationRepo.markAsRead(props.conversation.id, props.currentUserEmail)
       }
     } catch (error) {
       console.error('Error marking messages as read:', error)

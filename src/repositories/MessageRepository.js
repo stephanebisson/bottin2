@@ -65,7 +65,7 @@ export class MessageRepository {
 
   /**
    * Get messages sent by a specific user
-   * @param {string} senderId - Sender's parent ID
+   * @param {string} senderId - Sender's email
    * @param {number} limit - Maximum number of messages to load
    */
   async getBySenderId (senderId, limit = 50) {
@@ -182,18 +182,18 @@ export class MessageRepository {
   /**
    * Mark message as read by a user
    * @param {string} id - Message ID
-   * @param {string} parentId - Parent's ID
+   * @param {string} userEmail - User's email
    */
-  async markAsRead (id, parentId) {
+  async markAsRead (id, userEmail) {
     try {
-      console.log(`MessageRepository: Marking message ${id} as read by ${parentId}...`)
+      console.log(`MessageRepository: Marking message ${id} as read by ${userEmail}...`)
       const docRef = doc(db, this.collectionName, id)
 
       await updateDoc(docRef, {
-        readBy: arrayUnion(parentId),
+        readBy: arrayUnion(userEmail),
       })
 
-      console.log(`MessageRepository: Marked message ${id} as read by ${parentId}`)
+      console.log(`MessageRepository: Marked message ${id} as read by ${userEmail}`)
     } catch (error) {
       console.error(`MessageRepository: Error marking message ${id} as read:`, error)
       throw new Error(`Failed to mark message ${id} as read: ${error.message}`)
@@ -203,17 +203,17 @@ export class MessageRepository {
   /**
    * Mark all messages in a conversation as read by a user
    * @param {string} conversationId - Conversation ID
-   * @param {string} parentId - Parent's ID
+   * @param {string} userEmail - User's email
    */
-  async markConversationAsRead (conversationId, parentId) {
+  async markConversationAsRead (conversationId, userEmail) {
     try {
-      console.log(`MessageRepository: Marking all messages in conversation ${conversationId} as read by ${parentId}...`)
+      console.log(`MessageRepository: Marking all messages in conversation ${conversationId} as read by ${userEmail}...`)
 
       const messages = await this.getConversationMessages(conversationId, 100)
-      const unreadMessages = messages.filter(msg => !msg.isReadBy(parentId) && msg.senderId !== parentId)
+      const unreadMessages = messages.filter(msg => !msg.isReadBy(userEmail) && msg.senderId !== userEmail)
 
       for (const message of unreadMessages) {
-        await this.markAsRead(message.id, parentId)
+        await this.markAsRead(message.id, userEmail)
       }
 
       console.log(`MessageRepository: Marked ${unreadMessages.length} messages as read in conversation ${conversationId}`)

@@ -3,7 +3,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:core:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2019 Google LLC
@@ -30,12 +30,14 @@ define(['exports'], (function (exports) { 'use strict';
         if (self.__WB_DISABLE_DEV_LOGS) {
           return;
         }
-        if (method === 'groupCollapsed' && // Safari doesn't print all console.groupCollapsed() arguments:
+        if (method === 'groupCollapsed') {
+          // Safari doesn't print all console.groupCollapsed() arguments:
           // https://bugs.webkit.org/show_bug.cgi?id=182754
-          /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+          if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
             console[method](...args);
             return;
           }
+        }
         const styles = [`background: ${methodToColorMap[method]}`, `border-radius: 0.5em`, `color: white`, `font-weight: bold`, `padding: 2px 0.5em`];
         // When in a group, the workbox prefix is not displayed.
         const logPrefix = inGroup ? [] : ['%cworkbox', styles.join(';')];
@@ -430,7 +432,7 @@ define(['exports'], (function (exports) { 'use strict';
     const isArrayOfClass = (value,
     // Need general type to do check later.
     expectedClass,
-     
+    // eslint-disable-line
     details) => {
       const error = new WorkboxError('not-array-of-class', details);
       if (!Array.isArray(value)) {
@@ -454,7 +456,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:routing:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2018 Google LLC
@@ -849,13 +851,13 @@ define(['exports'], (function (exports) { 'use strict';
           // We have a handler, meaning Workbox is going to handle the route.
           // print the routing details to the console.
           logger.groupCollapsed(`Router is responding to: ${getFriendlyURL(url)}`);
-          for (const msg of debugMessages) {
+          debugMessages.forEach(msg => {
             if (Array.isArray(msg)) {
               logger.log(...msg);
             } else {
               logger.log(msg);
             }
-          }
+          });
           logger.groupEnd();
         }
         // Wrap in try and catch in case the handle method throws a synchronous
@@ -868,13 +870,13 @@ define(['exports'], (function (exports) { 'use strict';
             event,
             params
           });
-        } catch (error) {
-          responsePromise = Promise.reject(error);
+        } catch (err) {
+          responsePromise = Promise.reject(err);
         }
         // Get route's catch handler, if it exists
         const catchHandler = route && route.catchHandler;
         if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
-          responsePromise = responsePromise.catch(async error => {
+          responsePromise = responsePromise.catch(async err => {
             // If there's a route catch handler, process that first
             if (catchHandler) {
               {
@@ -882,7 +884,7 @@ define(['exports'], (function (exports) { 'use strict';
                 // and may not make sense without the URL
                 logger.groupCollapsed(`Error thrown when responding to: ` + ` ${getFriendlyURL(url)}. Falling back to route's Catch Handler.`);
                 logger.error(`Error thrown by:`, route);
-                logger.error(error);
+                logger.error(err);
                 logger.groupEnd();
               }
               try {
@@ -892,9 +894,9 @@ define(['exports'], (function (exports) { 'use strict';
                   event,
                   params
                 });
-              } catch (error_) {
-                if (error_ instanceof Error) {
-                  error = error_;
+              } catch (catchErr) {
+                if (catchErr instanceof Error) {
+                  err = catchErr;
                 }
               }
             }
@@ -904,7 +906,7 @@ define(['exports'], (function (exports) { 'use strict';
                 // and may not make sense without the URL
                 logger.groupCollapsed(`Error thrown when responding to: ` + ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
                 logger.error(`Error thrown by:`, route);
-                logger.error(error);
+                logger.error(err);
                 logger.groupEnd();
               }
               return this._catchHandler.handle({
@@ -913,7 +915,7 @@ define(['exports'], (function (exports) { 'use strict';
                 event
               });
             }
-            throw error;
+            throw err;
           });
         }
         return responsePromise;
@@ -965,7 +967,7 @@ define(['exports'], (function (exports) { 'use strict';
               // Instead of passing an empty array in as params, use undefined.
               params = undefined;
             } else if (matchResult.constructor === Object &&
-             
+            // eslint-disable-line
             Object.keys(matchResult).length === 0) {
               // Instead of passing an empty object in as params, use undefined.
               params = undefined;
@@ -1069,10 +1071,10 @@ define(['exports'], (function (exports) { 'use strict';
           });
         }
         const routeIndex = this._routes.get(route.method).indexOf(route);
-        if (routeIndex === -1) {
-          throw new WorkboxError('unregister-route-route-not-registered');
-        } else {
+        if (routeIndex > -1) {
           this._routes.get(route.method).splice(routeIndex, 1);
+        } else {
+          throw new WorkboxError('unregister-route-route-not-registered');
         }
       }
     }
@@ -1144,7 +1146,7 @@ define(['exports'], (function (exports) { 'use strict';
           const valueToCheck = capture.startsWith('http') ? captureUrl.pathname : capture;
           // See https://github.com/pillarjs/path-to-regexp#parameters
           const wildcards = '[*:?+]';
-          if (new RegExp(`${wildcards}`).test(valueToCheck)) {
+          if (new RegExp(`${wildcards}`).exec(valueToCheck)) {
             logger.debug(`The '$capture' parameter contains an Express-style wildcard ` + `character (${wildcards}). Strings are now always interpreted as ` + `exact matches; use a RegExp for partial or wildcard matches.`);
           }
         }
@@ -1192,7 +1194,7 @@ define(['exports'], (function (exports) { 'use strict';
       precache: 'precache-v2',
       prefix: 'workbox',
       runtime: 'runtime',
-      suffix: typeof registration === 'undefined' ? '' : registration.scope
+      suffix: typeof registration !== 'undefined' ? registration.scope : ''
     };
     const _createCacheName = cacheName => {
       return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix].filter(value => value && value.length > 0).join('-');
@@ -1287,12 +1289,12 @@ define(['exports'], (function (exports) { 'use strict';
 
     function _extends() {
       return _extends = Object.assign ? Object.assign.bind() : function (n) {
-        for (let e = 1; e < arguments.length; e++) {
-          const t = arguments[e];
-          for (const r in t) {(Object.prototype).hasOwnProperty.call(t, r) && (n[r] = t[r]);}
+        for (var e = 1; e < arguments.length; e++) {
+          var t = arguments[e];
+          for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
         }
         return n;
-      }, Reflect.apply(_extends, null, arguments);
+      }, _extends.apply(null, arguments);
     }
 
     const instanceOfAny = (object, constructors) => constructors.some(c => object instanceof c);
@@ -1343,7 +1345,7 @@ define(['exports'], (function (exports) { 'use strict';
     }
     function cacheDonePromiseForTransaction(tx) {
       // Early bail if we've already created a done promise for this transaction.
-      if (transactionDoneMap.has(tx)) {return;}
+      if (transactionDoneMap.has(tx)) return;
       const done = new Promise((resolve, reject) => {
         const unlisten = () => {
           tx.removeEventListener('complete', complete);
@@ -1369,7 +1371,7 @@ define(['exports'], (function (exports) { 'use strict';
       get(target, prop, receiver) {
         if (target instanceof IDBTransaction) {
           // Special handling for transaction.done.
-          if (prop === 'done') {return transactionDoneMap.get(target);}
+          if (prop === 'done') return transactionDoneMap.get(target);
           // Polyfill for objectStoreNames because of Edge.
           if (prop === 'objectStoreNames') {
             return target.objectStoreNames || transactionStoreNamesMap.get(target);
@@ -1427,21 +1429,21 @@ define(['exports'], (function (exports) { 'use strict';
       };
     }
     function transformCachableValue(value) {
-      if (typeof value === 'function') {return wrapFunction(value);}
+      if (typeof value === 'function') return wrapFunction(value);
       // This doesn't return, it just creates a 'done' promise for the transaction,
       // which is later returned for transaction.done (see idbObjectHandler).
-      if (value instanceof IDBTransaction) {cacheDonePromiseForTransaction(value);}
-      if (instanceOfAny(value, getIdbProxyableTypes())) {return new Proxy(value, idbProxyTraps);}
+      if (value instanceof IDBTransaction) cacheDonePromiseForTransaction(value);
+      if (instanceOfAny(value, getIdbProxyableTypes())) return new Proxy(value, idbProxyTraps);
       // Return the same value back if we're not going to transform it.
       return value;
     }
     function wrap(value) {
       // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
       // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
-      if (value instanceof IDBRequest) {return promisifyRequest(value);}
+      if (value instanceof IDBRequest) return promisifyRequest(value);
       // If we've already transformed this value before, reuse the transformed value.
       // This is faster, but it also provides object equality.
-      if (transformCache.has(value)) {return transformCache.get(value);}
+      if (transformCache.has(value)) return transformCache.get(value);
       const newValue = transformCachableValue(value);
       // Not all types are transformed.
       // These may be primitive types, so they can't be WeakMap keys.
@@ -1479,7 +1481,7 @@ define(['exports'], (function (exports) { 'use strict';
         event.oldVersion, event.newVersion, event));
       }
       openPromise.then(db => {
-        if (terminated) {db.addEventListener('close', () => terminated());}
+        if (terminated) db.addEventListener('close', () => terminated());
         if (blocking) {
           db.addEventListener('versionchange', event => blocking(event.oldVersion, event.newVersion, event));
         }
@@ -1502,27 +1504,27 @@ define(['exports'], (function (exports) { 'use strict';
       }
       return wrap(request).then(() => undefined);
     }
-    const readMethods = new Set(['get', 'getKey', 'getAll', 'getAllKeys', 'count']);
-    const writeMethods = new Set(['put', 'add', 'delete', 'clear']);
+    const readMethods = ['get', 'getKey', 'getAll', 'getAllKeys', 'count'];
+    const writeMethods = ['put', 'add', 'delete', 'clear'];
     const cachedMethods = new Map();
     function getMethod(target, prop) {
       if (!(target instanceof IDBDatabase && !(prop in target) && typeof prop === 'string')) {
         return;
       }
-      if (cachedMethods.get(prop)) {return cachedMethods.get(prop);}
+      if (cachedMethods.get(prop)) return cachedMethods.get(prop);
       const targetFuncName = prop.replace(/FromIndex$/, '');
       const useIndex = prop !== targetFuncName;
-      const isWrite = writeMethods.has(targetFuncName);
+      const isWrite = writeMethods.includes(targetFuncName);
       if (
       // Bail if the target doesn't exist on the target. Eg, getAll isn't in Edge.
-      !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) || !(isWrite || readMethods.has(targetFuncName))) {
+      !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) || !(isWrite || readMethods.includes(targetFuncName))) {
         return;
       }
       const method = async function (storeName, ...args) {
         // isWrite ? 'readwrite' : undefined gzipps better, but fails in Edge :(
         const tx = this.transaction(storeName, isWrite ? 'readwrite' : 'readonly');
         let target = tx.store;
-        if (useIndex) {target = target.index(args.shift());}
+        if (useIndex) target = target.index(args.shift());
         // Must reject if op rejects.
         // If it's a write operation, must reject if tx.done rejects.
         // Must reject with op rejection first.
@@ -1541,7 +1543,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:expiration:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2018 Google LLC
@@ -1570,6 +1572,7 @@ define(['exports'], (function (exports) { 'use strict';
        * @private
        */
       constructor(cacheName) {
+        this._db = null;
         this._cacheName = cacheName;
       }
       /**
@@ -1724,9 +1727,7 @@ define(['exports'], (function (exports) { 'use strict';
         }
         return this._db;
       }
-    
-      _db = null;
-}
+    }
 
     /*
       Copyright 2018 Google LLC
@@ -1757,6 +1758,8 @@ define(['exports'], (function (exports) { 'use strict';
        * that will be used when calling `delete()` on the cache.
        */
       constructor(cacheName, config = {}) {
+        this._isRunning = false;
+        this._rerunRequested = false;
         {
           finalAssertExports.isType(cacheName, 'string', {
             moduleName: 'workbox-expiration',
@@ -1814,7 +1817,7 @@ define(['exports'], (function (exports) { 'use strict';
           if (urlsExpired.length > 0) {
             logger.groupCollapsed(`Expired ${urlsExpired.length} ` + `${urlsExpired.length === 1 ? 'entry' : 'entries'} and removed ` + `${urlsExpired.length === 1 ? 'it' : 'them'} from the ` + `'${this._cacheName}' cache.`);
             logger.log(`Expired the following ${urlsExpired.length === 1 ? 'URL' : 'URLs'}:`);
-            for (const url of urlsExpired) {logger.log(`    ${url}`);}
+            urlsExpired.forEach(url => logger.log(`    ${url}`));
             logger.groupEnd();
           } else {
             logger.debug(`Cache expiration ran and found no entries to remove.`);
@@ -1856,17 +1859,17 @@ define(['exports'], (function (exports) { 'use strict';
        * @return {boolean}
        */
       async isURLExpired(url) {
-        if (this._maxAgeSeconds) {
-          const timestamp = await this._timestampModel.getTimestamp(url);
-          const expireOlderThan = Date.now() - this._maxAgeSeconds * 1000;
-          return timestamp === undefined ? true : timestamp < expireOlderThan;
-        } else {
+        if (!this._maxAgeSeconds) {
           {
             throw new WorkboxError(`expired-test-without-max-age`, {
               methodName: 'isURLExpired',
               paramName: 'maxAgeSeconds'
             });
           }
+        } else {
+          const timestamp = await this._timestampModel.getTimestamp(url);
+          const expireOlderThan = Date.now() - this._maxAgeSeconds * 1000;
+          return timestamp !== undefined ? timestamp < expireOlderThan : true;
         }
       }
       /**
@@ -1879,10 +1882,7 @@ define(['exports'], (function (exports) { 'use strict';
         this._rerunRequested = false;
         await this._timestampModel.expireEntries(Infinity); // Expires all.
       }
-    
-      _isRunning = false;
-      _rerunRequested = false;
-}
+    }
 
     /*
       Copyright 2018 Google LLC
@@ -1964,7 +1964,7 @@ define(['exports'], (function (exports) { 'use strict';
           if (event) {
             try {
               event.waitUntil(updateTimestampDone);
-            } catch {
+            } catch (error) {
               {
                 // The event may not be a fetch event; only log the URL if it is.
                 if ('request' in event) {
@@ -2137,7 +2137,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:cacheable-response:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2018 Google LLC
@@ -2233,9 +2233,9 @@ define(['exports'], (function (exports) { 'use strict';
             logger.log(`Cacheable headers: ` + JSON.stringify(this._headers, null, 2));
             logger.groupEnd();
             const logFriendlyHeaders = {};
-            for (const [key, value] of response.headers.entries()) {
+            response.headers.forEach((value, key) => {
               logFriendlyHeaders[key] = value;
-            }
+            });
             logger.groupCollapsed(`View response status and headers here.`);
             logger.log(`Response status: ${response.status}`);
             logger.log(`Response headers: ` + JSON.stringify(logFriendlyHeaders, null, 2));
@@ -2302,7 +2302,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:strategies:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2018 Google LLC
@@ -2586,10 +2586,10 @@ define(['exports'], (function (exports) { 'use strict';
               event
             });
           }
-        } catch (error) {
-          if (error instanceof Error) {
+        } catch (err) {
+          if (err instanceof Error) {
             throw new WorkboxError('plugin-error-request-will-fetch', {
-              thrownErrorMessage: error.message
+              thrownErrorMessage: err.message
             });
           }
         }
@@ -2620,7 +2620,7 @@ define(['exports'], (function (exports) { 'use strict';
           // is being used (see above).
           if (originalRequest) {
             await this.runCallbacks('fetchDidFail', {
-              error,
+              error: error,
               event,
               originalRequest: originalRequest.clone(),
               request: pluginFilteredRequest.clone()
@@ -2793,7 +2793,7 @@ define(['exports'], (function (exports) { 'use strict';
               request: effectiveRequest,
               event: this.event,
               // params has a type any can't change right now.
-              params: this.params  
+              params: this.params // eslint-disable-line
             }));
           }
           this._cacheKeys[key] = effectiveRequest;
@@ -2932,13 +2932,15 @@ define(['exports'], (function (exports) { 'use strict';
             responseToCache = undefined;
           }
           {
-            if (responseToCache && responseToCache.status !== 200) {
+            if (responseToCache) {
+              if (responseToCache.status !== 200) {
                 if (responseToCache.status === 0) {
                   logger.warn(`The response for '${this.request.url}' ` + `is an opaque response. The caching strategy that you're ` + `using will not cache opaque responses by default.`);
                 } else {
                   logger.debug(`The response for '${this.request.url}' ` + `returned a status code of '${response.status}' and won't ` + `be cached as a result.`);
                 }
               }
+            }
           }
         }
         return responseToCache;
@@ -3109,10 +3111,10 @@ define(['exports'], (function (exports) { 'use strict';
               }
             }
           }
-          if (response) {
-            logger.log(`While responding to '${getFriendlyURL(request.url)}', ` + `an ${error instanceof Error ? error.toString() : ''} error occurred. Using a fallback response provided by ` + `a handlerDidError plugin.`);
-          } else {
+          if (!response) {
             throw error;
+          } else {
+            logger.log(`While responding to '${getFriendlyURL(request.url)}', ` + `an ${error instanceof Error ? error.toString() : ''} error occurred. Using a fallback response provided by ` + `a handlerDidError plugin.`);
           }
         }
         for (const callback of handler.iterateCallbacks('handlerWillRespond')) {
@@ -3129,7 +3131,7 @@ define(['exports'], (function (exports) { 'use strict';
         let error;
         try {
           response = await responseDone;
-        } catch {
+        } catch (error) {
           // Ignore errors, as response errors should be caught via the `response`
           // promise above. The `done` promise will only throw for errors in
           // promises passed to `handler.waitUntil()`.
@@ -3150,7 +3152,7 @@ define(['exports'], (function (exports) { 'use strict';
           event,
           request,
           response,
-          error
+          error: error
         });
         handler.destroy();
         if (error) {
@@ -3280,9 +3282,9 @@ define(['exports'], (function (exports) { 'use strict';
             // NOTE(philipwalton): Really annoying that we have to type cast here.
             // https://github.com/microsoft/TypeScript/issues/20006
             response = await fetchAndCachePromise;
-          } catch (error_) {
-            if (error_ instanceof Error) {
-              error = error_;
+          } catch (err) {
+            if (err instanceof Error) {
+              error = err;
             }
           }
         }
@@ -3548,19 +3550,15 @@ define(['exports'], (function (exports) { 'use strict';
         }
         let response = await handler.cacheMatch(request);
         let error = undefined;
-        if (response) {
-          {
-            logs.push(`Found a cached response in the '${this.cacheName}' cache.`);
-          }
-        } else {
+        if (!response) {
           {
             logs.push(`No response found in the '${this.cacheName}' cache. ` + `Will respond with a network request.`);
           }
           try {
             response = await handler.fetchAndCachePut(request);
-          } catch (error_) {
-            if (error_ instanceof Error) {
-              error = error_;
+          } catch (err) {
+            if (err instanceof Error) {
+              error = err;
             }
           }
           {
@@ -3569,6 +3567,10 @@ define(['exports'], (function (exports) { 'use strict';
             } else {
               logs.push(`Unable to get a response from the network.`);
             }
+          }
+        } else {
+          {
+            logs.push(`Found a cached response in the '${this.cacheName}' cache.`);
           }
         }
         {
@@ -3630,7 +3632,7 @@ define(['exports'], (function (exports) { 'use strict';
     // @ts-ignore
     try {
       self['workbox:precaching:7.2.0'] && _();
-    } catch {}
+    } catch (e) {}
 
     /*
       Copyright 2018 Google LLC
@@ -3725,7 +3727,8 @@ define(['exports'], (function (exports) { 'use strict';
           state,
           cachedResponse
         }) => {
-          if (event.type === 'install' && state && state.originalRequest && state.originalRequest instanceof Request) {
+          if (event.type === 'install') {
+            if (state && state.originalRequest && state.originalRequest instanceof Request) {
               // TODO: `state` should never be undefined...
               const url = state.originalRequest.url;
               if (cachedResponse) {
@@ -3734,6 +3737,7 @@ define(['exports'], (function (exports) { 'use strict';
                 this.updatedURLs.push(url);
               }
             }
+          }
           return cachedResponse;
         };
       }
@@ -3761,9 +3765,9 @@ define(['exports'], (function (exports) { 'use strict';
           params
         }) => {
           // Params is type any, can't change right now.
-           
+          /* eslint-disable */
           const cacheKey = (params === null || params === void 0 ? void 0 : params.cacheKey) || this._precacheController.getCacheKeyForURL(request.url);
-           
+          /* eslint-enable */
           return cacheKey ? new Request(cacheKey, {
             headers: request.headers
           }) : request;
@@ -3876,7 +3880,7 @@ define(['exports'], (function (exports) { 'use strict';
           try {
             new Response(testResponse.body);
             supportStatus = true;
-          } catch {
+          } catch (error) {
             supportStatus = false;
           }
         }
@@ -4021,7 +4025,7 @@ define(['exports'], (function (exports) { 'use strict';
           // Do not add integrity if the original request is no-cors
           // See https://github.com/GoogleChrome/workbox/issues/3096
           response = await handler.fetch(new Request(request, {
-            integrity: request.mode === 'no-cors' ? undefined : integrityInRequest || integrityInManifest
+            integrity: request.mode !== 'no-cors' ? integrityInRequest || integrityInManifest : undefined
           }));
           // It's only "safe" to repair the cache if we're using SRI to guarantee
           // that the response matches the precache manifest's expectations,
@@ -4480,7 +4484,7 @@ define(['exports'], (function (exports) { 'use strict';
     function removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching = []) {
       // Convert the iterable into an array at the start of the loop to make sure
       // deletion doesn't mess up iteration.
-      for (const paramName of urlObject.searchParams.keys()) {
+      for (const paramName of [...urlObject.searchParams.keys()]) {
         if (ignoreURLParametersMatching.some(regExp => regExp.test(paramName))) {
           urlObject.searchParams.delete(paramName);
         }

@@ -56,42 +56,37 @@ export class ConversationRepository {
   }
 
   /**
-   * Get all conversations for a specific user
-   * @param {string} parentId - Parent's ID
-   * @param {boolean} includeArchived - Whether to include archived conversations
+   * Get all conversations for a specific user (non-archived only)
+   * @param {string} userEmail - User's email address
    */
-  async getUserConversations (parentId, includeArchived = false) {
+  async getUserConversations (userEmail) {
     try {
-      console.log(`ConversationRepository: Loading conversations for ${parentId}...`)
+      console.log(`ConversationRepository: Loading conversations for ${userEmail}...`)
 
-      const constraints = [
-        where('participants', 'array-contains', parentId),
+      const q = query(
+        this.collectionRef,
+        where('participants', 'array-contains', userEmail),
+        where('archived', '==', false),
         orderBy('lastMessageAt', 'desc'),
-      ]
-
-      if (!includeArchived) {
-        constraints.push(where('archived', '==', false))
-      }
-
-      const q = query(this.collectionRef, ...constraints)
+      )
       const snapshot = await getDocs(q)
 
       const conversations = ConversationDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`ConversationRepository: Loaded ${conversations.length} conversations for ${parentId}`)
+      console.log(`ConversationRepository: Loaded ${conversations.length} conversations for ${userEmail}`)
 
       return conversations
     } catch (error) {
-      console.error(`ConversationRepository: Error loading conversations for ${parentId}:`, error)
-      throw new Error(`Failed to load conversations for ${parentId}: ${error.message}`)
+      console.error(`ConversationRepository: Error loading conversations for ${userEmail}:`, error)
+      throw new Error(`Failed to load conversations for ${userEmail}: ${error.message}`)
     }
   }
 
   /**
    * Get conversations by type
    * @param {string} type - 'direct', 'class', or 'committee'
-   * @param {string} parentId - Optional: filter by user participation
+   * @param {string} userEmail - Optional: filter by user participation
    */
-  async getByType (type, parentId = null) {
+  async getByType (type, userEmail = null) {
     try {
       console.log(`ConversationRepository: Loading ${type} conversations...`)
 
@@ -100,8 +95,8 @@ export class ConversationRepository {
         orderBy('lastMessageAt', 'desc'),
       ]
 
-      if (parentId) {
-        constraints.push(where('participants', 'array-contains', parentId))
+      if (userEmail) {
+        constraints.push(where('participants', 'array-contains', userEmail))
       }
 
       const q = query(this.collectionRef, ...constraints)
@@ -148,27 +143,27 @@ export class ConversationRepository {
 
   /**
    * Find or create a direct conversation between two users
-   * @param {string} parent1Id - First parent's ID
-   * @param {string} parent2Id - Second parent's ID
-   * @param {Object} parent1Data - { name: string } - First parent's data
-   * @param {Object} parent2Data - { name: string } - Second parent's data
+   * @param {string} user1Email - First user's email
+   * @param {string} user2Email - Second user's email
+   * @param {Object} user1Data - { name: string } - First user's data
+   * @param {Object} user2Data - { name: string } - Second user's data
    */
-  async findOrCreateDirectConversation (parent1Id, parent2Id, parent1Data, parent2Data) {
+  async findOrCreateDirectConversation (user1Email, user2Email, user1Data, user2Data) {
     try {
-      console.log(`ConversationRepository: Finding/creating direct conversation between ${parent1Id} and ${parent2Id}...`)
+      console.log(`ConversationRepository: Finding/creating direct conversation between ${user1Email} and ${user2Email}...`)
 
       // Try to find existing conversation
       const q = query(
         this.collectionRef,
         where('type', '==', 'direct'),
-        where('participants', 'array-contains', parent1Id),
+        where('participants', 'array-contains', user1Email),
       )
       const snapshot = await getDocs(q)
 
       // Check if any of the results include both users
       const existingConversation = snapshot.docs.find(doc => {
         const data = doc.data()
-        return data.participants.includes(parent2Id)
+        return data.participants.includes(user2Email)
       })
 
       if (existingConversation) {
@@ -182,20 +177,20 @@ export class ConversationRepository {
         type: 'direct',
         contextId: '',
         contextLabel: { en: '', fr: '' },
-        participants: [parent1Id, parent2Id],
+        participants: [user1Email, user2Email],
         participantNames: {
-          [parent1Id]: parent1Data.name,
-          [parent2Id]: parent2Data.name,
+          [user1Email]: user1Data.name,
+          [user2Email]: user2Data.name,
         },
         unreadCount: {
-          [parent1Id]: 0,
-          [parent2Id]: 0,
+          [user1Email]: 0,
+          [user2Email]: 0,
         },
         lastMessageAt: new Date(),
         lastMessagePreview: '',
         lastMessageSenderId: '',
         archived: false,
-        createdBy: parent1Id,
+        createdBy: user1Email,
       }
 
       const conversationDTO = new ConversationDTO(conversationData)
@@ -216,9 +211,9 @@ export class ConversationRepository {
    * @param {string} type - 'class' or 'committee'
    * @param {string} contextId - Context identifier
    * @param {Object} contextLabel - { en: string, fr: string }
-   * @param {string[]} participants - Array of participant parent IDs
-   * @param {Object} participantNames - Object mapping parent IDs to names
-   * @param {string} createdBy - Creator's parent ID
+   * @param {string[]} participants - Array of participant emails
+   * @param {Object} participantNames - Object mapping emails to names
+   * @param {string} createdBy - Creator's email
    */
   async findOrCreateContextConversation (type, contextId, contextLabel, participants, participantNames, createdBy) {
     try {
@@ -239,7 +234,7 @@ export class ConversationRepository {
         contextLabel,
         participants,
         participantNames,
-        unreadCount: Object.fromEntries(participants.map(parentId => [parentId, 0])),
+        unreadCount: Object.fromEntries(participants.map(email => [email, 0])),
         lastMessageAt: new Date(),
         lastMessagePreview: '',
         lastMessageSenderId: '',
@@ -315,7 +310,7 @@ export class ConversationRepository {
    * Update last message info
    * @param {string} id - Conversation ID
    * @param {string} preview - Message preview text
-   * @param {string} senderId - Sender's parent ID
+   * @param {string} senderId - Sender's email
    */
   async updateLastMessage (id, preview, senderId) {
     try {
@@ -338,18 +333,18 @@ export class ConversationRepository {
   /**
    * Increment unread count for users (except sender)
    * @param {string} id - Conversation ID
-   * @param {string[]} parentIds - Array of parent IDs
-   * @param {string} senderParentId - Sender's parent ID (excluded from increment)
+   * @param {string[]} userEmails - Array of user emails
+   * @param {string} senderEmail - Sender's email (excluded from increment)
    */
-  async incrementUnreadCount (id, parentIds, senderParentId) {
+  async incrementUnreadCount (id, userEmails, senderEmail) {
     try {
       console.log(`ConversationRepository: Incrementing unread count for conversation ${id}...`)
       const docRef = doc(db, this.collectionName, id)
 
       const updates = {}
-      for (const parentId of parentIds) {
-        if (parentId !== senderParentId) {
-          updates[`unreadCount.${parentId}`] = increment(1)
+      for (const email of userEmails) {
+        if (email !== senderEmail) {
+          updates[`unreadCount.${email}`] = increment(1)
         }
       }
 
@@ -364,18 +359,18 @@ export class ConversationRepository {
   /**
    * Mark conversation as read by user
    * @param {string} id - Conversation ID
-   * @param {string} parentId - Parent's ID
+   * @param {string} userEmail - User's email
    */
-  async markAsRead (id, parentId) {
+  async markAsRead (id, userEmail) {
     try {
-      console.log(`ConversationRepository: Marking conversation ${id} as read by ${parentId}...`)
+      console.log(`ConversationRepository: Marking conversation ${id} as read by ${userEmail}...`)
       const docRef = doc(db, this.collectionName, id)
 
       await updateDoc(docRef, {
-        [`unreadCount.${parentId}`]: 0,
+        [`unreadCount.${userEmail}`]: 0,
       })
 
-      console.log(`ConversationRepository: Marked conversation ${id} as read by ${parentId}`)
+      console.log(`ConversationRepository: Marked conversation ${id} as read by ${userEmail}`)
     } catch (error) {
       console.error(`ConversationRepository: Error marking conversation ${id} as read:`, error)
       throw new Error(`Failed to mark conversation ${id} as read: ${error.message}`)
@@ -416,29 +411,29 @@ export class ConversationRepository {
 
   /**
    * Get total unread count for a user across all conversations
-   * @param {string} parentId - Parent's ID
+   * @param {string} userEmail - User's email
    */
-  async getTotalUnreadCount (parentId) {
+  async getTotalUnreadCount (userEmail) {
     try {
-      console.log(`ConversationRepository: Getting total unread count for ${parentId}...`)
-      const conversations = await this.getUserConversations(parentId, false)
+      console.log(`ConversationRepository: Getting total unread count for ${userEmail}...`)
+      const conversations = await this.getUserConversations(userEmail, false)
 
       const totalUnread = conversations.reduce((sum, conv) => {
-        return sum + conv.getUnreadCountForUser(parentId)
+        return sum + conv.getUnreadCountForUser(userEmail)
       }, 0)
 
-      console.log(`ConversationRepository: Total unread count for ${parentId}: ${totalUnread}`)
+      console.log(`ConversationRepository: Total unread count for ${userEmail}: ${totalUnread}`)
       return totalUnread
     } catch (error) {
-      console.error(`ConversationRepository: Error getting total unread count for ${parentId}:`, error)
-      throw new Error(`Failed to get total unread count for ${parentId}: ${error.message}`)
+      console.error(`ConversationRepository: Error getting total unread count for ${userEmail}:`, error)
+      throw new Error(`Failed to get total unread count for ${userEmail}: ${error.message}`)
     }
   }
 
   /**
    * Search conversations by text
    */
-  async search (searchText, parentId) {
+  async search (searchText, userEmail) {
     if (!searchText || searchText.trim().length === 0) {
       return []
     }
@@ -447,7 +442,7 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Searching conversations for "${searchText}"...`)
 
       // Load user's conversations and filter client-side
-      const userConversations = await this.getUserConversations(parentId)
+      const userConversations = await this.getUserConversations(userEmail)
 
       const searchLower = searchText.toLowerCase().trim()
       const filtered = userConversations.filter(conversation =>

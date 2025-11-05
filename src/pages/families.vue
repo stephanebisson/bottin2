@@ -265,12 +265,18 @@
   const firebaseStore = useFirebaseDataStore()
   const authStore = useAuthStore()
 
+  // Get current user's parent record
+  const currentUserParent = computed(() => {
+    if (!authStore.userEmail) return null
+    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
+  })
+
   // Get current user's full name from parent record
   const currentUserFullName = computed(() => {
-    if (!authStore.userEmail) return authStore.userDisplayName || ''
-    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-    return currentParent?.fullName || authStore.userDisplayName || ''
+    return currentUserParent.value?.fullName || authStore.userDisplayName || ''
   })
+
+  // Note: We use authStore.userEmail directly for messaging
 
   // Loading status computed
   const loadingStatus = computed(() => {

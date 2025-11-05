@@ -460,7 +460,7 @@
             <v-card-actions v-if="false" class="pa-3 pt-0">
               <v-spacer />
               <MessageButton
-                v-if="authStore.isAuthenticated && getClassParentEmails(classItem.classLetter).length > 0"
+                v-if="authStore.isAuthenticated && getClassParentIds(classItem.classLetter).length > 0"
                 color="primary"
                 :context-id="`class-${classItem.classLetter}`"
                 :context-label="{
@@ -468,7 +468,7 @@
                   fr: `Parents de ${classItem.className}`
                 }"
                 :participant-names="getClassParentNames(classItem.classLetter)"
-                :participants="getClassParentEmails(classItem.classLetter)"
+                :participants="getClassParentIds(classItem.classLetter)"
                 type="class"
                 variant="elevated"
                 @start-conversation="handleStartConversation"
@@ -874,29 +874,23 @@
   }
 
   // Get all unique parent emails for a class
-  function getClassParentEmails (classLetter) {
+  function getClassParentIds (classLetter) {
     const students = getClassStudents(classLetter)
     const emailSet = new Set()
 
     for (const student of students) {
       if (student.parent1_id) {
-        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
-        if (parent && parent.email) {
-          emailSet.add(parent.email)
-        }
+        emailSet.add(student.parent1_id) // parent1_id is actually an email
       }
       if (student.parent2_id) {
-        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
-        if (parent && parent.email) {
-          emailSet.add(parent.email)
-        }
+        emailSet.add(student.parent2_id) // parent2_id is actually an email
       }
     }
 
     return Array.from(emailSet)
   }
 
-  // Get parent names map for a class
+  // Get parent names map for a class (mapped by email)
   function getClassParentNames (classLetter) {
     const students = getClassStudents(classLetter)
     const namesMap = {}
@@ -904,14 +898,14 @@
     for (const student of students) {
       if (student.parent1_id) {
         const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
-        if (parent && parent.email) {
-          namesMap[parent.email] = parent.fullName
+        if (parent) {
+          namesMap[student.parent1_id] = parent.fullName
         }
       }
       if (student.parent2_id) {
         const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
-        if (parent && parent.email) {
-          namesMap[parent.email] = parent.fullName
+        if (parent) {
+          namesMap[student.parent2_id] = parent.fullName
         }
       }
     }
