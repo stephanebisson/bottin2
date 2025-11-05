@@ -47,7 +47,7 @@
       title="Fondation de l'école Étoile filante"
     />
 
-    <!-- Committees Page 1 - Two categories -->
+    <!-- Committees Page 1 - En lien avec le projet éducatif -->
     <PrintPage id="section-comites">
       <div class="committees-section">
         <h1 class="section-title">Comités</h1>
@@ -67,7 +67,12 @@
             <CommitteeTable compact :members="committee.enrichedMembers" />
           </div>
         </div>
+      </div>
+    </PrintPage>
 
+    <!-- Committees Page 2 - Communications -->
+    <PrintPage>
+      <div class="committees-section">
         <!-- Communications -->
         <h2 class="committee-category-title">Communications</h2>
         <div v-for="committee in getCommitteesByNames(['Bottin', 'Groupe Facebook', 'OPP'])" :key="committee.id" class="committee">
@@ -86,11 +91,11 @@
       </div>
     </PrintPage>
 
-    <!-- Committees Page 2 -->
+    <!-- Committees Page 3 - Activités à l'école -->
     <PrintPage>
       <div class="committees-section">
         <h2 class="committee-category-title">Activités à l'école</h2>
-        <div v-for="committee in getCommitteesByNames(['Ateliers', 'Bazar', 'Bibliothèque'])" :key="committee.id" class="committee">
+        <div v-for="committee in getCommitteesByNames(['Ateliers', 'Bazar'])" :key="committee.id" class="committee">
           <div class="committee-header-inline">
             <h3 class="committee-name">
               {{ committee.name }}
@@ -106,7 +111,26 @@
       </div>
     </PrintPage>
 
-    <!-- Committees Page 3 -->
+    <!-- Committees Page 4 - Bibliothèque -->
+    <PrintPage>
+      <div class="committees-section">
+        <div v-for="committee in getCommitteesByNames(['Bibliothèque'])" :key="committee.id" class="committee">
+          <div class="committee-header-inline">
+            <h3 class="committee-name">
+              {{ committee.name }}
+              <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+            </h3>
+            <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+            <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+          </div>
+          <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
+            <CommitteeTable compact :members="committee.enrichedMembers" />
+          </div>
+        </div>
+      </div>
+    </PrintPage>
+
+    <!-- Committees Page 5 -->
     <PrintPage>
       <div class="committees-section">
         <div v-for="committee in getCommitteesByNames(['JEDI', 'Feves', 'Comité des usagers SDG'])" :key="committee.id" class="committee">
