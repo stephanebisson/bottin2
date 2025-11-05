@@ -1,6 +1,7 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, increment, orderBy, query, updateDoc, where } from 'firebase/firestore'
 import { ConversationDTO } from '@/dto/ConversationDTO.js'
 import { db } from '@/firebase'
+import { sanitizeEmailForKey } from '@/utils/emailHelpers'
 
 /**
  * Conversation Repository - Clean data access layer for conversation operations
@@ -344,7 +345,9 @@ export class ConversationRepository {
       const updates = {}
       for (const email of userEmails) {
         if (email !== senderEmail) {
-          updates[`unreadCount.${email}`] = increment(1)
+          // Sanitize email for Firestore field path
+          const sanitizedEmail = sanitizeEmailForKey(email)
+          updates[`unreadCount.${sanitizedEmail}`] = increment(1)
         }
       }
 
@@ -366,8 +369,10 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Marking conversation ${id} as read by ${userEmail}...`)
       const docRef = doc(db, this.collectionName, id)
 
+      // Sanitize email for Firestore field path
+      const sanitizedEmail = sanitizeEmailForKey(userEmail)
       await updateDoc(docRef, {
-        [`unreadCount.${userEmail}`]: 0,
+        [`unreadCount.${sanitizedEmail}`]: 0,
       })
 
       console.log(`ConversationRepository: Marked conversation ${id} as read by ${userEmail}`)

@@ -1,7 +1,12 @@
+import { getByEmail, sanitizeEmailKeys, setByEmail, unsanitizeEmailKeys } from '@/utils/emailHelpers'
+
 /**
  * Conversation Data Transfer Object
  * Handles data validation, transformation, and standardization for conversation records
  * Supports direct, class, and committee conversation types
+ *
+ * NOTE: participantNames and unreadCount use sanitized email keys (dots replaced with __DOT__)
+ * because Firestore interprets dots as nested paths. Use getByEmail() helper to access values.
  */
 export class ConversationDTO {
   constructor (data = {}) {
@@ -9,9 +14,9 @@ export class ConversationDTO {
     this.type = this.sanitizeType(data.type)
     this.contextId = this.sanitizeString(data.contextId)
     this.contextLabel = this.sanitizeContextLabel(data.contextLabel)
-    this.participants = this.sanitizeArray(data.participants)
-    this.participantNames = this.sanitizeObject(data.participantNames)
-    this.unreadCount = this.sanitizeObject(data.unreadCount)
+    this.participants = this.sanitizeArray(data.participants) // Array of actual emails
+    this.participantNames = this.sanitizeObject(data.participantNames) // Keys are sanitized emails
+    this.unreadCount = this.sanitizeObject(data.unreadCount) // Keys are sanitized emails
     this.lastMessageAt = data.lastMessageAt || null
     this.lastMessagePreview = this.sanitizeString(data.lastMessagePreview)
     this.lastMessageSenderId = this.sanitizeString(data.lastMessageSenderId)
@@ -150,7 +155,7 @@ export class ConversationDTO {
    * @param {string} userEmail - User's email
    */
   getUnreadCountForUser (userEmail) {
-    return this.unreadCount[userEmail] || 0
+    return getByEmail(this.unreadCount, userEmail) || 0
   }
 
   /**
@@ -184,15 +189,16 @@ export class ConversationDTO {
 
   /**
    * Transform data for Firestore storage (only raw fields, no computed fields)
+   * Sanitizes email keys in participantNames and unreadCount for Firestore compatibility
    */
   toFirestore () {
     return {
       type: this.type,
       contextId: this.contextId,
       contextLabel: this.contextLabel,
-      participants: this.participants,
-      participantNames: this.participantNames,
-      unreadCount: this.unreadCount,
+      participants: this.participants, // Array of actual emails
+      participantNames: sanitizeEmailKeys(this.participantNames), // Sanitize keys for Firestore
+      unreadCount: sanitizeEmailKeys(this.unreadCount), // Sanitize keys for Firestore
       lastMessageAt: this.lastMessageAt || new Date(),
       lastMessagePreview: this.lastMessagePreview,
       lastMessageSenderId: this.lastMessageSenderId,
@@ -280,7 +286,8 @@ export class ConversationDTO {
     const newUnreadCount = { ...this.unreadCount }
     for (const email of userEmails) {
       if (email !== senderEmail) {
-        newUnreadCount[email] = (newUnreadCount[email] || 0) + 1
+        const currentCount = getByEmail(newUnreadCount, email) || 0
+        setByEmail(newUnreadCount, email, currentCount + 1)
       }
     }
     return this.withUpdates({ unreadCount: newUnreadCount })
@@ -293,7 +300,7 @@ export class ConversationDTO {
    */
   markAsReadBy (userEmail) {
     const newUnreadCount = { ...this.unreadCount }
-    newUnreadCount[userEmail] = 0
+    setByEmail(newUnreadCount, userEmail, 0)
     return this.withUpdates({ unreadCount: newUnreadCount })
   }
 
@@ -337,15 +344,19 @@ export class ConversationDTO {
 
   /**
    * Static factory method to create from Firestore document
+   * Unsanitizes email keys in participantNames and unreadCount
    */
   static fromFirestore (doc) {
     if (!doc.exists()) {
       throw new Error('Document does not exist')
     }
 
+    const data = doc.data()
     return new ConversationDTO({
       id: doc.id,
-      ...doc.data(),
+      ...data,
+      participantNames: unsanitizeEmailKeys(data.participantNames || {}),
+      unreadCount: unsanitizeEmailKeys(data.unreadCount || {}),
     })
   }
 
