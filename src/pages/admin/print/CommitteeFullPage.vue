@@ -100,7 +100,6 @@
 }
 
 .committee-section {
-  flex: 1;
   min-height: 0;
   overflow: hidden;
   margin-bottom: 1rem;
