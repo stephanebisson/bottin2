@@ -49,10 +49,10 @@
     }
   }
 
-  /* Prevent pull-to-refresh on mobile */
+  /* Allow pull-to-refresh on mobile */
   @media (max-width: 600px) {
     body {
-      overscroll-behavior-y: none;
+      overscroll-behavior-y: auto;
     }
   }
 

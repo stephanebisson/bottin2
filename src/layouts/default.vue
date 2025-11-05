@@ -8,6 +8,23 @@
 
     <NavigationDrawer v-if="!isPrintPage" v-model="drawer" />
 
+    <!-- Pull-to-refresh indicator -->
+    <div
+      v-if="!isPrintPage && (isPulling || isRefreshing)"
+      class="pull-refresh-indicator"
+      :style="{
+        transform: `translateY(${Math.min(pullDistance, 80)}px)`,
+        opacity: Math.min(pullDistance / 80, 1)
+      }"
+    >
+      <v-progress-circular
+        color="primary"
+        :indeterminate="isRefreshing"
+        :model-value="isPulling && !isRefreshing ? (pullDistance / 80) * 100 : undefined"
+        size="32"
+      />
+    </div>
+
     <v-main :class="{ 'main-content': !isPrintPage }">
       <router-view />
     </v-main>
@@ -37,6 +54,7 @@
   import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
   import UpdatePrompt from '@/components/UpdatePrompt.vue'
+  import { usePullToRefresh } from '@/composables/usePullToRefresh'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -85,6 +103,33 @@
   // On desktop: closed for update pages, open for other pages
   const drawer = ref(mobile.value ? false : !isUpdatePage.value)
 
+  // Global refresh handler
+  async function handleRefresh () {
+    try {
+      console.log('Pull-to-refresh: Refreshing all data...')
+
+      // Refresh all Firebase data stores in parallel
+      await Promise.all([
+        firebaseStore.refreshData(), // Legacy classes/committees
+        firebaseStore.refreshStudentsDTO(),
+        firebaseStore.refreshParentsDTO(),
+        firebaseStore.refreshStaffDTO(),
+        firebaseStore.refreshCommitteesDTO(),
+      ])
+
+      console.log('Pull-to-refresh: All data refreshed successfully')
+    } catch (error) {
+      console.error('Pull-to-refresh: Error refreshing data', error)
+    }
+  }
+
+  // Pull-to-refresh functionality
+  const { isRefreshing, pullDistance, isPulling } = usePullToRefresh(handleRefresh, {
+    threshold: 80,
+    maxPull: 120,
+    disabled: isPrintPage.value,
+  })
+
   // Watch for mobile state changes and adjust drawer accordingly
   watch(mobile, newMobile => {
     // On mobile close drawer, on desktop check if it's an update page
@@ -104,5 +149,16 @@
   /* Add padding to account for fixed app bar */
   .main-content {
     padding-top: 64px !important;
+  }
+
+  /* Pull-to-refresh indicator */
+  .pull-refresh-indicator {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    pointer-events: none;
   }
 </style>

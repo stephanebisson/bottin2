@@ -61,6 +61,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'icons/*.png'],
+      manifestFilename: 'manifest.webmanifest',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+      },
       manifest: {
         name: 'Bottin Étoile filante',
         short_name: 'Bottin Étoile filante',

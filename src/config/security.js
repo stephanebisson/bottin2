@@ -102,6 +102,7 @@ export function getCSPConfig () {
       isDev ? '\'unsafe-eval\'' : '', // Allow eval in development for HMR
       '\'unsafe-inline\'', // Required for Vue.js
       'https://www.googletagmanager.com', // Google Analytics
+      'https://apis.google.com', // Google APIs
     ].filter(Boolean),
     'style-src': [
       '\'self\'',
@@ -126,6 +127,11 @@ export function getCSPConfig () {
       'https://firebaseapp.com',
       'https://*.googleapis.com', // All Google APIs including Firebase services
       'https://www.google-analytics.com', // Google Analytics data collection
+    ].filter(Boolean),
+    'frame-src': [
+      '\'self\'',
+      isDev ? 'http://localhost:*' : '', // Firebase emulators in dev
+      'https://*.firebaseapp.com', // Firebase Auth
     ].filter(Boolean),
     'base-uri': ['\'self\''],
     'form-action': ['\'self\''],
