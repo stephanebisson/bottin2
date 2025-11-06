@@ -31,6 +31,7 @@ export const COMMITTEE_ROLES = {
   'Ateliers': [
     'Membre',
     'Porte-parole',
+    'Bénévole',
   ],
   'Bazar': [
     'Membre',
