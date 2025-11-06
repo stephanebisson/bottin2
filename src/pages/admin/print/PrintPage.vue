@@ -34,8 +34,9 @@
 
 <script setup>
   import { onMounted, ref } from 'vue'
+  import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
 
-  defineProps({
+  const props = defineProps({
     // Hide page footer (useful for title/cover pages)
     noFooter: {
       type: Boolean,
@@ -46,10 +47,20 @@
       type: Boolean,
       default: false,
     },
+    // Section ID(s) for Table of Contents linking - can be a string or array of strings
+    id: {
+      type: [String, Array],
+      default: null,
+    },
   })
+
+  const { registerPage } = usePrintPageRegistry()
 
   const pageRef = ref(null)
   const hasOverflow = ref(false)
+
+  // Register this page with the registry on component creation
+  registerPage(props.id)
 
   onMounted(() => {
     // Check for content overflow on screen only
@@ -311,5 +322,62 @@
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
   border-bottom: 2px solid black;
+}
+
+.print-page :deep(h2) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18pt;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  color: #000;
+}
+
+.print-page :deep(h3) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14pt;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  color: #000;
+  text-align: center;
+}
+
+.print-page :deep(.section-subtitle) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18pt;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #000;
+}
+
+.print-page :deep(.committee-title) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 24pt;
+  font-weight: bold;
+  margin: 0;
+  color: #000;
+}
+
+.print-page :deep(.group-title) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 24pt;
+  font-weight: bold;
+  margin: 0;
+  color: #000;
+}
+
+.print-page :deep(.subgroup-title) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14pt;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #000;
+}
+
+.print-page :deep(.committee-category-title) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18pt;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem 0;
+  color: #000;
 }
 </style>

@@ -78,13 +78,6 @@
   flex-shrink: 0;
 }
 
-.committee-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
-  font-weight: bold;
-  margin: 0;
-}
-
 .committee-email {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
@@ -103,13 +96,5 @@
   min-height: 0;
   overflow: hidden;
   margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  color: #000;
 }
 </style>

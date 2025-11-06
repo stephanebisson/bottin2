@@ -66,14 +66,6 @@
 
 <style scoped>
 /* Committees Section - Compact Layout (for other committees) */
-.committee-category-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
-  font-weight: 600;
-  margin: 1.5rem 0 1rem 0;
-  color: #000;
-}
-
 .committee {
   margin-bottom: 2rem;
   page-break-inside: avoid;

@@ -4,7 +4,7 @@
     <div class="family-students">
       <div v-for="student in family.students" :key="student.id" class="family-student-row">
         <div class="family-student-left">
-          <h2 class="student-name">{{ student.last_name }}, {{ student.first_name }}</h2>
+          <div class="student-name">{{ student.last_name }}, {{ student.first_name }}</div>
         </div>
         <div class="family-student-right">
           {{ student.teacherName }}{{ student.level ? ', ' + formatGradeLevel(student.level) : '' }}
@@ -119,9 +119,10 @@
 }
 
 .student-name {
-  font-size: 11pt;
+  font-size: 14pt;
   font-weight: bold;
   margin: 0;
+  padding: 0;
   display: inline;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <PrintPage id="section-cssdm">
+  <PrintPage :id="['section-cssdm', 'section-repaq']">
     <div class="committees-section">
       <!-- CSSDM Header -->
       <h1 class="section-title">Centre de services scolaire de Montréal</h1>
@@ -184,7 +184,7 @@
 
 .committee-title-repaq {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 20pt;
+  font-size: 24pt;
   font-weight: bold;
   margin: 0;
 }

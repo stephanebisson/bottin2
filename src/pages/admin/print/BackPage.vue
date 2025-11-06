@@ -73,7 +73,7 @@
 .resource-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 18pt;
-  font-weight: bold;
+  font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: #000;
 }

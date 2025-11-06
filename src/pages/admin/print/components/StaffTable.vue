@@ -117,7 +117,7 @@
 }
 
 .staff-table-sdg td {
-  padding: 0.4rem 0.5rem;
+  padding: 0.35rem 0.5rem;
   vertical-align: top;
 }
 

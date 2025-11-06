@@ -62,7 +62,7 @@
 }
 
 .parent-reps-table td {
-  padding: 0.2rem 0.4rem;
+  padding: 0.35rem 0.5rem;
   vertical-align: top;
 }
 

@@ -91,7 +91,7 @@
 }
 
 .committee-table td {
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.5rem;
   vertical-align: top;
 }
 
@@ -108,7 +108,7 @@
   font-weight: 600;
   font-size: 10pt;
   color: #000;
-  padding: 0.4rem 0.75rem !important;
+  padding: 0.35rem 0.5rem !important;
 }
 
 /* Member rows */

@@ -68,21 +68,6 @@
   line-height: 1.2;
 }
 
-h2 {
-  font-size: 16pt;
-  font-weight: 600;
-  margin-top: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-h3 {
-  font-size: 15pt;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
 p {
   margin-bottom: 0.75rem;
 }

@@ -180,6 +180,7 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
   import { getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
@@ -202,33 +203,10 @@
   import TableOfContents from './TableOfContents.vue'
   import TitlePage from './TitlePage.vue'
 
-  // ============================================================================
-  // TABLE OF CONTENTS PAGE NUMBERS
-  // ============================================================================
-  // Update these numbers after doing a print preview to see actual page numbers
-  const TOC_PAGE_NUMBERS = {
-    staff: 3, // Personnel (École Étoile filante)
-    sdg: 4, // Personnel (Service de garde)
-    committees: 5, // Conseil d'établissement
-    fondation: 6, // Fondation de l'école Étoile filante
-    comites: 7, // Comités section (pages 7-9)
-    cssdm: 10, // Centre de services scolaire de Montréal
-    repaq: 10, // REPAQ (on same page as CSSDM)
-    classes: 11, // Liste des classes (1e-2e)
-    'classes-34': 12, // Liste des classes (3e-4e)
-    'classes-56': 13, // Liste des classes (5e-6e)
-    families: 14, // Liste alphabétique des enfants (pages 14+, depends on # of families)
-    parents: 20, // Liste alphabétique des parents (estimate, adjust after print preview)
-    referentiel: 22, // Référentiel (estimate, adjust after print preview)
-    implication: 23, // Implication (estimate, adjust after print preview)
-    faq1: 24, // FAQ page 1 (estimate, adjust after print preview)
-    faq2: 25, // FAQ page 2 (estimate, adjust after print preview)
-  }
-  // ============================================================================
-
   // Store references
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
+  const { reset: resetPageRegistry } = usePrintPageRegistry()
 
   // State
   const isAuthorized = ref(false)
@@ -841,26 +819,13 @@
     }
   }
 
-  // Populate TOC page numbers before print
-  function populateTOCPageNumbers () {
-    // Update TOC entries with the page numbers defined at the top of this file
-    for (const section of Object.keys(TOC_PAGE_NUMBERS)) {
-      const tocElement = document.querySelector(`[data-section="${section}"]`)
-      if (tocElement) {
-        tocElement.textContent = TOC_PAGE_NUMBERS[section]
-      }
-    }
-  }
-
   onMounted(async () => {
+    // Reset the page registry for fresh page counting
+    resetPageRegistry()
+
     await checkAdminStatus()
     if (isAuthorized.value) {
       await loadData()
-
-      // Wait for content to render, then populate TOC once
-      setTimeout(() => {
-        populateTOCPageNumbers()
-      }, 500)
     } else {
       loading.value = false
     }
@@ -925,14 +890,6 @@
 }
 
 /* Committees compact styles */
-.committee-category-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
-  font-weight: 600;
-  margin: 1.5rem 0 1rem 0;
-  color: #000;
-}
-
 .committee {
   margin-bottom: 2rem;
   page-break-inside: avoid;

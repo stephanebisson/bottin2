@@ -99,14 +99,6 @@
   border-bottom: 2px solid black;
 }
 
-.group-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 20pt;
-  font-weight: bold;
-  margin: 0;
-  color: #000;
-}
-
 .school-phone {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14pt;
@@ -116,14 +108,6 @@
 
 .staff-subgroup {
   margin-bottom: 1.25rem;
-}
-
-.subgroup-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  color: #000;
 }
 
 /* SDG Header Section */
@@ -158,7 +142,7 @@
 
 .sdg-name {
   font-size: 18pt;
-  font-weight: bold;
+  font-weight: 600;
   color: #000;
   margin-bottom: 0.5rem;
 }

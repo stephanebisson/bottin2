@@ -104,7 +104,7 @@
 
 .class-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 15pt;
+  font-size: 14pt;
   font-weight: bold;
   margin: 0;
   color: #000;
@@ -112,7 +112,7 @@
 
 .class-code {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13pt;
+  font-size: 14pt;
   font-weight: 600;
   color: #000;
 }

@@ -3,80 +3,10 @@
     <div class="toc">
       <h1 class="section-title">Table des matières</h1>
       <div class="toc-items">
-        <div class="toc-item">
-          <span class="toc-label">Personnel (École Étoile filante)</span>
+        <div v-for="item in tocItems" :key="item.section" class="toc-item">
+          <span class="toc-label" v-html="item.label" />
           <span class="toc-dots" />
-          <span class="toc-page" data-section="staff">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Personnel (Service de garde)</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="sdg">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Conseil d'établissement</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="committees">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Fondation de l'école Étoile filante</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="fondation">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Comités</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="comites">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Centre de services scolaire de Montréal</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="cssdm">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">REPAQ</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="repaq">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Liste des classes (1<sup>e</sup>-2<sup>e</sup>)</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="classes">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Liste des classes (3<sup>e</sup>-4<sup>e</sup>)</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="classes-34">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Liste des classes (5<sup>e</sup>-6<sup>e</sup>)</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="classes-56">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Liste alphabétique des enfants</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="families">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Liste alphabétique des parents</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="parents">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Référentiel</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="referentiel">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Implication</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="implication">___</span>
-        </div>
-        <div class="toc-item">
-          <span class="toc-label">Trucs et astuces pour les périodes de coéducation</span>
-          <span class="toc-dots" />
-          <span class="toc-page" data-section="faq1">___</span>
+          <span class="toc-page">{{ getPageNumber(item.section) || '___' }}</span>
         </div>
       </div>
     </div>
@@ -84,7 +14,29 @@
 </template>
 
 <script setup>
+  import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
   import PrintPage from './PrintPage.vue'
+
+  const { getPageNumber } = usePrintPageRegistry()
+
+  // Table of Contents structure
+  const tocItems = [
+    { section: 'section-staff', label: 'Personnel de l\'Étoile filante' },
+    { section: 'section-sdg', label: 'Service de garde' },
+    { section: 'section-committees', label: 'Conseil d\'établissement' },
+    { section: 'section-fondation', label: 'Fondation de l\'école Étoile filante' },
+    { section: 'section-comites', label: 'Comités' },
+    { section: 'section-cssdm', label: 'Centre de services scolaire de Montréal' },
+    { section: 'section-repaq', label: 'REPAQ' },
+    { section: 'section-classes', label: 'Liste des classes (1<sup>e</sup>-2<sup>e</sup>)' },
+    { section: 'section-classes-34', label: 'Liste des classes (3<sup>e</sup>-4<sup>e</sup>)' },
+    { section: 'section-classes-56', label: 'Liste des classes (5<sup>e</sup>-6<sup>e</sup>)' },
+    { section: 'section-families', label: 'Liste alphabétique des enfants' },
+    { section: 'section-parents', label: 'Liste alphabétique des parents' },
+    { section: 'section-referentiel', label: 'Référentiel pédagogique' },
+    { section: 'section-implication', label: 'L\'implication parentale' },
+    { section: 'section-faq1', label: 'Trucs et astuces pour les périodes de coéducation' },
+  ]
 </script>
 
 <style scoped>
@@ -121,7 +73,6 @@
 .toc-page {
   font-weight: bold;
   white-space: nowrap;
-  min-width: 3rem;
   text-align: right;
 }
 </style>
