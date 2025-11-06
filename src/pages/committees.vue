@@ -228,6 +228,7 @@
   import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
+  import { getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
@@ -314,6 +315,9 @@
           }
         })
         .toSorted((a, b) => {
+          // Get role display order for this committee (if defined)
+          const roleOrder = getCommitteeRoleDisplayOrder(committee.name)
+
           // First sort by member type (parents first, then staff)
           if (a.memberType !== b.memberType) {
             if (a.memberType === 'parent' && b.memberType === 'staff') return -1
@@ -322,7 +326,25 @@
             if (a.memberType === 'unknown') return 1
             if (b.memberType === 'unknown') return -1
           }
-          // Then sort by name within the same member type
+
+          // If role order is defined, sort by role order within the same member type
+          if (roleOrder) {
+            const aRoleIndex = roleOrder.indexOf(a.role)
+            const bRoleIndex = roleOrder.indexOf(b.role)
+
+            // If both roles are in the order, sort by their position
+            if (aRoleIndex !== -1 && bRoleIndex !== -1) {
+              return aRoleIndex - bRoleIndex
+            }
+
+            // If only one role is in the order, it comes first
+            if (aRoleIndex !== -1) return -1
+            if (bRoleIndex !== -1) return 1
+
+            // If neither role is in the order, fall through to name sorting
+          }
+
+          // Then sort by name within the same member type and role order
           return a.fullName.localeCompare(b.fullName)
         })
 
