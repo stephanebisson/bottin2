@@ -117,6 +117,7 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
   ],
   'Fondation': [
     'Co-Présidente',
+    'Vice-Président',
     'Secrétaire',
     'Trésorier',
     'Administratrices et administrateurs',
