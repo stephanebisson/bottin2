@@ -57,7 +57,7 @@
           <v-card height="100%">
             <!-- Committee Header -->
             <div class="bg-primary text-white pa-4">
-              <div class="d-flex align-start gap-3">
+              <div class="d-flex align-start justify-space-between gap-3 mb-2">
                 <div class="committee-name text-h6 font-weight-bold">
                   <HighlightedText :query="searchQuery" :text="committee.name" />
                 </div>
@@ -80,6 +80,27 @@
                     variant="text"
                     @click="openEditDialog(committee)"
                   />
+                </div>
+              </div>
+
+              <!-- Committee Details -->
+              <div v-if="committee.description || committee.email || committee.phone || committee.url" class="committee-details">
+                <div v-if="committee.description" class="text-body-2 mb-2 font-italic">
+                  {{ committee.description }}
+                </div>
+                <div v-if="committee.email || committee.phone || committee.url" class="committee-contact-info">
+                  <div v-if="committee.email" class="d-flex align-center text-caption">
+                    <v-icon class="me-2" size="small">mdi-email</v-icon>
+                    <a class="text-white text-decoration-none" :href="`mailto:${committee.email}`">{{ committee.email }}</a>
+                  </div>
+                  <div v-if="committee.phone" class="d-flex align-center text-caption">
+                    <v-icon class="me-2" size="small">mdi-phone</v-icon>
+                    <a class="text-white text-decoration-none" :href="`tel:${committee.phone}`">{{ formatPhone(committee.phone) }}</a>
+                  </div>
+                  <div v-if="committee.url" class="d-flex align-center text-caption">
+                    <v-icon class="me-2" size="small">mdi-web</v-icon>
+                    <a class="text-white text-decoration-none" :href="ensureHttps(committee.url)" rel="noopener noreferrer" target="_blank">{{ committee.url }}</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -397,6 +418,29 @@
     }
   }
 
+  // Helper: Format phone number
+  function formatPhone (phone) {
+    if (!phone) return ''
+
+    const cleaned = phone.toString().replace(/\D/g, '')
+
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+    }
+
+    return phone
+  }
+
+  // Helper: Ensure URL has https:// protocol
+  function ensureHttps (url) {
+    if (!url) return ''
+    const urlStr = url.toString().trim()
+    if (/^https?:\/\//i.test(urlStr)) {
+      return urlStr
+    }
+    return `https://${urlStr}`
+  }
+
   onMounted(async () => {
     // Load DTO data in parallel
     await Promise.all([
@@ -416,6 +460,21 @@
   line-height: 1.3;
   flex: 1;
   min-width: 0;
+}
+
+.committee-details {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 0.75rem;
+}
+
+.committee-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.committee-contact-info a:hover {
+  text-decoration: underline !important;
 }
 
 .member-item-compact {

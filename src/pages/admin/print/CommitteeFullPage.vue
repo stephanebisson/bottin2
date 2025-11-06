@@ -3,9 +3,15 @@
     <div class="committee-full-page">
       <!-- Committee Header -->
       <div class="committee-header">
-        <h1 class="committee-title">{{ title }}</h1>
-        <span v-if="committee.url" class="committee-url">{{ committee.url }}</span>
-        <span v-else-if="committee.email" class="committee-email">{{ committee.email }}</span>
+        <h1 class="committee-title">
+          {{ committee.name }}
+          <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+        </h1>
+        <div class="committee-contact">
+          <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
+          <div v-if="committee.phone" class="committee-phone">{{ formatPhone(committee.phone) }}</div>
+          <div v-if="committee.url" class="committee-url">{{ committee.url }}</div>
+        </div>
       </div>
 
       <!-- Parent Members Section (only for committees with separated parent/staff) -->
@@ -58,6 +64,19 @@
       default: () => [],
     },
   })
+
+  // Helper: Format phone number
+  function formatPhone (phone) {
+    if (!phone) return ''
+
+    const cleaned = phone.toString().replace(/\D/g, '')
+
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+    }
+
+    return phone
+  }
 </script>
 
 <style scoped>
@@ -71,25 +90,38 @@
 .committee-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid black;
   flex-shrink: 0;
 }
 
-.committee-email {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
-  font-weight: 500;
-  color: #000;
+.committee-title {
+  flex: 1;
 }
 
+.committee-description {
+  font-weight: normal;
+  margin-left: 0.25rem;
+}
+
+.committee-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.committee-email,
+.committee-phone,
 .committee-url {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 500;
   color: #000;
+  white-space: nowrap;
 }
 
 .committee-section {

@@ -22,8 +22,11 @@
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
-            <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
-            <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+            <div class="committee-contact-inline">
+              <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
+            </div>
           </div>
 
           <!-- Members grouped by role -->
@@ -38,9 +41,15 @@
         <div v-for="committee in repaq" :key="committee.id" class="committee">
           <!-- Committee Header -->
           <div class="committee-header-repaq">
-            <h1 class="committee-title-repaq">{{ committee.name }}</h1>
-            <span v-if="committee.url" class="committee-url">{{ committee.url }}</span>
-            <span v-else-if="committee.email" class="committee-email">{{ committee.email }}</span>
+            <div class="committee-title-wrapper-repaq">
+              <h1 class="committee-title-repaq">{{ committee.name }}</h1>
+              <div v-if="committee.description" class="committee-description-repaq">{{ committee.description }}</div>
+            </div>
+            <div class="committee-contact-repaq">
+              <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
+              <div v-if="committee.phone" class="committee-phone">{{ formatPhone(committee.phone) }}</div>
+              <div v-if="committee.url" class="committee-url">{{ committee.url }}</div>
+            </div>
           </div>
 
           <!-- Members grouped by role -->
@@ -157,16 +166,21 @@
   margin-left: 0.25rem;
 }
 
-.committee-email-inline {
-  font-size: 10pt;
-  font-weight: 500;
-  color: #000;
+.committee-contact-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  text-align: right;
 }
 
+.committee-email-inline,
+.committee-phone-inline,
 .committee-url-inline {
   font-size: 10pt;
   font-weight: 500;
   color: #000;
+  white-space: nowrap;
 }
 
 .committee-section-compact {
@@ -176,30 +190,47 @@
 .committee-header-repaq {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid black;
+}
+
+.committee-title-wrapper-repaq {
+  flex: 1;
 }
 
 .committee-title-repaq {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 24pt;
   font-weight: bold;
+  margin: 0 0 0.25rem 0;
+}
+
+.committee-description-repaq {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12pt;
+  font-weight: normal;
+  font-style: italic;
+  color: #000;
   margin: 0;
 }
 
-.committee-url {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
-  font-weight: 500;
-  color: #000;
+.committee-contact-repaq {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  text-align: right;
 }
 
-.committee-email {
+.committee-url,
+.committee-email,
+.committee-phone {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 500;
   color: #000;
+  white-space: nowrap;
 }
 </style>

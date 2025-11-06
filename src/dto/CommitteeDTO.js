@@ -9,6 +9,7 @@ export class CommitteeDTO {
     this.name = this.sanitizeString(data.name)
     this.description = data.description ? this.sanitizeString(data.description) : ''
     this.email = data.email ? this.sanitizeString(data.email).toLowerCase() : ''
+    this.phone = data.phone ? this.sanitizeString(data.phone) : ''
     this.url = data.url ? this.sanitizeString(data.url) : ''
     this.members = this.sanitizeMembers(data.members)
 
@@ -127,6 +128,7 @@ export class CommitteeDTO {
       name: this.name,
       description: this.description,
       email: this.email,
+      phone: this.phone,
       url: this.url,
       updatedAt: new Date(),
       createdAt: this.createdAt || new Date(),
@@ -164,6 +166,7 @@ export class CommitteeDTO {
       name: this.name,
       description: this.description,
       email: this.email,
+      phone: this.phone,
       url: this.url,
       members: this.members,
       memberCount: this.memberCount,
