@@ -40,6 +40,7 @@
             <div class="sdg-name">{{ SDG_INFO.name }}</div>
             <div class="sdg-address">{{ SDG_INFO.addressLine1 }}</div>
             <div class="sdg-address">{{ SDG_INFO.addressLine2 }}</div>
+            <div class="sdg-email">{{ SDG_INFO.email }}</div>
             <div class="sdg-url">{{ SDG_INFO.url }}</div>
           </div>
         </div>
@@ -148,6 +149,12 @@
 }
 
 .sdg-address {
+  font-size: 11pt;
+  color: #000;
+  line-height: 1.4;
+}
+
+.sdg-email {
   font-size: 11pt;
   color: #000;
   line-height: 1.4;
