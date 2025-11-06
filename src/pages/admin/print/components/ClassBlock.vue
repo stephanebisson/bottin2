@@ -2,7 +2,7 @@
   <div class="class-block">
     <!-- Class Name and Code -->
     <div class="class-header-row">
-      <h2 class="class-title">{{ classItem.className }}</h2>
+      <h2 class="class-title" :class="fontClass">{{ classItem.className }}</h2>
       <span class="class-code">{{ classItem.classCode }}</span>
     </div>
 
@@ -31,6 +31,7 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue'
   import ParentRepsTable from './ParentRepsTable.vue'
 
   const props = defineProps({
@@ -55,6 +56,9 @@
       required: true,
     },
   })
+
+  // Use Kalam font for all class names
+  const fontClass = 'font-kalam'
 
   // Helper: Check if student is a student rep
   function isStudentRep (studentId) {
@@ -103,11 +107,16 @@
 }
 
 .class-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14pt;
   font-weight: bold;
   margin: 0;
   color: #000;
+}
+
+/* Kalam cursive font for class names */
+.class-title.font-kalam {
+  font-family: 'Kalam', cursive;
+  font-weight: 400;
 }
 
 .class-code {
