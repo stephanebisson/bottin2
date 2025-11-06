@@ -71,6 +71,7 @@ export const COMMITTEE_ROLES = {
   'Fondation': [
     'Administratrices et administrateurs',
     'Co-Présidente',
+    'Vice-Président',
     'Observateur',
     'Secrétaire',
     'Trésorier',
