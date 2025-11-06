@@ -2,15 +2,17 @@
   <PrintPage :first-page="true" :no-footer="true">
     <div class="title-page">
       <div class="title-box">
-        <div class="title-content">
+        <div class="title-section">
           <h1 class="main-title">
             <div class="title-word">Le</div>
             <div class="title-word">Gros</div>
             <div class="title-word">Bottin</div>
           </h1>
+        </div>
+        <div class="title-section">
           <h2 class="subtitle">2025 2026</h2>
         </div>
-        <div class="title-logo">
+        <div class="title-section">
           <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
         </div>
       </div>
@@ -33,7 +35,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 100%;
   height: 100%;
   border: 4px dotted #222;
@@ -41,8 +43,7 @@
   background: #fafafa;
 }
 
-.title-content {
-  flex: 1;
+.title-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,28 +68,19 @@
   display: block;
 }
 
-.subtitle {
+.title-page .subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 36pt;
+  font-size: 4rem !important;
   font-weight: 300;
   text-align: center;
-  margin: 1.5rem 0 0 0;
+  margin: 0 !important;
   letter-spacing: 0.15em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.title-logo {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 1.5rem 0 0 0;
-}
-
-.title-logo img {
+.title-section img {
   width: 40%;
   max-height: 2.5in;
   height: auto;
@@ -118,18 +110,14 @@
     -webkit-print-color-adjust: exact;
   }
 
-  .subtitle {
-    font-size: 36pt;
-    margin: 1.5rem 0 0 0;
+  .title-page .subtitle {
+    font-size: 4rem !important;
+    margin: 0 !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 
-  .title-logo {
-    padding: 1rem 0 0 0;
-  }
-
-  .title-logo img {
+  .title-section img {
     width: 40%;
     max-height: 2.5in;
     print-color-adjust: exact;
