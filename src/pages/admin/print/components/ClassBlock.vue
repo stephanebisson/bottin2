@@ -101,9 +101,17 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-top: 0.4rem;
+  margin-bottom: 0.1rem;
+}
+
+.class-block:first-child .class-header-row {
+  padding-top: 1rem;
+}
+
+/* Add border-top only for the second class block (not the first) */
+.class-block:not(:first-child) .class-header-row {
   border-top: 1px solid black;
-  margin-bottom: 0.4rem;
+  padding-top: 1rem;
 }
 
 .class-title {
@@ -127,10 +135,11 @@
 }
 
 .class-teacher-name {
-  font-size: 10.5pt;
+  font-size: 12pt;
   font-style: italic;
   color: #000;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  margin-top: 0;
 }
 
 .class-students-section {

@@ -1,6 +1,6 @@
 <template>
   <div v-if="rep1 || rep2" class="class-parent-reps-section">
-    <strong>Représentants des parents :</strong>
+    <strong>Représentants des parents</strong>
     <table class="parent-reps-table">
       <tbody>
         <tr v-if="rep1">
@@ -50,10 +50,15 @@
   margin-bottom: 0.6rem;
 }
 
+.class-parent-reps-section strong {
+  display: block;
+  margin-bottom: 0.1rem;
+}
+
 .parent-reps-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0.3rem;
+  margin-top: 0;
   font-size: 8.5pt;
 }
 
@@ -62,7 +67,7 @@
 }
 
 .parent-reps-table td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.1rem 0.5rem;
   vertical-align: top;
 }
 

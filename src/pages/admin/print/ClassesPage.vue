@@ -47,14 +47,21 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-top: 0.5rem;
+  border-bottom: 2px solid black;
   padding-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .class-page-header .section-title {
   border-bottom: none;
   margin-bottom: 0;
+  padding-top: 0.5rem;
   padding-bottom: 0;
+}
+
+/* Override h2 margin from PrintPage.vue for class titles */
+.classes-content :deep(h2) {
+  margin: 0;
 }
 
 .class-level-badge {
