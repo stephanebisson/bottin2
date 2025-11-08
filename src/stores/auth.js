@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref(null)
   const isInitialized = ref(false)
-  const registrationDisabled = ref(true) // Temporarily disable registration until site launch
+  const registrationDisabled = ref(false) // Registration enabled for authorized parents/staff
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)

@@ -51,7 +51,7 @@ exports.validateEmailV2 = onRequest({
     const normalizedEmail = email.toLowerCase().trim()
     console.log('Email validation request processed (V2)')
 
-    // Check if email exists in parents collection
+    // Check if email exists in parents collection (only parents can register)
     const parentsQuery = await db.collection('parents')
       .where('email', '==', normalizedEmail)
       .limit(1)
@@ -68,27 +68,10 @@ exports.validateEmailV2 = onRequest({
       })
     }
 
-    // Check if email exists in staff collection
-    const staffQuery = await db.collection('staff')
-      .where('email', '==', normalizedEmail)
-      .limit(1)
-      .get()
-
-    if (!staffQuery.empty) {
-      const staffDoc = staffQuery.docs[0]
-      const staffData = staffDoc.data()
-      return res.status(200).json({
-        authorized: true,
-        displayName: staffData.first_name || '',
-        userType: 'staff',
-        message: 'Email found in staff collection.',
-      })
-    }
-
-    // Email not found in either collection
+    // Email not found in parents collection - only parents can create accounts
     return res.status(200).json({
       authorized: false,
-      message: 'Email not found in authorized collections.',
+      message: 'Email not found in parents collection. Only parents can create accounts.',
     })
   } catch (error) {
     // Handle validation errors
