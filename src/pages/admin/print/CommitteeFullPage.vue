@@ -90,7 +90,7 @@
 .committee-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: baseline;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid black;
