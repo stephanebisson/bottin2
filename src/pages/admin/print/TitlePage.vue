@@ -38,7 +38,7 @@
   justify-content: space-evenly;
   width: 100%;
   height: 100%;
-  border: 4px dotted #222;
+  border: 4px double #222;
   padding: 2rem;
   background: #fafafa;
 }
@@ -98,7 +98,7 @@
   .title-box {
     width: 100%;
     height: 100%;
-    border: 4px dotted #222;
+    border: 4px double #222;
     background: white;
     padding: 1.5rem;
   }
