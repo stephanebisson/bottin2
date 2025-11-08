@@ -31,7 +31,7 @@
     { section: 'section-classes', label: 'Liste des classes (1<sup>e</sup>-2<sup>e</sup>)' },
     { section: 'section-classes-34', label: 'Liste des classes (3<sup>e</sup>-4<sup>e</sup>)' },
     { section: 'section-classes-56', label: 'Liste des classes (5<sup>e</sup>-6<sup>e</sup>)' },
-    { section: 'section-families', label: 'Liste alphabétique des enfants' },
+    { section: 'section-families', label: 'Liste alphabétique des élèves' },
     { section: 'section-parents', label: 'Liste alphabétique des parents' },
     { section: 'section-referentiel', label: 'Référentiel pédagogique' },
     { section: 'section-implication', label: 'L\'implication parentale' },

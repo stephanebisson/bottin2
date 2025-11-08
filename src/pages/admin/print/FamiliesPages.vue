@@ -2,7 +2,7 @@
   <PrintPage v-for="(page, pageIndex) in paginatedFamilies" :id="page.isFirstPage ? 'section-families' : undefined" :key="`family-page-${pageIndex}`">
     <template #header>
       <!-- Section title only on first page -->
-      <h1 v-if="page.isFirstPage" class="section-title">Liste alphabétique des enfants</h1>
+      <h1 v-if="page.isFirstPage" class="section-title">Liste alphabétique des élèves</h1>
 
       <!-- Letter range header -->
       <h1 class="families-letter-header">{{ page.letterRange }}</h1>
