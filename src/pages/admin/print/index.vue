@@ -488,9 +488,7 @@
     // Sort each level's students by name
     for (const level of Object.keys(grouped)) {
       grouped[level].sort((a, b) => {
-        const nameA = `${a.first_name} ${a.last_name}`.toLowerCase()
-        const nameB = `${b.first_name} ${b.last_name}`.toLowerCase()
-        return nameA.localeCompare(nameB)
+        return a.last_name.localeCompare(b.last_name)
       })
     }
 
