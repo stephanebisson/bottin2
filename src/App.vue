@@ -1,11 +1,55 @@
 <template>
   <v-app>
-    <router-view />
+    <!-- Central loading indicator while app initializes -->
+    <v-overlay
+      v-model="isInitializing"
+      class="align-center justify-center"
+      persistent
+    >
+      <div class="text-center">
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        />
+        <div class="mt-4 text-h6">
+          Loading...
+        </div>
+      </div>
+    </v-overlay>
+
+    <router-view v-if="!isInitializing" />
   </v-app>
 </template>
 
 <script setup>
-  //
+  import { onMounted, ref } from 'vue'
+  import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
+  const isInitializing = ref(true)
+
+  onMounted(async () => {
+    try {
+      // Wait for auth to initialize
+      while (!authStore.isInitialized) {
+        await new Promise(resolve => setTimeout(resolve, 50))
+      }
+
+      // If user is authenticated, load all data
+      if (authStore.isAuthenticated) {
+        console.log('App: Loading all data...')
+        await firebaseStore.loadAllDTOData()
+        console.log('App: Data loaded')
+      }
+    } catch (error) {
+      console.error('App initialization error:', error)
+    } finally {
+      isInitializing.value = false
+    }
+  })
 </script>
 
 <style>

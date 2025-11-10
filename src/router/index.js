@@ -6,12 +6,11 @@
 
 import { setupLayouts } from 'virtual:generated-layouts'
 // Composables
- 
+
 import { createRouter, createWebHistory } from 'vue-router'
- 
+
 import { routes } from 'vue-router/auto-routes'
 import { authMiddleware, routeConfig } from '@/middleware/auth'
-import { useFirebaseDataStore } from '@/stores/firebaseData'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,43 +70,8 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
-// Load all DTO data once after initial navigation (for authenticated users)
-// Data changes infrequently - use pull-to-refresh to manually refresh
-let dataInitialized = false
-
-router.afterEach(async (to) => {
-  // Skip if already initialized
-  if (dataInitialized) {
-    return
-  }
-
-  // Skip data loading for auth and public routes
-  const isAuthRoute = to.path === '/auth' || to.path.startsWith('/email-verification')
-  const isOpenRoute = routeConfig.open.some(openPath => to.path.startsWith(openPath))
-
-  if (isAuthRoute || isOpenRoute) {
-    return
-  }
-
-  // Load all DTO data centrally once
-  const firebaseStore = useFirebaseDataStore()
-
-  // Only load if data is missing
-  if (firebaseStore.hasAllDTOData) {
-    // Data already exists, mark as initialized
-    dataInitialized = true
-  } else {
-    try {
-      console.log('Router: Initial data load...')
-      await firebaseStore.loadAllDTOData()
-      dataInitialized = true
-      console.log('Router: Initial data load complete')
-    } catch (error) {
-      console.error('Failed to load DTO data in router:', error)
-      // Don't block navigation on data loading failure
-    }
-  }
-})
+// Data loading is now handled centrally in App.vue on mount
+// No need for router-based data loading
 
 router.isReady().then(() => {
   localStorage.removeItem('vuetify:dynamic-reload')

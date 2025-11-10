@@ -148,28 +148,32 @@
               {{ $t('profile.committees') }}
             </v-card-title>
 
-            <v-card-text v-if="committees.length > 0" class="pa-4">
-              <div class="d-flex flex-column gap-3">
-                <v-card
-                  v-for="committee in committees"
+            <v-card-text v-if="committees.length > 0" class="pa-0">
+              <v-list>
+                <v-list-item
+                  v-for="(committee, index) in committees"
                   :key="committee.id"
-                  class="pa-3"
-                  variant="outlined"
+                  :class="{ 'border-b': index < committees.length - 1 }"
                 >
-                  <div class="font-weight-bold mb-1">
+                  <template #prepend>
+                    <v-icon color="success">mdi-account-group</v-icon>
+                  </template>
+
+                  <v-list-item-title class="font-weight-bold">
                     {{ committee.name }}
-                  </div>
-                  <div v-if="committee.role && committee.role !== 'Member'" class="text-caption">
+                  </v-list-item-title>
+
+                  <v-list-item-subtitle v-if="committee.role && committee.role !== 'Member'">
                     <v-chip
                       color="success"
-                      size="x-small"
-                      variant="text"
+                      size="small"
+                      variant="tonal"
                     >
                       {{ committee.role }}
                     </v-chip>
-                  </div>
-                </v-card>
-              </div>
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
             </v-card-text>
 
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
@@ -179,7 +183,7 @@
           </v-card>
 
           <!-- Interests & Skills -->
-          <v-card v-if="displayedInterests.length > 0">
+          <v-card v-if="displayedInterests.length > 0" class="mb-6">
             <v-card-title class="d-flex align-center bg-info-lighten-5">
               <v-icon class="me-2" color="info">mdi-star</v-icon>
               {{ $t('profile.interests') }}
@@ -317,47 +321,18 @@
     return teacher ? teacher.first_name : null
   }
 
-  // Load data on mount
-  onMounted(async () => {
-    try {
-      loading.value = true
-      error.value = null
+  // Check profile on mount - data is already loaded by App.vue
+  onMounted(() => {
+    loading.value = false
 
-      // Ensure we have user auth data
-      if (!authStore.isAuthenticated) {
-        throw new Error('User must be authenticated to view profile')
-      }
+    // Check if user has a parent profile
+    if (!parentProfile.value) {
+      // Check if they're staff instead
+      const isStaff = firebaseStore.staffDTO.some(staff =>
+        staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
+      )
 
-      // Data is loaded centrally by the router, just wait if still loading
-      if (firebaseStore.isAnyDTOLoading) {
-        console.log('Waiting for DTO data to finish loading...')
-        // Wait for loading to complete (with timeout)
-        const timeout = setTimeout(() => {
-          console.warn('DTO loading timeout')
-        }, 10_000)
-
-        const checkLoading = setInterval(() => {
-          if (!firebaseStore.isAnyDTOLoading) {
-            clearInterval(checkLoading)
-            clearTimeout(timeout)
-          }
-        }, 100)
-      }
-
-      // Check if user is a parent (not staff)
-      if (!parentProfile.value) {
-        // Check if they're staff instead
-        const isStaff = firebaseStore.staffDTO.some(staff =>
-          staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
-        )
-
-        error.value = isStaff ? t('profile.staffNotAvailable') : t('profile.noProfileFoundMessage')
-      }
-    } catch (error_) {
-      error.value = error_.message || 'Failed to load profile data'
-      console.error('Profile page error:', error_)
-    } finally {
-      loading.value = false
+      error.value = isStaff ? t('profile.staffNotAvailable') : t('profile.noProfileFoundMessage')
     }
   })
 </script>
