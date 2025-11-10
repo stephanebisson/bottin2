@@ -98,27 +98,29 @@
   import { useRoute, useRouter } from 'vue-router'
   import TicTacToeCard from '@/components/TicTacToeCard.vue'
   import { useI18n } from '@/composables/useI18n'
+  import { usePWA } from '@/composables/usePWA'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const router = useRouter()
   const route = useRoute()
   const { t } = useI18n()
+  const { isRunningAsPWA } = usePWA()
 
   // Welcome message state
   const showWelcomeMessage = ref(false)
 
-  // Easter egg state
-  const showEasterEgg = ref(false)
-
-  // Check if Easter egg should appear (only with URL parameter)
-  function checkEasterEgg () {
-    // Only show if URL parameter is present
+  // Easter egg state - show for PWA users or with URL parameter
+  const showEasterEgg = computed(() => {
+    // Show if running as PWA
+    if (isRunningAsPWA.value) {
+      return true
+    }
+    // Or if URL parameter is present
     if (route.query.easteregg === 'true' || route.query.easteregg === '1') {
       return true
     }
-
     return false
-  }
+  })
 
   // Check for welcome query parameter on mount
   onMounted(() => {
@@ -127,9 +129,6 @@
       // Clean up the URL
       router.replace({ path: '/', query: {} })
     }
-
-    // Check if Easter egg should appear
-    showEasterEgg.value = checkEasterEgg()
   })
 
   // Use centralized data store
