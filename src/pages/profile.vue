@@ -257,15 +257,15 @@
     if (!parentProfile.value?.id) return []
 
     const parentId = parentProfile.value.id
-    return firebaseStore.committees
+    return firebaseStore.committeesDTO
       .filter(committee =>
         committee.members && committee.members.some(member =>
-          member.parent_id === parentId,
+          member.memberId === parentId,
         ),
       )
       .map(committee => {
         const member = committee.members.find(member =>
-          member.parent_id === parentId,
+          member.memberId === parentId,
         )
         return {
           id: committee.id,
@@ -328,17 +328,21 @@
         throw new Error('User must be authenticated to view profile')
       }
 
-      // Load all data if not already loaded
-      if (!firebaseStore.hasData.value) {
-        await firebaseStore.loadAllData()
-      }
+      // Data is loaded centrally by the router, just wait if still loading
+      if (firebaseStore.isAnyDTOLoading) {
+        console.log('Waiting for DTO data to finish loading...')
+        // Wait for loading to complete (with timeout)
+        const timeout = setTimeout(() => {
+          console.warn('DTO loading timeout')
+        }, 10_000)
 
-      // Load DTO data for parents, students, and staff
-      await Promise.all([
-        firebaseStore.loadParentsDTO(),
-        firebaseStore.loadStudentsDTO(),
-        firebaseStore.loadStaffDTO(),
-      ])
+        const checkLoading = setInterval(() => {
+          if (!firebaseStore.isAnyDTOLoading) {
+            clearInterval(checkLoading)
+            clearTimeout(timeout)
+          }
+        }, 100)
+      }
 
       // Check if user is a parent (not staff)
       if (!parentProfile.value) {

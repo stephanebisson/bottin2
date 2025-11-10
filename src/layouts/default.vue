@@ -108,14 +108,8 @@
     try {
       console.log('Pull-to-refresh: Refreshing all data...')
 
-      // Refresh all Firebase data stores in parallel
-      await Promise.all([
-        firebaseStore.refreshData(), // Legacy classes/committees
-        firebaseStore.refreshStudentsDTO(),
-        firebaseStore.refreshParentsDTO(),
-        firebaseStore.refreshStaffDTO(),
-        firebaseStore.refreshCommitteesDTO(),
-      ])
+      // Force refresh all DTO data (bypasses cache)
+      await firebaseStore.loadAllDTOData(true)
 
       console.log('Pull-to-refresh: All data refreshed successfully')
     } catch (error) {

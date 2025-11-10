@@ -15,6 +15,24 @@
     <v-spacer v-if="!mobile" />
 
     <div class="d-flex align-center" :class="{ 'ml-auto': mobile }">
+      <!-- Refresh Button (tablet/desktop, when authenticated, hidden on small mobile) -->
+      <template v-if="authStore.isAuthenticated && !smAndDown">
+        <v-tooltip location="bottom">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              :loading="isRefreshing"
+              variant="text"
+              @click="handleRefresh"
+            >
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ $t('common.refresh') }}</span>
+        </v-tooltip>
+      </template>
+
       <!-- Messaging Icon (when authenticated and chat enabled) -->
       <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
         <v-badge
@@ -109,7 +127,7 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ThemeSelector from '@/components/ThemeSelector.vue'
@@ -129,12 +147,15 @@
   const route = useRoute()
   const router = useRouter()
   const { t } = useI18n()
-  const { mobile } = useDisplay()
+  const { mobile, smAndDown } = useDisplay()
 
   // Access stores
   const firebaseStore = useFirebaseDataStore()
   const { dataStats } = firebaseStore
   const authStore = useAuthStore()
+
+  // Refresh state
+  const isRefreshing = ref(false)
 
   // Get current parent
   const currentParent = computed(() => {
@@ -209,8 +230,20 @@
     return date.toLocaleTimeString()
   })
 
-  async function refreshData () {
-    await firebaseStore.refreshData()
+  async function handleRefresh () {
+    try {
+      isRefreshing.value = true
+      console.log('AppBar: Refreshing all data...')
+
+      // Force refresh all DTO data (bypasses cache)
+      await firebaseStore.loadAllDTOData(true)
+
+      console.log('AppBar: All data refreshed successfully')
+    } catch (error) {
+      console.error('AppBar: Error refreshing data', error)
+    } finally {
+      isRefreshing.value = false
+    }
   }
 
   async function handleLogout () {

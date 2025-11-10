@@ -49,7 +49,8 @@
     "lastName": "Nom de famille",
     "retry": "Réessayer",
     "notProvided": "Non fourni",
-    "optional": "Optionnel"
+    "optional": "Optionnel",
+    "refresh": "Actualiser les données"
   },
   "classes": {
     "title": "Classes",

@@ -458,6 +458,64 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     }
   }
 
+  // ===== UNIFIED DTO LOADING =====
+  /**
+   * Load all DTO data at once (parents, students, staff, committees, classes)
+   * This should be called once during app initialization
+   */
+  const loadAllDTOData = async (forceRefresh = false) => {
+    console.log('Loading all DTO data...')
+
+    try {
+      // Load all DTOs in parallel
+      await Promise.all([
+        loadParentsDTO(forceRefresh),
+        loadStudentsDTO(forceRefresh),
+        loadStaffDTO(forceRefresh),
+        loadCommitteesDTO(forceRefresh),
+        loadAllData(forceRefresh), // Legacy: classes and committees
+      ])
+
+      console.log('All DTO data loaded successfully')
+    } catch (error_) {
+      console.error('Error loading all DTO data:', error_)
+      throw error_
+    }
+  }
+
+  /**
+   * Check if all DTO data is loaded and fresh
+   */
+  const hasAllDTOData = computed(() => {
+    return hasParentsDTO.value
+      && hasStudentsDTO.value
+      && hasStaffDTO.value
+      && hasCommitteesDTO.value
+      && hasData.value
+  })
+
+  /**
+   * Check if any DTO data is stale
+   */
+  const isAnyDTODataStale = computed(() => {
+    return isParentsDTOStale.value
+      || isStudentsDTOStale.value
+      || isStaffDTOStale.value
+      || isCommitteesDTOStale.value
+      || isDataStale.value
+  })
+
+  /**
+   * Check if any DTO is currently loading
+   */
+  const isAnyDTOLoading = computed(() => {
+    return parentsLoadingDTO.value
+      || studentsLoadingDTO.value
+      || staffLoadingDTO.value
+      || committeesLoadingDTO.value
+      || loading.value
+  })
+
   return {
     // ===== LEGACY API (classes and committees only) =====
     classes,
@@ -549,6 +607,12 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     clearCommitteesDTO,
     searchCommitteesDTO,
     getCommitteesDTOStats,
+
+    // Unified DTO Loading
+    loadAllDTOData,
+    hasAllDTOData,
+    isAnyDTODataStale,
+    isAnyDTOLoading,
 
     // Repository access (for advanced usage)
     studentRepository,
