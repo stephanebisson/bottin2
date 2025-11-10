@@ -1,14 +1,6 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('directory.title') }}</h1>
-      <v-chip
-        :color="firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
-      >
-        {{ loadingStatus }}
-      </v-chip>
-    </div>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('directory.title') }}</h1>
 
     <!-- Error Messages -->
     <div v-if="firebaseStore.studentsErrorDTO || firebaseStore.parentsErrorDTO" class="mb-4">

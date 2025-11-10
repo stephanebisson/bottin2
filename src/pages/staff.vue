@@ -1,14 +1,6 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('staff.title') }}</h1>
-      <v-chip
-        :color="firebaseStore.staffLoadingDTO ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.staffLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
-      >
-        {{ firebaseStore.staffLoadingDTO ? $t('common.loading') : searchQuery ? $t('staff.staffFiltered', { filtered: filteredStaffGroups.reduce((acc, group) => acc + group.subgroups.reduce((subAcc, subgroup) => subAcc + subgroup.members.length, 0), 0), total: firebaseStore.staffDTO.length }) : $t('staff.staffLoaded', { count: firebaseStore.staffDTO.length }) }}
-      </v-chip>
-    </div>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('staff.title') }}</h1>
 
     <div v-if="firebaseStore.staffErrorDTO" class="mb-4">
       <v-alert

@@ -1,14 +1,6 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('committees.title') }}</h1>
-      <v-chip
-        :color="firebaseStore.committeesLoadingDTO ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.committeesLoadingDTO ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
-      >
-        {{ firebaseStore.committeesLoadingDTO ? $t('common.loading') : searchQuery ? $t('committees.committeesFiltered', { filtered: filteredCommittees.length, total: firebaseStore.committeesDTO.length }) : $t('committees.committeesLoaded', { count: firebaseStore.committeesDTO.length }) }}
-      </v-chip>
-    </div>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('committees.title') }}</h1>
 
     <div v-if="firebaseStore.committeesErrorDTO" class="mb-4">
       <v-alert

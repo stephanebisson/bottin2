@@ -1,14 +1,6 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('classes.title') }}</h1>
-      <v-chip
-        :color="firebaseStore.loading ? 'orange' : 'green'"
-        :prepend-icon="firebaseStore.loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
-      >
-        {{ firebaseStore.loading ? $t('common.loading') : $t('classes.classesLoaded', { count: firebaseStore.classes.length }) }}
-      </v-chip>
-    </div>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('classes.title') }}</h1>
 
     <div v-if="firebaseStore.error" class="mb-4">
       <v-alert
