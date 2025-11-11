@@ -31,6 +31,9 @@
 
 <script setup>
   import { useRegisterSW } from 'virtual:pwa-register/vue'
+  import { useAuthStore } from '@/stores/auth'
+
+  const authStore = useAuthStore()
 
   const {
     offlineReady,
@@ -38,5 +41,5 @@
     updateServiceWorker,
   } = useRegisterSW()
 
-  const showPrompt = computed(() => offlineReady.value || needRefresh.value)
+  const showPrompt = computed(() => authStore.isAuthenticated && (offlineReady.value || needRefresh.value))
 </script>
