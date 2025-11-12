@@ -36,6 +36,7 @@
     { section: 'section-referentiel', label: 'Référentiel pédagogique' },
     { section: 'section-implication', label: 'L\'implication parentale' },
     { section: 'section-faq1', label: 'Trucs et astuces pour les périodes de coéducation' },
+    { section: 'section-schedule', label: 'Horaire' },
   ]
 </script>
 
