@@ -16,18 +16,18 @@
           <li>Activités Ouvertes d'Apprentissage (AOA);</li>
           <li>Ateliers - animation ou supervision (mercredi après-midi);</li>
           <li>Matinées de parents;</li>
-          <li>Périodes de TA;</li>
+          <li>Périodes de travail autonome (TA);</li>
           <li>Projets de classe.</li>
         </ul>
         <p>C'est de cette façon que nous soutenons le plus les enseignants et nos
-          enfants car plusieurs de ces moments de coéducation émanent directement
+          élèves car plusieurs de ces moments de coéducation émanent directement
           des besoins des classes.</p>
-        <p>Une autre façon de soutenir directement nos enseignants et enfants est de
+        <p>Une autre façon de soutenir directement nos enseignants et élèves est de
           s'offrir comme représentant de classe.</p>
       </li>
 
       <li>
-        <strong>D'autres occasions d'être avec les enfants:</strong>
+        <strong>D'autres occasions d'être avec les élèves:</strong>
         <ul class="bullet-list">
           <li>Bibliothèque;</li>
           <li>Sorties;</li>

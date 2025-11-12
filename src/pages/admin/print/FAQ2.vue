@@ -18,8 +18,8 @@
     <div class="faq-item">
       <h3 class="question">Vers la fin de la période de coéducation – les 10 dernières minutes?</h3>
       <div class="answer">
-        <p>Aidez les enfants à réfléchir sur ce qui a été fait et ce qui reste à faire (à la maison ou à la prochaine période, si nécessaire).</p>
-        <p>Assurez-vous que les enfants ramassent le matériel.</p>
+        <p>Aidez les élèves à réfléchir sur ce qui a été fait et ce qui reste à faire (à la maison ou à la prochaine période, si nécessaire).</p>
+        <p>Assurez-vous que les élèves ramassent le matériel.</p>
       </div>
     </div>
 

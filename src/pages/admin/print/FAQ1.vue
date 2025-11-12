@@ -8,20 +8,20 @@
       <h3 class="question">Que fait-on au début de la période de coéducation (projets, matinées parents, périodes de TA, etc.)?</h3>
       <div class="answer">
         <p><strong>À votre arrivée :</strong> allez confirmer l'objectif de la période avec l'enseignant; et selon le type d'activité : le fonctionnement (exemple : travail en grand groupe, en équipe, individuel), le local et le matériel.</p>
-        <p>Attendez que les enfants soient assis, en silence et attentifs, avant de commencer l'activité.</p>
+        <p>Attendez que les élèves soient assis, en silence et attentifs, avant de commencer l'activité.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <h3 class="question">Que fait-on durant la période de coéducation?</h3>
       <div class="answer">
-        <p>Circulez dans la classe. Allez vers chaque groupe et prenez un petit moment pour écouter, là où ils sont rendus. Soyez attentif aux besoins des enfants ou des équipes. Laissez les enfants régler leurs différends, mais n'hésitez pas à intervenir pour donner des conseils ou des encouragements, si nécessaire.</p>
-        <p>N'hésitez pas à faire respecter les consignes – assurez-vous, cependant, qu'elles soient courtes, claires et bien comprises. N'oubliez pas que tous les enfants de la classe ont besoin de votre encadrement, de vos conseils et de vos encouragements.</p>
+        <p>Circulez dans la classe. Allez vers chaque groupe et prenez un petit moment pour écouter, là où ils sont rendus. Soyez attentif aux besoins des élèves ou des équipes. Laissez les élèves régler leurs différends, mais n'hésitez pas à intervenir pour donner des conseils ou des encouragements, si nécessaire.</p>
+        <p>N'hésitez pas à faire respecter les consignes – assurez-vous, cependant, qu'elles soient courtes, claires et bien comprises. N'oubliez pas que tous les élèves de la classe ont besoin de votre encadrement, de vos conseils et de vos encouragements.</p>
       </div>
     </div>
 
     <div class="faq-item">
-      <h3 class="question">Que dois-je faire si les enfants ont soif ou besoin d'aller à la toilette?</h3>
+      <h3 class="question">Que dois-je faire si les élèves ont soif ou besoin d'aller à la toilette?</h3>
       <div class="answer">
         <p>L'enfant doit vous avertir avant de sortir de classe. Assurez-vous que l'enfant sort calmement (un à la fois, si possible).</p>
       </div>
