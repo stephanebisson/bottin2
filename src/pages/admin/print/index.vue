@@ -166,6 +166,9 @@
     <FAQ1 />
     <FAQ2 />
 
+    <!-- Schedule -->
+    <Schedule />
+
     <!-- Back Page -->
     <BackPage />
   </div>
@@ -192,6 +195,7 @@
   import ParentsListPages from './ParentsListPages.vue'
   import PrintPage from './PrintPage.vue'
   import Referentiel from './Referentiel.vue'
+  import Schedule from './Schedule.vue'
   import StaffSection from './StaffSection.vue'
   import TableOfContents from './TableOfContents.vue'
   import TitlePage from './TitlePage.vue'
