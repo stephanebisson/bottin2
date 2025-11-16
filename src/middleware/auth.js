@@ -53,6 +53,15 @@ export const authMiddleware = {
       return
     }
 
+    // Check if this is showing email verified success message
+    const showingVerifiedSuccess = to.query.emailVerified === 'true'
+    if (showingVerifiedSuccess) {
+      // Allow access to show the success message
+      console.log('🔓 Allowing access to /auth to show email verified success')
+      next()
+      return
+    }
+
     if (authStore.isAuthenticated) {
       // Check if email is verified before redirecting
       if (!authStore.isEmailVerified) {

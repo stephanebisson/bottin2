@@ -218,12 +218,15 @@
       setTimeout(() => {
         router.replace({ path: '/auth', query: {} })
       }, 500)
+      return // Don't redirect to home, user needs to sign in
     }
 
-    // If user is already authenticated, redirect to home
-    if (authStore.isAuthenticated) {
+    // If user is already authenticated AND email is verified, redirect to home
+    if (authStore.isAuthenticated && authStore.isEmailVerified) {
       router.push('/')
     }
+    // If authenticated but email NOT verified, stay on auth page
+    // (user might be trying to resend verification email)
   })
 </script>
 
