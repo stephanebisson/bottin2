@@ -273,7 +273,12 @@
     "offlineMessage": "You're currently offline. Email validation and registration require an internet connection.",
     "authServiceIssues": "Our authentication service is experiencing issues. Please try again in a few moments.",
     "invalidOrExpiredLink": "This verification link is invalid or has expired. Please request a new verification email.",
-    "verificationFailed": "Email verification failed. Please try again or request a new verification email."
+    "verificationFailed": "Email verification failed. Please try again or request a new verification email.",
+    "emailVerifiedSuccess": "✅ Email Verified Successfully!",
+    "emailVerifiedLoginPrompt": "Your email has been verified! You can now log in to access the full school directory.",
+    "emailVerifiedSuccessTitle": "Welcome!",
+    "verifyingEmail": "Verifying Your Email",
+    "pleaseWait": "Please wait while we verify your email address..."
   },
   "validation": {
     "required": "This field is required",

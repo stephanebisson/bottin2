@@ -3,13 +3,21 @@
     <!-- Welcome verification success message -->
     <v-alert
       v-if="showWelcomeMessage"
+      border="start"
+      border-color="success"
       class="mb-6"
       closable
+      elevation="2"
       icon="mdi-check-circle"
-      :text="$t('auth.welcomeEmailVerified')"
+      prominent
       type="success"
       @click:close="showWelcomeMessage = false"
-    />
+    >
+      <v-alert-title class="text-h5 mb-2">
+        🎉 {{ $t('auth.emailVerifiedSuccessTitle') }}
+      </v-alert-title>
+      <div>{{ $t('auth.welcomeEmailVerified') }}</div>
+    </v-alert>
 
     <!-- Header Section -->
     <div class="text-center mb-8">

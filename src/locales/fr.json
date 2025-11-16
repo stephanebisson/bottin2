@@ -275,7 +275,12 @@
     "offlineMessage": "Vous êtes actuellement hors ligne. La validation de courriel et l'inscription nécessitent une connexion Internet.",
     "authServiceIssues": "Notre service d'authentification rencontre des difficultés. Veuillez réessayer dans quelques instants.",
     "invalidOrExpiredLink": "Ce lien de vérification est invalide ou a expiré. Veuillez demander un nouveau courriel de vérification.",
-    "verificationFailed": "La vérification du courriel a échoué. Veuillez réessayer ou demander un nouveau courriel de vérification."
+    "verificationFailed": "La vérification du courriel a échoué. Veuillez réessayer ou demander un nouveau courriel de vérification.",
+    "emailVerifiedSuccess": "✅ Courriel vérifié avec succès !",
+    "emailVerifiedLoginPrompt": "Votre courriel a été vérifié ! Vous pouvez maintenant vous connecter pour accéder au répertoire complet de l'école.",
+    "emailVerifiedSuccessTitle": "Bienvenue !",
+    "verifyingEmail": "Vérification de votre courriel",
+    "pleaseWait": "Veuillez patienter pendant que nous vérifions votre adresse courriel..."
   },
   "validation": {
     "required": "Ce champ est requis",
