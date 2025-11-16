@@ -240,7 +240,14 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Set language for verification email and send it
       setFirebaseLanguage()
-      await sendEmailVerification(userCredential.user)
+
+      // Configure action code settings to use our app URL
+      const actionCodeSettings = {
+        url: window.location.origin + '/auth',
+        handleCodeInApp: true,
+      }
+
+      await sendEmailVerification(userCredential.user, actionCodeSettings)
 
       user.value = userCredential.user
       return userCredential.user
@@ -350,8 +357,15 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Set language and use retry logic for email verification
       setFirebaseLanguage()
+
+      // Configure action code settings to use our app URL
+      const actionCodeSettings = {
+        url: window.location.origin + '/auth',
+        handleCodeInApp: true,
+      }
+
       await retryWithBackoff(async () => {
-        await sendEmailVerification(user.value)
+        await sendEmailVerification(user.value, actionCodeSettings)
       }, 3, 1000)
 
       console.log('✅ Verification email sent successfully')

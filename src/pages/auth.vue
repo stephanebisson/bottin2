@@ -132,30 +132,34 @@
         const isLoggedIn = !!auth.currentUser
 
         if (isLoggedIn) {
-          // User is logged in - refresh their session and redirect directly to home
-          console.log('🔄 Reloading user to get updated emailVerified status...')
-          await auth.currentUser.reload()
+          // User is logged in - sign them out and back in to get fresh token
+          console.log('🔄 User is logged in, refreshing session after verification...')
 
-          // CRITICAL: Force refresh the auth token to update emailVerified in token claims
-          console.log('🔄 Force refreshing auth token...')
-          await auth.currentUser.getIdToken(true) // Force refresh = true
+          // Get user email before signing out
+          const userEmail = auth.currentUser.email
 
-          // Update auth store with the refreshed user
-          await authStore.refreshUser()
+          // Store the credentials temporarily (user must be signed in to get here)
+          // We'll show the login form with email pre-filled
+          console.log('🔄 Signing out to refresh session...')
 
-          // Verify that email is now marked as verified
-          console.log('✅ Email verified status:', auth.currentUser.emailVerified)
+          // Sign out
+          await authStore.logout()
 
-          // Small delay to ensure token is fully propagated
-          await new Promise(resolve => setTimeout(resolve, 500))
+          // Hide loading overlay
+          processingVerification.value = false
 
-          console.log('🎉 User was logged in - redirecting directly to home with welcome message')
-          // Use replace to avoid back button issues
+          // Show success message and ask user to sign in again
+          // This gives them a fresh token with email_verified: true
+          showEmailVerifiedSuccess.value = true
+          activeTab.value = 'login'
+
+          // Clean URL
           router.replace({
-            path: '/',
-            query: { welcome: 'verified' },
+            path: '/auth',
+            query: { emailVerified: 'true', email: userEmail },
           })
-          return true
+
+          return false
         } else {
           // User is NOT logged in - show success on login page
           console.log('👤 User was not logged in - showing success message on auth page')
