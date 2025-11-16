@@ -44,7 +44,24 @@ export const authMiddleware = {
       await authStore.initializeAuth()
     }
 
+    // Check if this is a Firebase action code link (email verification, password reset, etc.)
+    const hasActionCode = to.query.mode && to.query.oobCode
+    if (hasActionCode) {
+      // Allow access to auth page to process the action code
+      console.log('🔓 Allowing access to /auth for action code processing:', to.query.mode)
+      next()
+      return
+    }
+
     if (authStore.isAuthenticated) {
+      // Check if email is verified before redirecting
+      if (!authStore.isEmailVerified) {
+        // User is authenticated but email not verified - let them access auth page
+        // (they might be trying to resend verification email)
+        next()
+        return
+      }
+
       // Check if there's a redirect query parameter
       const redirectPath = to.query.redirect || '/'
       next(redirectPath) // User is authenticated, redirect to intended page or home
