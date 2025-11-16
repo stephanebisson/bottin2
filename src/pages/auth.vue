@@ -55,15 +55,18 @@
 </template>
 
 <script setup>
+  import { applyActionCode } from 'firebase/auth'
   import { onMounted, ref } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import LoginForm from '@/components/LoginForm.vue'
   import RegisterForm from '@/components/RegisterForm.vue'
   import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
   import { useI18n } from '@/composables/useI18n'
+  import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
   const router = useRouter()
+  const route = useRoute()
   const authStore = useAuthStore()
   const { t } = useI18n()
 
@@ -71,10 +74,69 @@
   const activeTab = ref('login')
   const showReset = ref(false)
 
+  // Handle Firebase action codes (email verification, password reset, etc.)
+  async function handleActionCode () {
+    const mode = route.query.mode
+    const oobCode = route.query.oobCode
+
+    if (!mode || !oobCode) {
+      return false // No action code to process
+    }
+
+    console.log(`📧 Processing Firebase action: ${mode}`)
+
+    try {
+      if (mode === 'verifyEmail') {
+        // Apply the email verification code
+        await applyActionCode(auth, oobCode)
+        console.log('✅ Email verified successfully!')
+
+        // Refresh the current user to get updated emailVerified status
+        if (auth.currentUser) {
+          await auth.currentUser.reload()
+          await authStore.refreshUser()
+        }
+
+        // Redirect to home with success message
+        router.push({
+          path: '/',
+          query: { welcome: 'verified' },
+        })
+        return true
+      } else if (mode === 'resetPassword') {
+        // For password reset, redirect to reset password form with the code
+        router.push({
+          path: '/auth',
+          query: { resetCode: oobCode },
+        })
+        showReset.value = true
+        return true
+      }
+    } catch (error) {
+      console.error('❌ Failed to process action code:', error)
+      // Show error and continue to normal auth page
+      authStore.setError(
+        error.code === 'auth/invalid-action-code'
+          ? t('auth.invalidOrExpiredLink')
+          : t('auth.verificationFailed'),
+      )
+    }
+
+    // Clear the query params to show clean URL
+    router.replace({ path: '/auth', query: {} })
+    return false
+  }
+
   // Redirect if already authenticated
   onMounted(async () => {
     // Wait for auth initialization
     await authStore.initializeAuth()
+
+    // Check for action codes first (email verification, password reset, etc.)
+    const actionHandled = await handleActionCode()
+    if (actionHandled) {
+      return // Action code handled, no need to continue
+    }
 
     // If user is already authenticated, redirect to home
     if (authStore.isAuthenticated) {

@@ -271,7 +271,9 @@
     "emailLimitReached": " You may have reached the email sending limit. Please try again in a few hours.",
     "sessionExpiredResendEmail": "Your session has expired. Please sign in again to resend verification email.",
     "offlineMessage": "You're currently offline. Email validation and registration require an internet connection.",
-    "authServiceIssues": "Our authentication service is experiencing issues. Please try again in a few moments."
+    "authServiceIssues": "Our authentication service is experiencing issues. Please try again in a few moments.",
+    "invalidOrExpiredLink": "This verification link is invalid or has expired. Please request a new verification email.",
+    "verificationFailed": "Email verification failed. Please try again or request a new verification email."
   },
   "validation": {
     "required": "This field is required",

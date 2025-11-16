@@ -273,7 +273,9 @@
     "emailLimitReached": " Vous avez peut-être atteint la limite d'envoi de courriel. Veuillez réessayer dans quelques heures.",
     "sessionExpiredResendEmail": "Votre session a expiré. Veuillez vous reconnecter pour renvoyer le courriel de vérification.",
     "offlineMessage": "Vous êtes actuellement hors ligne. La validation de courriel et l'inscription nécessitent une connexion Internet.",
-    "authServiceIssues": "Notre service d'authentification rencontre des difficultés. Veuillez réessayer dans quelques instants."
+    "authServiceIssues": "Notre service d'authentification rencontre des difficultés. Veuillez réessayer dans quelques instants.",
+    "invalidOrExpiredLink": "Ce lien de vérification est invalide ou a expiré. Veuillez demander un nouveau courriel de vérification.",
+    "verificationFailed": "La vérification du courriel a échoué. Veuillez réessayer ou demander un nouveau courriel de vérification."
   },
   "validation": {
     "required": "Ce champ est requis",
