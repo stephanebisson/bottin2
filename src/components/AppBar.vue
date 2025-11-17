@@ -29,7 +29,7 @@
               <v-icon>mdi-refresh</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('common.refresh') }}</span>
+          <span>{{ $i18n('common.refresh') }}</span>
         </v-tooltip>
       </template>
 
@@ -81,7 +81,7 @@
               prepend-icon="mdi-account-edit"
               @click="$router.push('/profile')"
             >
-              <v-list-item-title>{{ $t('nav.profile') }}</v-list-item-title>
+              <v-list-item-title>{{ $i18n('nav.profile') }}</v-list-item-title>
             </v-list-item>
 
             <!-- Feedback -->
@@ -89,7 +89,7 @@
               prepend-icon="mdi-message-text"
               @click="$router.push('/feedback')"
             >
-              <v-list-item-title>{{ $t('footer.sendFeedback') }}</v-list-item-title>
+              <v-list-item-title>{{ $i18n('footer.sendFeedback') }}</v-list-item-title>
             </v-list-item>
 
             <v-divider />
@@ -100,7 +100,7 @@
               prepend-icon="mdi-logout"
               @click="handleLogout"
             >
-              <v-list-item-title>{{ $t('auth.logout') }}</v-list-item-title>
+              <v-list-item-title>{{ $i18n('auth.logout') }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -119,7 +119,7 @@
               <v-icon>mdi-account-outline</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('auth.login') }}</span>
+          <span>{{ $i18n('auth.login') }}</span>
         </v-tooltip>
       </template>
     </div>
@@ -128,10 +128,10 @@
 
 <script setup>
   import { computed, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ThemeSelector from '@/components/ThemeSelector.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -146,8 +146,11 @@
 
   const route = useRoute()
   const router = useRouter()
-  const { t } = useI18n()
   const { mobile, smAndDown } = useDisplay()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Access stores
   const firebaseStore = useFirebaseDataStore()
@@ -198,28 +201,28 @@
 
     switch (routeName) {
       case 'classes': {
-        return t('classes.title')
+        return $i18n('classes.title')
       }
       case 'students': {
-        return t('students.title')
+        return $i18n('students.title')
       }
       case 'parents': {
-        return t('parents.title')
+        return $i18n('parents.title')
       }
       case 'staff': {
-        return t('staff.title')
+        return $i18n('staff.title')
       }
       case 'committees': {
-        return t('committees.title')
+        return $i18n('committees.title')
       }
       case 'admin': {
-        return t('admin.title')
+        return $i18n('admin.title')
       }
       case 'index': {
-        return t('nav.schoolDirectory')
+        return $i18n('nav.schoolDirectory')
       }
       default: {
-        return t('nav.schoolDirectory')
+        return $i18n('nav.schoolDirectory')
       }
     }
   })

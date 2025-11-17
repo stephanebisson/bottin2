@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('admin.title') }}</h1>
+      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
       <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $t('admin.adminAccessRequired') }}
+        {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
         <p class="text-body-2 text-grey-darken-1 mb-4">
-          {{ $t('admin.refreshPermissionsInstructions') }}
+          {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
         <v-btn
           color="primary"
@@ -23,7 +23,7 @@
           prepend-icon="mdi-refresh"
           @click="checkAdminStatus"
         >
-          {{ $t('admin.refreshAdminStatus') }}
+          {{ $i18n('admin.refreshAdminStatus') }}
         </v-btn>
       </div>
     </div>
@@ -36,9 +36,9 @@
           <div class="d-flex align-center">
             <v-icon class="mr-4" size="48">mdi-shield-account</v-icon>
             <div>
-              <h2 class="text-h5 font-weight-bold">{{ $t('admin.welcomeTitle') }}</h2>
+              <h2 class="text-h5 font-weight-bold">{{ $i18n('admin.welcomeTitle') }}</h2>
               <p class="text-body-1 mt-2">
-                {{ $t('admin.welcomeDescription') }}
+                {{ $i18n('admin.welcomeDescription') }}
               </p>
             </div>
           </div>
@@ -56,9 +56,9 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-calendar-sync</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.annualUpdateWorkflow') }}</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.annualUpdateWorkflow') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                {{ $t('admin.annualUpdateDescription') }}
+                {{ $i18n('admin.annualUpdateDescription') }}
               </p>
 
               <!-- Quick Status -->
@@ -68,15 +68,15 @@
                   size="small"
                   variant="tonal"
                 >
-                  {{ $t(`admin.status.${currentWorkflow.status}`) }}
+                  {{ $i18n(`admin.status.${currentWorkflow.status}`) }}
                 </v-chip>
                 <div class="text-body-2 mt-2">
-                  {{ $t('admin.workflowCompleted', { completed: currentWorkflow.formsSubmitted || 0, total: currentWorkflow.totalParents || 0 }) }}
+                  {{ $i18n('admin.workflowCompleted', currentWorkflow.formsSubmitted || 0, currentWorkflow.totalParents || 0) }}
                 </div>
               </div>
               <div v-else class="mt-4">
                 <v-chip color="grey" size="small" variant="tonal">
-                  {{ $t('admin.noActiveWorkflow') }}
+                  {{ $i18n('admin.noActiveWorkflow') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -92,15 +92,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-group</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.parentsDirectory.title') }}</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.parentsDirectory.title') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                {{ $t('admin.parentsDirectory.description') }}
+                {{ $i18n('admin.parentsDirectory.description') }}
               </p>
 
               <!-- Quick Stats -->
               <div class="mt-4">
                 <v-chip color="primary" size="small" variant="tonal">
-                  {{ $t('admin.parentsDirectory.viewAllParents') }}
+                  {{ $i18n('admin.parentsDirectory.viewAllParents') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -116,15 +116,15 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-school-outline</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.studentsTable.title') }}</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.studentsTable.title') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                {{ $t('admin.studentsTable.description') }}
+                {{ $i18n('admin.studentsTable.description') }}
               </p>
 
               <!-- Quick Stats -->
               <div class="mt-4">
                 <v-chip color="primary" size="small" variant="tonal">
-                  {{ $t('admin.studentsTable.viewAllStudents') }}
+                  {{ $i18n('admin.studentsTable.viewAllStudents') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -136,9 +136,9 @@
           <v-card class="h-100 admin-card">
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-tie-outline</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $t('admin.staffUpdate.title') }}</h3>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.staffUpdate.title') }}</h3>
               <p class="text-body-2 text-grey-darken-1">
-                {{ $t('admin.staffUpdate.description') }}
+                {{ $i18n('admin.staffUpdate.description') }}
               </p>
 
               <!-- Staff Update Link -->
@@ -150,7 +150,7 @@
                   variant="tonal"
                   @click="openStaffUpdateLink"
                 >
-                  {{ $t('admin.staffUpdate.openLink') }}
+                  {{ $i18n('admin.staffUpdate.openLink') }}
                 </v-btn>
                 <v-btn
                   class="mt-2"
@@ -160,12 +160,12 @@
                   variant="text"
                   @click="copyStaffUpdateLink"
                 >
-                  {{ $t('admin.staffUpdate.copyLink') }}
+                  {{ $i18n('admin.staffUpdate.copyLink') }}
                 </v-btn>
               </div>
               <div v-else class="mt-4">
                 <v-chip color="grey" size="small" variant="tonal">
-                  {{ $t('admin.staffUpdate.noToken') }}
+                  {{ $i18n('admin.staffUpdate.noToken') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -180,12 +180,10 @@
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useI18n } from '@/composables/useI18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const { t } = useI18n()
   const router = useRouter()
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('directory.title') }}</h1>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('directory.title') }}</h1>
 
     <!-- Error Messages -->
     <div v-if="firebaseStore.studentsErrorDTO || firebaseStore.parentsErrorDTO" class="mb-4">
@@ -9,7 +9,7 @@
         class="mb-2"
         closable
         :text="firebaseStore.studentsErrorDTO"
-        :title="$t('directory.errorLoadingData')"
+        :title="$i18n('directory.errorLoadingData')"
         type="error"
         @click:close="firebaseStore.studentsErrorDTO = null"
       />
@@ -17,7 +17,7 @@
         v-if="firebaseStore.parentsErrorDTO"
         closable
         :text="firebaseStore.parentsErrorDTO"
-        :title="$t('directory.errorLoadingData')"
+        :title="$i18n('directory.errorLoadingData')"
         type="error"
         @click:close="firebaseStore.parentsErrorDTO = null"
       />
@@ -26,13 +26,13 @@
     <!-- Loading State -->
     <div v-if="firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('directory.loadingData') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('directory.loadingData') }}</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="firebaseStore.studentsDTO.length === 0 && firebaseStore.parentsDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-multiple-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('directory.noDataFound') }}</p>
+      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('directory.noDataFound') }}</p>
     </div>
 
     <div v-else>
@@ -45,7 +45,7 @@
             class="mb-4"
             clearable
             hide-details
-            :label="$t('directory.searchPlaceholder')"
+            :label="$i18n('directory.searchPlaceholder')"
             prepend-inner-icon="mdi-magnify"
             variant="outlined"
             @input="onSearchInput"
@@ -63,11 +63,11 @@
             >
               <v-chip value="families">
                 <v-icon start>mdi-account-multiple</v-icon>
-                {{ $t('directory.familiesView') }}
+                {{ $i18n('directory.familiesView') }}
               </v-chip>
               <v-chip value="parents">
                 <v-icon start>mdi-account-supervisor</v-icon>
-                {{ $t('directory.parentsView') }}
+                {{ $i18n('directory.parentsView') }}
               </v-chip>
             </v-chip-group>
 
@@ -79,8 +79,8 @@
                 density="comfortable"
                 hide-details
                 :items="classOptions"
-                :label="$t('directory.filterByClass')"
-                :placeholder="$t('directory.allClasses')"
+                :label="$i18n('directory.filterByClass')"
+                :placeholder="$i18n('directory.allClasses')"
                 prepend-inner-icon="mdi-school"
                 style="min-width: 280px;"
                 variant="outlined"
@@ -163,7 +163,7 @@
             </v-row>
 
             <div v-else class="text-body-2 text-grey-darken-1">
-              {{ $t('directory.noParentInfo') }}
+              {{ $i18n('directory.noParentInfo') }}
             </div>
           </div>
         </v-card-text>
@@ -174,9 +174,9 @@
         <v-table>
           <thead>
             <tr>
-              <th class="text-left font-weight-bold">{{ $t('directory.parent') }}</th>
-              <th class="text-left font-weight-bold">{{ $t('directory.children') }}</th>
-              <th class="text-left font-weight-bold">{{ $t('directory.teacherLevel') }}</th>
+              <th class="text-left font-weight-bold">{{ $i18n('directory.parent') }}</th>
+              <th class="text-left font-weight-bold">{{ $i18n('directory.children') }}</th>
+              <th class="text-left font-weight-bold">{{ $i18n('directory.teacherLevel') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -211,7 +211,7 @@
                   </div>
                 </div>
                 <div v-else class="text-grey-darken-1">
-                  {{ $t('directory.noChildren') }}
+                  {{ $i18n('directory.noChildren') }}
                 </div>
               </td>
               <td class="py-3">
@@ -236,15 +236,17 @@
 
 <script setup>
   import { computed, inject, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
 
-  const { t } = useI18n()
 
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   // Get messaging shell reference
   const messagingShell = inject('messagingShell', null)
 
@@ -273,11 +275,11 @@
   // Loading status computed
   const loadingStatus = computed(() => {
     if (firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO) {
-      return t('common.loading')
+      return $i18n('common.loading')
     }
     const studentsCount = firebaseStore.studentsDTO.length
     const parentsCount = firebaseStore.parentsDTO.length
-    return t('directory.dataLoaded', { students: studentsCount, parents: parentsCount })
+    return $i18n('directory.dataLoaded', studentsCount, parentsCount)
   })
 
   // Class options for filtering
@@ -439,11 +441,11 @@
     if (viewMode.value === 'families') {
       const total = groupedFamilies.value.length
       const filtered = filteredFamilies.value.length
-      return t('directory.familiesShown', { filtered, total })
+      return $i18n('directory.familiesShown', undefined, undefined)
     } else {
       const total = parentsWithChildren.value.length
       const filtered = filteredParents.value.length
-      return t('directory.parentsShown', { filtered, total })
+      return $i18n('directory.parentsShown', undefined, undefined)
     }
   })
 

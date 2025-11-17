@@ -1,0 +1,270 @@
+{
+  "en": {
+    "classes.classesLoaded": [
+      "count"
+    ],
+    "classes.noStaffInfo": [
+      "teacher"
+    ],
+    "classes.noParentInfo": [
+      "parent"
+    ],
+    "classes.studentCount": [
+      "count"
+    ],
+    "students.studentsLoaded": [
+      "count"
+    ],
+    "students.familiesShown": [
+      "filtered",
+      "total"
+    ],
+    "parents.parentsLoaded": [
+      "count"
+    ],
+    "parents.parentsFiltered": [
+      "filtered",
+      "total"
+    ],
+    "directory.dataLoaded": [
+      "students",
+      "parents"
+    ],
+    "directory.familiesShown": [
+      "filtered",
+      "total"
+    ],
+    "directory.parentsShown": [
+      "filtered",
+      "total"
+    ],
+    "staff.staffLoaded": [
+      "count"
+    ],
+    "staff.staffFiltered": [
+      "filtered",
+      "total"
+    ],
+    "staff.memberCount": [
+      "count"
+    ],
+    "committees.committeesLoaded": [
+      "count"
+    ],
+    "committees.committeesFiltered": [
+      "filtered",
+      "total"
+    ],
+    "committees.memberCount": [
+      "count"
+    ],
+    "themes.currentTheme": [
+      "theme"
+    ],
+    "auth.autoCheckingIn": [
+      "seconds"
+    ],
+    "validation.phone.tooShort": [
+      "digits"
+    ],
+    "validation.phone.tooLong": [
+      "digits"
+    ],
+    "validation.postalCode.tooShort": [
+      "chars"
+    ],
+    "validation.postalCode.tooLong": [
+      "chars"
+    ],
+    "admin.workflowProgress": [
+      "schoolYear",
+      "completed",
+      "total",
+      "percentage"
+    ],
+    "admin.workflowCompleted": [
+      "completed",
+      "total"
+    ],
+    "admin.parentsDirectory.totalParents": [
+      "count"
+    ],
+    "admin.parentsDirectory.childrenCount": [
+      "count"
+    ],
+    "admin.studentsTable.totalStudents": [
+      "count"
+    ],
+    "updateForm.welcome": [
+      "name"
+    ],
+    "updateForm.confirmOtherParentAddress": [
+      "fullName"
+    ],
+    "staffUpdate.welcome": [
+      "name"
+    ],
+    "staffUpdate.totalStaff": [
+      "count"
+    ],
+    "staffUpdate.changedItems": [
+      "count"
+    ],
+    "map.dataLoaded": [
+      "parents"
+    ],
+    "map.familiesNeedGeocoding": [
+      "count"
+    ],
+    "map.familiesIncompleteAddress": [
+      "count"
+    ],
+    "footer.switchLanguage": [
+      "language"
+    ],
+    "themeSelector.currentTheme": [
+      "theme"
+    ],
+    "messages.characterCount": [
+      "count",
+      "max"
+    ],
+    "messages.messageTooLong": [
+      "max"
+    ]
+  },
+  "fr": {
+    "classes.classesLoaded": [
+      "count"
+    ],
+    "classes.noStaffInfo": [
+      "teacher"
+    ],
+    "classes.noParentInfo": [
+      "parent"
+    ],
+    "classes.studentCount": [
+      "count"
+    ],
+    "students.studentsLoaded": [
+      "count"
+    ],
+    "students.familiesShown": [
+      "filtered",
+      "total"
+    ],
+    "parents.parentsLoaded": [
+      "count"
+    ],
+    "parents.parentsFiltered": [
+      "filtered",
+      "total"
+    ],
+    "directory.dataLoaded": [
+      "students",
+      "parents"
+    ],
+    "directory.familiesShown": [
+      "filtered",
+      "total"
+    ],
+    "directory.parentsShown": [
+      "filtered",
+      "total"
+    ],
+    "staff.staffLoaded": [
+      "count"
+    ],
+    "staff.staffFiltered": [
+      "filtered",
+      "total"
+    ],
+    "staff.memberCount": [
+      "count"
+    ],
+    "committees.committeesLoaded": [
+      "count"
+    ],
+    "committees.committeesFiltered": [
+      "filtered",
+      "total"
+    ],
+    "committees.memberCount": [
+      "count"
+    ],
+    "themes.currentTheme": [
+      "theme"
+    ],
+    "auth.autoCheckingIn": [
+      "seconds"
+    ],
+    "validation.phone.tooShort": [
+      "digits"
+    ],
+    "validation.phone.tooLong": [
+      "digits"
+    ],
+    "validation.postalCode.tooShort": [
+      "chars"
+    ],
+    "validation.postalCode.tooLong": [
+      "chars"
+    ],
+    "admin.workflowProgress": [
+      "schoolYear",
+      "completed",
+      "total",
+      "percentage"
+    ],
+    "admin.workflowCompleted": [
+      "completed",
+      "total"
+    ],
+    "admin.parentsDirectory.totalParents": [
+      "count"
+    ],
+    "admin.parentsDirectory.childrenCount": [
+      "count"
+    ],
+    "admin.studentsTable.totalStudents": [
+      "count"
+    ],
+    "updateForm.welcome": [
+      "name"
+    ],
+    "updateForm.confirmOtherParentAddress": [
+      "fullName"
+    ],
+    "staffUpdate.welcome": [
+      "name"
+    ],
+    "staffUpdate.totalStaff": [
+      "count"
+    ],
+    "staffUpdate.changedItems": [
+      "count"
+    ],
+    "map.dataLoaded": [
+      "parents"
+    ],
+    "map.familiesNeedGeocoding": [
+      "count"
+    ],
+    "map.familiesIncompleteAddress": [
+      "count"
+    ],
+    "footer.switchLanguage": [
+      "language"
+    ],
+    "themeSelector.currentTheme": [
+      "theme"
+    ],
+    "messages.characterCount": [
+      "count",
+      "max"
+    ],
+    "messages.messageTooLong": [
+      "max"
+    ]
+  }
+}

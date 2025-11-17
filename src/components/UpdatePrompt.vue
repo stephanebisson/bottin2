@@ -8,7 +8,7 @@
   >
     <div class="d-flex align-center">
       <v-icon class="mr-2">mdi-update</v-icon>
-      <span>{{ $t('pwa.updateAvailable') }}</span>
+      <span>{{ $i18n('pwa.updateAvailable') }}</span>
     </div>
 
     <template #actions>
@@ -17,7 +17,7 @@
         variant="text"
         @click="updateServiceWorker(true)"
       >
-        {{ $t('pwa.update') }}
+        {{ $i18n('pwa.update') }}
       </v-btn>
       <v-btn
         icon="mdi-close"

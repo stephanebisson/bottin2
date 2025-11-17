@@ -1,15 +1,15 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('admin.studentsTable.title') }}</h1>
+      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.studentsTable.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
       <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $t('admin.adminAccessRequired') }}
+        {{ $i18n('admin.adminAccessRequired') }}
       </p>
     </div>
 
@@ -22,7 +22,7 @@
           indeterminate
           size="64"
         />
-        <p class="mt-4">{{ $t('admin.studentsTable.loading') }}</p>
+        <p class="mt-4">{{ $i18n('admin.studentsTable.loading') }}</p>
       </v-card>
 
       <!-- Error State -->
@@ -38,7 +38,7 @@
       <!-- Students Data Table -->
       <v-card v-else>
         <v-card-title class="d-flex justify-space-between align-center">
-          <span>{{ $t('admin.studentsTable.tableTitle') }}</span>
+          <span>{{ $i18n('admin.studentsTable.tableTitle') }}</span>
           <div class="d-flex align-center ga-4">
             <v-btn
               color="primary"
@@ -46,10 +46,10 @@
               variant="elevated"
               @click="createNewStudent"
             >
-              {{ $t('admin.studentsTable.newStudent') }}
+              {{ $i18n('admin.studentsTable.newStudent') }}
             </v-btn>
             <div class="text-body-2 text-grey-darken-1">
-              {{ $t('admin.studentsTable.totalStudents', { count: students.length }) }}
+              {{ $i18n('admin.studentsTable.totalStudents', students.length) }}
             </div>
           </div>
         </v-card-title>
@@ -166,7 +166,7 @@
                 {{ getParentDisplayName(item.parent2_id) }}
               </span>
               <span v-if="!item.parent1_id && !item.parent2_id" class="text-grey-darken-1 font-italic">
-                {{ $t('admin.studentsTable.noParent') }}
+                {{ $i18n('admin.studentsTable.noParent') }}
               </span>
             </div>
           </template>
@@ -216,7 +216,7 @@
             <div class="text-center pa-12">
               <v-icon color="grey-lighten-1" size="64">mdi-school-outline</v-icon>
               <p class="text-h6 mt-4 text-grey-darken-1">
-                {{ $t('admin.studentsTable.noStudents') }}
+                {{ $i18n('admin.studentsTable.noStudents') }}
               </p>
             </div>
           </template>
@@ -234,7 +234,7 @@
         <v-card-title class="bg-error text-white">
           <div class="d-flex align-center">
             <v-icon class="mr-2" color="white" size="large">mdi-alert-circle</v-icon>
-            <span class="text-h5">{{ $t('admin.parentsDirectory.confirmDeleteStudent') }}</span>
+            <span class="text-h5">{{ $i18n('admin.parentsDirectory.confirmDeleteStudent') }}</span>
           </div>
         </v-card-title>
 
@@ -246,7 +246,7 @@
             variant="tonal"
           >
             <div class="text-body-1 font-weight-bold mb-2">
-              {{ $t('admin.parentsDirectory.deleteStudentWarning') }}
+              {{ $i18n('admin.parentsDirectory.deleteStudentWarning') }}
             </div>
           </v-alert>
 
@@ -260,14 +260,14 @@
           </div>
 
           <p class="text-body-1 mb-4">
-            {{ $t('admin.parentsDirectory.deleteStudentExplanation') }}
+            {{ $i18n('admin.parentsDirectory.deleteStudentExplanation') }}
           </p>
 
           <v-divider class="my-4" />
 
           <div class="mb-4">
             <p class="text-body-1 font-weight-bold mb-2">
-              {{ $t('admin.parentsDirectory.deleteStudentConfirmation') }}
+              {{ $i18n('admin.parentsDirectory.deleteStudentConfirmation') }}
             </p>
             <v-text-field
               v-model="deleteConfirmationText"
@@ -277,7 +277,7 @@
               :error="deleteConfirmationError"
               :error-messages="deleteConfirmationErrorMessage"
               hide-details="auto"
-              :placeholder="$t('admin.parentsDirectory.typeDeleteToConfirm')"
+              :placeholder="$i18n('admin.parentsDirectory.typeDeleteToConfirm')"
               variant="outlined"
               @keyup.enter="confirmDeleteStudent"
             />
@@ -292,7 +292,7 @@
             variant="text"
             @click="cancelDeleteStudent"
           >
-            {{ $t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="error"
@@ -301,7 +301,7 @@
             variant="flat"
             @click="confirmDeleteStudent"
           >
-            {{ $t('admin.parentsDirectory.deleteStudent') }}
+            {{ $i18n('admin.parentsDirectory.deleteStudent') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -311,7 +311,7 @@
 
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { getResetLevel, getValidLevelsForClass } from '@/config/classLevels'
   import { StudentDTO } from '@/dto/StudentDTO.js'
   import { ClassRepository } from '@/repositories/ClassRepository'
@@ -319,7 +319,10 @@
   import { StudentRepository } from '@/repositories/StudentRepository'
   import { useAuthStore } from '@/stores/auth'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
 
   // State
@@ -372,36 +375,36 @@
   // Define table headers
   const headers = computed(() => [
     {
-      title: t('admin.studentsTable.headers.firstName'),
+      title: $i18n('admin.studentsTable.headers.firstName'),
       key: 'first_name',
       sortable: false,
       width: '120px',
     },
     {
-      title: t('admin.studentsTable.headers.lastName'),
+      title: $i18n('admin.studentsTable.headers.lastName'),
       key: 'last_name',
       sortable: false,
       width: '120px',
     },
     {
-      title: t('admin.studentsTable.headers.class'),
+      title: $i18n('admin.studentsTable.headers.class'),
       key: 'className',
       sortable: false,
       width: '150px',
     },
     {
-      title: t('admin.studentsTable.headers.level'),
+      title: $i18n('admin.studentsTable.headers.level'),
       key: 'level',
       sortable: false,
       width: '80px',
     },
     {
-      title: t('admin.studentsTable.headers.parents'),
+      title: $i18n('admin.studentsTable.headers.parents'),
       key: 'parents',
       sortable: false,
     },
     {
-      title: t('common.actions'),
+      title: $i18n('common.actions'),
       key: 'actions',
       sortable: false,
       width: '100px',
@@ -467,7 +470,7 @@
       console.log(`Loaded ${students.value.length} students as DTOs`)
     } catch (error_) {
       console.error('Failed to load students:', error_)
-      error.value = t('admin.studentsTable.loadError')
+      error.value = $i18n('admin.studentsTable.loadError')
     } finally {
       loading.value = false
     }
@@ -580,7 +583,7 @@
 
       // Validate required fields
       if (!newStudent.value.first_name.trim()) {
-        error.value = t('admin.studentsTable.validation.firstNameRequired')
+        error.value = $i18n('admin.studentsTable.validation.firstNameRequired')
         setTimeout(() => {
           error.value = null
         }, 5000)
@@ -588,7 +591,7 @@
       }
 
       if (!newStudent.value.last_name.trim()) {
-        error.value = t('admin.studentsTable.validation.lastNameRequired')
+        error.value = $i18n('admin.studentsTable.validation.lastNameRequired')
         setTimeout(() => {
           error.value = null
         }, 5000)
@@ -596,7 +599,7 @@
       }
 
       if (!newStudent.value.parent1_id && !newStudent.value.parent2_id) {
-        error.value = t('admin.studentsTable.validation.parentRequired')
+        error.value = $i18n('admin.studentsTable.validation.parentRequired')
         setTimeout(() => {
           error.value = null
         }, 5000)
@@ -627,7 +630,7 @@
       newStudent.value = null
     } catch (error_) {
       console.error('Failed to create student:', error_)
-      error.value = t('admin.studentsTable.createError')
+      error.value = $i18n('admin.studentsTable.createError')
       setTimeout(() => {
         error.value = null
       }, 5000)
@@ -678,7 +681,7 @@
       editingRows.value.delete(studentDTO.id)
     } catch (error_) {
       console.error('Failed to save student:', error_)
-      error.value = t('admin.studentsTable.updateError')
+      error.value = $i18n('admin.studentsTable.updateError')
       setTimeout(() => {
         error.value = null
       }, 5000)
@@ -689,7 +692,7 @@
 
   // Delete Student Dialog Methods
   const isDeleteConfirmed = computed(() => {
-    const expectedText = t('admin.delete').toUpperCase()
+    const expectedText = $i18n('admin.delete').toUpperCase()
     return deleteConfirmationText.value.trim().toUpperCase() === expectedText
   })
 
@@ -712,7 +715,7 @@
   async function confirmDeleteStudent () {
     if (!isDeleteConfirmed.value) {
       deleteConfirmationError.value = true
-      deleteConfirmationErrorMessage.value = t('admin.parentsDirectory.deleteStudentMismatch')
+      deleteConfirmationErrorMessage.value = $i18n('admin.parentsDirectory.deleteStudentMismatch')
       return
     }
 
@@ -743,7 +746,7 @@
     } catch (error_) {
       console.error('Error deleting student:', error_)
       deleteConfirmationError.value = true
-      deleteConfirmationErrorMessage.value = t('admin.parentsDirectory.deleteStudentError')
+      deleteConfirmationErrorMessage.value = $i18n('admin.parentsDirectory.deleteStudentError')
     } finally {
       deletingStudent.value = false
     }

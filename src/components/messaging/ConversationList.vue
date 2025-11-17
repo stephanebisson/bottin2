@@ -2,7 +2,7 @@
   <div class="conversation-list d-flex flex-column" style="height: 100%;">
     <!-- Header -->
     <v-toolbar color="surface" density="compact">
-      <v-toolbar-title>{{ $t('messages.title') }}</v-toolbar-title>
+      <v-toolbar-title>{{ $i18n('messages.title') }}</v-toolbar-title>
     </v-toolbar>
 
     <!-- Search -->
@@ -12,7 +12,7 @@
         clearable
         density="compact"
         hide-details
-        :placeholder="$t('messages.search')"
+        :placeholder="$i18n('messages.search')"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
       />
@@ -21,13 +21,13 @@
     <!-- Loading State -->
     <div v-if="loading" class="pa-4 text-center">
       <v-progress-circular color="primary" indeterminate />
-      <p class="text-caption mt-2">{{ $t('common.loading') }}</p>
+      <p class="text-caption mt-2">{{ $i18n('common.loading') }}</p>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="pa-4 text-center">
       <v-icon color="error" icon="mdi-alert-circle" size="48" />
-      <p class="text-body-2 mt-2">{{ $t('messages.errorLoadingConversations') }}</p>
+      <p class="text-body-2 mt-2">{{ $i18n('messages.errorLoadingConversations') }}</p>
       <v-btn
         class="mt-2"
         color="primary"
@@ -35,7 +35,7 @@
         variant="outlined"
         @click="loadConversations"
       >
-        {{ $t('messages.retryLoading') }}
+        {{ $i18n('messages.retryLoading') }}
       </v-btn>
     </div>
 
@@ -70,7 +70,7 @@
         </v-list-item-title>
 
         <v-list-item-subtitle class="text-truncate">
-          {{ conversation.lastMessagePreview || $t('messages.noMessages') }}
+          {{ conversation.lastMessagePreview || $i18n('messages.noMessages') }}
         </v-list-item-subtitle>
 
         <!-- Timestamp -->
@@ -86,10 +86,10 @@
     <div v-else class="flex-grow-1 d-flex flex-column align-center justify-center pa-8">
       <v-icon color="grey-lighten-1" icon="mdi-message-outline" size="64" />
       <p class="text-h6 text-medium-emphasis mt-4">
-        {{ searchQuery ? $t('common.noResultsFound') : $t('messages.noConversations') }}
+        {{ searchQuery ? $i18n('common.noResultsFound') : $i18n('messages.noConversations') }}
       </p>
       <p v-if="!searchQuery" class="text-body-2 text-medium-emphasis mt-2">
-        {{ $t('messages.startChatting') }}
+        {{ $i18n('messages.startChatting') }}
       </p>
     </div>
   </div>
@@ -98,7 +98,7 @@
 <script setup>
   import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { ConversationDTO } from '@/dto/ConversationDTO'
   import { db } from '@/firebase'
   import { ConversationRepository } from '@/repositories/ConversationRepository'
@@ -116,7 +116,9 @@
 
   const emit = defineEmits(['select-conversation'])
 
-  const { t, locale } = useI18n()
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const conversationRepo = new ConversationRepository()
 
@@ -147,7 +149,7 @@
     }
 
     // For class/committee, use the context label
-    return conversation.getLabel(locale.value)
+    return conversation.getLabel(bananaI18n.locale)
   }
 
   function getConversationIcon (type) {
@@ -206,13 +208,13 @@
 
     // Less than 7 days: show day name
     if (diffDays < 7) {
-      if (diffDays === 0) return t('messages.today')
-      if (diffDays === 1) return t('messages.yesterday')
-      return date.toLocaleDateString(locale.value, { weekday: 'short' })
+      if (diffDays === 0) return $i18n('messages.today')
+      if (diffDays === 1) return $i18n('messages.yesterday')
+      return date.toLocaleDateString(bananaI18n.locale, { weekday: 'short' })
     }
 
     // Older: show date
-    return date.toLocaleDateString(locale.value, { month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(bananaI18n.locale, { month: 'short', day: 'numeric' })
   }
 
   function selectConversation (conversation) {

@@ -14,7 +14,7 @@
         size="64"
       />
       <div class="mt-4 text-center">
-        {{ $t('map.loading') }}
+        {{ $i18n('map.loading') }}
       </div>
     </v-overlay>
 
@@ -24,7 +24,7 @@
       class="ma-4"
       type="info"
     >
-      {{ $t('map.noGeocodedFamilies') }}
+      {{ $i18n('map.noGeocodedFamilies') }}
     </v-alert>
 
     <!-- Stats card -->
@@ -36,7 +36,7 @@
       <v-card-text>
         <div class="text-caption">
           <strong>{{ geocodedFamiliesCount }}</strong> / {{ totalFamiliesCount }}
-          {{ $t('map.familiesOnMap') }}
+          {{ $i18n('map.familiesOnMap') }}
         </div>
       </v-card-text>
     </v-card>
@@ -46,14 +46,11 @@
 <script setup>
   import L from 'leaflet'
   import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
   import { CLUSTER_SETTINGS, getSchoolLocation, MAP_DEFAULT_ZOOM } from '@/config/school'
   import 'leaflet/dist/leaflet.css'
   import 'leaflet.markercluster/dist/MarkerCluster.css'
   import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
   import 'leaflet.markercluster'
-
-  const { t } = useI18n()
 
   const props = defineProps({
     families: {

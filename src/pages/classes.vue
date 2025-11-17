@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('classes.title') }}</h1>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('classes.title') }}</h1>
 
     <div v-if="firebaseStore.error" class="mb-4">
       <v-alert
         closable
         :text="firebaseStore.error"
-        :title="$t('classes.errorLoadingClasses')"
+        :title="$i18n('classes.errorLoadingClasses')"
         type="error"
         @click:close="firebaseStore.error = null"
       />
@@ -14,12 +14,12 @@
 
     <div v-if="firebaseStore.loading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('classes.loadingClasses') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('classes.loadingClasses') }}</p>
     </div>
 
     <div v-else-if="firebaseStore.classes.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-school-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('classes.noClassesFound') }}</p>
+      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('classes.noClassesFound') }}</p>
     </div>
 
     <div v-else>
@@ -62,7 +62,7 @@
               <div v-if="classItem.teacher" class="mb-3 mt-3">
                 <div class="d-flex align-center mb-1">
                   <v-icon class="me-2" color="primary">mdi-account-tie</v-icon>
-                  <span class="font-weight-medium">{{ $t('classes.teacher') }}</span>
+                  <span class="font-weight-medium">{{ $i18n('classes.teacher') }}</span>
                 </div>
                 <div class="ms-6 text-body-2">
                   <v-tooltip
@@ -87,24 +87,24 @@
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).title" class="mb-1">
-                            <strong>{{ $t('classes.teacherTitle') }}:</strong> {{ getTeacherInfo(classItem.teacher).title }}
+                            <strong>{{ $i18n('classes.teacherTitle') }}:</strong> {{ getTeacherInfo(classItem.teacher).title }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).email" class="mb-1">
-                            <strong>{{ $t('common.email') }}:</strong> {{ getTeacherInfo(classItem.teacher).email }}
+                            <strong>{{ $i18n('common.email') }}:</strong> {{ getTeacherInfo(classItem.teacher).email }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).phone" class="mb-1">
-                            <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
+                            <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
                           </div>
 
                           <div v-if="getTeacherInfo(classItem.teacher).ce_role" class="mb-1">
-                            <strong>{{ $t('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
+                            <strong>{{ $i18n('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
                           </div>
                         </div>
 
                         <div v-else class="text-caption">
-                          {{ $t('classes.noStaffInfo', { teacher: classItem.teacher }) }}
+                          {{ $i18n('classes.noStaffInfo', classItem.teacher) }}
                         </div>
                       </div>
                     </template>
@@ -119,7 +119,7 @@
               <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="mb-3">
                 <div class="d-flex align-center mb-1">
                   <v-icon class="me-2" color="primary">mdi-account-supervisor</v-icon>
-                  <span class="font-weight-medium">{{ $t('classes.parentRepresentatives') }}</span>
+                  <span class="font-weight-medium">{{ $i18n('classes.parentRepresentatives') }}</span>
                 </div>
                 <div class="ms-6 text-body-2">
                   <!-- Parent Rep 1 -->
@@ -144,29 +144,29 @@
                             <div class="text-h6 mb-3 text-white">
                               {{ getParentData(classItem.parent_rep_1).first_name }} {{ getParentData(classItem.parent_rep_1).last_name }}
                               <br>
-                              <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
+                              <span class="text-body-2">{{ $i18n('classes.parentRepresentative') }}</span>
                             </div>
 
                             <!-- Contact Information -->
                             <div class="mb-3">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.contactInformation') }}</div>
 
                               <div class="mb-1">
-                                <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_1).email }}
+                                <strong>{{ $i18n('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_1).email }}
                               </div>
 
                               <div v-if="getParentData(classItem.parent_rep_1).phone" class="mb-1">
-                                <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}
+                                <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}
                               </div>
 
                               <div v-if="formatAddress(getParentData(classItem.parent_rep_1))" class="mb-1">
-                                <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_1)) }}
+                                <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_1)) }}
                               </div>
                             </div>
 
                             <!-- Interests Section -->
                             <div v-if="getParentData(classItem.parent_rep_1).interests && getParentData(classItem.parent_rep_1).interests.length > 0" class="mb-3">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.interests') }}</div>
                               <div class="text-body-2">
                                 {{ getParentData(classItem.parent_rep_1).interests.join(', ') }}
                               </div>
@@ -174,7 +174,7 @@
 
                             <!-- Children Section -->
                             <div class="mb-2">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.children') }}</div>
 
                               <div v-if="getParentChildren(classItem.parent_rep_1).length > 0">
                                 <div
@@ -184,23 +184,23 @@
                                 >
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                   <div class="text-caption">
-                                    {{ $t('classes.class') }}: {{ child.className }}
+                                    {{ $i18n('classes.class') }}: {{ child.className }}
                                     <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                      - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
+                                      - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
                               <div v-else class="text-caption text-grey">
-                                {{ $t('classes.noChildrenFound') }}
+                                {{ $i18n('classes.noChildrenFound') }}
                               </div>
                             </div>
                           </div>
 
                           <div v-else class="text-caption">
-                            {{ $t('classes.noParentInfo', { parent: classItem.parent_rep_1 }) }}
+                            {{ $i18n('classes.noParentInfo', classItem.parent_rep_1) }}
                           </div>
                         </div>
                       </template>
@@ -232,29 +232,29 @@
                             <div class="text-h6 mb-3 text-white">
                               {{ getParentData(classItem.parent_rep_2).first_name }} {{ getParentData(classItem.parent_rep_2).last_name }}
                               <br>
-                              <span class="text-body-2">{{ $t('classes.parentRepresentative') }}</span>
+                              <span class="text-body-2">{{ $i18n('classes.parentRepresentative') }}</span>
                             </div>
 
                             <!-- Contact Information -->
                             <div class="mb-3">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.contactInformation') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.contactInformation') }}</div>
 
                               <div class="mb-1">
-                                <strong>{{ $t('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_2).email }}
+                                <strong>{{ $i18n('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_2).email }}
                               </div>
 
                               <div v-if="getParentData(classItem.parent_rep_2).phone" class="mb-1">
-                                <strong>{{ $t('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}
+                                <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}
                               </div>
 
                               <div v-if="formatAddress(getParentData(classItem.parent_rep_2))" class="mb-1">
-                                <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_2)) }}
+                                <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_2)) }}
                               </div>
                             </div>
 
                             <!-- Interests Section -->
                             <div v-if="getParentData(classItem.parent_rep_2).interests && getParentData(classItem.parent_rep_2).interests.length > 0" class="mb-3">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.interests') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.interests') }}</div>
                               <div class="text-body-2">
                                 {{ getParentData(classItem.parent_rep_2).interests.join(', ') }}
                               </div>
@@ -262,7 +262,7 @@
 
                             <!-- Children Section -->
                             <div class="mb-2">
-                              <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.children') }}</div>
+                              <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.children') }}</div>
 
                               <div v-if="getParentChildren(classItem.parent_rep_2).length > 0">
                                 <div
@@ -272,23 +272,23 @@
                                 >
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                   <div class="text-caption">
-                                    {{ $t('classes.class') }}: {{ child.className }}
+                                    {{ $i18n('classes.class') }}: {{ child.className }}
                                     <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                      - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
+                                      - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
                               <div v-else class="text-caption text-grey">
-                                {{ $t('classes.noChildrenFound') }}
+                                {{ $i18n('classes.noChildrenFound') }}
                               </div>
                             </div>
                           </div>
 
                           <div v-else class="text-caption">
-                            {{ $t('classes.noParentInfo', { parent: classItem.parent_rep_2 }) }}
+                            {{ $i18n('classes.noParentInfo', classItem.parent_rep_2) }}
                           </div>
                         </div>
                       </template>
@@ -305,7 +305,7 @@
                 <div class="d-flex align-center mb-2">
                   <v-icon class="me-2" color="primary">mdi-account-multiple</v-icon>
                   <span class="font-weight-medium">
-                    {{ $t('classes.students') }} ({{ getClassStudents(classItem.classLetter).length }})
+                    {{ $i18n('classes.students') }} ({{ getClassStudents(classItem.classLetter).length }})
                   </span>
                 </div>
 
@@ -330,7 +330,7 @@
                               {{ formatGradeLevel(levelData.level) }}
                             </v-chip>
                             <span class="text-caption text-grey">
-                              {{ $t(levelData.students.length === 1 ? 'classes.studentCount' : 'classes.studentCountPlural', { count: levelData.students.length }) }}
+                              {{ $i18n('classes.studentCount', levelData.students.length) }}
                             </span>
                           </div>
 
@@ -354,7 +354,7 @@
                                     style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
                                   >
                                     {{ student.first_name }} {{ student.last_name }}
-                                    <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $t('classes.representative') }}</span>
+                                    <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $i18n('classes.representative') }}</span>
                                   </span>
                                 </template>
                                 <template #default>
@@ -368,17 +368,17 @@
 
                                     <!-- Parents Section -->
                                     <div class="mb-3">
-                                      <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.parents') }}</div>
+                                      <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.parents') }}</div>
 
                                       <div v-if="getStudentParent(student, 1)" class="mb-2">
                                         <div class="font-weight-bold">{{ getStudentParent(student, 1).first_name }} {{ getStudentParent(student, 1).last_name }}</div>
                                         <div class="text-caption">{{ getStudentParent(student, 1).email }}</div>
                                         <div v-if="getStudentParent(student, 1).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 1).phone) }}</div>
                                         <div v-if="formatAddress(getStudentParent(student, 1))" class="text-caption">
-                                          <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
+                                          <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
                                         </div>
                                         <div v-if="getStudentParent(student, 1).interests && getStudentParent(student, 1).interests.length > 0" class="text-caption mt-1">
-                                          <strong>{{ $t('common.interests') }}:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
+                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
                                         </div>
                                       </div>
 
@@ -387,21 +387,21 @@
                                         <div class="text-caption">{{ getStudentParent(student, 2).email }}</div>
                                         <div v-if="getStudentParent(student, 2).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 2).phone) }}</div>
                                         <div v-if="formatAddress(getStudentParent(student, 2))" class="text-caption">
-                                          <strong>{{ $t('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
+                                          <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
                                         </div>
                                         <div v-if="getStudentParent(student, 2).interests && getStudentParent(student, 2).interests.length > 0" class="text-caption mt-1">
-                                          <strong>{{ $t('common.interests') }}:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
+                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
                                         </div>
                                       </div>
 
                                       <div v-if="!getStudentParent(student, 1) && !getStudentParent(student, 2)" class="text-caption text-grey">
-                                        {{ $t('classes.noParentInfoFound') }}
+                                        {{ $i18n('classes.noParentInfoFound') }}
                                       </div>
                                     </div>
 
                                     <!-- Siblings Section -->
                                     <div class="mb-2">
-                                      <div class="text-subtitle-2 mb-2 text-white">{{ $t('classes.siblings') }}</div>
+                                      <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.siblings') }}</div>
 
                                       <div v-if="getStudentSiblings(student).length > 0">
                                         <div
@@ -411,16 +411,16 @@
                                         >
                                           <div class="font-weight-bold">{{ sibling.first_name }} {{ sibling.last_name }}</div>
                                           <div class="text-caption">
-                                            {{ $t('classes.class') }}: {{ sibling.className }}
+                                            {{ $i18n('classes.class') }}: {{ sibling.className }}
                                             <span v-if="getTeacherName(getClassTeacher(sibling.className))">
-                                              - {{ $t('classes.teacher') }}: {{ getTeacherName(getClassTeacher(sibling.className)) }}
+                                              - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(sibling.className)) }}
                                             </span>
                                           </div>
                                         </div>
                                       </div>
 
                                       <div v-else class="text-caption text-grey">
-                                        {{ $t('classes.noSiblingsFound') }}
+                                        {{ $i18n('classes.noSiblingsFound') }}
                                       </div>
                                     </div>
                                   </div>
@@ -442,7 +442,7 @@
                   </template>
 
                   <div v-else class="text-body-2 text-grey">
-                    {{ $t('classes.noStudentsFound') }}
+                    {{ $i18n('classes.noStudentsFound') }}
                   </div>
                 </div>
               </div>
@@ -479,7 +479,7 @@
     >
       <v-card>
         <v-card-title class="bg-primary text-white">
-          <span class="text-h5">{{ t('classes.editClass') }}</span>
+          <span class="text-h5">{{ $i18n('classes.editClass') }}</span>
         </v-card-title>
 
         <v-card-text class="pt-6">
@@ -498,7 +498,7 @@
           <v-text-field
             v-model="editForm.className"
             density="comfortable"
-            :label="t('classes.className')"
+            :label="$i18n('classes.className')"
             required
             variant="outlined"
           />
@@ -509,7 +509,7 @@
             clearable
             density="comfortable"
             :items="getAllParents"
-            :label="t('classes.parentRepresentative1')"
+            :label="$i18n('classes.parentRepresentative1')"
             variant="outlined"
           />
 
@@ -520,7 +520,7 @@
             clearable
             density="comfortable"
             :items="getAllParents"
-            :label="t('classes.parentRepresentative2')"
+            :label="$i18n('classes.parentRepresentative2')"
             variant="outlined"
           />
 
@@ -529,9 +529,9 @@
             v-model="editForm.student_rep_1"
             clearable
             density="comfortable"
-            :hint="t('classes.studentRep1Hint')"
+            :hint="$i18n('classes.studentRep1Hint')"
             :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 0) : []"
-            :label="t('classes.studentRep1')"
+            :label="$i18n('classes.studentRep1')"
             persistent-hint
             variant="outlined"
           />
@@ -542,9 +542,9 @@
             class="mt-2"
             clearable
             density="comfortable"
-            :hint="t('classes.studentRep2Hint')"
+            :hint="$i18n('classes.studentRep2Hint')"
             :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 1) : []"
-            :label="t('classes.studentRep2')"
+            :label="$i18n('classes.studentRep2')"
             persistent-hint
             variant="outlined"
           />
@@ -558,7 +558,7 @@
             variant="text"
             @click="closeEditDialog"
           >
-            {{ t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="primary"
@@ -566,7 +566,7 @@
             variant="elevated"
             @click="saveClassChanges"
           >
-            {{ t('common.save') }}
+            {{ $i18n('common.save') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -577,11 +577,15 @@
 
 <script setup>
   import { computed, inject, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import MessageButton from '@/components/messaging/MessageButton.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Feature flags
   const showPopups = ref(false)
@@ -592,8 +596,6 @@
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
   const authStore = useAuthStore()
-  const { locale, t } = useI18n()
-
   // Admin state
   const isAdmin = ref(false)
   const classRepository = new ClassRepository()
@@ -731,7 +733,7 @@
     // Handle special cases
     if (!level || level === 'Unknown') return level
 
-    const currentLocale = locale.value || 'en'
+    const currentLocale = bananaI18n.locale || 'en'
     const numLevel = Number(level)
 
     if (currentLocale === 'fr') {

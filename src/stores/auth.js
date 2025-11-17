@@ -9,13 +9,12 @@ import {
 } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useI18n } from '@/composables/useI18n'
 import { getFunctionsBaseUrl, secureFetch } from '@/config/functions'
 import { auth } from '@/firebase'
 
 export const useAuthStore = defineStore('auth', () => {
-  // Get i18n instance for language detection
-  const { locale } = useI18n()
+  // Get current locale from localStorage (same as vue-banana-i18n uses)
+  const getCurrentLocale = () => localStorage.getItem('bottin-locale') || 'fr'
 
   // State
   const user = ref(null)
@@ -36,8 +35,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Set Firebase auth language based on current UI locale
   const setFirebaseLanguage = () => {
-    auth.languageCode = locale.value
-    console.log(`🌐 Firebase auth language set to: ${locale.value}`)
+    const currentLocale = getCurrentLocale()
+    auth.languageCode = currentLocale
+    console.log(`🌐 Firebase auth language set to: ${currentLocale}`)
   }
 
   // Email validation cache to reduce API calls

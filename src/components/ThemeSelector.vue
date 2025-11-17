@@ -4,7 +4,7 @@
       <v-btn
         v-bind="props"
         icon
-        :title="t('themeSelector.currentTheme', { theme: currentThemeDisplay })"
+        :title="$i18n('themeSelector.currentTheme', currentThemeDisplay)"
         variant="text"
       >
         <v-icon>{{ currentThemeIcon }}</v-icon>
@@ -13,7 +13,7 @@
 
     <v-list min-width="280">
       <!-- Theme Categories Header -->
-      <v-list-subheader>{{ $t('themes.chooseTheme') }}</v-list-subheader>
+      <v-list-subheader>{{ $i18n('themes.chooseTheme') }}</v-list-subheader>
 
       <!-- Light Themes -->
       <v-list-item
@@ -36,7 +36,7 @@
         <template #prepend>
           <v-icon>mdi-brightness-6</v-icon>
         </template>
-        <v-list-item-title>{{ $t('themes.darkMode') }}</v-list-item-title>
+        <v-list-item-title>{{ $i18n('themes.darkMode') }}</v-list-item-title>
         <template #append>
           <v-switch
             color="primary"
@@ -52,31 +52,32 @@
 
 <script setup>
   import { computed, onMounted, watch } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useTheme } from 'vuetify'
-  import { useI18n } from '@/composables/useI18n'
 
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const theme = useTheme()
-  const { t } = useI18n()
-
   const lightThemes = computed(() => [
     {
       value: 'academicExcellence',
-      name: t('themes.academicExcellence'),
-      description: t('themes.academicExcellenceDesc'),
+      name: $i18n('themes.academicExcellence'),
+      description: $i18n('themes.academicExcellenceDesc'),
       icon: 'mdi-school',
       color: '#1565C0',
     },
     {
       value: 'knowledgeHub',
-      name: t('themes.knowledgeHub'),
-      description: t('themes.knowledgeHubDesc'),
+      name: $i18n('themes.knowledgeHub'),
+      description: $i18n('themes.knowledgeHubDesc'),
       icon: 'mdi-book-open-page-variant',
       color: '#2E7D32',
     },
     {
       value: 'modernSchool',
-      name: t('themes.modernSchool'),
-      description: t('themes.modernSchoolDesc'),
+      name: $i18n('themes.modernSchool'),
+      description: $i18n('themes.modernSchoolDesc'),
       icon: 'mdi-laptop',
       color: '#00695C',
     },
@@ -94,7 +95,7 @@
 
   const currentThemeDisplay = computed(() => {
     const themeData = lightThemes.value.find(th => th.value === currentTheme.value)
-    return themeData ? themeData.name : t('themeSelector.custom')
+    return themeData ? themeData.name : $i18n('themeSelector.custom')
   })
 
   const currentThemeIcon = computed(() => {

@@ -1,14 +1,14 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleLogin">
     <v-card-title class="text-h5 text-center pb-2">
-      {{ $t('auth.login') }}
+      {{ $i18n('auth.login') }}
     </v-card-title>
 
     <v-card-text>
       <v-text-field
         v-model="email"
         autocomplete="email"
-        :label="$t('auth.email')"
+        :label="$i18n('auth.email')"
         prepend-inner-icon="mdi-email"
         required
         :rules="emailRules"
@@ -20,7 +20,7 @@
         v-model="password"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="current-password"
-        :label="$t('auth.password')"
+        :label="$i18n('auth.password')"
         prepend-inner-icon="mdi-lock"
         required
         :rules="passwordRules"
@@ -47,7 +47,7 @@
           variant="text"
           @click="$emit('show-reset')"
         >
-          {{ $t('auth.forgotPassword') }}
+          {{ $i18n('auth.forgotPassword') }}
         </v-btn>
       </div>
     </v-card-text>
@@ -62,7 +62,7 @@
         type="submit"
         variant="elevated"
       >
-        {{ $t('auth.signIn') }}
+        {{ $i18n('auth.signIn') }}
       </v-btn>
     </v-card-actions>
   </v-form>
@@ -70,16 +70,20 @@
 
 <script setup>
   import { ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
-  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['show-reset'])
 
   const router = useRouter()
   const authStore = useAuthStore()
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+
   const { translateAuthError } = useAuthErrors()
 
   // Form data
@@ -90,13 +94,13 @@
 
   // Validation rules
   const emailRules = [
-    v => !!v || t('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid'),
+    v => !!v || $i18n('validation.emailRequired'),
+    v => /.+@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
   ]
 
   const passwordRules = [
-    v => !!v || t('validation.passwordRequired'),
-    v => (v && v.length >= 6) || t('validation.passwordMinLength'),
+    v => !!v || $i18n('validation.passwordRequired'),
+    v => (v && v.length >= 6) || $i18n('validation.passwordMinLength'),
   ]
 
   // Handle login

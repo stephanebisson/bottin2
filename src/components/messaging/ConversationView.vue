@@ -7,7 +7,7 @@
       <v-toolbar-title>
         <div>{{ conversationTitle }}</div>
         <div class="text-caption">
-          {{ conversation.participantCount }} {{ $t('messages.participants') }}
+          {{ conversation.participantCount }} {{ $i18n('messages.participants') }}
         </div>
       </v-toolbar-title>
 
@@ -17,7 +17,7 @@
         </template>
         <v-list>
           <v-list-item @click="archiveConversation">
-            <v-list-item-title>{{ $t('messages.archive') }}</v-list-item-title>
+            <v-list-item-title>{{ $i18n('messages.archive') }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -92,7 +92,7 @@
                     :icon="message.readCount > 1 ? 'mdi-check-all' : 'mdi-check'"
                     size="16"
                   />
-                  <span v-if="message.isEdited" class="ml-1">({{ $t('messages.edited') }})</span>
+                  <span v-if="message.isEdited" class="ml-1">({{ $i18n('messages.edited') }})</span>
                 </div>
               </v-card>
             </div>
@@ -103,8 +103,8 @@
       <!-- No Messages -->
       <div v-else class="text-center pa-8">
         <v-icon color="grey-lighten-1" icon="mdi-message-outline" size="64" />
-        <p class="text-body-1 text-medium-emphasis mt-4">{{ $t('messages.noMessages') }}</p>
-        <p class="text-caption text-medium-emphasis">{{ $t('messages.startChatting') }}</p>
+        <p class="text-body-1 text-medium-emphasis mt-4">{{ $i18n('messages.noMessages') }}</p>
+        <p class="text-caption text-medium-emphasis">{{ $i18n('messages.startChatting') }}</p>
       </div>
 
       <!-- Scroll to Bottom Button -->
@@ -130,7 +130,7 @@
         :disabled="sending"
         hide-details
         :max-rows="5"
-        :placeholder="$t('messages.typeMessage')"
+        :placeholder="$i18n('messages.typeMessage')"
         rows="1"
         variant="outlined"
         @keydown.enter.exact.prevent="sendMessage"
@@ -150,13 +150,13 @@
 
       <div class="d-flex justify-space-between mt-1">
         <div class="text-caption text-medium-emphasis">
-          {{ $t('messages.enterToSend') }}
+          {{ $i18n('messages.enterToSend') }}
         </div>
         <div
           class="text-caption"
           :class="characterCountColor"
         >
-          {{ $t('messages.characterCount', { count: characterCount, max: 2000 }) }}
+          {{ $i18n('messages.characterCount', characterCount, 2000) }}
         </div>
       </div>
     </div>
@@ -166,7 +166,7 @@
 <script setup>
   import { collection, limit as firestoreLimit, onSnapshot, orderBy, query, where } from 'firebase/firestore'
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { MessageDTO } from '@/dto/MessageDTO'
   import { db } from '@/firebase'
   import { ConversationRepository } from '@/repositories/ConversationRepository'
@@ -189,7 +189,9 @@
 
   const emit = defineEmits(['close', 'archive'])
 
-  const { t, locale } = useI18n()
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const messageRepo = new MessageRepository()
   const conversationRepo = new ConversationRepository()
@@ -209,7 +211,7 @@
       )
       return props.conversation.participantNames[otherParticipant] || otherParticipant
     }
-    return props.conversation.getLabel(locale.value)
+    return props.conversation.getLabel(bananaI18n.locale)
   })
 
   const messagesByDate = computed(() => {
@@ -273,12 +275,12 @@
     yesterday.setDate(yesterday.getDate() - 1)
 
     if (date.toDateString() === today.toDateString()) {
-      return t('messages.today')
+      return $i18n('messages.today')
     }
     if (date.toDateString() === yesterday.toDateString()) {
-      return t('messages.yesterday')
+      return $i18n('messages.yesterday')
     }
-    return date.toLocaleDateString(locale.value, {
+    return date.toLocaleDateString(bananaI18n.locale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -288,7 +290,7 @@
   function formatTime (timestamp) {
     if (!timestamp) return ''
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    return date.toLocaleTimeString(locale.value, {
+    return date.toLocaleTimeString(bananaI18n.locale, {
       hour: 'numeric',
       minute: '2-digit',
     })

@@ -4,7 +4,7 @@
       <v-btn
         v-bind="props"
         icon
-        :title="`${$t('common.language')}: ${currentLanguageDisplay}`"
+        :title="`${$i18n('common.language')}: ${currentLanguageDisplay}`"
         variant="text"
       >
         <v-icon>{{ currentLanguageIcon }}</v-icon>
@@ -13,7 +13,7 @@
 
     <v-list min-width="200">
       <!-- Language Header -->
-      <v-list-subheader>{{ $t('common.chooseLanguage') }}</v-list-subheader>
+      <v-list-subheader>{{ $i18n('common.chooseLanguage') }}</v-list-subheader>
 
       <!-- Language Options -->
       <v-list-item
@@ -34,22 +34,31 @@
 
 <script setup>
   import { computed } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
 
-  const { locale, t } = useI18n()
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+
+  // Get current locale reactively
+  const locale = computed({
+    get: () => bananaI18n.locale,
+    set: (value) => {
+      bananaI18n.setLocale(value)
+    }
+  })
 
   const languages = [
     {
       code: 'fr',
-      name: () => t('languageSelector.french'),
-      nativeName: () => t('languageSelector.frenchNative'),
+      name: () => $i18n('languageSelector.french'),
+      nativeName: () => $i18n('languageSelector.frenchNative'),
       icon: 'mdi-alpha-f-circle',
       color: '#0055A4',
     },
     {
       code: 'en',
-      name: () => t('languageSelector.english'),
-      nativeName: () => t('languageSelector.englishNative'),
+      name: () => $i18n('languageSelector.english'),
+      nativeName: () => $i18n('languageSelector.englishNative'),
       icon: 'mdi-alpha-e-circle',
       color: '#CF142B',
     },
@@ -57,7 +66,7 @@
 
   const currentLanguageDisplay = computed(() => {
     const lang = languages.find(l => l.code === locale.value)
-    return lang ? lang.name() : t('languageSelector.unknown')
+    return lang ? lang.name() : $i18n('languageSelector.unknown')
   })
 
   const currentLanguageIcon = computed(() => {

@@ -8,9 +8,9 @@
           variant="text"
           @click="$router.push('/admin')"
         >
-          {{ $t('admin.backToAdminDashboard') }}
+          {{ $i18n('admin.backToAdminDashboard') }}
         </v-btn>
-        <h1 class="text-h3 font-weight-bold">{{ $t('admin.annualUpdateWorkflow') }}</h1>
+        <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.annualUpdateWorkflow') }}</h1>
       </div>
     </div>
 
@@ -18,7 +18,7 @@
     <v-card class="mb-6">
       <v-card-title class="d-flex align-center">
         <v-icon class="mr-2">mdi-calendar-sync</v-icon>
-        {{ $t('admin.overallStatus') }}
+        {{ $i18n('admin.overallStatus') }}
       </v-card-title>
 
       <v-card-text>
@@ -26,7 +26,7 @@
         <div v-if="currentWorkflow" class="mb-4">
           <v-alert
             :text="getWorkflowStatusMessage(currentWorkflow)"
-            :title="$t('admin.currentWorkflow')"
+            :title="$i18n('admin.currentWorkflow')"
             :type="getWorkflowStatusType(currentWorkflow.status)"
           />
 
@@ -39,7 +39,7 @@
                     {{ currentWorkflow.stats?.totalParents || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
-                    {{ $t('admin.totalParents') }}
+                    {{ $i18n('admin.totalParents') }}
                   </div>
                 </v-card-text>
               </v-card>
@@ -52,7 +52,7 @@
                     {{ currentWorkflow.stats?.emailsSent || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
-                    {{ $t('admin.emailsSent') }}
+                    {{ $i18n('admin.emailsSent') }}
                   </div>
                 </v-card-text>
               </v-card>
@@ -65,7 +65,7 @@
                     {{ currentWorkflow.stats?.formsSubmitted || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
-                    {{ $t('admin.formsSubmitted') }}
+                    {{ $i18n('admin.formsSubmitted') }}
                   </div>
                 </v-card-text>
               </v-card>
@@ -78,7 +78,7 @@
                     {{ currentWorkflow.stats?.optedOut || 0 }}
                   </div>
                   <div class="text-body-2 text-grey-darken-1">
-                    {{ $t('admin.optedOut') }}
+                    {{ $i18n('admin.optedOut') }}
                   </div>
                 </v-card-text>
               </v-card>
@@ -98,8 +98,8 @@
                 @click="showStartWorkflowDialog = true"
               >
                 {{ currentWorkflow && currentWorkflow.status === 'active'
-                  ? $t('admin.workflowInProgress')
-                  : $t('admin.startAnnualUpdate') }}
+                  ? $i18n('admin.workflowInProgress')
+                  : $i18n('admin.startAnnualUpdate') }}
               </v-btn>
             </div>
           </div>
@@ -109,7 +109,7 @@
         <div v-else class="text-center py-8">
           <v-icon color="grey-darken-2" size="48">mdi-calendar-question</v-icon>
           <p class="text-h6 mt-2 text-grey-darken-2">
-            {{ $t('admin.noActiveWorkflow') }}
+            {{ $i18n('admin.noActiveWorkflow') }}
           </p>
 
           <!-- Action Buttons for No Workflow -->
@@ -122,7 +122,7 @@
               size="large"
               @click="showStartWorkflowDialog = true"
             >
-              {{ $t('admin.startAnnualUpdate') }}
+              {{ $i18n('admin.startAnnualUpdate') }}
             </v-btn>
           </div>
         </div>
@@ -133,7 +133,7 @@
     <v-card v-if="currentWorkflow && currentWorkflow.status === 'active'">
       <v-card-title class="d-flex align-center">
         <v-icon class="mr-2">mdi-account-group</v-icon>
-        {{ $t('admin.parentsManagement') }}
+        {{ $i18n('admin.parentsManagement') }}
       </v-card-title>
 
       <v-card-text>
@@ -506,13 +506,13 @@
     <v-card v-if="!currentWorkflow || currentWorkflow.status !== 'active'">
       <v-card-title class="d-flex align-center">
         <v-icon class="mr-2">mdi-history</v-icon>
-        {{ $t('admin.workflowHistory') }}
+        {{ $i18n('admin.workflowHistory') }}
       </v-card-title>
 
       <v-card-text>
         <div v-if="workflowHistory.length === 0" class="text-center py-4">
           <p class="text-body-1 text-grey-darken-1">
-            {{ $t('admin.noWorkflowHistory') }}
+            {{ $i18n('admin.noWorkflowHistory') }}
           </p>
         </div>
 
@@ -542,7 +542,7 @@
                 size="small"
                 variant="tonal"
               >
-                {{ $t(`admin.status.${workflow.status}`) }}
+                {{ $i18n(`admin.status.${workflow.status}`) }}
               </v-chip>
             </template>
           </v-list-item>
@@ -555,11 +555,11 @@
       <v-card>
         <v-card-title class="d-flex align-center">
           <v-icon class="mr-2" color="warning">mdi-alert</v-icon>
-          {{ $t('admin.confirmStartWorkflow') }}
+          {{ $i18n('admin.confirmStartWorkflow') }}
         </v-card-title>
 
         <v-card-text>
-          <p class="mb-4">{{ $t('admin.startWorkflowWarning') }}</p>
+          <p class="mb-4">{{ $i18n('admin.startWorkflowWarning') }}</p>
 
           <v-alert
             class="mb-4"
@@ -568,10 +568,10 @@
             variant="tonal"
           >
             <div class="text-body-2">
-              <strong>{{ $t('admin.thisWillDo') }}:</strong>
+              <strong>{{ $i18n('admin.thisWillDo') }}:</strong>
               <ul class="mt-2 ml-4">
-                <li>{{ $t('admin.generateTokens') }}</li>
-                <li>{{ $t('admin.createWorkflowSession') }}</li>
+                <li>{{ $i18n('admin.generateTokens') }}</li>
+                <li>{{ $i18n('admin.createWorkflowSession') }}</li>
               </ul>
             </div>
           </v-alert>
@@ -583,8 +583,8 @@
             variant="tonal"
           >
             <div class="text-body-2">
-              <strong>{{ $t('admin.important') }}:</strong>
-              {{ $t('admin.emailsSentSeparately') }}
+              <strong>{{ $i18n('admin.important') }}:</strong>
+              {{ $i18n('admin.emailsSentSeparately') }}
             </div>
           </v-alert>
 
@@ -592,8 +592,8 @@
           <v-text-field
             v-model="confirmationText"
             class="mt-4"
-            :label="$t('admin.confirmationType')"
-            :placeholder="$t('admin.confirmationPlaceholder')"
+            :label="$i18n('admin.confirmationType')"
+            :placeholder="$i18n('admin.confirmationPlaceholder')"
             variant="outlined"
           />
         </v-card-text>
@@ -605,7 +605,7 @@
             variant="text"
             @click="showStartWorkflowDialog = false"
           >
-            {{ $t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="primary"
@@ -613,7 +613,7 @@
             :loading="loading"
             @click="startWorkflow"
           >
-            {{ $t('admin.startWorkflow') }}
+            {{ $i18n('admin.startWorkflow') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -624,12 +624,15 @@
 
 <script setup>
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
@@ -790,12 +793,7 @@
       ? Math.round((formsSubmitted / totalParents) * 100)
       : 0
 
-    return t('admin.workflowProgress', {
-      schoolYear: workflow.schoolYear,
-      completed: formsSubmitted,
-      total: totalParents,
-      percentage: completionRate,
-    })
+    return $i18n('admin.workflowProgress', workflow.schoolYear, formsSubmitted, totalParents, completionRate)
   }
 
   function formatDate (timestamp) {
@@ -930,11 +928,11 @@
 
   function getEmailStatusText (status) {
     switch (status) {
-      case 'sent': { return t('admin.emailSent')
+      case 'sent': { return $i18n('admin.emailSent')
       }
-      case 'not_sent': { return t('admin.emailNotSent')
+      case 'not_sent': { return $i18n('admin.emailNotSent')
       }
-      default: { return t('admin.emailNotSent')
+      default: { return $i18n('admin.emailNotSent')
       }
     }
   }
@@ -972,15 +970,15 @@
 
   function getFormStatusText (status) {
     switch (status) {
-      case 'submitted': { return t('admin.formSubmitted')
+      case 'submitted': { return $i18n('admin.formSubmitted')
       }
       case 'confirmed_by_partner': { return 'Confirmed by Partner'
       }
-      case 'opted_out': { return t('admin.optedOut')
+      case 'opted_out': { return $i18n('admin.optedOut')
       }
-      case 'pending': { return t('admin.pending')
+      case 'pending': { return $i18n('admin.pending')
       }
-      default: { return t('admin.pending')
+      default: { return $i18n('admin.pending')
       }
     }
   }

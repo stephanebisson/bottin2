@@ -1,7 +1,7 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleRegister">
     <v-card-title class="text-h5 text-center pb-2">
-      {{ $t('auth.register') }}
+      {{ $i18n('auth.register') }}
     </v-card-title>
 
     <v-card-text>
@@ -10,8 +10,8 @@
         v-if="authStore.registrationDisabled"
         class="mb-4"
         icon="mdi-account-off"
-        :text="$t('auth.registrationDisabledMessage')"
-        :title="$t('auth.registrationDisabled')"
+        :text="$i18n('auth.registrationDisabledMessage')"
+        :title="$i18n('auth.registrationDisabled')"
         type="warning"
       />
 
@@ -25,7 +25,7 @@
         autocomplete="email"
         :color="emailAuthorized === true ? 'success' : emailAuthorized === false ? 'error' : 'primary'"
         :disabled="authStore.registrationDisabled"
-        :label="$t('auth.email')"
+        :label="$i18n('auth.email')"
         :loading="emailValidationLoading"
         prepend-inner-icon="mdi-email"
         required
@@ -48,11 +48,11 @@
         >
           <v-icon class="me-1" size="small">mdi-check-circle</v-icon>
           <span v-if="userInfo.displayName">
-            {{ $t('registerForm.welcome') }}{{ userInfo.displayName }}!
-            <span class="text-caption">({{ userInfo.userType === 'parent' ? $t('registerForm.parent') : $t('registerForm.staff') }})</span>
+            {{ $i18n('registerForm.welcome') }}{{ userInfo.displayName }}!
+            <span class="text-caption">({{ userInfo.userType === 'parent' ? $i18n('registerForm.parent') : $i18n('registerForm.staff') }})</span>
           </span>
           <span v-else>
-            {{ $t('validation.emailAuthorized') }}
+            {{ $i18n('validation.emailAuthorized') }}
           </span>
         </div>
         <div
@@ -60,7 +60,7 @@
           class="text-error d-flex align-center"
         >
           <v-icon class="me-1" size="small">mdi-close-circle</v-icon>
-          {{ $t('validation.emailNotAuthorized') }}
+          {{ $i18n('validation.emailNotAuthorized') }}
         </div>
       </div>
 
@@ -69,7 +69,7 @@
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="new-password"
         :disabled="authStore.registrationDisabled"
-        :label="$t('auth.password')"
+        :label="$i18n('auth.password')"
         prepend-inner-icon="mdi-lock"
         required
         :rules="passwordRules"
@@ -83,7 +83,7 @@
         :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
         autocomplete="new-password"
         :disabled="authStore.registrationDisabled"
-        :label="$t('auth.confirmPassword')"
+        :label="$i18n('auth.confirmPassword')"
         prepend-inner-icon="mdi-lock-check"
         required
         :rules="confirmPasswordRules"
@@ -97,7 +97,7 @@
         v-if="!authStore.serviceHealth.isOnline"
         class="mb-4"
         icon="mdi-wifi-off"
-        :text="$t('auth.offlineMessage')"
+        :text="$i18n('auth.offlineMessage')"
         type="warning"
       />
 
@@ -106,7 +106,7 @@
         v-if="authStore.serviceHealth.isOnline && !authStore.serviceHealth.firebaseReachable"
         class="mb-4"
         icon="mdi-cloud-alert"
-        :text="$t('auth.authServiceIssues')"
+        :text="$i18n('auth.authServiceIssues')"
         type="warning"
       />
 
@@ -130,7 +130,7 @@
       >
         <template #label>
           <span class="text-body-2">
-            {{ $t('auth.agreeToTerms') }}
+            {{ $i18n('auth.agreeToTerms') }}
           </span>
         </template>
       </v-checkbox>
@@ -146,7 +146,7 @@
         type="submit"
         variant="elevated"
       >
-        {{ $t('auth.createAccount') }}
+        {{ $i18n('auth.createAccount') }}
       </v-btn>
     </v-card-actions>
 
@@ -155,14 +155,14 @@
       <v-expansion-panels class="w-100" variant="accordion">
         <v-expansion-panel>
           <v-expansion-panel-title class="text-caption">
-            {{ $t('registerForm.debugInfo') }}
+            {{ $i18n('registerForm.debugInfo') }}
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="text-caption">
-              <div><strong>{{ $t('registerForm.network') }}</strong> {{ authStore.serviceHealth.isOnline ? $t('registerForm.online') : $t('registerForm.offline') }}</div>
-              <div><strong>{{ $t('registerForm.firebase') }}</strong> {{ authStore.serviceHealth.firebaseReachable ? $t('registerForm.reachable') : $t('registerForm.unreachable') }}</div>
-              <div><strong>{{ $t('registerForm.lastCheck') }}</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : $t('registerForm.never') }}</div>
-              <div><strong>{{ $t('registerForm.emailStatus') }}</strong> {{ emailAuthorized === null ? $t('registerForm.notChecked') : emailAuthorized ? $t('registerForm.authorized') : $t('registerForm.notAuthorized') }}</div>
+              <div><strong>{{ $i18n('registerForm.network') }}</strong> {{ authStore.serviceHealth.isOnline ? $i18n('registerForm.online') : $i18n('registerForm.offline') }}</div>
+              <div><strong>{{ $i18n('registerForm.firebase') }}</strong> {{ authStore.serviceHealth.firebaseReachable ? $i18n('registerForm.reachable') : $i18n('registerForm.unreachable') }}</div>
+              <div><strong>{{ $i18n('registerForm.lastCheck') }}</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : $i18n('registerForm.never') }}</div>
+              <div><strong>{{ $i18n('registerForm.emailStatus') }}</strong> {{ emailAuthorized === null ? $i18n('registerForm.notChecked') : emailAuthorized ? $i18n('registerForm.authorized') : $i18n('registerForm.notAuthorized') }}</div>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -173,14 +173,17 @@
 
 <script setup>
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
-  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
 
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const router = useRouter()
   const authStore = useAuthStore()
-  const { t } = useI18n()
   const { translateAuthError } = useAuthErrors()
 
   // Environment check for debug panel
@@ -199,26 +202,26 @@
 
   // Validation rules
   const emailRules = [
-    v => !!v || t('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid'),
-    v => emailAuthorized.value !== false || t('validation.emailNotAuthorized'),
+    v => !!v || $i18n('validation.emailRequired'),
+    v => /.+@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
+    v => emailAuthorized.value !== false || $i18n('validation.emailNotAuthorized'),
   ]
 
   const passwordRules = [
-    v => !!v || t('validation.passwordRequired'),
-    v => (v && v.length >= 6) || t('validation.passwordMinLength'),
-    v => /(?=.*[a-z])/.test(v) || t('validation.passwordLowercase'),
-    v => /(?=.*[A-Z])/.test(v) || t('validation.passwordUppercase'),
-    v => /(?=.*\d)/.test(v) || t('validation.passwordNumber'),
+    v => !!v || $i18n('validation.passwordRequired'),
+    v => (v && v.length >= 6) || $i18n('validation.passwordMinLength'),
+    v => /(?=.*[a-z])/.test(v) || $i18n('validation.passwordLowercase'),
+    v => /(?=.*[A-Z])/.test(v) || $i18n('validation.passwordUppercase'),
+    v => /(?=.*\d)/.test(v) || $i18n('validation.passwordNumber'),
   ]
 
   const confirmPasswordRules = [
-    v => !!v || t('validation.confirmPasswordRequired'),
-    v => v === password.value || t('validation.passwordsMatch'),
+    v => !!v || $i18n('validation.confirmPasswordRequired'),
+    v => v === password.value || $i18n('validation.passwordsMatch'),
   ]
 
   const termsRules = [
-    v => v === true || t('validation.termsRequired'),
+    v => v === true || $i18n('validation.termsRequired'),
   ]
 
   // Store user info for display

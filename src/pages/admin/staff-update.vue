@@ -8,18 +8,18 @@
           variant="text"
           @click="$router.push('/admin/annual-update')"
         >
-          {{ $t('admin.backToAdminDashboard') }}
+          {{ $i18n('admin.backToAdminDashboard') }}
         </v-btn>
-        <h1 class="text-h3 font-weight-bold">{{ $t('admin.staffUpdate.title') }}</h1>
+        <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.staffUpdate.title') }}</h1>
       </div>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
       <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $t('admin.adminAccessRequired') }}
+        {{ $i18n('admin.adminAccessRequired') }}
       </p>
     </div>
 
@@ -29,14 +29,14 @@
       <v-card class="mb-6">
         <v-card-title class="d-flex align-center">
           <v-icon class="mr-2">mdi-key</v-icon>
-          {{ $t('admin.staffUpdate.tokenStatus') }}
+          {{ $i18n('admin.staffUpdate.tokenStatus') }}
         </v-card-title>
 
         <v-card-text>
           <!-- Loading State -->
           <div v-if="loading" class="text-center py-8">
             <v-progress-circular color="primary" indeterminate size="64" />
-            <p class="text-body-1 mt-4">{{ $t('common.loading') }}</p>
+            <p class="text-body-1 mt-4">{{ $i18n('common.loading') }}</p>
           </div>
 
           <!-- Token Exists -->
@@ -48,7 +48,7 @@
               variant="tonal"
             >
               <div class="text-body-1">
-                {{ $t('admin.staffUpdate.tokenGenerated') }}
+                {{ $i18n('admin.staffUpdate.tokenGenerated') }}
               </div>
             </v-alert>
 
@@ -69,7 +69,7 @@
                   prepend-icon="mdi-open-in-new"
                   @click="openStaffUpdateLink"
                 >
-                  {{ $t('admin.staffUpdate.openLink') }}
+                  {{ $i18n('admin.staffUpdate.openLink') }}
                 </v-btn>
 
                 <v-btn
@@ -78,7 +78,7 @@
                   variant="outlined"
                   @click="copyStaffUpdateLink"
                 >
-                  {{ $t('admin.staffUpdate.copyLink') }}
+                  {{ $i18n('admin.staffUpdate.copyLink') }}
                 </v-btn>
               </div>
             </div>
@@ -87,11 +87,11 @@
             <v-card class="mt-4" variant="outlined">
               <v-card-text>
                 <div class="text-body-2">
-                  <strong>{{ $t('admin.staffUpdate.tokenCreated') }}:</strong>
+                  <strong>{{ $i18n('admin.staffUpdate.tokenCreated') }}:</strong>
                   {{ formatDate(staffUpdateData?.createdAt) }}
                 </div>
                 <div v-if="staffUpdateData?.createdBy" class="text-body-2 mt-2">
-                  <strong>{{ $t('admin.staffUpdate.createdBy') }}:</strong>
+                  <strong>{{ $i18n('admin.staffUpdate.createdBy') }}:</strong>
                   {{ staffUpdateData.createdBy }}
                 </div>
               </v-card-text>
@@ -102,10 +102,10 @@
           <div v-else class="text-center py-8">
             <v-icon color="grey-darken-2" size="64">mdi-key-plus</v-icon>
             <p class="text-h6 mt-4 text-grey-darken-2">
-              {{ $t('admin.staffUpdate.noTokenGenerated') }}
+              {{ $i18n('admin.staffUpdate.noTokenGenerated') }}
             </p>
             <p class="text-body-2 text-grey-darken-1 mt-2">
-              {{ $t('admin.staffUpdate.generateTokenInstructions') }}
+              {{ $i18n('admin.staffUpdate.generateTokenInstructions') }}
             </p>
 
             <v-btn
@@ -116,7 +116,7 @@
               size="large"
               @click="generateToken"
             >
-              {{ $t('admin.staffUpdate.generateToken') }}
+              {{ $i18n('admin.staffUpdate.generateToken') }}
             </v-btn>
           </div>
         </v-card-text>
@@ -126,12 +126,12 @@
       <v-card>
         <v-card-title class="d-flex align-center">
           <v-icon class="mr-2">mdi-information</v-icon>
-          {{ $t('admin.staffUpdate.aboutTitle') }}
+          {{ $i18n('admin.staffUpdate.aboutTitle') }}
         </v-card-title>
 
         <v-card-text>
           <p class="text-body-1 mb-4">
-            {{ $t('admin.staffUpdate.aboutDescription') }}
+            {{ $i18n('admin.staffUpdate.aboutDescription') }}
           </p>
 
           <v-alert
@@ -140,8 +140,8 @@
             variant="tonal"
           >
             <div class="text-body-2">
-              <strong>{{ $t('admin.staffUpdate.securityNote') }}</strong>
-              {{ $t('admin.staffUpdate.securityNoteDescription') }}
+              <strong>{{ $i18n('admin.staffUpdate.securityNote') }}</strong>
+              {{ $i18n('admin.staffUpdate.securityNoteDescription') }}
             </div>
           </v-alert>
         </v-card-text>
@@ -161,11 +161,14 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
 
   // State
@@ -263,11 +266,11 @@
       staffUpdateToken.value = data.token
       staffUpdateData.value = data
 
-      successMessage.value = t('admin.staffUpdate.tokenGeneratedSuccess')
+      successMessage.value = $i18n('admin.staffUpdate.tokenGeneratedSuccess')
       showSuccessSnackbar.value = true
     } catch (error) {
       console.error('Failed to generate staff update token:', error)
-      alert(t('admin.staffUpdate.tokenGenerationError'))
+      alert($i18n('admin.staffUpdate.tokenGenerationError'))
     } finally {
       generating.value = false
     }
@@ -285,7 +288,7 @@
 
     try {
       await navigator.clipboard.writeText(staffUpdateUrl.value)
-      successMessage.value = t('admin.staffUpdate.linkCopied')
+      successMessage.value = $i18n('admin.staffUpdate.linkCopied')
       showSuccessSnackbar.value = true
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
@@ -296,7 +299,7 @@
       textArea.select()
       document.execCommand('copy')
       textArea.remove()
-      successMessage.value = t('admin.staffUpdate.linkCopied')
+      successMessage.value = $i18n('admin.staffUpdate.linkCopied')
       showSuccessSnackbar.value = true
     }
   }

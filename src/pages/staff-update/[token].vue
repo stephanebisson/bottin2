@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('staffUpdate.loadingInfo') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('staffUpdate.loadingInfo') }}</p>
     </div>
 
     <!-- Error State -->
@@ -22,7 +22,7 @@
           @click="retryLoad"
         >
           <v-icon class="mr-2">mdi-refresh</v-icon>
-          {{ $t('common.tryAgain') }}
+          {{ $i18n('common.tryAgain') }}
         </v-btn>
 
         <v-btn
@@ -31,7 +31,7 @@
           @click="$router.push('/')"
         >
           <v-icon class="mr-2">mdi-home</v-icon>
-          {{ $t('common.goHome') }}
+          {{ $i18n('common.goHome') }}
         </v-btn>
       </div>
 
@@ -44,7 +44,7 @@
         max-width="500"
         variant="tonal"
       >
-        {{ $t('staffUpdate.contactSchool') }}
+        {{ $i18n('staffUpdate.contactSchool') }}
       </v-alert>
     </div>
 
@@ -84,16 +84,18 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import StaffUpdateFormV1 from '@/components/StaffUpdateFormV1.vue'
   import StaffUpdateFormV2 from '@/components/StaffUpdateFormV2.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { getFunctionsBaseUrl } from '@/config/functions'
 
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const route = useRoute()
   const router = useRouter()
-  const { t } = useI18n()
-
   // State
   const loading = ref(true)
   const error = ref(null)
@@ -200,16 +202,16 @@
       case 'missing_token':
       case 'invalid_token':
       case 'expired_token': {
-        return t('staffUpdate.linkExpired')
+        return $i18n('staffUpdate.linkExpired')
       }
       case 'server_error': {
-        return t('staffUpdate.serviceIssue')
+        return $i18n('staffUpdate.serviceIssue')
       }
       case 'network_error': {
-        return t('staffUpdate.connectionIssue')
+        return $i18n('staffUpdate.connectionIssue')
       }
       default: {
-        return t('staffUpdate.unexpectedIssue')
+        return $i18n('staffUpdate.unexpectedIssue')
       }
     }
   }
@@ -219,19 +221,19 @@
     switch (error.value) {
       case 'missing_token':
       case 'invalid_token': {
-        return t('staffUpdate.invalidLinkMessage')
+        return $i18n('staffUpdate.invalidLinkMessage')
       }
       case 'expired_token': {
-        return t('staffUpdate.expiredLinkMessage')
+        return $i18n('staffUpdate.expiredLinkMessage')
       }
       case 'server_error': {
-        return t('staffUpdate.serverErrorMessage')
+        return $i18n('staffUpdate.serverErrorMessage')
       }
       case 'network_error': {
-        return t('staffUpdate.networkErrorMessage')
+        return $i18n('staffUpdate.networkErrorMessage')
       }
       default: {
-        return t('staffUpdate.unexpectedErrorMessage')
+        return $i18n('staffUpdate.unexpectedErrorMessage')
       }
     }
   }

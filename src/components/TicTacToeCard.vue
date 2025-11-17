@@ -7,8 +7,8 @@
     <div class="d-flex flex-column align-center flex-grow-1">
       <!-- Header -->
       <v-icon class="mb-3" color="success" size="48">mdi-gamepad-variant</v-icon>
-      <h3 class="text-h6 font-weight-bold mb-1">{{ $t('easterEgg.ticTacToe') }}</h3>
-      <p class="text-caption text-grey-darken-1 mb-4">{{ $t('easterEgg.takeABreak') }}</p>
+      <h3 class="text-h6 font-weight-bold mb-1">{{ $i18n('easterEgg.ticTacToe') }}</h3>
+      <p class="text-caption text-grey-darken-1 mb-4">{{ $i18n('easterEgg.takeABreak') }}</p>
 
       <!-- Game status -->
       <div class="mb-3">
@@ -18,7 +18,7 @@
           size="small"
           variant="flat"
         >
-          {{ $t('easterEgg.yourTurn') }}
+          {{ $i18n('easterEgg.yourTurn') }}
         </v-chip>
         <v-chip
           v-else-if="winner === 'X'"
@@ -26,7 +26,7 @@
           size="small"
           variant="flat"
         >
-          {{ $t('easterEgg.youWin') }}
+          {{ $i18n('easterEgg.youWin') }}
         </v-chip>
         <v-chip
           v-else-if="winner === 'O'"
@@ -34,7 +34,7 @@
           size="small"
           variant="flat"
         >
-          {{ $t('easterEgg.computerWins') }}
+          {{ $i18n('easterEgg.computerWins') }}
         </v-chip>
         <v-chip
           v-else-if="isDraw"
@@ -42,7 +42,7 @@
           size="small"
           variant="flat"
         >
-          {{ $t('easterEgg.draw') }}
+          {{ $i18n('easterEgg.draw') }}
         </v-chip>
       </div>
 
@@ -79,7 +79,7 @@
         variant="outlined"
         @click="resetGame"
       >
-        {{ $t('easterEgg.newGame') }}
+        {{ $i18n('easterEgg.newGame') }}
       </v-btn>
     </div>
   </v-card>

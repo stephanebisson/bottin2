@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('admin.parentsDirectory.title') }}</h1>
+      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.parentsDirectory.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
       <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $t('admin.adminAccessRequired') }}
+        {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
         <p class="text-body-2 text-grey-darken-1 mb-4">
-          {{ $t('admin.refreshPermissionsInstructions') }}
+          {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
         <v-btn
           color="primary"
@@ -23,7 +23,7 @@
           prepend-icon="mdi-refresh"
           @click="checkAdminStatus"
         >
-          {{ $t('admin.refreshAdminStatus') }}
+          {{ $i18n('admin.refreshAdminStatus') }}
         </v-btn>
       </div>
     </div>
@@ -33,20 +33,20 @@
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-h6 mt-4">{{ $t('common.loading') }}</p>
+        <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-h5 mt-4 text-error">{{ $t('common.error') }}</h2>
+        <h2 class="text-h5 mt-4 text-error">{{ $i18n('common.error') }}</h2>
         <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
         <v-btn
           class="mt-4"
           color="primary"
           @click="loadData"
         >
-          {{ $t('common.retry') }}
+          {{ $i18n('common.retry') }}
         </v-btn>
       </div>
 
@@ -58,9 +58,9 @@
             <div class="d-flex align-center">
               <v-icon class="mr-4" size="48">mdi-account-group</v-icon>
               <div>
-                <h2 class="text-h5 font-weight-bold">{{ $t('admin.parentsDirectory.summary') }}</h2>
+                <h2 class="text-h5 font-weight-bold">{{ $i18n('admin.parentsDirectory.summary') }}</h2>
                 <p class="text-body-1 mt-2">
-                  {{ $t('admin.parentsDirectory.totalParents', { count: sortedParents.length }) }}
+                  {{ $i18n('admin.parentsDirectory.totalParents', sortedParents.length) }}
                 </p>
               </div>
             </div>
@@ -71,13 +71,13 @@
         <v-card>
           <v-card-title>
             <div class="d-flex justify-space-between align-center w-100">
-              <span class="text-h5">{{ $t('admin.parentsDirectory.allParents') }}</span>
+              <span class="text-h5">{{ $i18n('admin.parentsDirectory.allParents') }}</span>
               <v-btn
                 color="primary"
                 prepend-icon="mdi-account-plus"
                 @click="createNewParent"
               >
-                {{ $t('admin.parentsDirectory.addNewParent') }}
+                {{ $i18n('admin.parentsDirectory.addNewParent') }}
               </v-btn>
             </div>
           </v-card-title>
@@ -123,14 +123,14 @@
                 v-model="item.email"
                 density="compact"
                 hide-details
-                :placeholder="$t('common.optional')"
+                :placeholder="$i18n('common.optional')"
                 type="email"
                 variant="outlined"
               />
               <a v-else-if="item.email" class="text-primary text-decoration-none" :href="`mailto:${item.email}`">
                 {{ item.email }}
               </a>
-              <span v-else class="text-grey-darken-1 font-italic">{{ $t('common.notProvided') }}</span>
+              <span v-else class="text-grey-darken-1 font-italic">{{ $i18n('common.notProvided') }}</span>
             </template>
 
             <!-- Phone Column -->
@@ -144,7 +144,7 @@
                 variant="outlined"
               />
               <span v-else-if="item.phone">{{ item.displayPhone }}</span>
-              <span v-else class="text-grey-darken-1 font-italic">{{ $t('common.notProvided') }}</span>
+              <span v-else class="text-grey-darken-1 font-italic">{{ $i18n('common.notProvided') }}</span>
             </template>
 
             <!-- Children Column -->
@@ -156,12 +156,12 @@
                     :key="child.id"
                     class="mb-1"
                   >
-                    {{ child.fullName }} ({{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $t('admin.parentsDirectory.noTeacher') }})
+                    {{ child.fullName }} ({{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $i18n('admin.parentsDirectory.noTeacher') }})
                   </div>
                 </div>
               </div>
               <span v-else class="text-grey-darken-1 font-italic">
-                {{ $t('admin.parentsDirectory.noChildren') }}
+                {{ $i18n('admin.parentsDirectory.noChildren') }}
               </span>
             </template>
 
@@ -206,13 +206,16 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { ParentRepository } from '@/repositories/ParentRepository.js'
   import { StudentRepository } from '@/repositories/StudentRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
@@ -269,40 +272,40 @@
   // Table headers
   const tableHeaders = computed(() => [
     {
-      title: t('common.firstName'),
+      title: $i18n('common.firstName'),
       align: 'start',
       sortable: false,
       key: 'first_name',
       width: '120px',
     },
     {
-      title: t('common.lastName'),
+      title: $i18n('common.lastName'),
       align: 'start',
       sortable: false,
       key: 'last_name',
       width: '120px',
     },
     {
-      title: t('common.email'),
+      title: $i18n('common.email'),
       align: 'start',
       sortable: false,
       key: 'email',
     },
     {
-      title: t('common.phone'),
+      title: $i18n('common.phone'),
       align: 'start',
       sortable: false,
       key: 'phone',
     },
     {
-      title: t('admin.parentsDirectory.children'),
+      title: $i18n('admin.parentsDirectory.children'),
       align: 'start',
       sortable: false,
       key: 'children',
       width: '300px',
     },
     {
-      title: t('common.actions'),
+      title: $i18n('common.actions'),
       key: 'actions',
       sortable: false,
       width: '100px',
@@ -455,7 +458,7 @@
 
       // Validate required fields
       if (!newParent.value.first_name.trim()) {
-        error.value = t('admin.parentsDirectory.validation.required')
+        error.value = $i18n('admin.parentsDirectory.validation.required')
         setTimeout(() => {
           error.value = null
         }, 5000)
@@ -463,7 +466,7 @@
       }
 
       if (!newParent.value.last_name.trim()) {
-        error.value = t('admin.parentsDirectory.validation.required')
+        error.value = $i18n('admin.parentsDirectory.validation.required')
         setTimeout(() => {
           error.value = null
         }, 5000)
@@ -474,7 +477,7 @@
       if (newParent.value.email.trim()) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailPattern.test(newParent.value.email.trim())) {
-          error.value = t('admin.parentsDirectory.validation.invalidEmail')
+          error.value = $i18n('admin.parentsDirectory.validation.invalidEmail')
           setTimeout(() => {
             error.value = null
           }, 5000)

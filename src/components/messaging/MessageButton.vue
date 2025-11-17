@@ -19,8 +19,7 @@
 
 <script setup>
   import { computed } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
-
+  import { useI18n } from 'vue-banana-i18n'
   const props = defineProps({
     // Conversation type: 'direct', 'class', or 'committee'
     type: {
@@ -82,7 +81,9 @@
 
   const emit = defineEmits(['click', 'start-conversation'])
 
-  const { t, locale } = useI18n()
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const participantCount = computed(() => {
     return props.participants.length
@@ -96,16 +97,16 @@
     // Default labels based on type
     switch (props.type) {
       case 'direct': {
-        return t('messages.messageParent')
+        return $i18n('messages.messageParent')
       }
       case 'class': {
-        return t('messages.messageAllClassParents')
+        return $i18n('messages.messageAllClassParents')
       }
       case 'committee': {
-        return t('messages.messageCommitteeMembers')
+        return $i18n('messages.messageCommitteeMembers')
       }
       default: {
-        return t('messages.startConversation')
+        return $i18n('messages.startConversation')
       }
     }
   })

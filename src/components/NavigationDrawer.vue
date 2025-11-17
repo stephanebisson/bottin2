@@ -11,8 +11,8 @@
       <v-list-item
         class="mb-2"
         prepend-icon="mdi-book-open-page-variant"
-        :subtitle="$t('nav.schoolDirectory')"
-        :title="$t('nav.schoolDirectorySystem')"
+        :subtitle="$i18n('nav.schoolDirectory')"
+        :title="$i18n('nav.schoolDirectorySystem')"
       />
 
       <!-- User Info (when authenticated) -->
@@ -73,7 +73,7 @@
       <template v-else>
         <v-list-item class="text-center py-4">
           <v-list-item-title class="text-body-2 text-grey-darken-1">
-            {{ $t('nav.pleaseLogin') }}
+            {{ $i18n('nav.pleaseLogin') }}
           </v-list-item-title>
         </v-list-item>
 
@@ -85,7 +85,7 @@
             @click="$router.push('/auth')"
           >
             <v-icon start>mdi-login</v-icon>
-            {{ $t('auth.login') }}
+            {{ $i18n('auth.login') }}
           </v-btn>
         </v-list-item>
       </template>
@@ -97,8 +97,8 @@
 
 <script setup>
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useDisplay } from 'vuetify'
-  import { useI18n } from '@/composables/useI18n'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -113,12 +113,15 @@
 
   const { mobile } = useDisplay()
 
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+
   const drawerModel = computed({
     get: () => props.modelValue,
     set: value => emit('update:modelValue', value),
   })
 
-  const { t } = useI18n()
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
@@ -161,33 +164,33 @@
   const navigationItems = computed(() => {
     const baseItems = [
       {
-        title: t('nav.home'),
+        title: $i18n('nav.home'),
         icon: 'mdi-home',
         to: '/',
       },
       {
-        title: t('nav.classes'),
+        title: $i18n('nav.classes'),
         icon: 'mdi-school',
         to: '/classes',
       },
       {
-        title: t('directory.title'),
+        title: $i18n('directory.title'),
         icon: 'mdi-book-account',
         to: '/families',
       },
       // Temporarily hidden while testing in production
       // {
-      //   title: t('map.title'),
+      //   title: $i18n('map.title'),
       //   icon: 'mdi-map-marker-multiple',
       //   to: '/map',
       // },
       {
-        title: t('nav.staff'),
+        title: $i18n('nav.staff'),
         icon: 'mdi-account-tie',
         to: '/staff',
       },
       {
-        title: t('nav.committees'),
+        title: $i18n('nav.committees'),
         icon: 'mdi-account-group',
         to: '/committees',
       },
@@ -196,36 +199,36 @@
     // Only add admin link if user is admin
     if (isAdmin.value) {
       baseItems.push({
-        title: t('admin.title'),
+        title: $i18n('admin.title'),
         icon: 'mdi-cog',
         children: [
           {
-            title: t('admin.annualUpdateWorkflow'),
+            title: $i18n('admin.annualUpdateWorkflow'),
             icon: 'mdi-calendar-sync',
             to: '/admin/annual-update',
           },
           {
-            title: t('admin.parentsDirectory.title'),
+            title: $i18n('admin.parentsDirectory.title'),
             icon: 'mdi-account-heart-outline',
             to: '/admin/parents',
           },
           {
-            title: t('admin.studentsTable.title'),
+            title: $i18n('admin.studentsTable.title'),
             icon: 'mdi-account-school-outline',
             to: '/admin/students',
           },
           {
-            title: t('admin.staffUpdate.title'),
+            title: $i18n('admin.staffUpdate.title'),
             icon: 'mdi-account-tie-outline',
             to: '/admin/staff-update',
           },
           {
-            title: t('admin.directoryPrint.title'),
+            title: $i18n('admin.directoryPrint.title'),
             icon: 'mdi-printer',
             to: '/admin/print',
           },
           {
-            title: t('feedback.admin.title'),
+            title: $i18n('feedback.admin.title'),
             icon: 'mdi-message-text',
             to: '/admin/feedback',
           },

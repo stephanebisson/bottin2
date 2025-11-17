@@ -1,18 +1,18 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleReset">
     <v-card-title class="text-h5 text-center pb-2">
-      {{ $t('auth.resetPassword') }}
+      {{ $i18n('auth.resetPassword') }}
     </v-card-title>
 
     <v-card-text>
       <p class="text-body-2 text-grey-darken-1 mb-4">
-        {{ $t('auth.resetPasswordInstructions') }}
+        {{ $i18n('auth.resetPasswordInstructions') }}
       </p>
 
       <v-text-field
         v-model="email"
         autocomplete="email"
-        :label="$t('auth.email')"
+        :label="$i18n('auth.email')"
         prepend-inner-icon="mdi-email"
         required
         :rules="emailRules"
@@ -34,7 +34,7 @@
       <v-alert
         v-if="resetSent"
         class="mb-4"
-        :text="$t('auth.resetEmailSent')"
+        :text="$i18n('auth.resetEmailSent')"
         type="success"
       />
 
@@ -46,7 +46,7 @@
           variant="text"
           @click="$emit('back-to-login')"
         >
-          {{ $t('auth.backToLogin') }}
+          {{ $i18n('auth.backToLogin') }}
         </v-btn>
       </div>
     </v-card-text>
@@ -61,7 +61,7 @@
         type="submit"
         variant="elevated"
       >
-        {{ resetSent ? $t('auth.emailSent') : $t('auth.sendResetEmail') }}
+        {{ resetSent ? $i18n('auth.emailSent') : $i18n('auth.sendResetEmail') }}
       </v-btn>
     </v-card-actions>
   </v-form>
@@ -69,13 +69,14 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['back-to-login'])
 
   const authStore = useAuthStore()
-  const { t } = useI18n()
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Form data
   const email = ref('')
@@ -84,8 +85,8 @@
 
   // Validation rules
   const emailRules = [
-    v => !!v || t('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || t('validation.emailInvalid'),
+    v => !!v || $i18n('validation.emailRequired'),
+    v => /.+@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
   ]
 
   // Handle password reset

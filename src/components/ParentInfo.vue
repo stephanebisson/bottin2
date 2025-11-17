@@ -24,7 +24,7 @@
         size="x-small"
         variant="outlined"
       >
-        {{ memberType === 'staff' ? $t('committees.staff') : $t('committees.parent') }}
+        {{ memberType === 'staff' ? $i18n('committees.staff') : $i18n('committees.parent') }}
       </v-chip>
     </div>
 
@@ -91,10 +91,7 @@
   import { computed, inject } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import MessageButton from '@/components/messaging/MessageButton.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { getInterestNames } from '@/config/interests'
-
-  const { t } = useI18n()
 
   // Get messaging shell reference
   const messagingShell = inject('messagingShell', null)

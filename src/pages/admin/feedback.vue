@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $t('feedback.admin.title') }}</h1>
+      <h1 class="text-h3 font-weight-bold">{{ $i18n('feedback.admin.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $t('admin.accessDenied') }}</h2>
+      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
       <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $t('admin.adminAccessRequired') }}
+        {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
         <p class="text-body-2 text-grey-darken-1 mb-4">
-          {{ $t('admin.refreshPermissionsInstructions') }}
+          {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
         <v-btn
           color="primary"
@@ -23,7 +23,7 @@
           prepend-icon="mdi-refresh"
           @click="checkAdminStatus"
         >
-          {{ $t('admin.refreshAdminStatus') }}
+          {{ $i18n('admin.refreshAdminStatus') }}
         </v-btn>
       </div>
     </div>
@@ -33,20 +33,20 @@
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-h6 mt-4">{{ $t('common.loading') }}</p>
+        <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-h5 mt-4 text-error">{{ $t('common.error') }}</h2>
+        <h2 class="text-h5 mt-4 text-error">{{ $i18n('common.error') }}</h2>
         <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
         <v-btn
           class="mt-4"
           color="primary"
           @click="loadData"
         >
-          {{ $t('common.retry') }}
+          {{ $i18n('common.retry') }}
         </v-btn>
       </div>
 
@@ -61,7 +61,7 @@
                   <v-icon class="mr-3" size="40">mdi-message-text</v-icon>
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.total }}</div>
-                    <div class="text-body-2">{{ $t('feedback.admin.totalFeedback') }}</div>
+                    <div class="text-body-2">{{ $i18n('feedback.admin.totalFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -75,7 +75,7 @@
                   <v-icon class="mr-3" size="40">mdi-clock-alert</v-icon>
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.pending }}</div>
-                    <div class="text-body-2">{{ $t('feedback.admin.pendingFeedback') }}</div>
+                    <div class="text-body-2">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -89,7 +89,7 @@
                   <v-icon class="mr-3" size="40">mdi-check-circle</v-icon>
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.resolved }}</div>
-                    <div class="text-body-2">{{ $t('feedback.admin.resolvedFeedback') }}</div>
+                    <div class="text-body-2">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -107,7 +107,7 @@
                   clearable
                   density="compact"
                   hide-details
-                  :label="$t('common.search')"
+                  :label="$i18n('common.search')"
                   prepend-inner-icon="mdi-magnify"
                   variant="outlined"
                 />
@@ -119,7 +119,7 @@
                   density="compact"
                   hide-details
                   :items="statusFilterOptions"
-                  :label="$t('feedback.admin.filterByStatus')"
+                  :label="$i18n('feedback.admin.filterByStatus')"
                   variant="outlined"
                 />
               </v-col>
@@ -185,7 +185,7 @@
                 >
                   <v-icon />
                   <v-tooltip activator="parent" location="top">
-                    {{ item.status === 'pending' ? $t('feedback.admin.markAsResolved') : $t('feedback.admin.markAsPending') }}
+                    {{ item.status === 'pending' ? $i18n('feedback.admin.markAsResolved') : $i18n('feedback.admin.markAsPending') }}
                   </v-tooltip>
                 </v-btn>
 
@@ -199,7 +199,7 @@
                 >
                   <v-icon />
                   <v-tooltip activator="parent" location="top">
-                    {{ $t('feedback.admin.editNotes') }}
+                    {{ $i18n('feedback.admin.editNotes') }}
                   </v-tooltip>
                 </v-btn>
 
@@ -214,7 +214,7 @@
                 >
                   <v-icon />
                   <v-tooltip activator="parent" location="top">
-                    {{ $t('common.delete') }}
+                    {{ $i18n('common.delete') }}
                   </v-tooltip>
                 </v-btn>
               </div>
@@ -228,7 +228,7 @@
                     <!-- Full Message -->
                     <div class="mb-4">
                       <div class="text-subtitle-2 font-weight-bold mb-2">
-                        {{ $t('feedback.admin.fullMessage') }}
+                        {{ $i18n('feedback.admin.fullMessage') }}
                       </div>
                       <div class="text-body-1 pa-3 bg-grey-lighten-4 rounded">
                         {{ item.message }}
@@ -238,14 +238,14 @@
                     <!-- Admin Notes -->
                     <div v-if="item.hasAdminNotes">
                       <div class="text-subtitle-2 font-weight-bold mb-2">
-                        {{ $t('feedback.admin.adminNotes') }}
+                        {{ $i18n('feedback.admin.adminNotes') }}
                       </div>
                       <div class="text-body-1 pa-3 bg-blue-lighten-5 rounded">
                         {{ item.admin_notes }}
                       </div>
                     </div>
                     <div v-else class="text-body-2 text-grey-darken-1 font-italic">
-                      {{ $t('feedback.admin.noAdminNotes') }}
+                      {{ $i18n('feedback.admin.noAdminNotes') }}
                     </div>
                   </div>
                 </td>
@@ -260,14 +260,14 @@
     <v-dialog v-model="notesDialog" max-width="600">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ $t('feedback.admin.editNotes') }}</span>
+          <span class="text-h5">{{ $i18n('feedback.admin.editNotes') }}</span>
         </v-card-title>
         <v-card-text>
           <v-textarea
             v-model="editingNotes"
             auto-grow
-            :label="$t('feedback.admin.adminNotesLabel')"
-            :placeholder="$t('feedback.admin.adminNotesPlaceholder')"
+            :label="$i18n('feedback.admin.adminNotesLabel')"
+            :placeholder="$i18n('feedback.admin.adminNotesPlaceholder')"
             rows="5"
             variant="outlined"
           />
@@ -279,7 +279,7 @@
             variant="text"
             @click="closeNotesDialog"
           >
-            {{ $t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="primary"
@@ -287,7 +287,7 @@
             variant="elevated"
             @click="saveNotes"
           >
-            {{ $t('common.save') }}
+            {{ $i18n('common.save') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -297,10 +297,10 @@
     <v-dialog v-model="deleteDialog" max-width="500">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ $t('feedback.admin.confirmDelete') }}</span>
+          <span class="text-h5">{{ $i18n('feedback.admin.confirmDelete') }}</span>
         </v-card-title>
         <v-card-text>
-          <p>{{ $t('feedback.admin.deleteWarning') }}</p>
+          <p>{{ $i18n('feedback.admin.deleteWarning') }}</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -309,7 +309,7 @@
             variant="text"
             @click="deleteDialog = false"
           >
-            {{ $t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="error"
@@ -317,7 +317,7 @@
             variant="elevated"
             @click="deleteFeedback"
           >
-            {{ $t('common.delete') }}
+            {{ $i18n('common.delete') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -327,12 +327,15 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
   const feedbackRepository = new FeedbackRepository()
@@ -379,42 +382,42 @@
 
   // Status filter options
   const statusFilterOptions = computed(() => [
-    { title: t('feedback.admin.allFeedback'), value: 'all' },
-    { title: t('feedback.admin.pendingOnly'), value: 'pending' },
-    { title: t('feedback.admin.resolvedOnly'), value: 'resolved' },
+    { title: $i18n('feedback.admin.allFeedback'), value: 'all' },
+    { title: $i18n('feedback.admin.pendingOnly'), value: 'pending' },
+    { title: $i18n('feedback.admin.resolvedOnly'), value: 'resolved' },
   ])
 
   // Table headers
   const tableHeaders = computed(() => [
     {
-      title: t('feedback.admin.date'),
+      title: $i18n('feedback.admin.date'),
       align: 'start',
       sortable: true,
       key: 'createdAt',
       width: '140px',
     },
     {
-      title: t('feedback.admin.parent'),
+      title: $i18n('feedback.admin.parent'),
       align: 'start',
       sortable: false,
       key: 'parent_id',
       width: '200px',
     },
     {
-      title: t('feedback.admin.message'),
+      title: $i18n('feedback.admin.message'),
       align: 'start',
       sortable: false,
       key: 'message',
     },
     {
-      title: t('feedback.admin.status'),
+      title: $i18n('feedback.admin.status'),
       align: 'center',
       sortable: true,
       key: 'status',
       width: '120px',
     },
     {
-      title: t('common.actions'),
+      title: $i18n('common.actions'),
       align: 'center',
       sortable: false,
       key: 'actions',
@@ -446,7 +449,7 @@
   // Helper functions
   function getParentName (parentId) {
     const parent = parents.value.find(p => p.id === parentId)
-    return parent ? parent.fullName : t('feedback.admin.unknownParent')
+    return parent ? parent.fullName : $i18n('feedback.admin.unknownParent')
   }
 
   function getParentEmail (parentId) {
@@ -469,7 +472,7 @@
       item.status = newStatus
     } catch (error) {
       console.error('Error updating feedback status:', error)
-      this.error = t('feedback.admin.error.updateFailed')
+      this.error = $i18n('feedback.admin.error.updateFailed')
     } finally {
       item._updating = false
     }
@@ -500,7 +503,7 @@
       closeNotesDialog()
     } catch (error) {
       console.error('Error saving admin notes:', error)
-      this.error = t('feedback.admin.error.saveFailed')
+      this.error = $i18n('feedback.admin.error.saveFailed')
     } finally {
       savingNotes.value = false
     }
@@ -524,7 +527,7 @@
       feedbackToDelete.value = null
     } catch (error) {
       console.error('Error deleting feedback:', error)
-      this.error = t('feedback.admin.error.deleteFailed')
+      this.error = $i18n('feedback.admin.error.deleteFailed')
     } finally {
       deleting.value = false
     }

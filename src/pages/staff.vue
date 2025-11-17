@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('staff.title') }}</h1>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('staff.title') }}</h1>
 
     <div v-if="firebaseStore.staffErrorDTO" class="mb-4">
       <v-alert
         closable
         :text="firebaseStore.staffErrorDTO"
-        :title="$t('staff.errorLoadingStaff')"
+        :title="$i18n('staff.errorLoadingStaff')"
         type="error"
         @click:close="firebaseStore.staffErrorDTO = null"
       />
@@ -14,12 +14,12 @@
 
     <div v-if="firebaseStore.staffLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('staff.loadingStaff') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('staff.loadingStaff') }}</p>
     </div>
 
     <div v-else-if="firebaseStore.staffDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-tie-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('staff.noStaffFound') }}</p>
+      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('staff.noStaffFound') }}</p>
     </div>
 
     <div v-else>
@@ -30,7 +30,7 @@
             v-model="searchQuery"
             clearable
             hide-details
-            :label="$t('staff.searchStaff')"
+            :label="$i18n('staff.searchStaff')"
             prepend-inner-icon="mdi-magnify"
             variant="outlined"
           />
@@ -56,7 +56,7 @@
                 {{ subgroup.name }}
               </h3>
               <p class="text-body-2 text-grey-darken-1 ma-0">
-                {{ $t('staff.memberCount', { count: subgroup.members.length }) }}
+                {{ $i18n('staff.memberCount', subgroup.members.length) }}
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@
                     <v-divider class="mb-2" />
                     <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
                       <v-icon class="me-1" size="small">mdi-school</v-icon>
-                      {{ $t('staff.classesTaught') }}
+                      {{ $i18n('staff.classesTaught') }}
                     </div>
                     <div class="d-flex flex-wrap gap-1">
                       <v-chip
@@ -136,15 +136,17 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
 
-  const searchQuery = ref('')
-  const { t } = useI18n()
 
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const searchQuery = ref('')
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
 
@@ -205,10 +207,10 @@
     if (ungroupedMembers.length > 0) {
       hierarchicalGroups.push({
         group: null,
-        name: t('staff.otherStaff'),
+        name: $i18n('staff.otherStaff'),
         subgroups: [{
           subgroup: null,
-          name: t('staff.otherStaff'),
+          name: $i18n('staff.otherStaff'),
           members: ungroupedMembers.toSorted((a, b) => {
             // Primary sort: by order field
             const orderA = a.order || 99

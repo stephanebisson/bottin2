@@ -1,7 +1,7 @@
 <template>
   <v-footer class="footer-compact d-flex align-center justify-center px-4 py-2">
     <div class="d-flex align-center text-caption text-disabled">
-      <span v-html="$t('footer.copyright')" />
+      <span v-html="$i18n('footer.copyright')" />
       <span class="mx-2">•</span>
       <a
         class="text-decoration-none text-disabled"

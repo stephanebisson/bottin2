@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $t('committees.title') }}</h1>
+    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('committees.title') }}</h1>
 
     <div v-if="firebaseStore.committeesErrorDTO" class="mb-4">
       <v-alert
         closable
         :text="firebaseStore.committeesErrorDTO"
-        :title="$t('committees.errorLoadingCommittees')"
+        :title="$i18n('committees.errorLoadingCommittees')"
         type="error"
         @click:close="firebaseStore.committeesErrorDTO = null"
       />
@@ -14,12 +14,12 @@
 
     <div v-if="firebaseStore.committeesLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('committees.loadingCommittees') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('committees.loadingCommittees') }}</p>
     </div>
 
     <div v-else-if="firebaseStore.committeesDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-group-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $t('committees.noCommitteesFound') }}</p>
+      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('committees.noCommitteesFound') }}</p>
     </div>
 
     <div v-else>
@@ -30,7 +30,7 @@
             v-model="searchQuery"
             clearable
             hide-details
-            :label="$t('committees.searchCommittees')"
+            :label="$i18n('committees.searchCommittees')"
             prepend-inner-icon="mdi-magnify"
             variant="outlined"
           />
@@ -60,7 +60,7 @@
                     size="small"
                     text-color="primary"
                   >
-                    {{ committee.enrichedMembers.length === 1 ? $t('committees.memberCount', { count: committee.enrichedMembers.length }) : $t('committees.memberCountPlural', { count: committee.enrichedMembers.length }) }}
+                    {{ $i18n('committees.memberCount', committee.enrichedMembers.length) }}
                   </v-chip>
                   <v-btn
                     v-if="isAdmin"
@@ -104,7 +104,7 @@
                 <div v-if="committee.parentMembers.length > 0">
                   <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
-                    {{ committee.hasMixedMemberTypes ? $t('committees.parentMembers') : $t('committees.membersHeader') }}
+                    {{ committee.hasMixedMemberTypes ? $i18n('committees.parentMembers') : $i18n('committees.membersHeader') }}
                   </div>
                   <ParentInfo
                     v-for="member in committee.parentMembers"
@@ -133,7 +133,7 @@
                     :class="{ 'mt-4': committee.parentMembers.length > 0 }"
                   >
                     <v-icon class="me-2" color="primary" size="small">mdi-school</v-icon>
-                    {{ $t('committees.staffMembers') }}
+                    {{ $i18n('committees.staffMembers') }}
                   </div>
                   <ParentInfo
                     v-for="member in committee.staffMembers"
@@ -162,7 +162,7 @@
                     :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
                   >
                     <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
-                    {{ $t('committees.unknownMembers') }}
+                    {{ $i18n('committees.unknownMembers') }}
                   </div>
                   <ParentInfo
                     v-for="member in committee.unknownMembers"
@@ -188,7 +188,7 @@
                 <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.unknownMembers.length === 0">
                   <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
-                    {{ $t('committees.membersHeader') }}
+                    {{ $i18n('committees.membersHeader') }}
                   </div>
                   <ParentInfo
                     v-for="member in committee.enrichedMembers"
@@ -212,7 +212,7 @@
               </div>
               <div v-else class="text-center py-4 text-grey-darken-1 text-caption">
                 <v-icon class="mb-2" color="grey-darken-2" size="24">mdi-account-group-outline</v-icon>
-                <div>{{ $t('committees.noMembersFound') }}</div>
+                <div>{{ $i18n('committees.noMembersFound') }}</div>
               </div>
             </v-card-text>
           </v-card>

@@ -17,17 +17,17 @@
         variant="tonal"
       >
         <div class="text-body-1">
-          {{ $t('staffUpdate.welcome', { name: $t('staff.title') }) }}
+          {{ $i18n('staffUpdate.welcome', $i18n('staff.title')) }}
         </div>
         <div class="text-body-2 mt-2">
-          {{ $t('staffUpdate.instructions') }}
+          {{ $i18n('staffUpdate.instructions') }}
         </div>
       </v-alert>
 
       <!-- Loading State -->
       <div v-if="loadingStaff" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-body-1 mt-4">{{ $t('staffUpdate.loadingStaff') }}</p>
+        <p class="text-body-1 mt-4">{{ $i18n('staffUpdate.loadingStaff') }}</p>
       </div>
 
       <!-- Staff Groups -->
@@ -59,7 +59,7 @@
           variant="text"
           @click="showSnackbar = false"
         >
-          {{ $t('common.close') }}
+          {{ $i18n('common.close') }}
         </v-btn>
       </template>
     </v-snackbar>
@@ -68,13 +68,10 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
   import { useStaffUpdate } from '@/composables/useStaffUpdate'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import GroupSection from './staff-update/GroupSection.vue'
   import SaveBar from './staff-update/SaveBar.vue'
-
-  const { t } = useI18n()
 
   // Props
   const props = defineProps({

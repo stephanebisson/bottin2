@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('updateForm.loadingInfo') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('updateForm.loadingInfo') }}</p>
     </div>
 
     <!-- Error State with Friendly Messages -->
@@ -31,7 +31,7 @@
           @click="$router.push('/')"
         >
           <v-icon class="mr-2">mdi-home</v-icon>
-          {{ $t('updateForm.goHome') }}
+          {{ $i18n('updateForm.goHome') }}
         </v-btn>
       </div>
 
@@ -53,7 +53,7 @@
       <v-card>
         <v-card-title class="d-flex align-center bg-primary text-white">
           <v-icon class="mr-2">mdi-account-edit</v-icon>
-          {{ $t('updateForm.title') }}
+          {{ $i18n('updateForm.title') }}
         </v-card-title>
 
         <v-card-text class="pa-6">
@@ -65,10 +65,10 @@
             variant="tonal"
           >
             <div class="text-body-1">
-              {{ $t('updateForm.welcome', { name: `${parentData.first_name} ${parentData.last_name}` }) }}
+              {{ $i18n('updateForm.welcome', parentData.fullName || `${parentData.first_name} ${parentData.last_name}`) }}
             </div>
             <div class="text-body-2 mt-2">
-              {{ $t('updateForm.instructions') }}
+              {{ $i18n('updateForm.instructions') }}
             </div>
           </v-alert>
 
@@ -83,10 +83,10 @@
             variant="tonal"
           >
             <div class="text-body-1 font-weight-medium">
-              {{ $t('updateForm.optOutWarningBox') }}
+              {{ $i18n('updateForm.optOutWarningBox') }}
             </div>
             <div class="text-body-2 mt-2 mb-3">
-              {{ $t('updateForm.optOutWarningBoxDescription') }}
+              {{ $i18n('updateForm.optOutWarningBoxDescription') }}
             </div>
             <v-btn
               color="error"
@@ -95,7 +95,7 @@
               variant="outlined"
               @click="showOptOutDialog = true"
             >
-              {{ $t('updateForm.optOutButton') }}
+              {{ $i18n('updateForm.optOutButton') }}
             </v-btn>
           </v-alert>
 
@@ -110,10 +110,10 @@
             variant="tonal"
           >
             <div class="text-body-1 font-weight-medium">
-              {{ $t('updateForm.reOptInWarningBox') }}
+              {{ $i18n('updateForm.reOptInWarningBox') }}
             </div>
             <div class="text-body-2 mt-2">
-              {{ $t('updateForm.reOptInWarningBoxDescription') }}
+              {{ $i18n('updateForm.reOptInWarningBoxDescription') }}
             </div>
           </v-alert>
 
@@ -123,14 +123,14 @@
               <v-col cols="12">
                 <h3 class="text-h6 font-weight-bold mb-4">
                   <v-icon class="mr-2">mdi-account</v-icon>
-                  {{ $t('updateForm.personalInfo') }}
+                  {{ $i18n('updateForm.personalInfo') }}
                 </h3>
               </v-col>
 
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="form.first_name"
-                  :label="$t('updateForm.firstName')"
+                  :label="$i18n('updateForm.firstName')"
                   :rules="[rules.required]"
                   variant="outlined"
                 />
@@ -139,7 +139,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="form.last_name"
-                  :label="$t('updateForm.lastName')"
+                  :label="$i18n('updateForm.lastName')"
                   :rules="[rules.required]"
                   variant="outlined"
                 />
@@ -149,8 +149,8 @@
                 <v-text-field
                   v-model="form.phone"
                   :error="form.phone && !isValidPhoneFormat(form.phone)"
-                  :error-messages="form.phone && !isValidPhoneFormat(form.phone) ? getPhoneValidationMessage(form.phone, $t) : ''"
-                  :label="$t('updateForm.phone')"
+                  :error-messages="form.phone && !isValidPhoneFormat(form.phone) ? getPhoneValidationMessage(form.phone, $i18n) : ''"
+                  :label="$i18n('updateForm.phone')"
                   placeholder="(123) 456-7890"
                   variant="outlined"
                   @blur="formatPhoneOnBlur"
@@ -162,7 +162,7 @@
               <v-col cols="12">
                 <h3 class="text-h6 font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-map-marker</v-icon>
-                  {{ $t('updateForm.address') }}
+                  {{ $i18n('updateForm.address') }}
                 </h3>
               </v-col>
 
@@ -170,7 +170,7 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="form.address"
-                  :label="$t('updateForm.streetAddress')"
+                  :label="$i18n('updateForm.streetAddress')"
                   variant="outlined"
                 />
               </v-col>
@@ -178,7 +178,7 @@
               <v-col cols="12" md="8">
                 <v-text-field
                   v-model="form.city"
-                  :label="$t('updateForm.city')"
+                  :label="$i18n('updateForm.city')"
                   variant="outlined"
                 />
               </v-col>
@@ -187,8 +187,8 @@
                 <v-text-field
                   v-model="form.postal_code"
                   :error="form.postal_code && !isValidPostalCodeFormat(form.postal_code)"
-                  :error-messages="form.postal_code && !isValidPostalCodeFormat(form.postal_code) ? getPostalCodeValidationMessage(form.postal_code, $t) : ''"
-                  :label="$t('updateForm.postalCode')"
+                  :error-messages="form.postal_code && !isValidPostalCodeFormat(form.postal_code) ? getPostalCodeValidationMessage(form.postal_code, $i18n) : ''"
+                  :label="$i18n('updateForm.postalCode')"
                   maxlength="7"
                   :placeholder="getSamplePostalCode()"
                   variant="outlined"
@@ -206,7 +206,7 @@
                 >
                   <template #label>
                     <span
-                      v-html="$t('updateForm.confirmOtherParentAddress', {
+                      v-html="$i18n('updateForm.confirmOtherParentAddress', {
                         fullName: `<strong>${otherParentInfo.fullName}</strong>`
                       })"
                     />
@@ -218,14 +218,14 @@
               <v-col cols="12">
                 <h3 class="text-h6 font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-account-group</v-icon>
-                  {{ $t('updateForm.committees') }}
+                  {{ $i18n('updateForm.committees') }}
                 </h3>
               </v-col>
 
               <v-col cols="12">
                 <div class="mb-4">
                   <p class="text-body-2 text-grey-darken-1 mb-4">
-                    {{ $t('updateForm.committeeInstructions') }}
+                    {{ $i18n('updateForm.committeeInstructions') }}
                   </p>
 
                   <div class="committee-grid">
@@ -252,7 +252,7 @@
                         density="compact"
                         hide-details
                         :items="getCommitteeRoles(committee.name)"
-                        :label="$t('updateForm.role')"
+                        :label="$i18n('updateForm.role')"
                         variant="outlined"
                       />
                     </div>
@@ -264,14 +264,14 @@
               <v-col cols="12">
                 <h3 class="text-h6 font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-star</v-icon>
-                  {{ $t('updateForm.interests') }}
+                  {{ $i18n('updateForm.interests') }}
                 </h3>
               </v-col>
 
               <v-col cols="12">
                 <div class="mb-4">
                   <p class="text-body-2 text-grey-darken-1 mb-4">
-                    {{ $t('updateForm.interestsInstructions') }}
+                    {{ $i18n('updateForm.interestsInstructions') }}
                   </p>
 
                   <div class="interests-grid">
@@ -299,7 +299,7 @@
                   size="large"
                   type="submit"
                 >
-                  {{ $t('updateForm.submit') }}
+                  {{ $i18n('updateForm.submit') }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -313,12 +313,12 @@
       <v-card>
         <v-card-title class="d-flex align-center bg-error text-white">
           <v-icon class="mr-2">mdi-alert-octagon</v-icon>
-          {{ $t('updateForm.optOutDialogTitle') }}
+          {{ $i18n('updateForm.optOutDialogTitle') }}
         </v-card-title>
 
         <v-card-text class="pa-6">
           <div class="text-body-1 mb-4">
-            {{ $t('updateForm.optOutDialogContent') }}
+            {{ $i18n('updateForm.optOutDialogContent') }}
           </div>
 
           <v-alert
@@ -327,7 +327,7 @@
             icon="mdi-alert"
             variant="tonal"
           >
-            {{ $t('updateForm.optOutDialogWarning') }}
+            {{ $i18n('updateForm.optOutDialogWarning') }}
           </v-alert>
         </v-card-text>
 
@@ -339,7 +339,7 @@
             variant="outlined"
             @click="showOptOutDialog = false"
           >
-            {{ $t('common.cancel') }}
+            {{ $i18n('common.cancel') }}
           </v-btn>
           <v-btn
             color="error"
@@ -347,7 +347,7 @@
             variant="flat"
             @click="confirmOptOut"
           >
-            {{ optingOut ? $t('updateForm.optOutProcessing') : $t('updateForm.optOutDialogConfirm') }}
+            {{ optingOut ? $i18n('updateForm.optOutProcessing') : $i18n('updateForm.optOutDialogConfirm') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -357,18 +357,20 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
-  import { useI18n } from '@/composables/useI18n'
   import { getCommitteeRoles } from '@/config/committees'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { getAvailableInterests } from '@/config/interests'
   import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay, formatPostalCodeForStorage, getPostalCodeValidationMessage, getSamplePostalCode, isValidPostalCodeFormat } from '@/utils/postalCodeFormatter'
 
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const route = useRoute()
   const router = useRouter()
-  const { t } = useI18n()
-
   // State
   const loading = ref(true)
   const submitting = ref(false)
@@ -400,7 +402,7 @@
 
   // Validation rules
   const rules = {
-    required: value => !!value || t('validation.required'),
+    required: value => !!value || $i18n('validation.required'),
   }
 
   // Get token from route params
@@ -494,7 +496,7 @@
       })
 
       if (!response.ok) {
-        let errorMessage = t('updateForm.serverError')
+        let errorMessage = $i18n('updateForm.serverError')
 
         try {
           // Try to get detailed error message from server response

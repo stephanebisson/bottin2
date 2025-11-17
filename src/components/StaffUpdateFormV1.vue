@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title class="d-flex align-center bg-primary text-white">
       <v-icon class="mr-2">mdi-account-edit</v-icon>
-      {{ $t('staffUpdate.title') }}
+      {{ $i18n('staffUpdate.title') }}
     </v-card-title>
 
     <v-card-text class="pa-6">
@@ -14,17 +14,17 @@
         variant="tonal"
       >
         <div class="text-body-1">
-          {{ $t('staffUpdate.welcome', { name: $t('staff.title') }) }}
+          {{ $i18n('staffUpdate.welcome', $i18n('staff.title')) }}
         </div>
         <div class="text-body-2 mt-2">
-          {{ $t('staffUpdate.instructions') }}
+          {{ $i18n('staffUpdate.instructions') }}
         </div>
       </v-alert>
 
       <!-- Loading staff data -->
       <div v-if="loadingStaff" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-body-1 mt-4">{{ $t('staffUpdate.loadingStaff') }}</p>
+        <p class="text-body-1 mt-4">{{ $i18n('staffUpdate.loadingStaff') }}</p>
       </div>
 
       <!-- Staff Data Table -->
@@ -37,7 +37,7 @@
               prepend-icon="mdi-plus"
               @click="addNewRow"
             >
-              {{ $t('staffUpdate.addStaff') }}
+              {{ $i18n('staffUpdate.addStaff') }}
             </v-btn>
 
             <v-btn
@@ -47,7 +47,7 @@
               prepend-icon="mdi-content-save"
               @click="saveAllChanges"
             >
-              {{ $t('staffUpdate.saveChanges') }}
+              {{ $i18n('staffUpdate.saveChanges') }}
             </v-btn>
           </div>
 
@@ -57,7 +57,7 @@
             prepend-icon="mdi-alert"
             variant="tonal"
           >
-            {{ $t('staffUpdate.unsavedChanges') }}
+            {{ $i18n('staffUpdate.unsavedChanges') }}
           </v-chip>
         </div>
 
@@ -181,9 +181,9 @@
 
         <!-- Stats -->
         <div class="mt-4 text-body-2 text-grey-darken-1">
-          {{ $t('staffUpdate.totalStaff', { count: staffList.length }) }}
+          {{ $i18n('staffUpdate.totalStaff', staffList.length) }}
           <span v-if="hasChanges" class="ml-4">
-            • {{ $t('staffUpdate.changedItems', { count: changedItems.size }) }}
+            • {{ $i18n('staffUpdate.changedItems', changedItems.size) }}
           </span>
         </div>
       </div>
@@ -203,7 +203,7 @@
         variant="text"
         @click="showSnackbar = false"
       >
-        {{ $t('common.close') }}
+        {{ $i18n('common.close') }}
       </v-btn>
     </template>
   </v-snackbar>
@@ -211,11 +211,9 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { useStaffUpdate } from '@/composables/useStaffUpdate'
   import { getValidSubgroupsForGroup, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS } from '@/config/staffGroups'
-
-  const { t } = useI18n()
 
   // Props
   const props = defineProps({
@@ -224,6 +222,10 @@
       required: true,
     },
   })
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Use shared composable
   const {
@@ -310,15 +312,15 @@
 
   // Table headers
   const headers = computed(() => [
-    { title: t('staffUpdate.firstName'), key: 'first_name', sortable: false, width: '12%' },
-    { title: t('staffUpdate.lastName'), key: 'last_name', sortable: false, width: '12%' },
-    { title: t('staffUpdate.email'), key: 'email', sortable: false, width: '16%' },
-    { title: t('staffUpdate.phone'), key: 'phone', sortable: false, width: '11%' },
-    { title: t('staffUpdate.title'), key: 'title', sortable: false, width: '13%' },
-    { title: t('staffUpdate.group'), key: 'group', sortable: false, width: '10%' },
-    { title: t('staffUpdate.subgroup'), key: 'subgroup', sortable: false, width: '10%' },
-    { title: t('staffUpdate.order'), key: 'order', sortable: false, width: '6%' },
-    { title: t('common.actions'), key: 'actions', sortable: false, width: '5%', align: 'center' },
+    { title: $i18n('staffUpdate.firstName'), key: 'first_name', sortable: false, width: '12%' },
+    { title: $i18n('staffUpdate.lastName'), key: 'last_name', sortable: false, width: '12%' },
+    { title: $i18n('staffUpdate.email'), key: 'email', sortable: false, width: '16%' },
+    { title: $i18n('staffUpdate.phone'), key: 'phone', sortable: false, width: '11%' },
+    { title: $i18n('staffUpdate.title'), key: 'title', sortable: false, width: '13%' },
+    { title: $i18n('staffUpdate.group'), key: 'group', sortable: false, width: '10%' },
+    { title: $i18n('staffUpdate.subgroup'), key: 'subgroup', sortable: false, width: '10%' },
+    { title: $i18n('staffUpdate.order'), key: 'order', sortable: false, width: '6%' },
+    { title: $i18n('common.actions'), key: 'actions', sortable: false, width: '5%', align: 'center' },
   ])
 
   // Load all staff using shared composable

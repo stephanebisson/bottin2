@@ -9,12 +9,12 @@
 
             <!-- Success Title -->
             <h2 class="text-h4 font-weight-bold mt-4 mb-2 text-success">
-              {{ $t('updateSuccess.title') }}
+              {{ $i18n('updateSuccess.title') }}
             </h2>
 
             <!-- Thank You Message -->
             <p class="text-body-1 mb-6">
-              {{ $t('updateSuccess.message') }}
+              {{ $i18n('updateSuccess.message') }}
             </p>
 
             <!-- Account Creation Section -->
@@ -26,10 +26,10 @@
                 variant="tonal"
               >
                 <div class="text-body-1 font-weight-medium mb-2">
-                  {{ $t('updateSuccess.createAccountTitle') }}
+                  {{ $i18n('updateSuccess.createAccountTitle') }}
                 </div>
                 <div class="text-body-2">
-                  {{ $t('updateSuccess.createAccountMessage') }}
+                  {{ $i18n('updateSuccess.createAccountMessage') }}
                 </div>
               </v-alert>
 
@@ -40,7 +40,7 @@
                 size="large"
                 variant="outlined"
               >
-                {{ $t('updateSuccess.createAccount') }}
+                {{ $i18n('updateSuccess.createAccount') }}
               </v-btn>
             </div>
 
@@ -53,7 +53,7 @@
                 variant="tonal"
               >
                 <div class="text-body-1">
-                  {{ $t('updateSuccess.accountExists') }}
+                  {{ $i18n('updateSuccess.accountExists') }}
                 </div>
               </v-alert>
 
@@ -63,7 +63,7 @@
                 size="large"
                 @click="goToLogin"
               >
-                {{ $t('updateSuccess.signIn') }}
+                {{ $i18n('updateSuccess.signIn') }}
               </v-btn>
             </div>
 
@@ -72,12 +72,12 @@
 
             <div class="text-body-2 text-grey-darken-1">
               <p class="mb-2">
-                {{ $t('updateSuccess.nextSteps') }}
+                {{ $i18n('updateSuccess.nextSteps') }}
               </p>
               <ul class="text-left mt-4">
-                <li>{{ $t('updateSuccess.step1') }}</li>
-                <li>{{ $t('updateSuccess.step2') }}</li>
-                <li>{{ $t('updateSuccess.step3') }}</li>
+                <li>{{ $i18n('updateSuccess.step1') }}</li>
+                <li>{{ $i18n('updateSuccess.step2') }}</li>
+                <li>{{ $i18n('updateSuccess.step3') }}</li>
               </ul>
             </div>
 
@@ -89,7 +89,7 @@
               variant="flat"
             >
               <div class="text-body-2">
-                {{ $t('updateSuccess.questions') }}
+                {{ $i18n('updateSuccess.questions') }}
               </div>
             </v-alert>
 
@@ -100,7 +100,7 @@
               variant="outlined"
               @click="goHome"
             >
-              {{ $t('updateSuccess.backHome') }}
+              {{ $i18n('updateSuccess.backHome') }}
             </v-btn>
           </v-card-text>
         </v-card>
@@ -112,12 +112,8 @@
 <script setup>
   import { computed, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { useI18n } from '@/composables/useI18n'
-
   const route = useRoute()
   const router = useRouter()
-  const { t } = useI18n()
-
   // Get query parameters
   const hasAccount = computed(() => route.query.hasAccount === '1')
   const email = computed(() => route.query.email || '')

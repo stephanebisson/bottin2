@@ -6,17 +6,17 @@
         <div class="text-center mb-6">
           <v-icon class="mb-4" color="primary" size="64">mdi-message-text</v-icon>
           <h1 class="text-h4 font-weight-bold mb-2">
-            {{ $t('feedback.title') }}
+            {{ $i18n('feedback.title') }}
           </h1>
           <p class="text-body-1 text-grey-darken-1">
-            {{ $t('feedback.description') }}
+            {{ $i18n('feedback.description') }}
           </p>
         </div>
 
         <!-- Loading State -->
         <div v-if="loading" class="text-center py-12">
           <v-progress-circular color="primary" indeterminate size="64" />
-          <p class="text-h6 mt-4">{{ $t('common.loading') }}</p>
+          <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
         </div>
 
         <!-- Success Message -->
@@ -54,8 +54,8 @@
                 auto-grow
                 clearable
                 counter="5000"
-                :label="$t('feedback.messageLabel')"
-                :placeholder="$t('feedback.messagePlaceholder')"
+                :label="$i18n('feedback.messageLabel')"
+                :placeholder="$i18n('feedback.messagePlaceholder')"
                 rows="8"
                 :rules="messageRules"
                 variant="outlined"
@@ -70,7 +70,7 @@
                 type="info"
                 variant="tonal"
               >
-                {{ $t('feedback.privacyNote') }}
+                {{ $i18n('feedback.privacyNote') }}
               </v-alert>
 
               <!-- Submit Button -->
@@ -84,7 +84,7 @@
                 variant="elevated"
               >
                 <v-icon start>mdi-send</v-icon>
-                {{ $t('feedback.submitButton') }}
+                {{ $i18n('feedback.submitButton') }}
               </v-btn>
             </v-form>
           </v-card-text>
@@ -96,12 +96,15 @@
 
 <script setup>
   import { onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
   import { useAuthStore } from '@/stores/auth'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
   const feedbackRepository = new FeedbackRepository()
   const parentRepository = new ParentRepository()
@@ -118,9 +121,9 @@
 
   // Validation rules
   const messageRules = [
-    v => !!v || t('feedback.validation.messageRequired'),
-    v => (v && v.length >= 10) || t('feedback.validation.messageTooShort'),
-    v => (v && v.length <= 5000) || t('feedback.validation.messageTooLong'),
+    v => !!v || $i18n('feedback.validation.messageRequired'),
+    v => (v && v.length >= 10) || $i18n('feedback.validation.messageTooShort'),
+    v => (v && v.length <= 5000) || $i18n('feedback.validation.messageTooLong'),
   ]
 
   // Submit feedback
@@ -131,7 +134,7 @@
 
     // Ensure parent profile is loaded
     if (!parentProfile.value) {
-      errorMessage.value = t('feedback.error.parentNotFound')
+      errorMessage.value = $i18n('feedback.error.parentNotFound')
       return
     }
 
@@ -147,14 +150,14 @@
       })
 
       // Show success message
-      successMessage.value = t('feedback.success')
+      successMessage.value = $i18n('feedback.success')
 
       // Reset form
       message.value = ''
       formRef.value.reset()
     } catch (error) {
       console.error('Error submitting feedback:', error)
-      errorMessage.value = t('feedback.error.submitFailed')
+      errorMessage.value = $i18n('feedback.error.submitFailed')
     } finally {
       submitting.value = false
     }
@@ -175,7 +178,7 @@
       parentProfile.value = await parentRepository.getByEmail(authStore.user.email)
 
       if (!parentProfile.value) {
-        errorMessage.value = t('feedback.error.parentNotFound')
+        errorMessage.value = $i18n('feedback.error.parentNotFound')
       }
     } catch (error) {
       console.error('Error loading parent data:', error)

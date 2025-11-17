@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useI18n } from '@/composables/useI18n'
+import { useI18n } from 'vue-banana-i18n'
 import { getFunctionsBaseUrl } from '@/config/functions'
 
 /**
@@ -10,7 +10,9 @@ import { getFunctionsBaseUrl } from '@/config/functions'
  * @returns {Object} Staff update functions and state
  */
 export function useStaffUpdate (token) {
-  const { t } = useI18n()
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // State
   const loadingStaff = ref(false)
@@ -71,7 +73,7 @@ export function useStaffUpdate (token) {
       return staffList
     } catch (error) {
       console.error('Failed to load staff:', error)
-      showMessage(t('staffUpdate.loadError'), 'error')
+      showMessage($i18n('staffUpdate.loadError'), 'error')
       throw error
     } finally {
       loadingStaff.value = false
@@ -105,10 +107,10 @@ export function useStaffUpdate (token) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      showMessage(t('staffUpdate.saveSuccess'), 'success')
+      showMessage($i18n('staffUpdate.saveSuccess'), 'success')
     } catch (error) {
       console.error('Failed to save changes:', error)
-      showMessage(t('staffUpdate.saveError'), 'error')
+      showMessage($i18n('staffUpdate.saveError'), 'error')
       throw error
     } finally {
       saving.value = false

@@ -9,8 +9,8 @@
           indeterminate
           size="64"
         />
-        <h3 class="text-h6 mb-2">{{ $t('auth.verifyingEmail') }}</h3>
-        <p class="text-body-2 text-medium-emphasis">{{ $t('auth.pleaseWait') }}</p>
+        <h3 class="text-h6 mb-2">{{ $i18n('auth.verifyingEmail') }}</h3>
+        <p class="text-body-2 text-medium-emphasis">{{ $i18n('auth.pleaseWait') }}</p>
       </v-card>
     </v-overlay>
 
@@ -27,10 +27,10 @@
           @click:close="showEmailVerifiedSuccess = false"
         >
           <v-alert-title class="text-h6">
-            {{ $t('auth.emailVerifiedSuccess') }}
+            {{ $i18n('auth.emailVerifiedSuccess') }}
           </v-alert-title>
           <div class="mt-2">
-            {{ $t('auth.emailVerifiedLoginPrompt') }}
+            {{ $i18n('auth.emailVerifiedLoginPrompt') }}
           </div>
         </v-alert>
 
@@ -49,10 +49,10 @@
               grow
             >
               <v-tab value="login">
-                {{ $t('auth.login') }}
+                {{ $i18n('auth.login') }}
               </v-tab>
               <v-tab value="register">
-                {{ $t('auth.register') }}
+                {{ $i18n('auth.register') }}
               </v-tab>
             </v-tabs>
 
@@ -78,7 +78,7 @@
             @click="$router.push('/')"
           >
             <v-icon start>mdi-home</v-icon>
-            {{ $t('auth.backToApp') }}
+            {{ $i18n('auth.backToApp') }}
           </v-btn>
         </div>
       </v-col>
@@ -93,14 +93,17 @@
   import LoginForm from '@/components/LoginForm.vue'
   import RegisterForm from '@/components/RegisterForm.vue'
   import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Component state
   const activeTab = ref('login')
@@ -189,8 +192,8 @@
       // Show error and continue to normal auth page
       authStore.setError(
         error.code === 'auth/invalid-action-code'
-          ? t('auth.invalidOrExpiredLink')
-          : t('auth.verificationFailed'),
+          ? $i18n('auth.invalidOrExpiredLink')
+          : $i18n('auth.verificationFailed'),
       )
       // Clear the query params to show clean URL
       router.replace({ path: '/auth', query: {} })

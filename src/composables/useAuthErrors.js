@@ -1,15 +1,17 @@
-import { useI18n } from '@/composables/useI18n'
+import { useI18n } from 'vue-banana-i18n'
 
 /**
  * Composable to translate auth error messages
  */
 export function useAuthErrors () {
-  const { t } = useI18n()
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const translateAuthError = error => {
     // If error is already a translation key (starts with 'auth.'), translate it
     if (typeof error === 'string' && error.startsWith('auth.')) {
-      return t(error)
+      return $i18n(error)
     }
 
     // Map common auth errors to translation keys
@@ -34,7 +36,7 @@ export function useAuthErrors () {
 
     // Check if we have a translation for this error
     if (errorMap[error]) {
-      return t(errorMap[error])
+      return $i18n(errorMap[error])
     }
 
     // Return original error if no translation available

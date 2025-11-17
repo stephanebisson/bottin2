@@ -79,7 +79,7 @@
           <v-card class="mb-6">
             <v-card-title class="d-flex align-center bg-primary-lighten-5">
               <v-icon class="me-2" color="primary">mdi-account-child</v-icon>
-              {{ $t('profile.myChildren') }}
+              {{ $i18n('profile.myChildren') }}
             </v-card-title>
 
             <v-card-text v-if="children.length > 0" class="pa-0">
@@ -109,7 +109,7 @@
                         size="small"
                         variant="outlined"
                       >
-                        {{ $t('profile.class') }}: {{ child.className }}
+                        {{ $i18n('profile.class') }}: {{ child.className }}
                       </v-chip>
 
                       <v-chip
@@ -124,7 +124,7 @@
 
                     <div v-if="getTeacherName(child.className)" class="mt-2">
                       <span class="text-body-2">
-                        {{ $t('profile.teacher') }}: {{ getTeacherName(child.className) }}
+                        {{ $i18n('profile.teacher') }}: {{ getTeacherName(child.className) }}
                       </span>
                     </div>
                   </v-list-item-subtitle>
@@ -134,7 +134,7 @@
 
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
               <v-icon class="mb-2" size="48">mdi-account-child-outline</v-icon>
-              <p>{{ $t('profile.noChildrenFound') }}</p>
+              <p>{{ $i18n('profile.noChildrenFound') }}</p>
             </v-card-text>
           </v-card>
         </v-col>
@@ -145,7 +145,7 @@
           <v-card class="mb-6">
             <v-card-title class="d-flex align-center bg-success-lighten-5">
               <v-icon class="me-2" color="success">mdi-account-group</v-icon>
-              {{ $t('profile.committees') }}
+              {{ $i18n('profile.committees') }}
             </v-card-title>
 
             <v-card-text v-if="committees.length > 0" class="pa-0">
@@ -178,7 +178,7 @@
 
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
               <v-icon class="mb-2" size="32">mdi-account-group-outline</v-icon>
-              <p class="text-body-2">{{ $t('profile.noCommitteesFound') }}</p>
+              <p class="text-body-2">{{ $i18n('profile.noCommitteesFound') }}</p>
             </v-card-text>
           </v-card>
 
@@ -186,7 +186,7 @@
           <v-card v-if="displayedInterests.length > 0" class="mb-6">
             <v-card-title class="d-flex align-center bg-info-lighten-5">
               <v-icon class="me-2" color="info">mdi-star</v-icon>
-              {{ $t('profile.interests') }}
+              {{ $i18n('profile.interests') }}
             </v-card-title>
 
             <v-card-text class="pa-4">
@@ -211,8 +211,8 @@
     <v-card v-else-if="!loading" class="text-center py-8">
       <v-card-text>
         <v-icon class="mb-4" color="grey-darken-2" size="64">mdi-account-question</v-icon>
-        <h2 class="text-h5 mb-2">{{ $t('profile.noProfileFound') }}</h2>
-        <p class="text-body-1 text-grey-darken-1">{{ $t('profile.contactAdmin') }}</p>
+        <h2 class="text-h5 mb-2">{{ $i18n('profile.noProfileFound') }}</h2>
+        <p class="text-body-1 text-grey-darken-1">{{ $i18n('profile.contactAdmin') }}</p>
       </v-card-text>
     </v-card>
   </v-container>
@@ -220,12 +220,15 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from '@/composables/useI18n'
+  import { useI18n } from 'vue-banana-i18n'
   import { getInterestNames } from '@/config/interests'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const { t } = useI18n()
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
@@ -332,7 +335,7 @@
         staff.email && staff.email.toLowerCase() === authStore.user.email.toLowerCase(),
       )
 
-      error.value = isStaff ? t('profile.staffNotAvailable') : t('profile.noProfileFoundMessage')
+      error.value = isStaff ? $i18n('profile.staffNotAvailable') : $i18n('profile.noProfileFoundMessage')
     }
   })
 </script>

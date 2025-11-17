@@ -14,21 +14,21 @@
       @click:close="showWelcomeMessage = false"
     >
       <v-alert-title class="text-h5 mb-2">
-        🎉 {{ $t('auth.emailVerifiedSuccessTitle') }}
+        🎉 {{ $i18n('auth.emailVerifiedSuccessTitle') }}
       </v-alert-title>
-      <div>{{ $t('auth.welcomeEmailVerified') }}</div>
+      <div>{{ $i18n('auth.welcomeEmailVerified') }}</div>
     </v-alert>
 
     <!-- Header Section -->
     <div class="text-center mb-8">
-      <h1 class="text-h3 font-weight-bold mb-2">{{ $t('nav.schoolDirectory') }}</h1>
-      <p class="text-h6 text-grey-darken-1">{{ $t('dashboard.welcome') }}</p>
+      <h1 class="text-h3 font-weight-bold mb-2">{{ $i18n('nav.schoolDirectory') }}</h1>
+      <p class="text-h6 text-grey-darken-1">{{ $i18n('dashboard.welcome') }}</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="firebaseStore.loading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $t('dashboard.loadingData') }}</p>
+      <p class="text-h6 mt-4">{{ $i18n('dashboard.loadingData') }}</p>
     </div>
 
     <!-- Error State -->
@@ -36,7 +36,7 @@
       <v-alert
         closable
         :text="firebaseStore.error"
-        :title="$t('dashboard.errorLoadingData')"
+        :title="$i18n('dashboard.errorLoadingData')"
         type="error"
         @click:close="firebaseStore.error = null"
       />
@@ -103,15 +103,18 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import TicTacToeCard from '@/components/TicTacToeCard.vue'
-  import { useI18n } from '@/composables/useI18n'
   import { usePWA } from '@/composables/usePWA'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const router = useRouter()
   const route = useRoute()
-  const { t } = useI18n()
   const { isRunningAsPWA } = usePWA()
 
   // Welcome message state
@@ -160,48 +163,48 @@
   // Navigation items for the grid
   const navigationItems = computed(() => [
     {
-      title: t('nav.classes'),
-      description: t('dashboard.classesDescription'),
+      title: $i18n('nav.classes'),
+      description: $i18n('dashboard.classesDescription'),
       icon: 'mdi-school',
       color: 'primary',
       route: '/classes',
       count: firebaseStore.classes.length,
-      countLabel: t('dashboard.classes').toLowerCase(),
+      countLabel: $i18n('dashboard.classes').toLowerCase(),
     },
     {
-      title: t('directory.title'),
-      description: t('dashboard.familiesDescription'),
+      title: $i18n('directory.title'),
+      description: $i18n('dashboard.familiesDescription'),
       icon: 'mdi-book-account',
       color: 'secondary',
       route: '/families',
       counts: [
         {
           count: firebaseStore.studentsDTO.length,
-          label: t('dashboard.students').toLowerCase(),
+          label: $i18n('dashboard.students').toLowerCase(),
         },
         {
           count: firebaseStore.parentsDTO.length,
-          label: t('dashboard.parents').toLowerCase(),
+          label: $i18n('dashboard.parents').toLowerCase(),
         },
       ],
     },
     {
-      title: t('nav.staff'),
-      description: t('dashboard.staffDescription'),
+      title: $i18n('nav.staff'),
+      description: $i18n('dashboard.staffDescription'),
       icon: 'mdi-account-tie',
       color: 'accent',
       route: '/staff',
       count: firebaseStore.staffDTO.length,
-      countLabel: t('dashboard.staffMembers').toLowerCase(),
+      countLabel: $i18n('dashboard.staffMembers').toLowerCase(),
     },
     {
-      title: t('nav.committees'),
-      description: t('dashboard.committeesDescription'),
+      title: $i18n('nav.committees'),
+      description: $i18n('dashboard.committeesDescription'),
       icon: 'mdi-account-group',
       color: 'warning',
       route: '/committees',
       count: firebaseStore.committees.length,
-      countLabel: t('dashboard.committees').toLowerCase(),
+      countLabel: $i18n('dashboard.committees').toLowerCase(),
     },
   ])
 

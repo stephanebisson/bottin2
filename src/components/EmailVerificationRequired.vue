@@ -7,34 +7,34 @@
             <v-icon class="mb-4" color="warning" size="64">
               mdi-email-alert
             </v-icon>
-            <div>{{ $t('auth.emailVerificationRequired') }}</div>
+            <div>{{ $i18n('auth.emailVerificationRequired') }}</div>
           </v-card-title>
 
           <v-card-text class="text-center">
             <!-- Step-by-step instructions for new registrations -->
             <div v-if="isNewRegistration" class="mb-4">
               <p class="mb-3 text-h6 text-success">
-                🎉 {{ $t('auth.accountCreatedSuccessfully') }}
+                🎉 {{ $i18n('auth.accountCreatedSuccessfully') }}
               </p>
               <p class="mb-4">
-                {{ $t('auth.accountCreatedPleaseVerify') }}
+                {{ $i18n('auth.accountCreatedPleaseVerify') }}
               </p>
 
               <!-- Step-by-step guide -->
               <v-list class="bg-transparent text-start" density="compact">
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-1-circle">
                   <v-list-item-title class="text-body-2">
-                    {{ $t('auth.step1CheckEmail') }}
+                    {{ $i18n('auth.step1CheckEmail') }}
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-2-circle">
                   <v-list-item-title class="text-body-2">
-                    {{ $t('auth.step2ClickLink') }}
+                    {{ $i18n('auth.step2ClickLink') }}
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-3-circle">
                   <v-list-item-title class="text-body-2">
-                    {{ $t('auth.step3AutoRedirect') }}
+                    {{ $i18n('auth.step3AutoRedirect') }}
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -44,26 +44,26 @@
             <div v-else class="mb-4">
               <div v-if="isReturningUser">
                 <p class="mb-3 text-h6 text-warning">
-                  🔐 {{ $t('auth.loginBlockedEmailNotVerified') }}
+                  🔐 {{ $i18n('auth.loginBlockedEmailNotVerified') }}
                 </p>
                 <p class="mb-4">
-                  {{ $t('auth.mustVerifyBeforeAccess') }}
+                  {{ $i18n('auth.mustVerifyBeforeAccess') }}
                 </p>
               </div>
               <div v-else-if="isBlockedAccess">
                 <p class="mb-3 text-h6 text-error">
-                  🚫 {{ $t('auth.accessBlockedEmailNotVerified') }}
+                  🚫 {{ $i18n('auth.accessBlockedEmailNotVerified') }}
                 </p>
                 <p class="mb-4">
-                  {{ $t('auth.verifyToUnlockAccess') }}
+                  {{ $i18n('auth.verifyToUnlockAccess') }}
                 </p>
               </div>
               <div v-else>
                 <p class="mb-4">
-                  {{ $t('auth.pleaseVerifyEmail') }}
+                  {{ $i18n('auth.pleaseVerifyEmail') }}
                 </p>
                 <p class="mb-4 text-medium-emphasis">
-                  {{ $t('auth.verificationEmailSent') }}
+                  {{ $i18n('auth.verificationEmailSent') }}
                 </p>
               </div>
             </div>
@@ -74,7 +74,7 @@
               class="mb-4"
               closable
               icon="mdi-check-circle"
-              :text="$t('auth.verificationEmailSentSuccess')"
+              :text="$i18n('auth.verificationEmailSentSuccess')"
               type="success"
               @click:close="verificationSent = false"
             />
@@ -103,7 +103,7 @@
                 variant="elevated"
                 @click="resendVerification"
               >
-                {{ $t('auth.resendVerificationEmail') }}
+                {{ $i18n('auth.resendVerificationEmail') }}
               </v-btn>
 
               <v-btn
@@ -116,7 +116,7 @@
                 variant="outlined"
                 @click="manualRefresh"
               >
-                {{ $t('auth.iHaveVerifiedEmail') }}
+                {{ $i18n('auth.iHaveVerifiedEmail') }}
               </v-btn>
 
               <!-- Auto-check status indicator -->
@@ -128,7 +128,7 @@
                   variant="outlined"
                 >
                   <v-icon class="me-1" size="small">mdi-autorenew</v-icon>
-                  {{ $t('auth.autoCheckingIn', { seconds: timeLeft }) }}
+                  {{ $i18n('auth.autoCheckingIn', timeLeft) }}
                 </v-chip>
               </div>
 
@@ -139,7 +139,7 @@
                   size="small"
                 >
                   <v-icon class="me-1" size="small">mdi-loading mdi-spin</v-icon>
-                  {{ $t('auth.checkingVerification') }}
+                  {{ $i18n('auth.checkingVerification') }}
                 </v-chip>
               </div>
 
@@ -151,7 +151,7 @@
                 variant="text"
                 @click="signOut"
               >
-                {{ $t('auth.logout') }}
+                {{ $i18n('auth.logout') }}
               </v-btn>
 
               <!-- Debug button for development -->
@@ -164,7 +164,7 @@
                 variant="outlined"
                 @click="debugUserState"
               >
-                {{ $t('auth.debugUserState') }}
+                {{ $i18n('auth.debugUserState') }}
               </v-btn>
             </v-col>
           </v-card-actions>
@@ -176,16 +176,18 @@
 
 <script setup>
   import { computed, onMounted, onUnmounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
-  import { useI18n } from '@/composables/useI18n'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
-  const { t } = useI18n()
-
   // Development mode check
   const isDevelopment = computed(() => import.meta.env.DEV)
 
@@ -304,12 +306,12 @@
 
         // Add helpful debugging info for user
         authStore.setError(
-          t('auth.emailStillNotVerified') + t('auth.differentBrowserHint'),
+          $i18n('auth.emailStillNotVerified') + $i18n('auth.differentBrowserHint'),
         )
       }
     } catch (error) {
       console.error('Manual refresh failed:', error)
-      authStore.setError(t('auth.failedCheckVerificationStatus'))
+      authStore.setError($i18n('auth.failedCheckVerificationStatus'))
     } finally {
       checkingVerification.value = false
     }

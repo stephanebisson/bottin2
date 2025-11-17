@@ -24,7 +24,7 @@
     <v-card-text class="pa-4">
       <div v-if="loading" class="text-center py-8">
         <v-progress-circular color="primary" indeterminate />
-        <p class="mt-4">{{ $t('committees.loadingMembers') }}</p>
+        <p class="mt-4">{{ $i18n('committees.loadingMembers') }}</p>
       </div>
 
       <div v-else-if="error" class="text-center py-4">
@@ -35,14 +35,14 @@
         <!-- Current Members -->
         <div class="mb-6">
           <div class="d-flex align-center justify-space-between mb-4">
-            <h3 class="text-h6">{{ $t('committees.currentMembers') }}</h3>
+            <h3 class="text-h6">{{ $i18n('committees.currentMembers') }}</h3>
             <v-btn
               color="primary"
               prepend-icon="mdi-plus"
               size="small"
               @click="showAddMember = true"
             >
-              {{ $t('committees.addMember') }}
+              {{ $i18n('committees.addMember') }}
             </v-btn>
           </div>
 
@@ -65,7 +65,7 @@
                     size="small"
                     variant="tonal"
                   >
-                    {{ member.memberType === 'staff' ? $t('committees.staff') : $t('committees.parent') }}
+                    {{ member.memberType === 'staff' ? $i18n('committees.staff') : $i18n('committees.parent') }}
                   </v-chip>
                 </div>
 
@@ -76,7 +76,7 @@
                     density="compact"
                     hide-details
                     :items="availableRoles"
-                    :label="$t('common.role')"
+                    :label="$i18n('common.role')"
                     style="min-width: 150px;"
                     variant="outlined"
                     @update:model-value="markAsModified(index)"
@@ -98,14 +98,14 @@
 
           <div v-else class="text-center py-4 text-grey-darken-1">
             <v-icon class="mb-2" color="grey-darken-2" size="48">mdi-account-group-outline</v-icon>
-            <div>{{ $t('committees.noMembers') }}</div>
+            <div>{{ $i18n('committees.noMembers') }}</div>
           </div>
         </div>
 
         <!-- Add Member Section -->
         <v-expand-transition>
           <v-card v-if="showAddMember" class="pa-4 bg-grey-lighten-4" variant="outlined">
-            <h4 class="text-h6 mb-3 text-grey-darken-3">{{ $t('committees.addNewMember') }}</h4>
+            <h4 class="text-h6 mb-3 text-grey-darken-3">{{ $i18n('committees.addNewMember') }}</h4>
 
             <v-row>
               <v-col cols="12" md="6">
@@ -115,7 +115,7 @@
                   item-title="label"
                   item-value="email"
                   :items="availableUsers"
-                  :label="$t('committees.selectUser')"
+                  :label="$i18n('committees.selectUser')"
                   :loading="searchingUsers"
                   prepend-inner-icon="mdi-magnify"
                   variant="outlined"
@@ -126,7 +126,7 @@
                 <v-select
                   v-model="newMemberRole"
                   :items="availableRoles"
-                  :label="$t('common.role')"
+                  :label="$i18n('common.role')"
                   variant="outlined"
                 />
               </v-col>
@@ -159,7 +159,7 @@
         variant="text"
         @click="$emit('close')"
       >
-        {{ $t('common.cancel') }}
+        {{ $i18n('common.cancel') }}
       </v-btn>
       <v-btn
         color="primary"
@@ -167,7 +167,7 @@
         :loading="saving"
         @click="saveChanges"
       >
-        {{ $t('common.save') }}
+        {{ $i18n('common.save') }}
       </v-btn>
     </v-card-actions>
   </v-card>
