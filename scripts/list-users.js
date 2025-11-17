@@ -127,7 +127,7 @@ async function listUsers () {
       // CSV header
       console.log('UID,Email,Display Name,Email Verified,Disabled,Admin,Created At,Last Sign In,Providers')
       // CSV rows
-      userData.forEach(user => {
+      for (const user of userData) {
         console.log([
           user.uid,
           user.email,
@@ -139,7 +139,7 @@ async function listUsers () {
           user.lastSignIn,
           user.providers,
         ].map(v => `"${v}"`).join(','))
-      })
+      }
     } else {
       // Table format (default) - one user per line
       if (userData.length === 0) {
@@ -158,7 +158,7 @@ async function listUsers () {
         console.log(separator)
 
         // Print each user on one line
-        userData.forEach((user, index) => {
+        for (const [index, user] of userData.entries()) {
           const num = `${index + 1}.`.padEnd(4)
           const verifiedIcon = (user.emailVerified ? '✅' : '❌').padEnd(3)
           const email = user.email.padEnd(maxEmailWidth)
@@ -168,7 +168,7 @@ async function listUsers () {
           const lastSignIn = (user.lastSignIn === 'Never' ? 'Never' : new Date(user.lastSignIn).toISOString().slice(0, 19).replace('T', ' ')).padEnd(20)
 
           console.log(`${num} ${verifiedIcon} ${email} ${displayName} ${admin} ${created} ${lastSignIn}`)
-        })
+        }
 
         console.log(separator)
 
