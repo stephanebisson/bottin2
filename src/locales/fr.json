@@ -788,6 +788,12 @@
     "scrollToBottom": "Défiler vers le bas",
     "newMessagesBelow": "Nouveaux messages ci-dessous"
   },
+  "games": {
+    "title": "Jeux",
+    "subtitle": "Prenez une pause et amusez-vous!",
+    "comingSoon": "Bientôt disponible",
+    "moreGames": "Plus de jeux à venir..."
+  },
   "easterEgg": {
     "ticTacToe": "Tic-Tac-Toe",
     "takeABreak": "Prenez une petite pause!",
@@ -795,7 +801,15 @@
     "youWin": "Vous avez gagné!",
     "computerWins": "L'ordinateur gagne!",
     "draw": "Match nul!",
-    "newGame": "Nouvelle partie"
+    "newGame": "Nouvelle partie",
+    "2048": "2048",
+    "joinTiles": "Assemblez les tuiles, atteignez 2048!",
+    "score": "Score",
+    "best": "Meilleur",
+    "youWin2048": "Vous avez gagné!",
+    "gameOver": "Partie terminée!",
+    "useArrows": "Utilisez les flèches ou glissez",
+    "continue": "Continuer"
   },
   "pwa": {
     "updateAvailable": "Une nouvelle version est disponible",

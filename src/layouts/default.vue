@@ -29,7 +29,7 @@
       <router-view />
     </v-main>
 
-    <AppFooter v-if="!isPrintPage && !mobile" />
+    <AppFooter v-if="!isPrintPage" />
 
     <!-- Messaging System -->
     <MessagingShell

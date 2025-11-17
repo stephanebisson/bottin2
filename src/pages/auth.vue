@@ -89,11 +89,11 @@
 <script setup>
   import { applyActionCode } from 'firebase/auth'
   import { onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import LoginForm from '@/components/LoginForm.vue'
   import RegisterForm from '@/components/RegisterForm.vue'
   import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 

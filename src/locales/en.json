@@ -777,6 +777,12 @@
     "scrollToBottom": "Scroll to bottom",
     "newMessagesBelow": "New messages below"
   },
+  "games": {
+    "title": "Games",
+    "subtitle": "Take a break and have some fun!",
+    "comingSoon": "Coming soon",
+    "moreGames": "More games on the way..."
+  },
   "easterEgg": {
     "ticTacToe": "Tic-Tac-Toe",
     "takeABreak": "Take a quick break!",
@@ -784,7 +790,15 @@
     "youWin": "You win!",
     "computerWins": "Computer wins!",
     "draw": "It's a draw!",
-    "newGame": "New game"
+    "newGame": "New game",
+    "2048": "2048",
+    "joinTiles": "Join the tiles, get to 2048!",
+    "score": "Score",
+    "best": "Best",
+    "youWin2048": "You won!",
+    "gameOver": "Game over!",
+    "useArrows": "Use arrow keys or swipe",
+    "continue": "Continue"
   },
   "pwa": {
     "updateAvailable": "A new version is available",

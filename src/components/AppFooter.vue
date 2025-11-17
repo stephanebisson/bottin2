@@ -9,6 +9,13 @@
       >
         bottin.etoile.filante@gmail.com
       </a>
+      <span class="mx-2">•</span>
+      <router-link
+        class="game-link"
+        to="/games"
+      >
+        <v-icon size="14">mdi-gamepad-variant</v-icon>
+      </router-link>
     </div>
   </v-footer>
 </template>
@@ -19,6 +26,21 @@
 <style scoped>
 .footer-compact {
   height: auto !important;
+}
+
+.game-link {
+  color: rgba(var(--v-theme-on-surface), 0.38);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+  display: inline-flex;
+  align-items: center;
+}
+
+.game-link:hover {
+  opacity: 1;
+  color: rgb(var(--v-theme-success));
+  transform: scale(1.1);
 }
 
 /* Mobile optimization */
