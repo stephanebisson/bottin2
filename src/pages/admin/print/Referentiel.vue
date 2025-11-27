@@ -12,7 +12,7 @@
       permettre aux enfants de se les approprier.</p>
 
     <p><strong>L’année 2017-2018</strong> a été marquée par une redéfinition de l’approche
-      pédagogique de l’école. L’école a adopté La pédagogie ouverte et
+      pédagogique de l’école. L’école a adopté la pédagogie ouverte et
       interactive, qui s’inscrivait en continuité avec les pratiques pédagogiques des
       enseignants et dans laquelle la créativité occupe une place de premier plan.</p>
 
@@ -44,11 +44,11 @@
       pédagogique de l’école en portant une attention particulière à la structure
       participative (coéducation, comités et implication parentale). Le référentiel
       complet (4 sections) est enfin diffusé dans le calendrier mensuel ainsi que
-      dans l’Infolettre de l’OPP.</p>
+      dans l’infolettre de l’OPP.</p>
 
-    <p><strong>L’année 2023-2024 :</strong> toutes les familles de l’école ont reçu une version
+    <p><strong>L’année 2023-2024 :</strong> Toutes les familles de l’école ont reçu une version
       imprimée du référentiel pédagogique. Le référentiel est également diffusé sur
-      le site web de l’école.</p>
+      le site Web de l’école.</p>
 
   </PrintPage>
 </template>

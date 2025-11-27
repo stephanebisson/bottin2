@@ -11,7 +11,7 @@
 
     <ol class="numbered-list">
       <li>
-        <strong>Moments de coéducation</strong> en accompagnant les élèves en classe lors des:
+        <strong>Moments de coéducation</strong> en accompagnant les élèves en classe lors des :
         <ul class="bullet-list">
           <li>Activités Ouvertes d'Apprentissage (AOA);</li>
           <li>Ateliers - animation ou supervision (mercredi après-midi);</li>
@@ -27,7 +27,7 @@
       </li>
 
       <li>
-        <strong>D'autres occasions d'être avec les élèves:</strong>
+        <strong>D'autres occasions d'être avec les élèves :</strong>
         <ul class="bullet-list">
           <li>Bibliothèque;</li>
           <li>Sorties;</li>
@@ -46,8 +46,8 @@
 
     <h2>Comment s'informer?</h2>
 
-    <p>Restez informés avec les courriels de l'école, le Calendrier et l'info du mois
-      (direction), l'infolettre de l'OPP (Organisation de Participation des Parents) et
+    <p>Restez informés avec les courriels de l'école, le calendrier et l'info du mois
+      (direction), l'infolettre de l'OPP (Organisation de participation des parents) et
       le groupe privé Facebook de la communauté de l'école Étoile filante.</p>
 
     <p class="emphasis">Bref, les occasions ne manquent pas! À vous de faire le saut et de
