@@ -4,7 +4,7 @@
     <div class="children-section">
       <div v-for="child in parent.children" :key="child.id" class="child-row">
         <div class="child-name">{{ child.lastNameFirst }}</div>
-        <div class="child-class">({{ child.teacherFirstName }}{{ child.levelDisplay ? ', ' + child.levelDisplay : '' }})</div>
+        <div class="child-class">{{ child.teacherFirstName }}{{ child.levelDisplay ? ', ' + child.levelDisplay : '' }}</div>
       </div>
     </div>
   </div>
