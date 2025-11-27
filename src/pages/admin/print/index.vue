@@ -62,7 +62,7 @@
             </h3>
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
@@ -86,7 +86,7 @@
             </h3>
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
@@ -109,7 +109,7 @@
             </h3>
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
@@ -131,7 +131,7 @@
             </h3>
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
@@ -183,6 +183,7 @@
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import BackPage from './BackPage.vue'
   import ClassesPage from './ClassesPage.vue'
   import CommitteeFullPage from './CommitteeFullPage.vue'
@@ -785,24 +786,12 @@
     })
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 
   // Get formatted school phone
-  const schoolPhone = computed(() => formatPhone(SCHOOL_LOCATION.phone))
+  const schoolPhone = computed(() => formatPhoneForDisplay(SCHOOL_LOCATION.phone))
 
   // Get formatted SDG phone
-  const sdgPhone = computed(() => formatPhone(SDG_INFO.phone))
+  const sdgPhone = computed(() => formatPhoneForDisplay(SDG_INFO.phone))
 
   // Load all data
   async function loadData () {

@@ -18,7 +18,7 @@
         <div class="parent-name">{{ family.parent1.fullName }}</div>
         <div class="parent-contact">
           <span v-if="family.parent1.email" class="parent-email">{{ family.parent1.email }}</span>
-          <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhone(family.parent1.phone) }}</span>
+          <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent1.phone) }}</span>
           <span v-if="formatAddress(family.parent1)" class="parent-address">{{ formatAddress(family.parent1) }}</span>
         </div>
       </div>
@@ -26,7 +26,7 @@
         <div class="parent-name">{{ family.parent2.fullName }}</div>
         <div class="parent-contact">
           <span v-if="family.parent2.email" class="parent-email">{{ family.parent2.email }}</span>
-          <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhone(family.parent2.phone) }}</span>
+          <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent2.phone) }}</span>
           <span v-if="formatAddress(family.parent2)" class="parent-address">{{ formatAddress(family.parent2) }}</span>
         </div>
       </div>
@@ -35,6 +35,8 @@
 </template>
 
 <script setup>
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+
   const props = defineProps({
     family: {
       type: Object,
@@ -72,18 +74,6 @@
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   }
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 </script>
 
 <style scoped>

@@ -62,7 +62,7 @@ export function formatPhoneForDisplay (phone) {
   const digits = extractDigits(phone)
 
   if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+    return `${digits.slice(0, 3)} ${digits.slice(3, 6)}-${digits.slice(6)}`
   }
 
   return phone // Return original if not 10 digits

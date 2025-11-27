@@ -9,7 +9,7 @@
         </h1>
         <div class="committee-contact">
           <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
-          <div v-if="committee.phone" class="committee-phone">{{ formatPhone(committee.phone) }}</div>
+          <div v-if="committee.phone" class="committee-phone">{{ formatPhoneForDisplay(committee.phone) }}</div>
           <div v-if="committee.url" class="committee-url">{{ committee.url }}</div>
         </div>
       </div>
@@ -35,6 +35,7 @@
 </template>
 
 <script setup>
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import CommitteeTable from './components/CommitteeTable.vue'
   import PrintPage from './PrintPage.vue'
 
@@ -65,18 +66,6 @@
     },
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 </script>
 
 <style scoped>

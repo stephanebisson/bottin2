@@ -18,7 +18,7 @@
           <div class="sdg-staff-name">{{ member.first_name }} {{ member.last_name }}</div>
           <div v-if="member.title" class="sdg-staff-title">{{ member.title }}</div>
         </td>
-        <td class="sdg-phone-cell">{{ formatPhone(member.phone) || '' }}</td>
+        <td class="sdg-phone-cell">{{ formatPhoneForDisplay(member.phone) || '' }}</td>
         <td class="sdg-email-cell">{{ member.email || '' }}</td>
       </tr>
     </tbody>
@@ -36,6 +36,8 @@
 </template>
 
 <script setup>
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+
   const props = defineProps({
     members: {
       type: Array,
@@ -48,18 +50,6 @@
     },
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 </script>
 
 <style scoped>

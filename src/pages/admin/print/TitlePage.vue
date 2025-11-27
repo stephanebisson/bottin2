@@ -10,7 +10,7 @@
           </h1>
         </div>
         <div class="title-section">
-          <h2 class="subtitle">2025 2026</h2>
+          <h2 class="subtitle">2025 - 2026</h2>
         </div>
         <div class="title-section">
           <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">

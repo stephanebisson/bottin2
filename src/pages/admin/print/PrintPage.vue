@@ -21,7 +21,7 @@
     <!-- Manual page footer (replaces @page @bottom-center) -->
     <div v-if="!noFooter" class="page-footer">
       <span class="page-number-left"><span class="page-number" /></span>
-      <span class="footer-center">Le Bottin de L'Étoile filante 2025-2026</span>
+      <span class="footer-center">Le Bottin de L'Étoile filante 2025 - 2026</span>
       <span class="page-number-right"><span class="page-number" /></span>
     </div>
 

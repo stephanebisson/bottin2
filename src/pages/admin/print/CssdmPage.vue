@@ -8,7 +8,7 @@
       <div class="cssdm-info">
         <div v-if="CSSDM_INFO.addressLine1" class="cssdm-address">{{ CSSDM_INFO.addressLine1 }}</div>
         <div v-if="CSSDM_INFO.addressLine2" class="cssdm-address">{{ CSSDM_INFO.addressLine2 }}</div>
-        <div v-if="CSSDM_INFO.phone" class="cssdm-phone">{{ formatPhone(CSSDM_INFO.phone) }}</div>
+        <div v-if="CSSDM_INFO.phone" class="cssdm-phone">{{ formatPhoneForDisplay(CSSDM_INFO.phone) }}</div>
         <div v-if="CSSDM_INFO.email" class="cssdm-email">{{ CSSDM_INFO.email }}</div>
         <div v-if="CSSDM_INFO.url" class="cssdm-url">{{ CSSDM_INFO.url }}</div>
       </div>
@@ -24,7 +24,7 @@
             </h3>
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhone(committee.phone) }}</span>
+              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
@@ -47,7 +47,7 @@
             </div>
             <div class="committee-contact-repaq">
               <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
-              <div v-if="committee.phone" class="committee-phone">{{ formatPhone(committee.phone) }}</div>
+              <div v-if="committee.phone" class="committee-phone">{{ formatPhoneForDisplay(committee.phone) }}</div>
               <div v-if="committee.url" class="committee-url">{{ committee.url }}</div>
             </div>
           </div>
@@ -64,6 +64,7 @@
 
 <script setup>
   import { CSSDM_INFO } from '@/config/cssdm'
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import CommitteeTable from './components/CommitteeTable.vue'
   import PrintPage from './PrintPage.vue'
 
@@ -82,18 +83,6 @@
     },
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 
   function getRoleGroups (committee) {
     return props.roleGroupsMap[committee.id] || []

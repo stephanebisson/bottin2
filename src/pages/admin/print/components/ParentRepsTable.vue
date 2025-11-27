@@ -5,12 +5,12 @@
       <tbody>
         <tr v-if="rep1">
           <td class="parent-rep-name-cell">{{ rep1.name }}</td>
-          <td class="parent-rep-phone-cell">{{ rep1.phone ? formatPhone(rep1.phone) : '' }}</td>
+          <td class="parent-rep-phone-cell">{{ rep1.phone ? formatPhoneForDisplay(rep1.phone) : '' }}</td>
           <td class="parent-rep-email-cell">{{ rep1.email || '' }}</td>
         </tr>
         <tr v-if="rep2">
           <td class="parent-rep-name-cell">{{ rep2.name }}</td>
-          <td class="parent-rep-phone-cell">{{ rep2.phone ? formatPhone(rep2.phone) : '' }}</td>
+          <td class="parent-rep-phone-cell">{{ rep2.phone ? formatPhoneForDisplay(rep2.phone) : '' }}</td>
           <td class="parent-rep-email-cell">{{ rep2.email || '' }}</td>
         </tr>
       </tbody>
@@ -19,6 +19,8 @@
 </template>
 
 <script setup>
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+
   const props = defineProps({
     rep1: {
       type: Object,
@@ -30,18 +32,6 @@
     },
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 </script>
 
 <style scoped>

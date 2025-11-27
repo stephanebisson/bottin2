@@ -16,7 +16,7 @@
               {{ member.fullName }}
             </td>
             <td class="phone-cell">
-              {{ formatPhone(member.phone) || '' }}
+              {{ formatPhoneForDisplay(member.phone) || '' }}
             </td>
             <td class="email-cell">
               {{ member.email || '' }}
@@ -32,7 +32,7 @@
             {{ member.fullName }}
           </td>
           <td class="phone-cell">
-            {{ formatPhone(member.phone) || '' }}
+            {{ formatPhoneForDisplay(member.phone) || '' }}
           </td>
           <td class="email-cell">
             {{ member.email || '' }}
@@ -44,6 +44,8 @@
 </template>
 
 <script setup>
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+
   const props = defineProps({
     members: {
       type: Array,
@@ -63,18 +65,6 @@
     },
   })
 
-  // Helper: Format phone number
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
 </script>
 
 <style scoped>
