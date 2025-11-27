@@ -59,7 +59,7 @@ export const COMMITTEE_ROLES = {
     'Président',
     'Secrétaire',
     'Substitut',
-    'Vice-Président',
+    'Vice-président',
   ],
   'Comité des usagers SDG': [
     'Membre',
@@ -71,8 +71,8 @@ export const COMMITTEE_ROLES = {
   ],
   'Fondation': [
     'Administratrices et administrateurs',
-    'Co-Présidente',
-    'Vice-Président',
+    'Co-présidente',
+    'Vice-président',
     'Observateur',
     'Secrétaire',
     'Trésorier',
@@ -109,7 +109,7 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
   'Conseil d\'établissement': [
     // TODO: Fill in the desired order
     'Président',
-    'Vice-Président',
+    'Vice-président',
     'Secrétaire',
     'Membre Parent',
     'Enseignant(e)',
@@ -118,8 +118,8 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
     'Membre non votants direction',
   ],
   'Fondation': [
-    'Co-Présidente',
-    'Vice-Président',
+    'Co-présidente',
+    'Vice-président',
     'Secrétaire',
     'Trésorier',
     'Administratrices et administrateurs',
