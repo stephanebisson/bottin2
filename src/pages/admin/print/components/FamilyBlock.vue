@@ -36,6 +36,7 @@
 
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+  import { formatPostalCodeForDisplay } from '@/utils/postalCodeFormatter'
 
   const props = defineProps({
     family: {
@@ -69,7 +70,7 @@
 
     if (parent.address) addressParts.push(parent.address)
     if (parent.city) addressParts.push(parent.city)
-    if (parent.postal_code) addressParts.push(parent.postal_code)
+    if (parent.postal_code) addressParts.push(formatPostalCodeForDisplay(parent.postal_code))
 
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   }
