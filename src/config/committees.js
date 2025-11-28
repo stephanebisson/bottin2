@@ -55,7 +55,7 @@ export const COMMITTEE_ROLES = {
     'Membre non votants direction',
     'SDG',
     'Subsitut',
-    'Membre Parent',
+    'Membre parent',
     'Président',
     'Secrétaire',
     'Substitut',
