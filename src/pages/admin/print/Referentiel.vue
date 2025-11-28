@@ -21,7 +21,7 @@
       de consultation, nous avons mieux déterminé celles qui seraient mises de
       l’avant durant les prochaines années.</p>
 
-    <h3>Autonomie / Collaboration; Effort / Engagement; Respect / Harmonie.</h3>
+    <h3>Autonomie / Collaboration; Effort / Engagement; Respect / Harmonie</h3>
 
     <p>Ces valeurs fonctionnent en duo, car une valeur en appelle une autre et ce
       pairage permet d’enrichir la pratique pédagogique. Elles s’inscrivent aussi
