@@ -54,7 +54,7 @@
 
         <!-- En lien avec le projet éducatif -->
         <h2 class="committee-category-title">En lien avec le projet éducatif</h2>
-        <div v-for="committee in getCommitteesByNames(['Admissions', 'CAMPÉ'])" :key="committee.id" class="committee">
+        <div v-for="committee in getCommitteesByNames(['Admissions', 'CAMPÉR'])" :key="committee.id" class="committee">
           <div class="committee-header-inline">
             <h3 class="committee-name">
               {{ committee.name }}
