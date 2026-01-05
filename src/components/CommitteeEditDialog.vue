@@ -75,7 +75,7 @@
                     v-model="member.role"
                     density="compact"
                     hide-details
-                    :items="availableRoles"
+                    :items="roleItems"
                     :label="$i18n('common.role')"
                     style="min-width: 150px;"
                     variant="outlined"
@@ -125,7 +125,7 @@
               <v-col cols="12" md="4">
                 <v-select
                   v-model="newMemberRole"
-                  :items="availableRoles"
+                  :items="roleItems"
                   :label="$i18n('common.role')"
                   variant="outlined"
                 />
@@ -178,6 +178,7 @@
   import { getCommitteeRoles } from '@/config/committees'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
 
   const props = defineProps({
     committee: {
@@ -208,6 +209,14 @@
   // Get available roles for this committee
   const availableRoles = computed(() => {
     return getCommitteeRoles(props.committee.name)
+  })
+
+  // Get role items with display text for dropdowns
+  const roleItems = computed(() => {
+    return availableRoles.value.map(role => ({
+      value: role,
+      title: getRoleDisplay(role),
+    }))
   })
 
   // Initialize members data

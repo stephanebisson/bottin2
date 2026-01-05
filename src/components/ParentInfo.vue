@@ -16,7 +16,7 @@
         size="x-small"
         variant="outlined"
       >
-        {{ role }}
+        {{ getRoleDisplay(role) }}
       </v-chip>
       <v-chip
         v-else-if="showMemberType && memberType"
@@ -92,6 +92,7 @@
   import HighlightedText from '@/components/HighlightedText.vue'
   import MessageButton from '@/components/messaging/MessageButton.vue'
   import { getInterestNames } from '@/config/interests'
+  import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
 
   // Get messaging shell reference
   const messagingShell = inject('messagingShell', null)

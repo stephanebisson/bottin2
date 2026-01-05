@@ -7,7 +7,7 @@
           <!-- Role header row -->
           <tr class="role-header-row">
             <td class="role-header-cell" colspan="3">
-              {{ roleGroup.role || 'Membre' }}
+              {{ getRoleDisplay(roleGroup.role || 'Membre', roleGroup.members.length) }}
             </td>
           </tr>
           <!-- Member rows -->
@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+  import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
 
   const props = defineProps({

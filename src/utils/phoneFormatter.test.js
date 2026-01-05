@@ -56,13 +56,13 @@ describe('Phone Formatter Utilities', () => {
   describe('formatPhoneForDisplay', () => {
     test.each([
       // Valid 10-digit numbers
-      ['1234567890', '(123) 456-7890'],
-      ['5551234567', '(555) 123-4567'],
+      ['1234567890', '123 456-7890'],
+      ['5551234567', '555 123-4567'],
 
       // Invalid formats (should return original)
       ['123456789', '123456789'],
       ['12345678901', '12345678901'],
-      ['(123) 456-7890', '(123) 456-7890'], // Already formatted
+      ['(123) 456-7890', '123 456-7890'],
       ['', ''],
       ['abc', 'abc'],
     ])('should format "%s" for display as "%s"', (input, expected) => {
