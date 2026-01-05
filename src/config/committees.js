@@ -18,7 +18,7 @@ export const ALL_ROLES = [
   'Enseignant',
   'Enseignante',
   'Membre',
-  'Membre non votants direction',
+  'Membre non votant direction',
   'Membre parent',
   'Observateur',
   'Observatrice',
@@ -52,7 +52,7 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
     'Enseignante',
     'SDG',
     'Substitut',
-    'Membre non votants direction',
+    'Membre non votant direction',
   ],
   'Fondation': [
     'Co-présidente',

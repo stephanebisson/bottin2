@@ -199,6 +199,7 @@
     "porte-parole": "{{PLURAL:$1|Porte-parole|Porte-paroles}}",
     "substitut": "{{PLURAL:$1|Substitut|Substituts}}",
     "membre parent": "{{PLURAL:$1|Membre parent|Membres parents}}",
+    "membre non votant direction": "{{PLURAL:$1|Membre non votant direction|Membres non votants direction}}",
     "enseignant(e)": "{{PLURAL:$1|Enseignant(e)|Enseignant(e)s}}",
     "administratrices et administrateurs": "{{PLURAL:$1|Administratrice et administrateur|Administratrices et administrateurs}}"
   },
