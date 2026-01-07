@@ -33,10 +33,10 @@
           <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
         </div>
         <div class="school-address">
-          <p class="school-name">École alternative Étoile filante</p>
-          <p class="address-line">5619 Chem. de la Côte-Saint-Antoine</p>
-          <p class="address-line">Montreal, QC H4A 1R5</p>
-          <p class="address-line">514-596-5682</p>
+          <p class="school-name">École alternative {{ SCHOOL_LOCATION.name }}</p>
+          <p class="address-line">{{ SCHOOL_LOCATION.address }}</p>
+          <p class="address-line">{{ SCHOOL_LOCATION.city }}, {{ SCHOOL_LOCATION.province }} {{ SCHOOL_LOCATION.postal_code }}</p>
+          <p class="address-line">{{ formatPhoneForDisplay(SCHOOL_LOCATION.phone) }}</p>
         </div>
       </div>
     </div>
@@ -44,6 +44,8 @@
 </template>
 
 <script setup>
+  import { SCHOOL_LOCATION } from '@/config/school.js'
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter.js'
   import PrintPage from './PrintPage.vue'
 </script>
 
