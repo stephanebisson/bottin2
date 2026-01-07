@@ -25,7 +25,7 @@
 
     <p>Ces valeurs fonctionnent en duo, car une valeur en appelle une autre et ce
       pairage permet d’enrichir la pratique pédagogique. Elles s’inscrivent aussi
-      dans des sphères interdépendantes : la sphère du SOI, celle de la
+      dans des sphères <span class="no-break">interdépendantes :</span> la sphère du SOI, celle de la
       CLASSE/DES AUTRES et celle de la COMMUNAUTÉ/ENVIRONNEMENT. Chaque
       valeur peut s’inscrire dans une ou plusieurs sphères.</p>
 
@@ -71,5 +71,9 @@ p {
 
 p:last-child {
   margin-bottom: 0;
+}
+
+.no-break {
+  white-space: nowrap;
 }
 </style>
