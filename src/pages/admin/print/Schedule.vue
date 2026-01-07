@@ -3,43 +3,45 @@
     <div class="page-header">
       <h1 class="section-title">Horaire</h1>
     </div>
-    <h2>Lundi, mardi, jeudi, vendredi</h2>
-    <p>Surveillance dans la cour à partir de 8h08</p>
-    <div class="schedule-entry">
-      <span class="time">8h13</span>
-      <span class="what">Entrée des élèves</span>
-    </div>
-    <div class="schedule-entry">
-      <span class="time">10h30 à 10h45</span>
-      <span class="what">Récréation</span>
-    </div>
-    <div class="schedule-entry">
-      <span class="time">11h47</span>
-      <span class="what">Fin des cours</span>
-    </div>
-    <p>Période du dîner</p>
-    <div class="schedule-entry">
-      <span class="time">13h10</span>
-      <span class="what">Entrée des élèves</span>
-    </div>
-    <div class="schedule-entry">
-      <span class="time">14h18 à 14h33</span>
-      <span class="what">Récréation</span>
-    </div>
-    <div class="schedule-entry">
-      <span class="time">15h35</span>
-      <span class="what">Fin des cours</span>
-    </div>
-    <h2>Mercredi</h2>
-    <div class="schedule-entry">
-      <span class="time">14h30</span>
-      <span class="what">Fin des cours</span>
-    </div>
+
+    <template v-for="(section, index) in schedule" :key="index">
+      <h2>{{ section.title }}</h2>
+
+      <template v-for="(item, itemIndex) in section.items" :key="itemIndex">
+        <p v-if="item.type === 'note'">{{ item.text }}</p>
+        <div v-else-if="item.type === 'entry'" class="schedule-entry">
+          <span class="time">{{ item.time }}</span>
+          <span class="what">{{ item.what }}</span>
+        </div>
+      </template>
+    </template>
   </PrintPage>
 </template>
 
 <script setup>
   import PrintPage from './PrintPage.vue'
+
+  const schedule = [
+    {
+      title: 'Lundi, mardi, jeudi, vendredi',
+      items: [
+        { type: 'note', text: 'Surveillance dans la cour à partir de 8 h 08' },
+        { type: 'entry', time: '8 h 13', what: 'Entrée des élèves' },
+        { type: 'entry', time: '10 h 30 à 10 h 45', what: 'Récréation' },
+        { type: 'entry', time: '11 h 47', what: 'Fin des cours' },
+        { type: 'note', text: 'Période du dîner' },
+        { type: 'entry', time: '13 h 10', what: 'Entrée des élèves' },
+        { type: 'entry', time: '14 h 18 à 14 h 33', what: 'Récréation' },
+        { type: 'entry', time: '15 h 35', what: 'Fin des cours' }
+      ]
+    },
+    {
+      title: 'Mercredi',
+      items: [
+        { type: 'entry', time: '14 h 30', what: 'Fin des cours' }
+      ]
+    }
+  ]
 </script>
 
 <style scoped>
