@@ -41,7 +41,7 @@
     />
 
     <!-- PWA Update Prompt -->
-    <UpdatePrompt />
+    <!-- <UpdatePrompt /> -->
   </v-app>
 </template>
 
@@ -53,7 +53,7 @@
   import AppFooter from '@/components/AppFooter.vue'
   import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
-  import UpdatePrompt from '@/components/UpdatePrompt.vue'
+  // import UpdatePrompt from '@/components/UpdatePrompt.vue'
   import { usePullToRefresh } from '@/composables/usePullToRefresh'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
