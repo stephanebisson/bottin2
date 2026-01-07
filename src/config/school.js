@@ -7,7 +7,7 @@
 // School physical address and coordinates
 export const SCHOOL_LOCATION = {
   name: 'Étoile filante',
-  address: '5619 Chem. de la Côte-Saint-Antoine',
+  address: '5619, Chemin de la Côte-Saint-Antoine',
   city: 'Montreal',
   postal_code: 'H4A 1R5', // TODO: Update with actual postal code
   province: 'QC',
