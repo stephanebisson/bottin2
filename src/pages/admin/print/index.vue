@@ -146,7 +146,7 @@
     <CssdmPage :comite-parents="getCommitteesByNames(['Comité des parents CSSDM'])" :repaq="getCommitteesByNames(['REPAQ'])" :role-groups-map="committeeRoleGroupsMap" />
 
     <!-- Classes Pages -->
-    <ClassesPage :classes-data="getClassesData([1, 2])" level-badge="1<sup>e</sup>-2<sup>e</sup>" section-id="section-classes" />
+    <ClassesPage :classes-data="getClassesData([1, 2])" level-badge="1<sup>re</sup>-2<sup>e</sup>" section-id="section-classes" />
     <ClassesPage :classes-data="getClassesData([3, 4])" level-badge="3<sup>e</sup>-4<sup>e</sup>" section-id="section-classes-34" />
     <ClassesPage :classes-data="getClassesData([5, 6])" level-badge="5<sup>e</sup>-6<sup>e</sup>" section-id="section-classes-56" />
 
@@ -614,6 +614,9 @@
   // Helper: Format level in compact form (1e, 2e, etc.)
   function formatLevelCompact (level) {
     if (!level || level === 'Unknown') return ''
+    if (level === 1) {
+      return '1re';
+    }
     return `${level}e`
   }
 

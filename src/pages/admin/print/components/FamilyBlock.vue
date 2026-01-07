@@ -7,7 +7,7 @@
           <div class="student-name">{{ student.last_name }}, {{ student.first_name }}</div>
         </div>
         <div class="family-student-right">
-          {{ student.teacherName }}{{ student.level ? ', ' + formatGradeLevel(student.level) : '' }}
+          {{ student.teacherName }}{{ student.level ? ', ' + formatGradeLevel(student.level, 'fr') : '' }}
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@
 </template>
 
 <script setup>
+  import { formatGradeLevel } from '@/utils/gradeFormatter.js'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay } from '@/utils/postalCodeFormatter'
 
@@ -44,23 +45,6 @@
       required: true,
     },
   })
-
-  // Helper: Format grade level
-  function formatGradeLevel (level) {
-    if (!level || level === 'Unknown') return level
-
-    const numLevel = Number(level)
-
-    switch (numLevel) {
-      case 1: { return '1ère année' }
-      case 2: { return '2ème année' }
-      case 3: { return '3ème année' }
-      case 4: { return '4ème année' }
-      case 5: { return '5ème année' }
-      case 6: { return '6ème année' }
-      default: { return `${level}ème année` }
-    }
-  }
 
   // Helper: Format address
   function formatAddress (parent) {

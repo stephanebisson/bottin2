@@ -18,7 +18,7 @@
     <div class="class-students-section">
       <div class="students-by-grade">
         <div v-for="gradeGroup in studentsByGrade" :key="gradeGroup.level" class="grade-column">
-          <div class="grade-label">{{ formatGradeLevel(gradeGroup.level) }}</div>
+          <div class="grade-label">{{ formatGradeLevel(gradeGroup.level, 'fr') }}</div>
           <div class="grade-students">
             <div v-for="student in gradeGroup.students" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id) }">
               {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id)"> (R)</template>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { formatGradeLevel } from '@/utils/gradeFormatter.js'
   import ParentRepsTable from './ParentRepsTable.vue'
 
   const props = defineProps({
@@ -63,23 +63,6 @@
   // Helper: Check if student is a student rep
   function isStudentRep (studentId) {
     return props.classItem.student_rep_1 === studentId || props.classItem.student_rep_2 === studentId
-  }
-
-  // Helper: Format grade level
-  function formatGradeLevel (level) {
-    if (!level || level === 'Unknown') return level
-
-    const numLevel = Number(level)
-
-    switch (numLevel) {
-      case 1: { return '1ère année' }
-      case 2: { return '2ème année' }
-      case 3: { return '3ème année' }
-      case 4: { return '4ème année' }
-      case 5: { return '5ème année' }
-      case 6: { return '6ème année' }
-      default: { return `${level}ème année` }
-    }
   }
 </script>
 

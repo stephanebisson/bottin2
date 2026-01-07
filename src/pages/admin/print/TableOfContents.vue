@@ -28,7 +28,7 @@
     { section: 'section-comites', label: 'Comités' },
     { section: 'section-cssdm', label: 'Centre de services scolaire de Montréal' },
     { section: 'section-repaq', label: 'REPAQ' },
-    { section: 'section-classes', label: 'Liste des classes (1<sup>e</sup>-2<sup>e</sup>)' },
+    { section: 'section-classes', label: 'Liste des classes (1<sup>re</sup>-2<sup>e</sup>)' },
     { section: 'section-classes-34', label: 'Liste des classes (3<sup>e</sup>-4<sup>e</sup>)' },
     { section: 'section-classes-56', label: 'Liste des classes (5<sup>e</sup>-6<sup>e</sup>)' },
     { section: 'section-families', label: 'Liste alphabétique des élèves' },

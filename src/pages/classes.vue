@@ -185,7 +185,7 @@
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                   <div class="text-caption">
                                     {{ $i18n('classes.class') }}: {{ child.className }}
-                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
+                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
                                       - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
@@ -273,7 +273,7 @@
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
                                   <div class="text-caption">
                                     {{ $i18n('classes.class') }}: {{ child.className }}
-                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level) }}</span>
+                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
                                       - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
@@ -327,7 +327,7 @@
                               size="small"
                               variant="outlined"
                             >
-                              {{ formatGradeLevel(levelData.level) }}
+                              {{ formatGradeLevel(levelData.level, bananaI18n.locale) }}
                             </v-chip>
                             <span class="text-caption text-grey">
                               {{ $i18n('classes.studentCount', levelData.students.length) }}
@@ -361,7 +361,7 @@
                                   <div class="pa-3" style="min-width: 350px;">
                                     <div class="text-h6 mb-3 text-white">
                                       {{ student.first_name }} {{ student.last_name }}
-                                      <span v-if="student.level" class="text-caption ml-2">({{ formatGradeLevel(student.level) }})</span>
+                                      <span v-if="student.level" class="text-caption ml-2">({{ formatGradeLevel(student.level, bananaI18n.locale) }})</span>
                                       <br>
                                       <span class="text-body-2">{{ student.className }}</span>
                                     </div>
@@ -582,6 +582,7 @@
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { formatGradeLevel } from '@/utils/gradeFormatter.js'
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -729,49 +730,6 @@
   }
 
   // Helper functions
-  function formatGradeLevel (level) {
-    // Handle special cases
-    if (!level || level === 'Unknown') return level
-
-    const currentLocale = bananaI18n.locale || 'en'
-    const numLevel = Number(level)
-
-    if (currentLocale === 'fr') {
-      switch (numLevel) {
-        case 1: { return '1ère année'
-        }
-        case 2: { return '2ème année'
-        }
-        case 3: { return '3ème année'
-        }
-        case 4: { return '4ème année'
-        }
-        case 5: { return '5ème année'
-        }
-        case 6: { return '6ème année'
-        }
-        default: { return `${level}ème année`
-        }
-      }
-    } else {
-      switch (numLevel) {
-        case 1: { return '1st grade'
-        }
-        case 2: { return '2nd grade'
-        }
-        case 3: { return '3rd grade'
-        }
-        case 4: { return '4th grade'
-        }
-        case 5: { return '5th grade'
-        }
-        case 6: { return '6th grade'
-        }
-        default: { return `${level}th grade`
-        }
-      }
-    }
-  }
 
   function getStudentName (studentId) {
     const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
