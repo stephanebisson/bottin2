@@ -89,7 +89,7 @@
           </div>
 
           <!-- Results Counter -->
-          <div v-if="searchQuery || selectedClass" class="text-caption mt-2 text-grey-darken-1">
+          <div class="text-caption mt-2 text-grey-darken-1">
             {{ resultCountText }}
           </div>
         </v-card-text>
@@ -441,11 +441,11 @@
     if (viewMode.value === 'families') {
       const total = groupedFamilies.value.length
       const filtered = filteredFamilies.value.length
-      return $i18n('directory.familiesShown', undefined, undefined)
+      return $i18n('directory.familiesShown', filtered, total)
     } else {
       const total = parentsWithChildren.value.length
       const filtered = filteredParents.value.length
-      return $i18n('directory.parentsShown', undefined, undefined)
+      return $i18n('directory.parentsShown', filtered, total)
     }
   })
 
