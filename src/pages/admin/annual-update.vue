@@ -101,6 +101,20 @@
                   ? $i18n('admin.workflowInProgress')
                   : $i18n('admin.startAnnualUpdate') }}
               </v-btn>
+
+              <!-- Complete Workflow Button (only show when active) -->
+              <v-btn
+                v-if="currentWorkflow && currentWorkflow.status === 'active'"
+                color="grey"
+                :disabled="loading || sendingEmails"
+                :loading="loading"
+                prepend-icon="mdi-check-circle"
+                size="large"
+                variant="outlined"
+                @click="showCompleteWorkflowDialog = true"
+              >
+                {{ $i18n('admin.completeWorkflow') }}
+              </v-btn>
             </div>
           </div>
         </div>
@@ -619,6 +633,83 @@
       </v-card>
     </v-dialog>
 
+    <!-- Complete Workflow Confirmation Dialog -->
+    <v-dialog v-model="showCompleteWorkflowDialog" max-width="500">
+      <v-card>
+        <v-card-title class="d-flex align-center">
+          <v-icon class="mr-2" color="warning">mdi-alert</v-icon>
+          {{ $i18n('admin.confirmCompleteWorkflow') }}
+        </v-card-title>
+
+        <v-card-text>
+          <p class="mb-4">{{ $i18n('admin.completeWorkflowWarning') }}</p>
+
+          <v-alert
+            class="mb-4"
+            color="info"
+            icon="mdi-information"
+            variant="tonal"
+          >
+            <div class="text-body-2">
+              <strong>{{ $i18n('admin.completeWorkflowInstructions') }}</strong>
+              <ul class="mt-2 ml-4">
+                <li>{{ $i18n('admin.markWorkflowComplete') }}</li>
+                <li>{{ $i18n('admin.archiveWorkflowData') }}</li>
+                <li>{{ $i18n('admin.preventFurtherChanges') }}</li>
+              </ul>
+            </div>
+          </v-alert>
+
+          <!-- Show current stats before completing -->
+          <v-alert
+            v-if="currentWorkflow"
+            class="mb-4"
+            color="success"
+            icon="mdi-chart-box"
+            variant="tonal"
+          >
+            <div class="text-body-2">
+              <strong>Final Statistics:</strong>
+              <ul class="mt-2 ml-4">
+                <li>{{ $i18n('admin.totalParents') }}: {{ currentWorkflow.stats?.totalParents || 0 }}</li>
+                <li>{{ $i18n('admin.emailsSent') }}: {{ currentWorkflow.stats?.emailsSent || 0 }}</li>
+                <li>{{ $i18n('admin.formsSubmitted') }}: {{ currentWorkflow.stats?.formsSubmitted || 0 }}</li>
+                <li>{{ $i18n('admin.optedOut') }}: {{ currentWorkflow.stats?.optedOut || 0 }}</li>
+              </ul>
+            </div>
+          </v-alert>
+
+          <!-- Admin Confirmation -->
+          <v-text-field
+            v-model="completeConfirmationText"
+            class="mt-4"
+            :label="$i18n('admin.completeConfirmationType')"
+            :placeholder="$i18n('admin.completeConfirmationPlaceholder')"
+            variant="outlined"
+          />
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="grey"
+            variant="text"
+            @click="showCompleteWorkflowDialog = false"
+          >
+            {{ $i18n('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="completeConfirmationText.toLowerCase() !== 'complete'"
+            :loading="loading"
+            @click="completeWorkflow"
+          >
+            {{ $i18n('admin.completeWorkflow') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -690,7 +781,9 @@
   const emailProgress = ref({ current: 0, total: 0, currentEmail: '', isPaused: false, error: null, parentStatuses: new Map() })
   const error = ref(null)
   const showStartWorkflowDialog = ref(false)
+  const showCompleteWorkflowDialog = ref(false)
   const confirmationText = ref('')
+  const completeConfirmationText = ref('')
   const currentWorkflow = ref(null)
   const workflowHistory = ref([])
 
@@ -1150,6 +1243,54 @@
       confirmationText.value = '' // Reset confirmation
     } catch (error_) {
       console.error('Failed to start workflow:', error_)
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Complete the annual update workflow
+  async function completeWorkflow () {
+    try {
+      loading.value = true
+      error.value = null
+
+      if (!currentWorkflow.value) {
+        throw new Error('No active workflow found')
+      }
+
+      // Call Firebase Function to complete the workflow
+      const baseUrl = getFunctionsBaseUrl()
+
+      const response = await fetch(`${baseUrl}/completeAnnualUpdateV2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          workflowId: currentWorkflow.value.id,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('completeAnnualUpdate error response:', errorText)
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
+      }
+
+      const result = await response.json()
+      console.log('completeAnnualUpdate response:', result)
+
+      // Refresh workflow data
+      await loadWorkflowData()
+
+      showCompleteWorkflowDialog.value = false
+      completeConfirmationText.value = '' // Reset confirmation
+
+      console.log($i18n('admin.workflowCompletedSuccess'))
+    } catch (error_) {
+      console.error('Failed to complete workflow:', error_)
       error.value = error_.message
     } finally {
       loading.value = false

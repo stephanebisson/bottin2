@@ -381,3 +381,104 @@ exports.getWorkflowStatusV2 = onRequest({
     })
   }
 })
+
+/**
+ * V2 - Complete (close) an annual update workflow
+ * Marks the workflow as completed and archives it
+ */
+exports.completeAnnualUpdateV2 = onRequest({
+  region: FUNCTIONS_REGION,
+  cors: {
+    origin: [
+      'https://bottin-etoile-filante.org',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  },
+}, async (req, res) => {
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      error: 'Method not allowed. Use POST.',
+    })
+  }
+
+  try {
+    console.log('=== completeAnnualUpdateV2 called ===')
+    console.log('Request body:', req.body)
+
+    // Verify user is authenticated and is admin
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
+    }
+
+    const idToken = authHeader.split('Bearer ')[1]
+    let decodedToken
+
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken)
+    } catch {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
+    }
+
+    // Verify admin claim
+    if (!decodedToken.admin) {
+      return res.status(403).json({ error: 'Admin access required' })
+    }
+
+    const { workflowId } = req.body
+
+    if (!workflowId) {
+      return res.status(400).json({
+        error: 'workflowId is required',
+      })
+    }
+
+    // Get the workflow document
+    const workflowRef = db.collection('workflows').doc(workflowId)
+    const workflowDoc = await workflowRef.get()
+
+    if (!workflowDoc.exists) {
+      return res.status(404).json({
+        error: 'Workflow not found',
+      })
+    }
+
+    const workflowData = workflowDoc.data()
+
+    // Check if workflow is active
+    if (workflowData.status !== 'active') {
+      return res.status(400).json({
+        error: `Cannot complete workflow with status '${workflowData.status}'. Only active workflows can be completed.`,
+      })
+    }
+
+    // Calculate final stats before completing
+    const finalStats = await calculateWorkflowStats(workflowId)
+
+    // Update the workflow to completed status
+    await workflowRef.update({
+      status: 'completed',
+      completedAt: FieldValue.serverTimestamp(),
+      stats: finalStats,
+      updatedAt: FieldValue.serverTimestamp(),
+    })
+
+    console.log(`Workflow ${workflowId} marked as completed`)
+
+    res.status(200).json({
+      message: 'Annual update workflow completed successfully',
+      workflowId,
+      finalStats,
+    })
+  } catch (error_) {
+    console.error('Failed to complete annual update:', error_)
+    return res.status(500).json({
+      error: 'Internal server error',
+    })
+  }
+})

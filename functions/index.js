@@ -4,7 +4,7 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminManagement')
-const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2, updateWorkflowProgressV2 } = require('./annualUpdateWorkflow')
+const { startAnnualUpdate, getWorkflowStatus, startAnnualUpdateV2, getWorkflowStatusV2, updateWorkflowProgressV2, completeAnnualUpdateV2 } = require('./annualUpdateWorkflow')
 // Import all functions from separate modules
 const { validateEmailV2 } = require('./auth')
 const { updateCommitteeMembersV2 } = require('./committees')
@@ -20,6 +20,7 @@ exports.getWorkflowStatus = getWorkflowStatus
 exports.startAnnualUpdateV2 = startAnnualUpdateV2
 exports.getWorkflowStatusV2 = getWorkflowStatusV2
 exports.updateWorkflowProgressV2 = updateWorkflowProgressV2
+exports.completeAnnualUpdateV2 = completeAnnualUpdateV2
 exports.sendParentEmailV2 = sendParentEmailV2
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2
