@@ -54,7 +54,7 @@ export default defineConfig({
       vueTemplate: true,
     }),
     legacy({
-      targets: ['Chrome >= 63', 'Firefox >= 67', 'Safari >= 11', 'Edge >= 80'],
+      targets: ['Chrome >= 90', 'Firefox >= 88', 'Safari >= 14', 'Edge >= 90'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       renderModernChunks: true,
     }),
@@ -192,7 +192,6 @@ export default defineConfig({
   ],
   optimizeDeps: {
     exclude: [
-      'vuetify',
       'vue-router',
       'unplugin-vue-router/runtime',
       'unplugin-vue-router/data-loaders',
@@ -222,6 +221,26 @@ export default defineConfig({
       output: {
         // Disable automatic preload link generation for unsupported types
         experimentalMinChunkSize: 1000,
+        // Manual chunking to reduce main bundle size
+        manualChunks(id) {
+          // Vendor chunks for large libraries
+          if (id.includes('node_modules')) {
+            // Firebase in separate chunk
+            if (id.includes('firebase')) {
+              return 'vendor-firebase'
+            }
+            // Vuetify in separate chunk
+            if (id.includes('vuetify')) {
+              return 'vendor-vuetify'
+            }
+            // Leaflet map library
+            if (id.includes('leaflet')) {
+              return 'vendor-leaflet'
+            }
+            // Other vendor libraries
+            return 'vendor'
+          }
+        },
       },
     },
     // Disable preloading of icon fonts to avoid unused preload warnings

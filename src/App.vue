@@ -38,12 +38,8 @@
         await new Promise(resolve => setTimeout(resolve, 50))
       }
 
-      // If user is authenticated, load all data
-      if (authStore.isAuthenticated) {
-        console.log('App: Loading all data...')
-        await firebaseStore.loadAllDTOData()
-        console.log('App: Data loaded')
-      }
+      // Data will be loaded lazily by individual routes/pages as needed
+      console.log('App: Auth initialized, ready for navigation')
     } catch (error) {
       console.error('App initialization error:', error)
     } finally {
