@@ -85,17 +85,6 @@
             </div>
           </v-card>
         </v-col>
-
-        <!-- Easter Egg: Tic-Tac-Toe Game -->
-        <v-col
-          v-if="showEasterEgg"
-          class="d-flex"
-          cols="12"
-          md="4"
-          sm="6"
-        >
-          <TicTacToeCard />
-        </v-col>
       </v-row>
     </div>
   </v-container>
@@ -105,8 +94,6 @@
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
-  import TicTacToeCard from '@/components/TicTacToeCard.vue'
-  import { usePWA } from '@/composables/usePWA'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
 
@@ -115,23 +102,9 @@
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const router = useRouter()
   const route = useRoute()
-  const { isRunningAsPWA } = usePWA()
 
   // Welcome message state
   const showWelcomeMessage = ref(false)
-
-  // Easter egg state - show for PWA users or with URL parameter
-  const showEasterEgg = computed(() => {
-    // Show if running as PWA
-    if (isRunningAsPWA.value) {
-      return true
-    }
-    // Or if URL parameter is present
-    if (route.query.easteregg === 'true' || route.query.easteregg === '1') {
-      return true
-    }
-    return false
-  })
 
   // Check for welcome query parameter on mount
   onMounted(() => {
