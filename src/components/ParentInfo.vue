@@ -59,7 +59,10 @@
     <!-- Address (if showAddress) -->
     <div v-if="showAddress && formattedAddress" class="text-body-2 d-flex align-center mb-1">
       <v-icon class="me-1" size="16">mdi-map-marker</v-icon>
-      <span>{{ formattedAddress }}</span>
+      <HighlightedText
+        :query="searchQuery"
+        :text="formattedAddress"
+      />
     </div>
 
     <!-- Interests (if showInterests) -->

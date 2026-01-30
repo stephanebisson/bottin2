@@ -399,7 +399,13 @@
             `${student.last_name}, ${student.first_name}`,
           ]),
           group.parent1 ? group.parent1.fullName : '',
+          group.parent1 ? group.parent1.address : '',
+          group.parent1 ? group.parent1.city : '',
+          group.parent1 ? group.parent1.postal_code : '',
           group.parent2 ? group.parent2.fullName : '',
+          group.parent2 ? group.parent2.address : '',
+          group.parent2 ? group.parent2.city : '',
+          group.parent2 ? group.parent2.postal_code : '',
         ].filter(Boolean)
 
         return matchesAnyField(searchFields, searchQuery.value)
@@ -423,6 +429,17 @@
     if (searchQuery.value) {
       parents = parents.filter(({ parent, children }) => {
         if (matchesSearch(parent.fullName, searchQuery.value)) {
+          return true
+        }
+
+        // Check address fields
+        if (parent.address && matchesSearch(parent.address, searchQuery.value)) {
+          return true
+        }
+        if (parent.city && matchesSearch(parent.city, searchQuery.value)) {
+          return true
+        }
+        if (parent.postal_code && matchesSearch(parent.postal_code, searchQuery.value)) {
           return true
         }
 
