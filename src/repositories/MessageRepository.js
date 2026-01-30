@@ -134,8 +134,13 @@ export class MessageRepository {
     const messageDTO = new MessageDTO(messageData)
     const id = await this.save(messageDTO)
 
-    // Return the message with the generated ID
-    return await this.getById(id)
+    // Return the message DTO with the generated ID (no need to re-fetch)
+    return new MessageDTO({
+      ...messageData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**

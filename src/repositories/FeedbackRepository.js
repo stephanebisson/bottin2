@@ -147,8 +147,13 @@ export class FeedbackRepository {
     const feedbackDTO = new FeedbackDTO(feedbackData)
     const id = await this.save(feedbackDTO)
 
-    // Return the feedback with the generated ID
-    return await this.getById(id)
+    // Return the feedback DTO with the generated ID (no need to re-fetch)
+    return new FeedbackDTO({
+      ...feedbackData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**

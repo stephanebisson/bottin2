@@ -194,8 +194,13 @@ export class StaffRepository {
     const staffDTO = new StaffDTO(staffData)
     const id = await this.save(staffDTO)
 
-    // Return the staff member with the email as ID
-    return await this.getById(id)
+    // Return the staff DTO with the generated ID (no need to re-fetch)
+    return new StaffDTO({
+      ...staffData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**

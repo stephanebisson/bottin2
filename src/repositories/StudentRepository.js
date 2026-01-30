@@ -168,8 +168,13 @@ export class StudentRepository {
     const studentDTO = new StudentDTO(studentData)
     const id = await this.save(studentDTO)
 
-    // Return the student with the new ID
-    return await this.getById(id)
+    // Return the student DTO with the generated ID (no need to re-fetch)
+    return new StudentDTO({
+      ...studentData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**

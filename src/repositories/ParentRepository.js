@@ -217,8 +217,13 @@ export class ParentRepository {
     const parentDTO = new ParentDTO(parentData)
     const id = await this.save(parentDTO)
 
-    // Return the parent with the generated ID
-    return await this.getById(id)
+    // Return the parent DTO with the generated ID (no need to re-fetch)
+    return new ParentDTO({
+      ...parentData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**

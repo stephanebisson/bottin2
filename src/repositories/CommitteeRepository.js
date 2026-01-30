@@ -245,8 +245,13 @@ export class CommitteeRepository {
     const committeeDTO = new CommitteeDTO(committeeData)
     const id = await this.save(committeeDTO)
 
-    // Return the committee with the generated ID
-    return await this.getById(id)
+    // Return the committee DTO with the generated ID (no need to re-fetch)
+    return new CommitteeDTO({
+      ...committeeData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   }
 
   /**
