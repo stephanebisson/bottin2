@@ -678,7 +678,9 @@
     "aboutTitle": "About the Map",
     "aboutDescription": "This map shows the locations of families in the school community. Only families with complete addresses (street address and postal code) can be shown on the map.",
     "familiesNeedGeocoding": "$1 families with complete addresses still need geocoding to appear on the map.",
-    "familiesIncompleteAddress": "$1 families have incomplete addresses (missing street address or postal code) and cannot be geocoded."
+    "familiesIncompleteAddress": "$1 families have incomplete addresses (missing street address or postal code) and cannot be geocoded.",
+    "students": "Students",
+    "parents": "Parents"
   },
   "feedback": {
     "title": "Send Feedback",

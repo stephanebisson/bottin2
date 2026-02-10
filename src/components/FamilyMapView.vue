@@ -46,11 +46,16 @@
 <script setup>
   import L from 'leaflet'
   import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import { CLUSTER_SETTINGS, getSchoolLocation, MAP_DEFAULT_ZOOM } from '@/config/school'
   import 'leaflet/dist/leaflet.css'
   import 'leaflet.markercluster/dist/MarkerCluster.css'
   import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
   import 'leaflet.markercluster'
+
+  // Get i18n function from vue-banana-i18n
+  const bananaI18n = useI18n()
+  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const props = defineProps({
     families: {
@@ -247,7 +252,7 @@
       // Add students section if any
       if (allStudents.size > 0) {
         popupContent += '<div style="margin-bottom: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 4px;">'
-        popupContent += '<div style="font-weight: bold; margin-bottom: 4px; color: #1976d2;">Students:</div>'
+        popupContent += `<div style="font-weight: bold; margin-bottom: 4px; color: #1976d2;">${$i18n('map.students')}:</div>`
         const sortedStudents = Array.from(allStudents).toSorted((a, b) =>
           `${a.last_name} ${a.first_name}`.localeCompare(`${b.last_name} ${b.first_name}`),
         )
@@ -260,7 +265,7 @@
       }
 
       // Add each parent
-      popupContent += '<div style="font-weight: bold; margin-bottom: 4px;">Parents:</div>'
+      popupContent += `<div style="font-weight: bold; margin-bottom: 4px;">${$i18n('map.parents')}:</div>`
       for (const family of location.families) {
         popupContent += '<div style="margin-top: 6px; margin-left: 8px;">'
         popupContent += `<strong>${family.fullName || `${family.first_name} ${family.last_name}`}</strong><br>`

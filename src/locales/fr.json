@@ -689,7 +689,9 @@
     "aboutTitle": "À propos de la carte",
     "aboutDescription": "Cette carte montre les emplacements des familles de la communauté scolaire. Seules les familles avec une adresse complète (adresse civique et code postal) peuvent être affichées sur la carte.",
     "familiesNeedGeocoding": "$1 familles avec une adresse complète ont encore besoin d'être géocodées pour apparaître sur la carte.",
-    "familiesIncompleteAddress": "$1 familles ont une adresse incomplète (adresse civique ou code postal manquant) et ne peuvent pas être géocodées."
+    "familiesIncompleteAddress": "$1 familles ont une adresse incomplète (adresse civique ou code postal manquant) et ne peuvent pas être géocodées.",
+    "students": "Élèves",
+    "parents": "Parents"
   },
   "feedback": {
     "title": "Envoyer des commentaires",
