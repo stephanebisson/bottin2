@@ -11,6 +11,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import { routes } from 'vue-router/auto-routes'
 import { authMiddleware, routeConfig } from '@/middleware/auth'
+import { logPageView } from '@/utils/analytics'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,12 @@ router.beforeEach(async (to, from, next) => {
 
   // No special auth requirements, proceed
   next()
+})
+
+// Track page views for analytics
+router.afterEach((to) => {
+  // Log page view with path and route name
+  logPageView(to.path, to.name || to.path)
 })
 
 // Data loading is now handled centrally in App.vue on mount

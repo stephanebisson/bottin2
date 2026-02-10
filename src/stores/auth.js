@@ -11,6 +11,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { getFunctionsBaseUrl, secureFetch } from '@/config/functions'
 import { auth } from '@/firebase'
+import { clearUserContext, setUserContext } from '@/utils/analytics'
 
 export const useAuthStore = defineStore('auth', () => {
   // Get current locale from localStorage (same as vue-banana-i18n uses)
@@ -186,7 +187,7 @@ export const useAuthStore = defineStore('auth', () => {
         return
       }
 
-      authStateUnsubscribe = onAuthStateChanged(auth, firebaseUser => {
+      authStateUnsubscribe = onAuthStateChanged(auth, async firebaseUser => {
         // Always set the user, regardless of verification status
         user.value = firebaseUser
 
@@ -195,15 +196,32 @@ export const useAuthStore = defineStore('auth', () => {
           resolve(firebaseUser)
         }
 
-        // Log verification status changes for debugging
+        // Set or clear analytics context
         if (firebaseUser) {
+          // Log verification status changes for debugging
           console.log('Auth state changed:', {
             hasEmail: !!firebaseUser.email,
             verified: firebaseUser.emailVerified,
             hasUid: !!firebaseUser.uid,
           })
+
+          // Get custom claims to determine role
+          try {
+            const idTokenResult = await firebaseUser.getIdTokenResult()
+            const role = idTokenResult.claims.admin ? 'admin' : 'user'
+
+            // Set analytics user context
+            setUserContext({
+              uid: firebaseUser.uid,
+              role,
+              emailVerified: firebaseUser.emailVerified,
+            })
+          } catch (error) {
+            console.warn('Failed to get user claims for analytics:', error)
+          }
         } else {
           console.log('User signed out')
+          clearUserContext()
         }
       })
     })
@@ -297,6 +315,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       await signOut(auth)
       user.value = null
+
+      // Clear analytics context
+      clearUserContext()
     } catch (error_) {
       setError(getAuthErrorMessage(error_))
       throw error_
