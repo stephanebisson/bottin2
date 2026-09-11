@@ -15,7 +15,7 @@ const SRC_DIR = path.join(__dirname, '../src')
 /**
  * Recursively find all Vue files
  */
-function findVueFiles(dir, files = []) {
+function findVueFiles (dir, files = []) {
   const items = fs.readdirSync(dir)
 
   for (const item of items) {
@@ -35,7 +35,7 @@ function findVueFiles(dir, files = []) {
 /**
  * Check if a Vue file needs useI18n import
  */
-function needsUseI18n(content) {
+function needsUseI18n (content) {
   // Must have <script setup>
   if (!content.includes('<script setup>')) {
     return false
@@ -47,32 +47,36 @@ function needsUseI18n(content) {
   }
 
   // Must NOT already have useI18n import
-  if (content.includes("from 'vue-banana-i18n'")) {
+  if (content.includes('from \'vue-banana-i18n\'')) {
     return false
   }
 
   // Must use $i18n in script section (not just template)
   const scriptMatch = content.match(/<script setup>([\s\S]*?)<\/script>/)
-  if (!scriptMatch) {return false}
+  if (!scriptMatch) {
+    return false
+  }
 
   const scriptContent = scriptMatch[1]
 
   // Check if $i18n is used in script (as a variable/function, not in strings/comments)
-  return /(?:^|[^'"`])(\$i18n\()/.test(scriptContent)
+  return /(?:^|[^'"`])\$i18n\(/.test(scriptContent)
 }
 
 /**
  * Add useI18n import and setup to a Vue file
  */
-function addUseI18n(content) {
+function addUseI18n (content) {
   // Find the script setup section
   const scriptMatch = content.match(/(<script setup>)([\s\S]*?)(<\/script>)/)
-  if (!scriptMatch) {return content}
+  if (!scriptMatch) {
+    return content
+  }
 
   const [, openTag, scriptContent, closeTag] = scriptMatch
 
   // Step 1: Add import after existing imports
-  let newScriptContent = scriptContent
+  let newScriptContent
 
   // Find the last import statement
   const importLines = scriptContent.split('\n')
@@ -86,11 +90,11 @@ function addUseI18n(content) {
 
   if (lastImportIndex >= 0) {
     // Insert after last import
-    importLines.splice(lastImportIndex + 1, 0, "  import { useI18n } from 'vue-banana-i18n'")
+    importLines.splice(lastImportIndex + 1, 0, '  import { useI18n } from \'vue-banana-i18n\'')
     newScriptContent = importLines.join('\n')
   } else {
     // No imports, add at beginning
-    newScriptContent = "\n  import { useI18n } from 'vue-banana-i18n'\n" + scriptContent
+    newScriptContent = '\n  import { useI18n } from \'vue-banana-i18n\'\n' + scriptContent
   }
 
   // Step 2: Add setup code after props/emits or after imports
@@ -137,7 +141,7 @@ function addUseI18n(content) {
       '',
       '  // Get i18n function from vue-banana-i18n',
       '  const bananaI18n = useI18n()',
-      '  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)'
+      '  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)',
     ]
     lines.splice(insertIndex, 0, ...i18nSetup)
     newScriptContent = lines.join('\n')
@@ -149,7 +153,7 @@ function addUseI18n(content) {
 /**
  * Main function
  */
-function main() {
+function main () {
   console.log('🔄 Adding useI18n imports to Vue files...\n')
 
   const vueFiles = findVueFiles(SRC_DIR)

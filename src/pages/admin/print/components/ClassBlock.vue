@@ -19,6 +19,7 @@
       <div class="students-by-grade">
         <div v-for="gradeGroup in studentsByGrade" :key="gradeGroup.level" class="grade-column">
           <div class="grade-label">{{ formatGradeLevel(gradeGroup.level, 'fr') }}</div>
+
           <div class="grade-students">
             <div v-for="student in gradeGroup.students" :key="student.id" class="student-item" :class="{ 'student-rep': isStudentRep(student.id) }">
               {{ student.first_name }} {{ student.last_name }}<template v-if="isStudentRep(student.id)"> (R)</template>

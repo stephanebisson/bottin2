@@ -31,7 +31,7 @@ class StudentDTO {
    * Sanitize number input - convert to number and handle invalid values
    */
   sanitizeNumber (value) {
-    if (value === null || value === undefined || value === '') {
+    if ([null, undefined, ''].includes(value)) {
       return null
     }
     const num = Number(value)

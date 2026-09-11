@@ -26,7 +26,7 @@ export class StaffRepository {
       return staff
     } catch (error) {
       console.error('StaffRepository: Error loading all staff:', error)
-      throw new Error(`Failed to load staff: ${error.message}`)
+      throw new Error(`Failed to load staff: ${error.message}`, { cause: error })
     }
   }
 
@@ -51,7 +51,7 @@ export class StaffRepository {
       return staffMember
     } catch (error) {
       console.error(`StaffRepository: Error loading staff member ${id}:`, error)
-      throw new Error(`Failed to load staff member ${id}: ${error.message}`)
+      throw new Error(`Failed to load staff member ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -78,7 +78,7 @@ export class StaffRepository {
       return validStaff
     } catch (error) {
       console.error('StaffRepository: Error loading staff by IDs:', error)
-      throw new Error(`Failed to load staff by IDs: ${error.message}`)
+      throw new Error(`Failed to load staff by IDs: ${error.message}`, { cause: error })
     }
   }
 
@@ -100,7 +100,7 @@ export class StaffRepository {
       return staff
     } catch (error) {
       console.error(`StaffRepository: Error loading staff with title ${title}:`, error)
-      throw new Error(`Failed to load staff with title ${title}: ${error.message}`)
+      throw new Error(`Failed to load staff with title ${title}: ${error.message}`, { cause: error })
     }
   }
 
@@ -122,7 +122,7 @@ export class StaffRepository {
       return staff
     } catch (error) {
       console.error('StaffRepository: Error loading staff with CE roles:', error)
-      throw new Error(`Failed to load staff with CE roles: ${error.message}`)
+      throw new Error(`Failed to load staff with CE roles: ${error.message}`, { cause: error })
     }
   }
 
@@ -135,7 +135,7 @@ export class StaffRepository {
       return await this.getAll()
     } catch (error) {
       console.error('StaffRepository: Error loading staff in directory:', error)
-      throw new Error(`Failed to load staff in directory: ${error.message}`)
+      throw new Error(`Failed to load staff in directory: ${error.message}`, { cause: error })
     }
   }
 
@@ -183,7 +183,7 @@ export class StaffRepository {
       }
     } catch (error) {
       console.error('StaffRepository: Error saving staff member:', error)
-      throw new Error(`Failed to save staff member ${staffDTO.fullName}: ${error.message}`)
+      throw new Error(`Failed to save staff member ${staffDTO.fullName}: ${error.message}`, { cause: error })
     }
   }
 
@@ -230,7 +230,7 @@ export class StaffRepository {
       console.log(`StaffRepository: Deleted staff member ${id}`)
     } catch (error) {
       console.error(`StaffRepository: Error deleting staff member ${id}:`, error)
-      throw new Error(`Failed to delete staff member ${id}: ${error.message}`)
+      throw new Error(`Failed to delete staff member ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -258,7 +258,7 @@ export class StaffRepository {
       return filtered
     } catch (error) {
       console.error(`StaffRepository: Error searching staff:`, error)
-      throw new Error(`Failed to search staff: ${error.message}`)
+      throw new Error(`Failed to search staff: ${error.message}`, { cause: error })
     }
   }
 
@@ -296,8 +296,9 @@ export class StaffRepository {
       }
     } catch (error) {
       console.error('StaffRepository: Error getting stats:', error)
-      throw new Error(`Failed to get staff statistics: ${error.message}`)
+      throw new Error(`Failed to get staff statistics: ${error.message}`, { cause: error })
     }
   }
-  collectionName = 'staff';
+
+  collectionName = 'staff'
 }

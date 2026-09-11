@@ -26,7 +26,7 @@ exports.updateCommitteeMembersV2 = onRequest({
       return res.status(401).json({ error: 'No authorization token provided' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1]
+    const idToken = authHeader.split('Bearer ', 2)[1]
 
     // Verify the ID token and get user claims
     const decodedToken = await admin.auth().verifyIdToken(idToken)

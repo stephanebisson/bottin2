@@ -1,6 +1,7 @@
 <template>
   <div class="parent-entry">
     <div class="parent-name">{{ parent.lastNameFirst }}</div>
+
     <div class="children-section">
       <div v-for="child in parent.children" :key="child.id" class="child-row">
         <div class="child-name">{{ child.lastNameFirst }}</div>

@@ -505,7 +505,8 @@
         "lastName": "Last Name",
         "class": "Class",
         "level": "Level",
-        "parents": "Parents"
+        "parents": "Parents",
+        "log": "History"
       },
       "newStudent": "New Student",
       "createError": "Failed to create student. Please try again.",
@@ -513,6 +514,101 @@
         "firstNameRequired": "First name is required",
         "lastNameRequired": "Last name is required",
         "parentRequired": "At least one parent is required"
+      },
+      "filterSearch": "Search by name...",
+      "filterClass": "Class",
+      "filterLevel": "Level",
+      "filterUnassigned": "Unassigned only",
+      "xSelected": "$1 student(s) selected",
+      "progressAll": "Annual progression",
+      "markDeparted": "Mark as departed",
+      "assignClass": "Assign class",
+      "progressError": "Error during student progression.",
+      "departError": "Error marking students as departed.",
+      "assignClassError": "Error assigning class.",
+      "progressDialog": {
+        "title": "Annual progression",
+        "warning": "This action updates all students at once and cannot be undone.",
+        "autoProgress": "$1 student(s) will advance to the next level (same class)",
+        "needsAssignment": "$1 student(s) will need to be assigned a new class",
+        "graduating": "$1 student(s) at level 6 will be removed from the system",
+        "invalid": "$1 student(s) have an invalid level and will be skipped",
+        "confirm": "Confirm progression"
+      },
+      "departDialog": {
+        "title": "Mark as departed",
+        "warning": "This action permanently removes students from the system.",
+        "message": "$1 student(s) will be removed from the system.",
+        "confirm": "Confirm departure"
+      },
+      "assignClassDialog": {
+        "title": "Assign class",
+        "message": "$1 unassigned student(s) will receive the selected class.",
+        "selectClass": "Select a class",
+        "confirm": "Assign"
+      },
+      "logs": {
+        "progress_student": "Progressed",
+        "graduate_student": "Graduated",
+        "depart_student": "Departed",
+        "assign_class": "Class assigned"
+      }
+    },
+    "parentsTable": {
+      "filterSearch": "Search by name or email...",
+      "filterClass": "Class",
+      "filterEmailStatus": "Email",
+      "filterSubmitted": "Submitted",
+      "filterOptedOut": "Opted out only",
+      "xSelected": "$1 parent(s) selected",
+      "sendEmail": "Send update link",
+      "markOptedOut": "Mark as opted out",
+      "removeParent": "Remove parent",
+      "emailError": "Error sending email.",
+      "optOutError": "Error opting out parent.",
+      "removeError": "Error removing parent.",
+      "sendEmailDialog": {
+        "title": "Send update link",
+        "alreadySent": "$1 parent(s) have already received a link this year.",
+        "noEmail": "$1 parent(s) have no email address and will be skipped.",
+        "message": "An update link will be sent to $1 parent(s).",
+        "confirm": "Send"
+      },
+      "optOutDialog": {
+        "title": "Mark as opted out",
+        "warning": "This action removes personal information for these parents from the directory.",
+        "message": "$1 parent(s) will be marked as opted out.",
+        "confirm": "Confirm"
+      },
+      "removeDialog": {
+        "title": "Remove parent",
+        "warning": "This action is permanent and will definitively remove these parents from the system.",
+        "message": "$1 parent(s) will be removed from the system.",
+        "confirm": "Confirm removal"
+      },
+      "headers": {
+        "status": "Status",
+        "log": "History"
+      },
+      "status": {
+        "emailSent": "Link sent",
+        "submittedOn": "Submitted $1",
+        "optedOut": "Opted out"
+      },
+      "logs": {
+        "send_update_email": "Link sent",
+        "opt_out_parent": "Opted out",
+        "remove_parent": "Removed"
+      },
+      "emailStatusOptions": {
+        "all": "All",
+        "sent": "Link sent",
+        "notSent": "Not sent"
+      },
+      "submittedOptions": {
+        "all": "All",
+        "yes": "Submitted",
+        "no": "Not submitted"
       }
     },
     "newParent": "New parent",
@@ -550,25 +646,54 @@
     "selectLevel": "Select Level",
     "addParent": "Add Parent",
     "staffUpdate": {
-      "title": "Staff information update",
-      "description": "Access the staff information update form with a secure link",
-      "openLink": "Open update form",
-      "copyLink": "Copy link",
-      "noToken": "No token available",
-      "tokenStatus": "Update link status",
-      "tokenGenerated": "Staff update link is active",
-      "tokenCreated": "Created",
-      "createdBy": "Created by",
-      "noTokenGenerated": "No update link generated",
-      "generateTokenInstructions": "Generate a secure link to allow staff members to update their information",
-      "generateToken": "Generate update link",
-      "tokenGeneratedSuccess": "Update link generated successfully!",
-      "tokenGenerationError": "Failed to generate update link. Please try again.",
-      "linkCopied": "Link copied to clipboard!",
-      "aboutTitle": "About staff updates",
-      "aboutDescription": "The staff update link allows staff members to review and update their information without logging in. Share this link with all staff members who need to update their details.",
-      "securityNote": "Security:",
-      "securityNoteDescription": "This link uses a secure token that is stored in the database. Only administrators can generate and access this link."
+      "title": "Staff editor",
+      "save": "Save",
+      "unsavedChangesTitle": "Unsaved changes",
+      "unsavedChangesText": "You have unsaved changes. If you leave now, your changes will be lost.",
+      "stayOnPage": "Stay on page",
+      "leaveWithoutSaving": "Leave without saving"
+    },
+    "auditLog": {
+      "title": "Audit log",
+      "description": "History of all administrative actions",
+      "filterSchoolYear": "School year",
+      "filterActionType": "Action type",
+      "filterEntityType": "Type",
+      "filterActor": "Search by admin...",
+      "filterDateFrom": "From",
+      "filterDateTo": "To",
+      "clearFilters": "Clear filters",
+      "noLogs": "No entries found",
+      "allYears": "All years",
+      "headers": {
+        "timestamp": "Date",
+        "action": "Action",
+        "entityType": "Type",
+        "entityName": "Name",
+        "actor": "Admin",
+        "schoolYear": "Year"
+      },
+      "entityTypes": {
+        "parent": "Parent",
+        "student": "Student"
+      },
+      "actionTypes": {
+        "send_update_email": "Link sent",
+        "opt_out_parent": "Parent opted out",
+        "remove_parent": "Parent removed",
+        "progress_student": "Student progressed",
+        "graduate_student": "Student graduated",
+        "depart_student": "Student departed",
+        "assign_class": "Class assigned"
+      },
+      "actionTypeOptions": {
+        "all": "All actions"
+      },
+      "entityTypeOptions": {
+        "all": "All",
+        "parent": "Parents",
+        "student": "Students"
+      }
     }
   },
   "updateForm": {

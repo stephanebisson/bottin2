@@ -8,6 +8,7 @@
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+
       <p class="text-body-1 text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
@@ -17,6 +18,7 @@
         <p class="text-body-2 text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
+
         <v-btn
           color="primary"
           :loading="loading"
@@ -41,6 +43,7 @@
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
         <h2 class="text-h5 mt-4 text-error">{{ $i18n('common.error') }}</h2>
         <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
+
         <v-btn
           class="mt-4"
           color="primary"
@@ -59,6 +62,7 @@
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon class="mr-3" size="40">mdi-message-text</v-icon>
+
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.total }}</div>
                     <div class="text-body-2">{{ $i18n('feedback.admin.totalFeedback') }}</div>
@@ -73,6 +77,7 @@
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon class="mr-3" size="40">mdi-clock-alert</v-icon>
+
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.pending }}</div>
                     <div class="text-body-2">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
@@ -87,6 +92,7 @@
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon class="mr-3" size="40">mdi-check-circle</v-icon>
+
                   <div>
                     <div class="text-h4 font-weight-bold">{{ stats.resolved }}</div>
                     <div class="text-body-2">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
@@ -112,6 +118,7 @@
                   variant="outlined"
                 />
               </v-col>
+
               <v-col cols="12" md="6">
                 <v-select
                   v-model="statusFilter"
@@ -184,6 +191,7 @@
                   @click="toggleStatus(item)"
                 >
                   <v-icon />
+
                   <v-tooltip activator="parent" location="top">
                     {{ item.status === 'pending' ? $i18n('feedback.admin.markAsResolved') : $i18n('feedback.admin.markAsPending') }}
                   </v-tooltip>
@@ -198,6 +206,7 @@
                   @click="openNotesDialog(item)"
                 >
                   <v-icon />
+
                   <v-tooltip activator="parent" location="top">
                     {{ $i18n('feedback.admin.editNotes') }}
                   </v-tooltip>
@@ -213,6 +222,7 @@
                   @click="confirmDelete(item)"
                 >
                   <v-icon />
+
                   <v-tooltip activator="parent" location="top">
                     {{ $i18n('common.delete') }}
                   </v-tooltip>
@@ -230,6 +240,7 @@
                       <div class="text-subtitle-2 font-weight-bold mb-2">
                         {{ $i18n('feedback.admin.fullMessage') }}
                       </div>
+
                       <div class="text-body-1 pa-3 bg-grey-lighten-4 rounded">
                         {{ item.message }}
                       </div>
@@ -240,10 +251,12 @@
                       <div class="text-subtitle-2 font-weight-bold mb-2">
                         {{ $i18n('feedback.admin.adminNotes') }}
                       </div>
+
                       <div class="text-body-1 pa-3 bg-blue-lighten-5 rounded">
                         {{ item.admin_notes }}
                       </div>
                     </div>
+
                     <div v-else class="text-body-2 text-grey-darken-1 font-italic">
                       {{ $i18n('feedback.admin.noAdminNotes') }}
                     </div>
@@ -262,6 +275,7 @@
         <v-card-title>
           <span class="text-h5">{{ $i18n('feedback.admin.editNotes') }}</span>
         </v-card-title>
+
         <v-card-text>
           <v-textarea
             v-model="editingNotes"
@@ -272,8 +286,10 @@
             variant="outlined"
           />
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn
             color="grey"
             variant="text"
@@ -281,6 +297,7 @@
           >
             {{ $i18n('common.cancel') }}
           </v-btn>
+
           <v-btn
             color="primary"
             :loading="savingNotes"
@@ -299,11 +316,14 @@
         <v-card-title>
           <span class="text-h5">{{ $i18n('feedback.admin.confirmDelete') }}</span>
         </v-card-title>
+
         <v-card-text>
           <p>{{ $i18n('feedback.admin.deleteWarning') }}</p>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn
             color="grey"
             variant="text"
@@ -311,6 +331,7 @@
           >
             {{ $i18n('common.cancel') }}
           </v-btn>
+
           <v-btn
             color="error"
             :loading="deleting"
@@ -331,7 +352,6 @@
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -472,7 +492,7 @@
       item.status = newStatus
     } catch (error) {
       console.error('Error updating feedback status:', error)
-      this.error = $i18n('feedback.admin.error.updateFailed')
+      error.value = $i18n('feedback.admin.error.updateFailed')
     } finally {
       item._updating = false
     }
@@ -503,7 +523,7 @@
       closeNotesDialog()
     } catch (error) {
       console.error('Error saving admin notes:', error)
-      this.error = $i18n('feedback.admin.error.saveFailed')
+      error.value = $i18n('feedback.admin.error.saveFailed')
     } finally {
       savingNotes.value = false
     }
@@ -527,7 +547,7 @@
       feedbackToDelete.value = null
     } catch (error) {
       console.error('Error deleting feedback:', error)
-      this.error = $i18n('feedback.admin.error.deleteFailed')
+      error.value = $i18n('feedback.admin.error.deleteFailed')
     } finally {
       deleting.value = false
     }

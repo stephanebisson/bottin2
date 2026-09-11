@@ -27,7 +27,7 @@ export class FeedbackRepository {
       return feedback
     } catch (error) {
       console.error('FeedbackRepository: Error loading all feedback:', error)
-      throw new Error(`Failed to load feedback: ${error.message}`)
+      throw new Error(`Failed to load feedback: ${error.message}`, { cause: error })
     }
   }
 
@@ -52,7 +52,7 @@ export class FeedbackRepository {
       return feedback
     } catch (error) {
       console.error(`FeedbackRepository: Error loading feedback ${id}:`, error)
-      throw new Error(`Failed to load feedback ${id}: ${error.message}`)
+      throw new Error(`Failed to load feedback ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -76,7 +76,7 @@ export class FeedbackRepository {
       return feedback
     } catch (error) {
       console.error(`FeedbackRepository: Error loading feedback for parent ${parentId}:`, error)
-      throw new Error(`Failed to load feedback for parent ${parentId}: ${error.message}`)
+      throw new Error(`Failed to load feedback for parent ${parentId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -100,7 +100,7 @@ export class FeedbackRepository {
       return feedback
     } catch (error) {
       console.error(`FeedbackRepository: Error loading ${status} feedback:`, error)
-      throw new Error(`Failed to load ${status} feedback: ${error.message}`)
+      throw new Error(`Failed to load ${status} feedback: ${error.message}`, { cause: error })
     }
   }
 
@@ -136,7 +136,7 @@ export class FeedbackRepository {
       }
     } catch (error) {
       console.error('FeedbackRepository: Error saving feedback:', error)
-      throw new Error(`Failed to save feedback: ${error.message}`)
+      throw new Error(`Failed to save feedback: ${error.message}`, { cause: error })
     }
   }
 
@@ -205,7 +205,7 @@ export class FeedbackRepository {
       console.log(`FeedbackRepository: Deleted feedback ${id}`)
     } catch (error) {
       console.error(`FeedbackRepository: Error deleting feedback ${id}:`, error)
-      throw new Error(`Failed to delete feedback ${id}: ${error.message}`)
+      throw new Error(`Failed to delete feedback ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -232,7 +232,7 @@ export class FeedbackRepository {
       return filtered
     } catch (error) {
       console.error('FeedbackRepository: Error searching feedback:', error)
-      throw new Error(`Failed to search feedback: ${error.message}`)
+      throw new Error(`Failed to search feedback: ${error.message}`, { cause: error })
     }
   }
 
@@ -261,9 +261,9 @@ export class FeedbackRepository {
       }
     } catch (error) {
       console.error('FeedbackRepository: Error getting stats:', error)
-      throw new Error(`Failed to get feedback statistics: ${error.message}`)
+      throw new Error(`Failed to get feedback statistics: ${error.message}`, { cause: error })
     }
   }
 
-  collectionName = 'feedback';
+  collectionName = 'feedback'
 }

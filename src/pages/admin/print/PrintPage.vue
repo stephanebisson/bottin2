@@ -89,7 +89,7 @@
         scrollHeight: element.scrollHeight,
         clientHeight: element.clientHeight,
         difference: element.scrollHeight - element.clientHeight,
-        hasOverflow: hasOverflow.value
+        hasOverflow: hasOverflow.value,
       })
     }
   }

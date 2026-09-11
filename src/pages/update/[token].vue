@@ -67,6 +67,7 @@
             <div class="text-body-1">
               {{ $i18n('updateForm.welcome', parentData.fullName || `${parentData.first_name} ${parentData.last_name}`) }}
             </div>
+
             <div class="text-body-2 mt-2">
               {{ $i18n('updateForm.instructions') }}
             </div>
@@ -85,9 +86,11 @@
             <div class="text-body-1 font-weight-medium">
               {{ $i18n('updateForm.optOutWarningBox') }}
             </div>
+
             <div class="text-body-2 mt-2 mb-3">
               {{ $i18n('updateForm.optOutWarningBoxDescription') }}
             </div>
+
             <v-btn
               color="error"
               prepend-icon="mdi-account-remove"
@@ -112,6 +115,7 @@
             <div class="text-body-1 font-weight-medium">
               {{ $i18n('updateForm.reOptInWarningBox') }}
             </div>
+
             <div class="text-body-2 mt-2">
               {{ $i18n('updateForm.reOptInWarningBoxDescription') }}
             </div>
@@ -333,6 +337,7 @@
 
         <v-card-actions class="pa-4">
           <v-spacer />
+
           <v-btn
             color="grey"
             :disabled="optingOut"
@@ -341,6 +346,7 @@
           >
             {{ $i18n('common.cancel') }}
           </v-btn>
+
           <v-btn
             color="error"
             :loading="optingOut"
@@ -364,7 +370,6 @@
   import { getAvailableInterests } from '@/config/interests'
   import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay, formatPostalCodeForStorage, getPostalCodeValidationMessage, getSamplePostalCode, isValidPostalCodeFormat } from '@/utils/postalCodeFormatter'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -455,7 +460,7 @@
   function handlePostalCodeInput (event) {
     // Allow users to type freely, auto-format with space
     const value = event.target ? event.target.value : event
-    const alphanumeric = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+    const alphanumeric = value.replace(/[^A-Z0-9]/gi, '').toUpperCase()
 
     if (alphanumeric.length <= 6) {
       // Format as A9A 9A9 while typing

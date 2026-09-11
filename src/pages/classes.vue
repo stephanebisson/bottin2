@@ -41,10 +41,12 @@
                   {{ classItem.className }}
                 </h5>
               </div>
+
               <div class="flex-shrink-0 ml-3 d-flex align-center ga-2">
                 <span class="text-white text-body-2" style="white-space: nowrap;">
                   ({{ classItem.classCode }})
                 </span>
+
                 <v-btn
                   v-if="isAdmin"
                   color="white"
@@ -64,6 +66,7 @@
                   <v-icon class="me-2" color="primary">mdi-account-tie</v-icon>
                   <span class="font-weight-medium">{{ $i18n('classes.teacher') }}</span>
                 </div>
+
                 <div class="ms-6 text-body-2">
                   <v-tooltip
                     v-if="showPopups"
@@ -79,6 +82,7 @@
                         {{ getTeacherName(classItem.teacher) }}
                       </span>
                     </template>
+
                     <template #default>
                       <div class="pa-3" style="min-width: 280px;">
                         <div v-if="getTeacherInfo(classItem.teacher)">
@@ -109,6 +113,7 @@
                       </div>
                     </template>
                   </v-tooltip>
+
                   <span v-else class="teacher-name">
                     {{ getTeacherName(classItem.teacher) }}
                   </span>
@@ -121,6 +126,7 @@
                   <v-icon class="me-2" color="primary">mdi-account-supervisor</v-icon>
                   <span class="font-weight-medium">{{ $i18n('classes.parentRepresentatives') }}</span>
                 </div>
+
                 <div class="ms-6 text-body-2">
                   <!-- Parent Rep 1 -->
                   <div v-if="classItem.parent_rep_1" class="mb-2">
@@ -138,6 +144,7 @@
                           {{ getParentName(classItem.parent_rep_1) }}
                         </span>
                       </template>
+
                       <template #default>
                         <div class="pa-3" style="min-width: 350px;">
                           <div v-if="getParentData(classItem.parent_rep_1)">
@@ -167,6 +174,7 @@
                             <!-- Interests Section -->
                             <div v-if="getParentData(classItem.parent_rep_1).interests && getParentData(classItem.parent_rep_1).interests.length > 0" class="mb-3">
                               <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.interests') }}</div>
+
                               <div class="text-body-2">
                                 {{ getParentData(classItem.parent_rep_1).interests.join(', ') }}
                               </div>
@@ -183,9 +191,11 @@
                                   class="mb-1"
                                 >
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
+
                                   <div class="text-caption">
                                     {{ $i18n('classes.class') }}: {{ child.className }}
                                     <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
+
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
                                       - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
@@ -205,6 +215,7 @@
                         </div>
                       </template>
                     </v-tooltip>
+
                     <span v-else class="parent-name">
                       {{ getParentName(classItem.parent_rep_1) }}
                     </span>
@@ -226,6 +237,7 @@
                           {{ getParentName(classItem.parent_rep_2) }}
                         </span>
                       </template>
+
                       <template #default>
                         <div class="pa-3" style="min-width: 350px;">
                           <div v-if="getParentData(classItem.parent_rep_2)">
@@ -255,6 +267,7 @@
                             <!-- Interests Section -->
                             <div v-if="getParentData(classItem.parent_rep_2).interests && getParentData(classItem.parent_rep_2).interests.length > 0" class="mb-3">
                               <div class="text-subtitle-2 mb-2 text-white">{{ $i18n('classes.interests') }}</div>
+
                               <div class="text-body-2">
                                 {{ getParentData(classItem.parent_rep_2).interests.join(', ') }}
                               </div>
@@ -271,9 +284,11 @@
                                   class="mb-1"
                                 >
                                   <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
+
                                   <div class="text-caption">
                                     {{ $i18n('classes.class') }}: {{ child.className }}
                                     <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
+
                                     <span v-if="getTeacherName(getClassTeacher(child.className))">
                                       - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
                                     </span>
@@ -293,6 +308,7 @@
                         </div>
                       </template>
                     </v-tooltip>
+
                     <span v-else class="parent-name">
                       {{ getParentName(classItem.parent_rep_2) }}
                     </span>
@@ -304,6 +320,7 @@
               <div class="mb-3">
                 <div class="d-flex align-center mb-2">
                   <v-icon class="me-2" color="primary">mdi-account-multiple</v-icon>
+
                   <span class="font-weight-medium">
                     {{ $i18n('classes.students') }} ({{ getClassStudents(classItem.classLetter).length }})
                   </span>
@@ -329,6 +346,7 @@
                             >
                               {{ formatGradeLevel(levelData.level, bananaI18n.locale) }}
                             </v-chip>
+
                             <span class="text-caption text-grey">
                               {{ $i18n('classes.studentCount', levelData.students.length) }}
                             </span>
@@ -357,6 +375,7 @@
                                     <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $i18n('classes.representative') }}</span>
                                   </span>
                                 </template>
+
                                 <template #default>
                                   <div class="pa-3" style="min-width: 350px;">
                                     <div class="text-h6 mb-3 text-white">
@@ -374,9 +393,11 @@
                                         <div class="font-weight-bold">{{ getStudentParent(student, 1).first_name }} {{ getStudentParent(student, 1).last_name }}</div>
                                         <div class="text-caption">{{ getStudentParent(student, 1).email }}</div>
                                         <div v-if="getStudentParent(student, 1).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 1).phone) }}</div>
+
                                         <div v-if="formatAddress(getStudentParent(student, 1))" class="text-caption">
                                           <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
                                         </div>
+
                                         <div v-if="getStudentParent(student, 1).interests && getStudentParent(student, 1).interests.length > 0" class="text-caption mt-1">
                                           <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
                                         </div>
@@ -386,9 +407,11 @@
                                         <div class="font-weight-bold">{{ getStudentParent(student, 2).first_name }} {{ getStudentParent(student, 2).last_name }}</div>
                                         <div class="text-caption">{{ getStudentParent(student, 2).email }}</div>
                                         <div v-if="getStudentParent(student, 2).phone" class="text-caption">{{ formatPhone(getStudentParent(student, 2).phone) }}</div>
+
                                         <div v-if="formatAddress(getStudentParent(student, 2))" class="text-caption">
                                           <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
                                         </div>
+
                                         <div v-if="getStudentParent(student, 2).interests && getStudentParent(student, 2).interests.length > 0" class="text-caption mt-1">
                                           <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
                                         </div>
@@ -410,6 +433,7 @@
                                           class="mb-1"
                                         >
                                           <div class="font-weight-bold">{{ sibling.first_name }} {{ sibling.last_name }}</div>
+
                                           <div class="text-caption">
                                             {{ $i18n('classes.class') }}: {{ sibling.className }}
                                             <span v-if="getTeacherName(getClassTeacher(sibling.className))">
@@ -426,6 +450,7 @@
                                   </div>
                                 </template>
                               </v-tooltip>
+
                               <span
                                 v-else
                                 class="student-name"
@@ -451,6 +476,7 @@
             <!-- Card Actions -->
             <v-card-actions v-if="false" class="pa-3 pt-0">
               <v-spacer />
+
               <MessageButton
                 v-if="authStore.isAuthenticated && getClassParentIds(classItem.classLetter).length > 0"
                 color="primary"
@@ -552,6 +578,7 @@
 
         <v-card-actions>
           <v-spacer />
+
           <v-btn
             color="grey"
             :disabled="savingClass"
@@ -560,6 +587,7 @@
           >
             {{ $i18n('common.cancel') }}
           </v-btn>
+
           <v-btn
             color="primary"
             :loading="savingClass"

@@ -8,38 +8,135 @@
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $i18n('admin.adminAccessRequired') }}
-      </p>
+      <p class="text-body-1 text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
     </div>
 
-    <!-- Students Table -->
     <div v-else>
-      <!-- Loading State -->
-      <v-card v-if="loading" class="pa-6 text-center">
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        />
-        <p class="mt-4">{{ $i18n('admin.studentsTable.loading') }}</p>
-      </v-card>
-
-      <!-- Error State -->
+      <!-- Error -->
       <v-alert
-        v-else-if="error"
-        class="mb-6"
+        v-if="error"
+        class="mb-4"
+        closable
         color="error"
         icon="mdi-alert-circle"
+        @click:close="error = null"
       >
         {{ error }}
       </v-alert>
 
-      <!-- Students Data Table -->
-      <v-card v-else>
-        <v-card-title class="d-flex justify-space-between align-center">
-          <span>{{ $i18n('admin.studentsTable.tableTitle') }}</span>
-          <div class="d-flex align-center ga-4">
+      <!-- Filter Bar -->
+      <v-row class="mb-4" dense>
+        <v-col cols="12" sm="4">
+          <v-text-field
+            v-model="searchQuery"
+            clearable
+            density="compact"
+            hide-details
+            :label="$i18n('admin.studentsTable.filterSearch')"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+          />
+        </v-col>
+
+        <v-col cols="6" sm="2">
+          <v-select
+            v-model="filterClass"
+            clearable
+            density="compact"
+            hide-details
+            item-title="text"
+            item-value="value"
+            :items="classOptions"
+            :label="$i18n('admin.studentsTable.filterClass')"
+            variant="outlined"
+          />
+        </v-col>
+
+        <v-col cols="6" sm="2">
+          <v-select
+            v-model="filterLevel"
+            clearable
+            density="compact"
+            hide-details
+            :items="allLevelOptions"
+            :label="$i18n('admin.studentsTable.filterLevel')"
+            variant="outlined"
+          />
+        </v-col>
+
+        <v-col class="d-flex align-center" cols="12" sm="4">
+          <v-switch
+            v-model="showUnassignedOnly"
+            color="warning"
+            density="compact"
+            hide-details
+            :label="$i18n('admin.studentsTable.filterUnassigned')"
+          />
+        </v-col>
+      </v-row>
+
+      <!-- Selection Toolbar -->
+      <v-toolbar
+        v-if="selectedIds.length > 0"
+        class="mb-2 rounded"
+        color="blue-grey-lighten-5"
+        density="compact"
+        flat
+      >
+        <v-toolbar-title class="text-body-2 font-weight-medium">
+          {{ $i18n('admin.studentsTable.xSelected', selectedIds.length) }}
+        </v-toolbar-title>
+
+        <v-btn
+          v-if="hasUnassignedSelected"
+          class="mr-2"
+          prepend-icon="mdi-google-classroom"
+          size="small"
+          variant="tonal"
+          @click="openAssignClassDialog"
+        >
+          {{ $i18n('admin.studentsTable.assignClass') }}
+        </v-btn>
+
+        <v-btn
+          class="mr-2"
+          color="error"
+          prepend-icon="mdi-logout"
+          size="small"
+          variant="tonal"
+          @click="openDepartDialog"
+        >
+          {{ $i18n('admin.studentsTable.markDeparted') }}
+        </v-btn>
+
+        <v-btn
+          icon="mdi-close"
+          size="small"
+          variant="text"
+          @click="selectedIds = []"
+        />
+      </v-toolbar>
+
+      <!-- Main Card -->
+      <v-card>
+        <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
+          <span>
+            {{ $i18n('admin.studentsTable.tableTitle') }}
+            <span class="text-body-2 text-grey-darken-1 ml-2">
+              {{ $i18n('admin.studentsTable.totalStudents', filteredStudents.length) }}
+            </span>
+          </span>
+
+          <div class="d-flex align-center ga-2">
+            <v-btn
+              color="warning"
+              prepend-icon="mdi-school"
+              variant="elevated"
+              @click="openProgressDialog"
+            >
+              {{ $i18n('admin.studentsTable.progressAll') }}
+            </v-btn>
+
             <v-btn
               color="primary"
               prepend-icon="mdi-plus"
@@ -48,23 +145,23 @@
             >
               {{ $i18n('admin.studentsTable.newStudent') }}
             </v-btn>
-            <div class="text-body-2 text-grey-darken-1">
-              {{ $i18n('admin.studentsTable.totalStudents', students.length) }}
-            </div>
           </div>
         </v-card-title>
 
+        <!-- Data Table -->
         <v-data-table
-          class="elevation-1"
+          v-model="selectedIds"
+          class="elevation-0"
           disable-sort
           :headers="headers"
           item-value="id"
-          :items="displayStudents"
+          :items="filteredStudents"
           :items-per-page="50"
           :loading="loading"
+          show-select
           :sort-by="[]"
         >
-          <!-- First Name Column -->
+          <!-- First Name -->
           <template #item.first_name="{ item }">
             <v-text-field
               v-if="editingRows.has(item.id)"
@@ -73,10 +170,11 @@
               hide-details
               variant="outlined"
             />
+
             <span v-else class="font-weight-medium">{{ item.first_name }}</span>
           </template>
 
-          <!-- Last Name Column -->
+          <!-- Last Name -->
           <template #item.last_name="{ item }">
             <v-text-field
               v-if="editingRows.has(item.id)"
@@ -85,10 +183,11 @@
               hide-details
               variant="outlined"
             />
+
             <span v-else class="font-weight-medium">{{ item.last_name }}</span>
           </template>
 
-          <!-- Class Column -->
+          <!-- Class -->
           <template #item.className="{ item }">
             <v-select
               v-if="editingRows.has(item.id)"
@@ -101,18 +200,26 @@
               style="min-width: 140px"
               variant="outlined"
             >
-              <template #selection="{ item: selectedItem }">
-                <span class="font-weight-medium">
-                  {{ selectedItem.title }}
-                </span>
+              <template #selection="{ item: sel }">
+                <span class="font-weight-medium">{{ sel.title }}</span>
               </template>
             </v-select>
+
+            <v-chip
+              v-else-if="!item.className"
+              color="orange"
+              size="small"
+              variant="tonal"
+            >
+              —
+            </v-chip>
+
             <span v-else class="font-weight-medium">
               {{ classOptions.find(c => c.value === item.className)?.text || item.className }}
             </span>
           </template>
 
-          <!-- Level Column -->
+          <!-- Level -->
           <template #item.level="{ item }">
             <v-select
               v-if="editingRows.has(item.id)"
@@ -123,16 +230,15 @@
               style="min-width: 70px"
               variant="outlined"
             >
-              <template #selection="{ item: selectedItem }">
-                <span class="font-weight-medium">
-                  {{ selectedItem.title }}
-                </span>
+              <template #selection="{ item: sel }">
+                <span class="font-weight-medium">{{ sel.title }}</span>
               </template>
             </v-select>
+
             <span v-else class="font-weight-medium">{{ item.level }}</span>
           </template>
 
-          <!-- Parents Column -->
+          <!-- Parents -->
           <template #item.parents="{ item }">
             <div v-if="editingRows.has(item.id)" class="d-flex flex-column ga-1">
               <v-autocomplete
@@ -143,9 +249,10 @@
                 item-title="fullName"
                 item-value="id"
                 :items="parentOptions"
-                placeholder="Select Parent 1"
+                placeholder="Parent 1"
                 variant="outlined"
               />
+
               <v-autocomplete
                 v-model="item.parent2_id"
                 clearable
@@ -154,24 +261,34 @@
                 item-title="fullName"
                 item-value="id"
                 :items="parentOptions"
-                placeholder="Select Parent 2"
+                placeholder="Parent 2"
                 variant="outlined"
               />
             </div>
+
             <div v-else class="d-flex flex-column">
-              <span v-if="item.parent1_id" class="text-body-2 mb-1">
-                {{ getParentDisplayName(item.parent1_id) }}
-              </span>
-              <span v-if="item.parent2_id" class="text-body-2">
-                {{ getParentDisplayName(item.parent2_id) }}
-              </span>
+              <span v-if="item.parent1_id" class="text-body-2 mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
+              <span v-if="item.parent2_id" class="text-body-2">{{ getParentDisplayName(item.parent2_id) }}</span>
+
               <span v-if="!item.parent1_id && !item.parent2_id" class="text-grey-darken-1 font-italic">
                 {{ $i18n('admin.studentsTable.noParent') }}
               </span>
             </div>
           </template>
 
-          <!-- Actions Column -->
+          <!-- Log chip -->
+          <template #item.log="{ item }">
+            <v-chip
+              v-if="getLogChip(item.id)"
+              :color="getLogChipColor(item.id)"
+              size="small"
+              variant="tonal"
+            >
+              {{ getLogChip(item.id) }}
+            </v-chip>
+          </template>
+
+          <!-- Actions -->
           <template #item.actions="{ item }">
             <div class="d-flex align-center ga-1">
               <template v-if="!editingRows.has(item.id)">
@@ -182,6 +299,7 @@
                   variant="text"
                   @click="startEditing(item)"
                 />
+
                 <v-btn
                   color="error"
                   icon="mdi-delete"
@@ -190,6 +308,7 @@
                   @click="openDeleteStudentDialog(item)"
                 />
               </template>
+
               <template v-else>
                 <v-btn
                   color="success"
@@ -199,6 +318,7 @@
                   variant="text"
                   @click="saveStudent(item)"
                 />
+
                 <v-btn
                   color="grey"
                   :disabled="item._saving"
@@ -211,25 +331,152 @@
             </div>
           </template>
 
-          <!-- No data state -->
+          <!-- No data -->
           <template #no-data>
             <div class="text-center pa-12">
               <v-icon color="grey-lighten-1" size="64">mdi-school-outline</v-icon>
-              <p class="text-h6 mt-4 text-grey-darken-1">
-                {{ $i18n('admin.studentsTable.noStudents') }}
-              </p>
+              <p class="text-h6 mt-4 text-grey-darken-1">{{ $i18n('admin.studentsTable.noStudents') }}</p>
             </div>
           </template>
         </v-data-table>
       </v-card>
     </div>
 
-    <!-- Delete Student Confirmation Dialog -->
-    <v-dialog
-      v-model="showDeleteDialog"
-      max-width="600px"
-      persistent
-    >
+    <!-- Progress All Dialog -->
+    <v-dialog v-model="showProgressDialog" max-width="600px" persistent>
+      <v-card>
+        <v-card-title class="bg-warning text-white d-flex align-center pa-4">
+          <v-icon class="mr-2">mdi-school</v-icon>
+          {{ $i18n('admin.studentsTable.progressDialog.title') }}
+        </v-card-title>
+
+        <v-card-text class="pt-6">
+          <v-alert class="mb-4" color="warning" icon="mdi-alert" variant="tonal">
+            {{ $i18n('admin.studentsTable.progressDialog.warning') }}
+          </v-alert>
+
+          <div class="d-flex flex-column ga-3">
+            <div class="d-flex align-center ga-2">
+              <v-icon color="success">mdi-arrow-up-circle</v-icon>
+              <span>{{ $i18n('admin.studentsTable.progressDialog.autoProgress', progressionPlan.auto.length) }}</span>
+            </div>
+
+            <div class="d-flex align-center ga-2">
+              <v-icon color="orange">mdi-swap-horizontal</v-icon>
+              <span>{{ $i18n('admin.studentsTable.progressDialog.needsAssignment', progressionPlan.needsAssignment.length) }}</span>
+            </div>
+
+            <div class="d-flex align-center ga-2">
+              <v-icon color="error">mdi-graduation-cap</v-icon>
+              <span>{{ $i18n('admin.studentsTable.progressDialog.graduating', progressionPlan.graduating.length) }}</span>
+            </div>
+
+            <div v-if="progressionPlan.invalid.length > 0" class="d-flex align-center ga-2">
+              <v-icon color="grey">mdi-alert-circle-outline</v-icon>
+              <span>{{ $i18n('admin.studentsTable.progressDialog.invalid', progressionPlan.invalid.length) }}</span>
+            </div>
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn color="grey" :disabled="progressingAll" variant="text" @click="showProgressDialog = false">
+            {{ $i18n('common.cancel') }}
+          </v-btn>
+
+          <v-btn color="warning" :loading="progressingAll" variant="flat" @click="executeProgressAll">
+            {{ $i18n('admin.studentsTable.progressDialog.confirm') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Depart Dialog -->
+    <v-dialog v-model="showDepartDialog" max-width="500px" persistent>
+      <v-card>
+        <v-card-title class="bg-error text-white d-flex align-center pa-4">
+          <v-icon class="mr-2">mdi-logout</v-icon>
+          {{ $i18n('admin.studentsTable.departDialog.title') }}
+        </v-card-title>
+
+        <v-card-text class="pt-6">
+          <v-alert class="mb-4" color="error" icon="mdi-alert" variant="tonal">
+            {{ $i18n('admin.studentsTable.departDialog.warning') }}
+          </v-alert>
+
+          <p class="mb-3">{{ $i18n('admin.studentsTable.departDialog.message', selectedIds.length) }}</p>
+
+          <v-list class="bg-grey-lighten-4 rounded" density="compact">
+            <v-list-item
+              v-for="student in selectedStudents"
+              :key="student.id"
+              :subtitle="`${student.className || '—'} · Niveau ${student.level}`"
+              :title="student.fullName"
+            />
+          </v-list>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn color="grey" :disabled="departingInProgress" variant="text" @click="showDepartDialog = false">
+            {{ $i18n('common.cancel') }}
+          </v-btn>
+
+          <v-btn color="error" :loading="departingInProgress" variant="flat" @click="executeDeparture">
+            {{ $i18n('admin.studentsTable.departDialog.confirm') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Assign Class Dialog -->
+    <v-dialog v-model="showAssignClassDialog" max-width="500px" persistent>
+      <v-card>
+        <v-card-title class="bg-primary text-white d-flex align-center pa-4">
+          <v-icon class="mr-2">mdi-google-classroom</v-icon>
+          {{ $i18n('admin.studentsTable.assignClassDialog.title') }}
+        </v-card-title>
+
+        <v-card-text class="pt-6">
+          <p class="mb-4">
+            {{ $i18n('admin.studentsTable.assignClassDialog.message', unassignedSelected.length) }}
+          </p>
+
+          <v-select
+            v-model="assignClassTarget"
+            density="compact"
+            item-title="text"
+            item-value="value"
+            :items="assignableClassOptions"
+            :label="$i18n('admin.studentsTable.assignClassDialog.selectClass')"
+            variant="outlined"
+          />
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn color="grey" :disabled="assigningClass" variant="text" @click="showAssignClassDialog = false">
+            {{ $i18n('common.cancel') }}
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            :disabled="!assignClassTarget"
+            :loading="assigningClass"
+            variant="flat"
+            @click="executeAssignClass"
+          >
+            {{ $i18n('admin.studentsTable.assignClassDialog.confirm') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Individual Dialog -->
+    <v-dialog v-model="showDeleteDialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="bg-error text-white">
           <div class="d-flex align-center">
@@ -239,36 +486,28 @@
         </v-card-title>
 
         <v-card-text class="pt-6">
-          <v-alert
-            class="mb-4"
-            color="error"
-            icon="mdi-alert"
-            variant="tonal"
-          >
+          <v-alert class="mb-4" color="error" icon="mdi-alert" variant="tonal">
             <div class="text-body-1 font-weight-bold mb-2">
               {{ $i18n('admin.parentsDirectory.deleteStudentWarning') }}
             </div>
           </v-alert>
 
           <div v-if="studentToDelete" class="mb-4">
-            <div class="text-h6 mb-2">
-              {{ studentToDelete.fullName }}
-            </div>
+            <div class="text-h6 mb-2">{{ studentToDelete.fullName }}</div>
+
             <div class="text-body-2 text-grey-darken-1">
               {{ studentToDelete.displayLevel }} - {{ studentToDelete.className }}
             </div>
           </div>
 
-          <p class="text-body-1 mb-4">
-            {{ $i18n('admin.parentsDirectory.deleteStudentExplanation') }}
-          </p>
-
+          <p class="text-body-1 mb-4">{{ $i18n('admin.parentsDirectory.deleteStudentExplanation') }}</p>
           <v-divider class="my-4" />
 
           <div class="mb-4">
             <p class="text-body-1 font-weight-bold mb-2">
               {{ $i18n('admin.parentsDirectory.deleteStudentConfirmation') }}
             </p>
+
             <v-text-field
               v-model="deleteConfirmationText"
               class="mt-2"
@@ -286,14 +525,11 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="grey"
-            :disabled="deletingStudent"
-            variant="text"
-            @click="cancelDeleteStudent"
-          >
+
+          <v-btn color="grey" :disabled="deletingStudent" variant="text" @click="cancelDeleteStudent">
             {{ $i18n('common.cancel') }}
           </v-btn>
+
           <v-btn
             color="error"
             :disabled="!isDeleteConfirmed"
@@ -310,31 +546,60 @@
 </template>
 
 <script setup>
+  import { addDoc, collection, deleteDoc, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
-  import { getResetLevel, getValidLevelsForClass } from '@/config/classLevels'
+  import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
   import { StudentDTO } from '@/dto/StudentDTO.js'
+  import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
   import { StudentRepository } from '@/repositories/StudentRepository'
   import { useAuthStore } from '@/stores/auth'
+  import { getCurrentSchoolYear } from '@/utils/schoolYear'
 
-
-  // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
   const authStore = useAuthStore()
 
-  // State
+  // ─── State ────────────────────────────────────────────────────────────────────
+
   const loading = ref(false)
   const error = ref(null)
-  const students = ref([]) // Array of StudentDTO instances
+  const students = ref([])
   const classOptions = ref([])
-  const parentOptions = ref([]) // Array of simplified parent objects {id, fullName} from ParentDTO
+  const parentOptions = ref([])
   const editingRows = ref(new Set())
-  const newStudent = ref(null) // StudentDTO for new student being created
+  const newStudent = ref(null)
+  const isAuthorized = ref(false)
 
-  // Delete Student Dialog State
+  // Filters
+  const searchQuery = ref('')
+  const filterClass = ref(null)
+  const filterLevel = ref(null)
+  const showUnassignedOnly = ref(false)
+
+  // Selection
+  const selectedIds = ref([])
+
+  // Log chips
+  const studentLogs = ref(new Map())
+
+  // Progress All
+  const showProgressDialog = ref(false)
+  const progressionPlan = ref({ auto: [], needsAssignment: [], graduating: [], invalid: [] })
+  const progressingAll = ref(false)
+
+  // Depart
+  const showDepartDialog = ref(false)
+  const departingInProgress = ref(false)
+
+  // Assign Class
+  const showAssignClassDialog = ref(false)
+  const assignClassTarget = ref(null)
+  const assigningClass = ref(false)
+
+  // Delete Individual
   const showDeleteDialog = ref(false)
   const studentToDelete = ref(null)
   const deleteConfirmationText = ref('')
@@ -342,176 +607,190 @@
   const deleteConfirmationErrorMessage = ref('')
   const deletingStudent = ref(false)
 
-  // Check if user is authorized using Firebase Custom Claims
-  const isAuthorized = ref(false)
+  // ─── Computed ─────────────────────────────────────────────────────────────────
 
-  // Check admin status using custom claims
+  const displayStudents = computed(() => {
+    if (newStudent.value) return [newStudent.value, ...students.value]
+    return students.value
+  })
+
+  const filteredStudents = computed(() => {
+    let result = displayStudents.value
+    if (searchQuery.value) {
+      const q = searchQuery.value.toLowerCase()
+      result = result.filter(s =>
+        s.first_name.toLowerCase().includes(q) || s.last_name.toLowerCase().includes(q),
+      )
+    }
+    if (filterClass.value) result = result.filter(s => s.className === filterClass.value)
+    if (filterLevel.value !== null) result = result.filter(s => s.level === filterLevel.value)
+    if (showUnassignedOnly.value) result = result.filter(s => !s.className)
+    return result
+  })
+
+  const selectedStudents = computed(() =>
+    selectedIds.value.map(idOrItem => {
+      if (typeof idOrItem === 'object' && idOrItem !== null) return idOrItem
+      return students.value.find(s => s.id === idOrItem)
+    }).filter(Boolean),
+  )
+
+  const unassignedSelected = computed(() => selectedStudents.value.filter(s => !s.className))
+
+  const hasUnassignedSelected = computed(() => unassignedSelected.value.length > 0)
+
+  const allLevelOptions = computed(() =>
+    [1, 2, 3, 4, 5, 6].map(l => ({ title: String(l), value: l })),
+  )
+
+  // Filter class options to those valid for the unassigned students' level(s)
+  const assignableClassOptions = computed(() => {
+    const uniqueLevels = [...new Set(unassignedSelected.value.map(s => s.level).filter(Boolean))]
+    if (uniqueLevels.length === 1) {
+      const targetLevel = uniqueLevels[0]
+      const validLetters = new Set(Object.entries(CLASS_LEVEL_MAPPING)
+        .filter(([, levels]) => levels.includes(targetLevel))
+        .map(([letter]) => letter))
+      return classOptions.value.filter(c => validLetters.has(c.value))
+    }
+    return classOptions.value
+  })
+
+  const isDeleteConfirmed = computed(() => {
+    const expectedText = $i18n('admin.delete').toUpperCase()
+    return deleteConfirmationText.value.trim().toUpperCase() === expectedText
+  })
+
+  const headers = computed(() => [
+    { title: $i18n('admin.studentsTable.headers.firstName'), key: 'first_name', sortable: false, width: '120px' },
+    { title: $i18n('admin.studentsTable.headers.lastName'), key: 'last_name', sortable: false, width: '120px' },
+    { title: $i18n('admin.studentsTable.headers.class'), key: 'className', sortable: false, width: '150px' },
+    { title: $i18n('admin.studentsTable.headers.level'), key: 'level', sortable: false, width: '80px' },
+    { title: $i18n('admin.studentsTable.headers.parents'), key: 'parents', sortable: false },
+    { title: $i18n('admin.studentsTable.headers.log'), key: 'log', sortable: false, width: '170px' },
+    { title: $i18n('common.actions'), key: 'actions', sortable: false, width: '100px' },
+  ])
+
+  // ─── Auth ─────────────────────────────────────────────────────────────────────
+
   async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
     }
-
     try {
-      // Get ID token result which includes custom claims - force refresh to get latest claims
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      const isAdmin = !!idTokenResult.claims.admin
-
-      isAuthorized.value = isAdmin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
+      const result = await authStore.user.getIdTokenResult(true)
+      isAuthorized.value = !!result.claims.admin
+    } catch {
       isAuthorized.value = false
     }
   }
 
-  // Computed students list that includes new student row at the beginning
-  const displayStudents = computed(() => {
-    if (newStudent.value) {
-      return [newStudent.value, ...students.value]
-    }
-    return students.value
-  })
+  // ─── Data Loading ─────────────────────────────────────────────────────────────
 
-  // Define table headers
-  const headers = computed(() => [
-    {
-      title: $i18n('admin.studentsTable.headers.firstName'),
-      key: 'first_name',
-      sortable: false,
-      width: '120px',
-    },
-    {
-      title: $i18n('admin.studentsTable.headers.lastName'),
-      key: 'last_name',
-      sortable: false,
-      width: '120px',
-    },
-    {
-      title: $i18n('admin.studentsTable.headers.class'),
-      key: 'className',
-      sortable: false,
-      width: '150px',
-    },
-    {
-      title: $i18n('admin.studentsTable.headers.level'),
-      key: 'level',
-      sortable: false,
-      width: '80px',
-    },
-    {
-      title: $i18n('admin.studentsTable.headers.parents'),
-      key: 'parents',
-      sortable: false,
-    },
-    {
-      title: $i18n('common.actions'),
-      key: 'actions',
-      sortable: false,
-      width: '100px',
-    },
-  ])
-
-  // Get color for class chips
-  function getClassColor (className) {
-    // Generate a consistent color based on class name
-    const colors = ['blue', 'green', 'orange', 'purple', 'red', 'teal', 'indigo', 'pink']
-    const hash = className.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.codePointAt(0)
-      return a & a
-    }, 0)
-    return colors[Math.abs(hash) % colors.length]
-  }
-
-  // Get level options for a given class
-  function getLevelOptions (classLetter) {
-    const validLevels = getValidLevelsForClass(classLetter)
-    return validLevels.map(level => ({
-      title: level.toString(),
-      value: level,
-    }))
-  }
-
-  // Load students data
   async function loadStudents () {
     try {
       loading.value = true
       error.value = null
-
-      const repository = new StudentRepository()
-      const studentDTOs = await repository.getAll()
-
-      // Sort by level, class, first name, last name (all ascending)
-      // Students without a level or class are sorted at the end
-      // StudentRepository.getAll() returns StudentDTO instances
-      students.value = studentDTOs.toSorted((a, b) => {
-        // First sort by level (ascending) - null values go to end
-        const levelA = a.level === null ? Number.MAX_SAFE_INTEGER : a.level
-        const levelB = b.level === null ? Number.MAX_SAFE_INTEGER : b.level
-        if (levelA < levelB) return -1
-        if (levelA > levelB) return 1
-
-        // Then sort by className - empty strings go to the end
-        const classA = a.className || '\uFFFF' // Use max Unicode char to sort empty to end
-        const classB = b.className || '\uFFFF'
-        if (classA < classB) return -1
-        if (classA > classB) return 1
-
-        // Then sort by first name (ascending)
-        if (a.first_name < b.first_name) return -1
-        if (a.first_name > b.first_name) return 1
-
-        // Finally sort by last name (ascending)
-        if (a.last_name < b.last_name) return -1
-        if (a.last_name > b.last_name) return 1
-
-        return 0
+      const repo = new StudentRepository()
+      const dtos = await repo.getAll()
+      students.value = dtos.toSorted((a, b) => {
+        const la = a.level === null ? Number.MAX_SAFE_INTEGER : a.level
+        const lb = b.level === null ? Number.MAX_SAFE_INTEGER : b.level
+        if (la !== lb) return la - lb
+        const ca = a.className || '\uFFFF'
+        const cb = b.className || '\uFFFF'
+        if (ca !== cb) return ca < cb ? -1 : 1
+        if (a.first_name !== b.first_name) return a.first_name < b.first_name ? -1 : 1
+        return a.last_name < b.last_name ? -1 : 1
       })
-
-      console.log(`Loaded ${students.value.length} students as DTOs`)
-    } catch (error_) {
-      console.error('Failed to load students:', error_)
+    } catch {
       error.value = $i18n('admin.studentsTable.loadError')
     } finally {
       loading.value = false
     }
   }
 
-  // Load class options for dropdowns
   async function loadClassOptions () {
     try {
-      const classRepository = new ClassRepository()
-      classOptions.value = await classRepository.getClassDropdownOptions()
-      console.log(`Loaded ${classOptions.value.length} class options`)
-    } catch (error_) {
-      console.error('Failed to load class options:', error_)
-    }
+      classOptions.value = await new ClassRepository().getClassDropdownOptions()
+    } catch {}
   }
 
-  // Load parent options for dropdowns
   async function loadParentOptions () {
     try {
-      const parentRepository = new ParentRepository()
-      const parents = await parentRepository.getAll()
-      parentOptions.value = parents.map(parentDTO => ({
-        id: parentDTO.id,
-        fullName: parentDTO.fullName,
-      }))
-      console.log(`Loaded ${parentOptions.value.length} parent options`)
-    } catch (error_) {
-      console.error('Failed to load parent options:', error_)
-    }
+      const parents = await new ParentRepository().getAll()
+      parentOptions.value = parents.map(p => ({ id: p.id, fullName: p.fullName }))
+    } catch {}
   }
 
-  // Get parent display name from ID
+  async function loadStudentLogs () {
+    try {
+      const q = query(
+        collection(db, 'actionLogs'),
+        where('entityType', '==', 'student'),
+        where('schoolYear', '==', getCurrentSchoolYear()),
+      )
+      const snapshot = await getDocs(q)
+      const map = new Map()
+      for (const snap of snapshot.docs) {
+        const data = snap.data()
+        const existing = map.get(data.entityId)
+        if (!existing || (data.timestamp?.seconds ?? 0) > (existing.timestamp?.seconds ?? 0)) {
+          map.set(data.entityId, data)
+        }
+      }
+      studentLogs.value = map
+    } catch {}
+  }
+
+  // ─── Log Chips ────────────────────────────────────────────────────────────────
+
+  const chipColors = {
+    progress_student: 'blue',
+    graduate_student: 'purple',
+    depart_student: 'red',
+    assign_class: 'green',
+  }
+
+  function getLogChip (studentId) {
+    const log = studentLogs.value.get(studentId)
+    if (!log) return null
+    const label = $i18n(`admin.studentsTable.logs.${log.actionType}`)
+    const date = log.timestamp?.toDate?.()
+    const dateStr = date ? date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''
+    return `${label} ${dateStr}`.trim()
+  }
+
+  function getLogChipColor (studentId) {
+    const log = studentLogs.value.get(studentId)
+    return log ? (chipColors[log.actionType] ?? 'grey') : 'grey'
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+  function getLevelOptions (classLetter) {
+    return getValidLevelsForClass(classLetter).map(level => ({ title: String(level), value: level }))
+  }
+
   function getParentDisplayName (parentId) {
-    if (!parentId) return null
-    const parent = parentOptions.value.find(p => p.id === parentId)
-    return parent ? parent.fullName : parentId
+    return parentOptions.value.find(p => p.id === parentId)?.fullName ?? parentId
   }
 
-  // Start editing a student row
+  async function writeLog (entry) {
+    await addDoc(collection(db, 'actionLogs'), {
+      actor: authStore.userEmail,
+      entityType: 'student',
+      schoolYear: getCurrentSchoolYear(),
+      timestamp: serverTimestamp(),
+      details: {},
+      ...entry,
+    })
+  }
+
+  // ─── Editing (inline row) ─────────────────────────────────────────────────────
+
   function startEditing (studentDTO) {
-    // Store original values for cancel functionality using DTO's toJSON method
     studentDTO._originalValues = {
       first_name: studentDTO.first_name,
       last_name: studentDTO.last_name,
@@ -523,178 +802,225 @@
     editingRows.value.add(studentDTO.id)
   }
 
-  // Cancel new student creation
-  function cancelNewStudent () {
-    if (newStudent.value) {
+  function cancelEditing (studentDTO) {
+    if (newStudent.value && studentDTO.id === newStudent.value.id) {
       editingRows.value.delete(newStudent.value.id)
       newStudent.value = null
-    }
-  }
-
-  // Cancel editing and restore original values
-  function cancelEditing (studentDTO) {
-    // Check if this is a new student being cancelled
-    if (newStudent.value && studentDTO.id === newStudent.value.id) {
-      cancelNewStudent()
       return
     }
-
     if (studentDTO._originalValues) {
-      studentDTO.first_name = studentDTO._originalValues.first_name
-      studentDTO.last_name = studentDTO._originalValues.last_name
-      studentDTO.className = studentDTO._originalValues.className
-      studentDTO.level = studentDTO._originalValues.level
-      studentDTO.parent1_id = studentDTO._originalValues.parent1_id
-      studentDTO.parent2_id = studentDTO._originalValues.parent2_id
+      Object.assign(studentDTO, studentDTO._originalValues)
       delete studentDTO._originalValues
     }
     editingRows.value.delete(studentDTO.id)
   }
 
-  // Create new student row
   function createNewStudent () {
-    if (newStudent.value) {
-      // Already creating a new student
-      return
-    }
-
-    // Create a new StudentDTO with temporary ID for editing
+    if (newStudent.value) return
     const tempId = 'new-student-' + Date.now()
-    newStudent.value = new StudentDTO({
-      id: tempId,
-      first_name: '',
-      last_name: '',
-      className: '',
-      level: null,
-      parent1_id: null,
-      parent2_id: null,
-    })
-
-    // Add to editing rows
+    newStudent.value = new StudentDTO({ id: tempId, first_name: '', last_name: '', className: '', level: null, parent1_id: null, parent2_id: null })
     editingRows.value.add(tempId)
   }
 
-  // Save new student
   async function saveNewStudent () {
     if (!newStudent.value) return
-
     try {
       newStudent.value._saving = true
-
-      // Validate required fields
       if (!newStudent.value.first_name.trim()) {
         error.value = $i18n('admin.studentsTable.validation.firstNameRequired')
-        setTimeout(() => {
-          error.value = null
-        }, 5000)
         return
       }
-
       if (!newStudent.value.last_name.trim()) {
         error.value = $i18n('admin.studentsTable.validation.lastNameRequired')
-        setTimeout(() => {
-          error.value = null
-        }, 5000)
         return
       }
-
       if (!newStudent.value.parent1_id && !newStudent.value.parent2_id) {
         error.value = $i18n('admin.studentsTable.validation.parentRequired')
-        setTimeout(() => {
-          error.value = null
-        }, 5000)
         return
       }
-
-      // Create student data (without temporary ID)
-      const studentData = {
+      const created = await new StudentRepository().create({
         first_name: newStudent.value.first_name.trim(),
         last_name: newStudent.value.last_name.trim(),
         className: newStudent.value.className,
         level: newStudent.value.level,
         parent1_id: newStudent.value.parent1_id || null,
         parent2_id: newStudent.value.parent2_id || null,
-      }
-
-      // Use StudentRepository.create which handles DTO validation internally
-      const repository = new StudentRepository()
-      const createdStudentDTO = await repository.create(studentData)
-
-      // Add new student to the beginning of the students array
-      students.value.unshift(createdStudentDTO)
-
-      console.log(`Created new student ${createdStudentDTO.fullName}`)
-
-      // Clear new student state
+      })
+      students.value.unshift(created)
       editingRows.value.delete(newStudent.value.id)
       newStudent.value = null
-    } catch (error_) {
-      console.error('Failed to create student:', error_)
+    } catch {
       error.value = $i18n('admin.studentsTable.createError')
-      setTimeout(() => {
-        error.value = null
-      }, 5000)
     } finally {
-      if (newStudent.value) {
-        newStudent.value._saving = false
-      }
+      if (newStudent.value) newStudent.value._saving = false
     }
   }
 
-  // Save student changes
   async function saveStudent (studentDTO) {
-    // Check if this is a new student being saved
     if (newStudent.value && studentDTO.id === newStudent.value.id) {
       await saveNewStudent()
       return
     }
-
     try {
       studentDTO._saving = true
-
-      // Create updates object with proper data sanitization
-      const updates = {
+      const updated = await new StudentRepository().update(studentDTO.id, {
         first_name: studentDTO.first_name,
         last_name: studentDTO.last_name,
         className: studentDTO.className,
         level: studentDTO.level,
         parent1_id: studentDTO.parent1_id || null,
         parent2_id: studentDTO.parent2_id || null,
-      }
-
-      // Use StudentRepository.update which handles DTO validation internally
-      const repository = new StudentRepository()
-      const updatedStudentDTO = await repository.update(studentDTO.id, updates)
-
-      // Update the reactive student object with the validated data from the updated DTO
-      // Only update writable properties, not computed ones like fullName
-      studentDTO.first_name = updatedStudentDTO.first_name
-      studentDTO.last_name = updatedStudentDTO.last_name
-      studentDTO.className = updatedStudentDTO.className
-      studentDTO.level = updatedStudentDTO.level
-      studentDTO.parent1_id = updatedStudentDTO.parent1_id
-      studentDTO.parent2_id = updatedStudentDTO.parent2_id
-      studentDTO.updatedAt = updatedStudentDTO.updatedAt
-
-      console.log(`Updated student ${updatedStudentDTO.fullName}`)
+      })
+      Object.assign(studentDTO, {
+        first_name: updated.first_name,
+        last_name: updated.last_name,
+        className: updated.className,
+        level: updated.level,
+        parent1_id: updated.parent1_id,
+        parent2_id: updated.parent2_id,
+        updatedAt: updated.updatedAt,
+      })
       delete studentDTO._originalValues
       editingRows.value.delete(studentDTO.id)
-    } catch (error_) {
-      console.error('Failed to save student:', error_)
+    } catch {
       error.value = $i18n('admin.studentsTable.updateError')
-      setTimeout(() => {
-        error.value = null
-      }, 5000)
     } finally {
       studentDTO._saving = false
     }
   }
 
-  // Delete Student Dialog Methods
-  const isDeleteConfirmed = computed(() => {
-    const expectedText = $i18n('admin.delete').toUpperCase()
-    return deleteConfirmationText.value.trim().toUpperCase() === expectedText
-  })
+  // ─── Progress All ─────────────────────────────────────────────────────────────
+
+  function openProgressDialog () {
+    const auto = [], needsAssignment = [], graduating = [], invalid = []
+    for (const s of students.value) {
+      switch (s.level) {
+        case 6: {
+          graduating.push(s)
+          break
+        }
+        case 2:
+        case 4: {
+          needsAssignment.push(s)
+          break
+        }
+        case 1:
+        case 3:
+        case 5: {
+          auto.push(s)
+          break
+        }
+        default: { invalid.push(s)
+        }
+      }
+    }
+    progressionPlan.value = { auto, needsAssignment, graduating, invalid }
+    showProgressDialog.value = true
+  }
+
+  async function executeProgressAll () {
+    progressingAll.value = true
+    try {
+      const { auto, needsAssignment, graduating } = progressionPlan.value
+      const batch = writeBatch(db)
+
+      for (const s of auto) {
+        batch.update(doc(db, 'students', s.id), { level: s.level + 1, updatedAt: serverTimestamp() })
+      }
+      for (const s of needsAssignment) {
+        batch.update(doc(db, 'students', s.id), { level: s.level + 1, className: null, updatedAt: serverTimestamp() })
+      }
+      for (const s of graduating) {
+        batch.delete(doc(db, 'students', s.id))
+      }
+
+      const classesSnap = await getDocs(collection(db, 'classes'))
+      for (const classDoc of classesSnap.docs) {
+        batch.update(classDoc.ref, { parent_rep_1: null, parent_rep_2: null, student_rep_1: null, student_rep_2: null })
+      }
+
+      await batch.commit()
+
+      await Promise.all([
+        ...auto.map(s => writeLog({ actionType: 'progress_student', entityId: s.id, entityName: s.fullName, details: { fromLevel: s.level, toLevel: s.level + 1, fromClass: s.className, toClass: s.className } })),
+        ...needsAssignment.map(s => writeLog({ actionType: 'progress_student', entityId: s.id, entityName: s.fullName, details: { fromLevel: s.level, toLevel: s.level + 1, fromClass: s.className, toClass: null, needsAssignment: true } })),
+        ...graduating.map(s => writeLog({ actionType: 'graduate_student', entityId: s.id, entityName: s.fullName, details: { fromLevel: s.level, fromClass: s.className } })),
+      ])
+
+      showProgressDialog.value = false
+      await loadStudents()
+      await loadStudentLogs()
+    } catch {
+      error.value = $i18n('admin.studentsTable.progressError')
+    } finally {
+      progressingAll.value = false
+    }
+  }
+
+  // ─── Mark as Departed ─────────────────────────────────────────────────────────
+
+  function openDepartDialog () {
+    showDepartDialog.value = true
+  }
+
+  async function executeDeparture () {
+    departingInProgress.value = true
+    try {
+      const toDepart = selectedStudents.value
+      const batch = writeBatch(db)
+      for (const s of toDepart) batch.delete(doc(db, 'students', s.id))
+      await batch.commit()
+      await Promise.all(toDepart.map(s => writeLog({
+        actionType: 'depart_student',
+        entityId: s.id,
+        entityName: s.fullName,
+        details: { level: s.level, className: s.className },
+      })))
+      const departedIds = new Set(toDepart.map(s => s.id))
+      students.value = students.value.filter(s => !departedIds.has(s.id))
+      selectedIds.value = []
+      showDepartDialog.value = false
+    } catch {
+      error.value = $i18n('admin.studentsTable.departError')
+    } finally {
+      departingInProgress.value = false
+    }
+  }
+
+  // ─── Assign Class ─────────────────────────────────────────────────────────────
+
+  function openAssignClassDialog () {
+    assignClassTarget.value = null
+    showAssignClassDialog.value = true
+  }
+
+  async function executeAssignClass () {
+    if (!assignClassTarget.value) return
+    assigningClass.value = true
+    try {
+      const targets = unassignedSelected.value
+      const className = assignClassTarget.value
+      const batch = writeBatch(db)
+      for (const s of targets) batch.update(doc(db, 'students', s.id), { className, updatedAt: serverTimestamp() })
+      await batch.commit()
+      await Promise.all(targets.map(s => writeLog({
+        actionType: 'assign_class',
+        entityId: s.id,
+        entityName: s.fullName,
+        details: { fromClass: null, toClass: className, level: s.level },
+      })))
+      for (const s of targets) s.className = className
+      await loadStudentLogs()
+      selectedIds.value = []
+      showAssignClassDialog.value = false
+    } catch {
+      error.value = $i18n('admin.studentsTable.assignClassError')
+    } finally {
+      assigningClass.value = false
+    }
+  }
+
+  // ─── Delete Individual ────────────────────────────────────────────────────────
 
   function openDeleteStudentDialog (student) {
     studentToDelete.value = student
@@ -708,8 +1034,6 @@
     showDeleteDialog.value = false
     studentToDelete.value = null
     deleteConfirmationText.value = ''
-    deleteConfirmationError.value = false
-    deleteConfirmationErrorMessage.value = ''
   }
 
   async function confirmDeleteStudent () {
@@ -718,33 +1042,22 @@
       deleteConfirmationErrorMessage.value = $i18n('admin.parentsDirectory.deleteStudentMismatch')
       return
     }
-
     if (!studentToDelete.value) return
-
     deletingStudent.value = true
-    deleteConfirmationError.value = false
-    deleteConfirmationErrorMessage.value = ''
-
     try {
-      console.log('Deleting student:', studentToDelete.value.fullName)
-
-      // Delete student using repository
-      const repository = new StudentRepository()
-      await repository.delete(studentToDelete.value.id)
-      console.log('Student deleted successfully:', studentToDelete.value.fullName)
-
-      // Remove from students array
-      students.value = students.value.filter(s => s.id !== studentToDelete.value.id)
-
-      // Close dialog
+      const student = studentToDelete.value
+      await new StudentRepository().delete(student.id)
+      await writeLog({
+        actionType: 'depart_student',
+        entityId: student.id,
+        entityName: student.fullName,
+        details: { level: student.level, className: student.className },
+      })
+      students.value = students.value.filter(s => s.id !== student.id)
       showDeleteDialog.value = false
       studentToDelete.value = null
       deleteConfirmationText.value = ''
-
-      // Show success message (you could add a snackbar here)
-      console.log('Student deleted successfully!')
-    } catch (error_) {
-      console.error('Error deleting student:', error_)
+    } catch {
       deleteConfirmationError.value = true
       deleteConfirmationErrorMessage.value = $i18n('admin.parentsDirectory.deleteStudentError')
     } finally {
@@ -752,38 +1065,24 @@
     }
   }
 
-  onMounted(async () => {
+  // ─── Lifecycle ────────────────────────────────────────────────────────────────
+
+  async function initialize () {
     await checkAdminStatus()
     if (isAuthorized.value) {
-      await Promise.all([
-        loadStudents(),
-        loadClassOptions(),
-        loadParentOptions(),
-      ])
+      await Promise.all([loadStudents(), loadClassOptions(), loadParentOptions()])
+      await loadStudentLogs()
     }
-  })
+  }
 
-  // Watch for authentication changes
-  watch(() => authStore.isAuthenticated, async newValue => {
-    if (newValue) {
-      await checkAdminStatus()
-      if (isAuthorized.value) {
-        await Promise.all([
-          loadStudents(),
-          loadClassOptions(),
-          loadParentOptions(),
-        ])
-      }
+  onMounted(initialize)
+
+  watch(() => authStore.isAuthenticated, async isAuth => {
+    if (isAuth) {
+      await initialize()
     } else {
       isAuthorized.value = false
       students.value = []
-      classOptions.value = []
     }
   })
 </script>
-
-<style scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-</style>

@@ -15,9 +15,11 @@
             <td class="member-name-cell">
               {{ member.fullName }}
             </td>
+
             <td class="phone-cell">
               {{ formatPhoneForDisplay(member.phone) || '' }}
             </td>
+
             <td class="email-cell">
               {{ member.email || '' }}
             </td>
@@ -31,9 +33,11 @@
           <td class="member-name-cell">
             {{ member.fullName }}
           </td>
+
           <td class="phone-cell">
             {{ formatPhoneForDisplay(member.phone) || '' }}
           </td>
+
           <td class="email-cell">
             {{ member.email || '' }}
           </td>

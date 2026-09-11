@@ -18,7 +18,9 @@ try {
   mkdirSync(iconsDir, { recursive: true })
   console.log('✅ Created icons directory')
 } catch (error) {
-  if (error.code !== 'EEXIST') {throw error}
+  if (error.code !== 'EEXIST') {
+    throw error
+  }
 }
 
 // Read SVG file
@@ -34,7 +36,7 @@ const promises = sizes.map(async size => {
     await sharp(svgBuffer)
       .resize(size, size, {
         fit: 'contain',
-        background: { r: 255, g: 255, b: 255, alpha: 0 } // Transparent background
+        background: { r: 255, g: 255, b: 255, alpha: 0 }, // Transparent background
       })
       .png()
       .toFile(outputPath)

@@ -6,7 +6,9 @@
  */
 export function formatGradeLevel (level, locale = 'fr') {
   // Handle special cases
-  if (!level || level === 'Unknown') {return level}
+  if (!level || level === 'Unknown') {
+    return level
+  }
 
   const numLevel = Number(level)
 

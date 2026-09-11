@@ -9,7 +9,6 @@ import { createApp } from 'vue'
 
 // Security
 import { initSecurity } from '@/config/security'
-
 // Plugins
 import { registerPlugins } from '@/plugins'
 
@@ -18,7 +17,6 @@ import App from './App.vue'
 
 // Polyfills for older browsers
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch'
-
 // Styles
 import 'unfonts.css'
 

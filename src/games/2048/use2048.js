@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export function use2048() {
+export function use2048 () {
   // 4x4 grid of tiles
   const board = ref([])
   const score = ref(0)
@@ -11,7 +11,7 @@ export function use2048() {
   // Initialize empty board
   const initBoard = () => {
     board.value = Array.from({ length: 4 }, () =>
-      Array.from({ length: 4 }, () => ({ value: 0, isNew: false, isMerged: false }))
+      Array.from({ length: 4 }, () => ({ value: 0, isNew: false, isMerged: false })),
     )
   }
 
@@ -31,7 +31,9 @@ export function use2048() {
   // Add random tile (2 or 4)
   const addRandomTile = () => {
     const empty = getEmptyCells()
-    if (empty.length === 0) {return false}
+    if (empty.length === 0) {
+      return false
+    }
 
     const { row, col } = empty[Math.floor(Math.random() * empty.length)]
     const value = Math.random() < 0.9 ? 2 : 4
@@ -50,21 +52,25 @@ export function use2048() {
   }
 
   // Move and merge tiles in one direction
-  const moveTiles = (direction) => {
-    if (gameOver.value) {return false}
+  const moveTiles = direction => {
+    if (gameOver.value) {
+      return false
+    }
 
     clearAnimationFlags()
     let moved = false
     // Deep clone the board array and cell objects
     const newBoard = board.value.map(row =>
-      row.map(cell => ({ ...cell }))
+      row.map(cell => ({ ...cell })),
     )
 
     if (direction === 'left' || direction === 'right') {
       for (let i = 0; i < 4; i++) {
         const row = newBoard[i].map(cell => cell.value)
         const { newRow, scored, hasMoved } = mergeRow(row, direction === 'right')
-        if (hasMoved) {moved = true}
+        if (hasMoved) {
+          moved = true
+        }
         score.value += scored
         for (let j = 0; j < 4; j++) {
           newBoard[i][j].value = newRow[j]
@@ -75,7 +81,9 @@ export function use2048() {
       for (let j = 0; j < 4; j++) {
         const col = newBoard.map(row => row[j].value)
         const { newRow, scored, hasMoved } = mergeRow(col, direction === 'down')
-        if (hasMoved) {moved = true}
+        if (hasMoved) {
+          moved = true
+        }
         score.value += scored
         for (let i = 0; i < 4; i++) {
           newBoard[i][j].value = newRow[i]
@@ -100,7 +108,9 @@ export function use2048() {
     let scored = 0
     let hasMoved = false
 
-    if (reverse) {newRow.reverse()}
+    if (reverse) {
+      newRow.reverse()
+    }
 
     // Merge adjacent equal values
     for (let i = 0; i < newRow.length - 1; i++) {
@@ -117,7 +127,9 @@ export function use2048() {
       newRow.push(0)
     }
 
-    if (reverse) {newRow.reverse()}
+    if (reverse) {
+      newRow.reverse()
+    }
 
     // Check if row changed
     if (!hasMoved) {
@@ -135,15 +147,17 @@ export function use2048() {
   // Check if any moves are possible
   const canMove = () => {
     // Check for empty cells
-    if (getEmptyCells().length > 0) {return true}
+    if (getEmptyCells().length > 0) {
+      return true
+    }
 
     // Check for adjacent equal values
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
         const val = board.value[i][j].value
         if (
-          (i < 3 && board.value[i + 1][j].value === val) ||
-          (j < 3 && board.value[i][j + 1].value === val)
+          (i < 3 && board.value[i + 1][j].value === val)
+          || (j < 3 && board.value[i][j + 1].value === val)
         ) {
           return true
         }
@@ -190,8 +204,10 @@ export function use2048() {
   }
 
   // Handle keyboard input
-  const handleKeyPress = (event) => {
-    if (gameOver.value) {return}
+  const handleKeyPress = event => {
+    if (gameOver.value) {
+      return
+    }
 
     const keyMap = {
       ArrowUp: 'up',
@@ -208,7 +224,7 @@ export function use2048() {
   }
 
   // Handle swipe gestures
-  const handleSwipe = (direction) => {
+  const handleSwipe = direction => {
     moveTiles(direction)
   }
 

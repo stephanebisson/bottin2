@@ -8,5 +8,5 @@ export const CSSDM_INFO = {
   addressLine2: 'Montréal (Québec) H1V 3R9',
   phone: '5145966000',
   url: 'www.cssdm.gouv.qc.ca',
-  email: 'info@csdm.qc.ca'
+  email: 'info@csdm.qc.ca',
 }

@@ -51,10 +51,12 @@
             <v-icon class="me-3" color="primary" size="large">
               {{ getGroupIcon(group.group, subgroup.subgroup) }}
             </v-icon>
+
             <div>
               <h3 class="text-h5 font-weight-bold text-primary">
                 {{ subgroup.name }}
               </h3>
+
               <p class="text-body-2 text-grey-darken-1 ma-0">
                 {{ $i18n('staff.memberCount', subgroup.members.length) }}
               </p>
@@ -92,6 +94,7 @@
                   <div class="mb-3">
                     <div v-if="member.email" class="mb-2 d-flex align-center">
                       <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
+
                       <a class="text-decoration-none text-body-2" :href="`mailto:${member.email}`">
                         <HighlightedText :query="searchQuery" :text="member.email" />
                       </a>
@@ -99,6 +102,7 @@
 
                     <div v-if="member.phone" class="mb-2 d-flex align-center">
                       <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
+
                       <a class="text-decoration-none text-body-2" :href="`tel:${member.phone}`">
                         {{ formatPhone(member.phone) }}
                       </a>
@@ -108,10 +112,12 @@
                   <!-- Classes Taught -->
                   <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
                     <v-divider class="mb-2" />
+
                     <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
                       <v-icon class="me-1" size="small">mdi-school</v-icon>
                       {{ $i18n('staff.classesTaught') }}
                     </div>
+
                     <div class="d-flex flex-wrap gap-1">
                       <v-chip
                         v-for="classLetter in getClassesTaught(member.id)"
@@ -141,7 +147,6 @@
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

@@ -251,7 +251,7 @@ async function main () {
   }
 }
 
-// Export for testing
+// eslint-disable-next-line unicorn/no-exports-in-scripts
 export { initializeFirebase, migrateDocument, parsePath }
 
 // Run the script if called directly

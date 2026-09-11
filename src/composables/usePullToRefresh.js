@@ -8,7 +8,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
  * @param {number} options.maxPull - Maximum pull distance (default: 120)
  * @param {boolean} options.disabled - Disable pull-to-refresh (default: false)
  */
-export function usePullToRefresh(onRefresh, options = {}) {
+export function usePullToRefresh (onRefresh, options = {}) {
   const {
     threshold = 80,
     maxPull = 120,
@@ -23,19 +23,25 @@ export function usePullToRefresh(onRefresh, options = {}) {
   let currentY = 0
 
   const canPullToRefresh = () => {
-    if (disabled) {return false}
+    if (disabled) {
+      return false
+    }
     // Only allow pull-to-refresh when scrolled to the top
     return window.scrollY === 0 || document.documentElement.scrollTop === 0
   }
 
   const handleTouchStart = e => {
-    if (!canPullToRefresh()) {return}
+    if (!canPullToRefresh()) {
+      return
+    }
     startY = e.touches[0].pageY
     isPulling.value = false
   }
 
   const handleTouchMove = e => {
-    if (!canPullToRefresh() || isRefreshing.value) {return}
+    if (!canPullToRefresh() || isRefreshing.value) {
+      return
+    }
 
     currentY = e.touches[0].pageY
     const distance = currentY - startY
@@ -46,7 +52,7 @@ export function usePullToRefresh(onRefresh, options = {}) {
       // Apply resistance to the pull (exponential decay)
       pullDistance.value = Math.min(
         distance * 0.5,
-        maxPull
+        maxPull,
       )
 
       // Only prevent default if the event is cancelable

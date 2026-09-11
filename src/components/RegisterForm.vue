@@ -42,19 +42,23 @@
           height="2"
           indeterminate
         />
+
         <div
           v-else-if="emailAuthorized === true"
           class="text-success d-flex align-center"
         >
           <v-icon class="me-1" size="small">mdi-check-circle</v-icon>
+
           <span v-if="userInfo.displayName">
             {{ $i18n('registerForm.welcome') }}{{ userInfo.displayName }}!
             <span class="text-caption">({{ userInfo.userType === 'parent' ? $i18n('registerForm.parent') : $i18n('registerForm.staff') }})</span>
           </span>
+
           <span v-else>
             {{ $i18n('validation.emailAuthorized') }}
           </span>
         </div>
+
         <div
           v-else-if="emailAuthorized === false"
           class="text-error d-flex align-center"
@@ -157,6 +161,7 @@
           <v-expansion-panel-title class="text-caption">
             {{ $i18n('registerForm.debugInfo') }}
           </v-expansion-panel-title>
+
           <v-expansion-panel-text>
             <div class="text-caption">
               <div><strong>{{ $i18n('registerForm.network') }}</strong> {{ authStore.serviceHealth.isOnline ? $i18n('registerForm.online') : $i18n('registerForm.offline') }}</div>
@@ -177,7 +182,6 @@
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
   import { useAuthStore } from '@/stores/auth'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -203,7 +207,7 @@
   // Validation rules
   const emailRules = [
     v => !!v || $i18n('validation.emailRequired'),
-    v => /.+@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
+    v => /.[^\n\r@\u2028\u2029]*@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
     v => emailAuthorized.value !== false || $i18n('validation.emailNotAuthorized'),
   ]
 
@@ -235,7 +239,7 @@
       clearTimeout(emailValidationTimeout)
     }
 
-    if (!newEmail || !/.+@.+\..+/.test(newEmail)) {
+    if (!newEmail || !/.[^\n\r@\u2028\u2029]*@.+\..+/.test(newEmail)) {
       emailAuthorized.value = null
       userInfo.value = { authorized: null, displayName: '', userType: '' }
       return

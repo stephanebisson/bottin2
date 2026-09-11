@@ -82,7 +82,7 @@ export async function secureFetch (url, options = {}) {
     clearTimeout(timeoutId)
 
     if (error.name === 'AbortError') {
-      throw new Error('Request timeout after 30 seconds')
+      throw new Error('Request timeout after 30 seconds', { cause: error })
     }
 
     throw error

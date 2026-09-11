@@ -6,6 +6,7 @@
         <div class="family-student-left">
           <div class="student-name">{{ student.last_name }}, {{ student.first_name }}</div>
         </div>
+
         <div class="family-student-right">
           {{ student.teacherName }}{{ student.level ? ', ' + formatGradeLevel(student.level, 'fr') : '' }}
         </div>
@@ -16,14 +17,17 @@
     <div class="family-parents">
       <div v-if="family.parent1" class="family-parent">
         <div class="parent-name">{{ family.parent1.fullName }}</div>
+
         <div class="parent-contact">
           <span v-if="family.parent1.email" class="parent-email">{{ family.parent1.email }}</span>
           <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent1.phone) }}</span>
           <span v-if="formatAddress(family.parent1)" class="parent-address">{{ formatAddress(family.parent1) }}</span>
         </div>
       </div>
+
       <div v-if="family.parent2" class="family-parent">
         <div class="parent-name">{{ family.parent2.fullName }}</div>
+
         <div class="parent-contact">
           <span v-if="family.parent2.email" class="parent-email">{{ family.parent2.email }}</span>
           <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent2.phone) }}</span>

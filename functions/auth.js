@@ -15,7 +15,7 @@ const db = admin.firestore()
  * @param {number} baseDelay - Base delay in milliseconds
  * @returns {Promise} Result of the function
  */
-async function retryFirestoreQuery(fn, maxRetries = 3, baseDelay = 500) {
+async function retryFirestoreQuery (fn, maxRetries = 3, baseDelay = 500) {
   let lastError
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -50,7 +50,7 @@ async function retryFirestoreQuery(fn, maxRetries = 3, baseDelay = 500) {
  * @param {string} email - Email address
  * @returns {string} Domain part only
  */
-function getEmailDomain(email) {
+function getEmailDomain (email) {
   const parts = email.split('@')
   return parts.length === 2 ? parts[1] : 'unknown'
 }

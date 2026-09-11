@@ -9,7 +9,6 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 // Utilities
 import { defineConfig } from 'vite'
-
 import { VitePWA } from 'vite-plugin-pwa'
 import Layouts from 'vite-plugin-vue-layouts-next'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
@@ -63,7 +62,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'favicon.ico', 'icons/*.png'],
       manifestFilename: 'manifest.webmanifest',
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },
       manifest: {
         name: 'Bottin Étoile filante',
@@ -80,53 +79,53 @@ export default defineConfig({
             src: '/icons/icon-72x72.png',
             sizes: '72x72',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-96x96.png',
             sizes: '96x96',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-128x128.png',
             sizes: '128x128',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-144x144.png',
             sizes: '144x144',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-152x152.png',
             sizes: '152x152',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-384x384.png',
             sizes: '384x384',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
-          }
+            purpose: 'any maskable',
+          },
         ],
         categories: ['education', 'utilities'],
-        lang: 'fr-CA'
+        lang: 'fr-CA',
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
@@ -139,12 +138,12 @@ export default defineConfig({
               cacheName: 'firestore-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+                statuses: [0, 200],
+              },
+            },
           },
           {
             // Firebase Auth - Network-first for security
@@ -154,9 +153,9 @@ export default defineConfig({
               cacheName: 'auth-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 5 // 5 minutes
-              }
-            }
+                maxAgeSeconds: 60 * 5, // 5 minutes
+              },
+            },
           },
           {
             // Google Fonts - Cache-first
@@ -166,9 +165,9 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
           },
           {
             // Map tiles - Cache-first with long expiry
@@ -178,16 +177,15 @@ export default defineConfig({
               cacheName: 'map-tiles-cache',
               expiration: {
                 maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
-          }
-        ]
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+        ],
       },
       devOptions: {
-        enabled: true,
-        type: 'module'
-      }
+        enabled: false,
+      },
     }),
   ],
   optimizeDeps: {
@@ -222,7 +220,7 @@ export default defineConfig({
         // Disable automatic preload link generation for unsupported types
         experimentalMinChunkSize: 1000,
         // Manual chunking to reduce main bundle size
-        manualChunks(id) {
+        manualChunks (id) {
           // Vendor chunks for large libraries
           if (id.includes('node_modules')) {
             // Firebase in separate chunk

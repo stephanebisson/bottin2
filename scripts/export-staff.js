@@ -99,14 +99,12 @@ function formatPhone (phone) {
  * Format staff member for email-friendly output
  */
 function formatStaffMember (staff) {
-  const lines = []
-
-  lines.push(
+  const lines = [
     `Nom: ${staff.first_name} ${staff.last_name}`,
     `Titre: ${staff.title || ''}`,
     `Courriel: ${staff.email || ''}`,
     `Téléphone: ${formatPhone(staff.phone)}`,
-  )
+  ]
 
   return lines.join('\n')
 }
@@ -192,9 +190,7 @@ function organizeStaffByGroups (staffList) {
  * Generate email-friendly output
  */
 function generateOutput (organizedStaff) {
-  const lines = []
-
-  lines.push(
+  const lines = [
     '='.repeat(70),
     'RÉPERTOIRE DU PERSONNEL',
     '='.repeat(70),
@@ -203,7 +199,7 @@ function generateOutput (organizedStaff) {
     '',
     '='.repeat(70),
     '',
-  )
+  ]
 
   // Sort groups alphabetically
   const sortedGroups = Object.keys(organizedStaff).toSorted()

@@ -13,6 +13,7 @@
         type="error"
         @click:close="firebaseStore.studentsErrorDTO = null"
       />
+
       <v-alert
         v-if="firebaseStore.parentsErrorDTO"
         closable
@@ -65,6 +66,7 @@
                 <v-icon start>mdi-account-multiple</v-icon>
                 {{ $i18n('directory.familiesView') }}
               </v-chip>
+
               <v-chip value="parents">
                 <v-icon start>mdi-account-supervisor</v-icon>
                 {{ $i18n('directory.parentsView') }}
@@ -117,6 +119,7 @@
                     :text="`${student.last_name}, ${student.first_name}`"
                   />
                 </div>
+
                 <div class="text-body-1 text-right">
                   <span v-if="getTeacherName(student.className)">{{ getTeacherName(student.className) }},</span>
                   <span v-if="student.level" class="ml-2">{{ student.level }}</span>
@@ -143,6 +146,7 @@
                   @start-conversation="handleStartConversation"
                 />
               </v-col>
+
               <v-col cols="12" sm="6">
                 <ParentInfo
                   v-if="group.parent2"
@@ -179,6 +183,7 @@
               <th class="text-left font-weight-bold">{{ $i18n('directory.teacherLevel') }}</th>
             </tr>
           </thead>
+
           <tbody>
             <tr
               v-for="parentData in filteredParents"
@@ -197,6 +202,7 @@
                   @start-conversation="handleStartConversation"
                 />
               </td>
+
               <td class="py-3">
                 <div v-if="parentData.children.length > 0">
                   <div
@@ -210,10 +216,12 @@
                     />
                   </div>
                 </div>
+
                 <div v-else class="text-grey-darken-1">
                   {{ $i18n('directory.noChildren') }}
                 </div>
               </td>
+
               <td class="py-3">
                 <div v-if="parentData.children.length > 0">
                   <div
@@ -242,7 +250,6 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

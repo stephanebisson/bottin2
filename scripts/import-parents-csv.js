@@ -192,7 +192,7 @@ async function importParents (db, parents) {
           first_name: parent.first_name.trim(),
           last_name: parent.last_name.trim(),
           email: parent.email.trim().toLowerCase(),
-          phone: parent.phone ? parent.phone.replace(/[^\d]/g, '') : '', // Keep only digits
+          phone: parent.phone ? parent.phone.replace(/\D/g, '') : '', // Keep only digits
           address: '',
           city: '',
           postal_code: '',

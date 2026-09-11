@@ -58,7 +58,7 @@ describe('Google Sheets Sync Transformation Logic', () => {
       // Non-matches
       ['John Smith', null],
       ['', null],
-      ['   ', null],
+      [' '.repeat(3), null],
     ])('should find parent by name "%s"', (searchName, expectedEmail) => {
       const result = findParentByName(mockParentsData, searchName)
 
@@ -82,7 +82,7 @@ describe('Google Sheets Sync Transformation Logic', () => {
       if (!phone || typeof phone !== 'string') {
         return ''
       }
-      return phone.replace(/[^\d]/g, '')
+      return phone.replace(/\D/g, '')
     }
 
     test.each([
@@ -248,9 +248,7 @@ describe('Google Sheets Sync Transformation Logic', () => {
           }
 
           const committee = committees.get(currentCommittee)
-          const existingMember = committee.members.find(m => m.email === email)
-
-          if (!existingMember && email) {
+          if (!committee.members.some(m => m.email === email) && email) {
             committee.members.push({
               email,
               member_type: 'parent',
@@ -337,7 +335,7 @@ describe('Google Sheets Sync Transformation Logic', () => {
       ['user/name@example.com', 'user_name@example.com'],
       ['user name@example.com', 'user_name@example.com'],
       ['', null],
-      ['   ', null],
+      [' '.repeat(3), null],
       [null, null],
       [undefined, null],
     ])('should sanitize email "%s" to "%s"', (input, expected) => {

@@ -5,9 +5,11 @@
         <!-- Page Header -->
         <div class="text-center mb-6">
           <v-icon class="mb-4" color="primary" size="64">mdi-message-text</v-icon>
+
           <h1 class="text-h4 font-weight-bold mb-2">
             {{ $i18n('feedback.title') }}
           </h1>
+
           <p class="text-body-1 text-grey-darken-1">
             {{ $i18n('feedback.description') }}
           </p>
@@ -100,7 +102,6 @@
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
   import { useAuthStore } from '@/stores/auth'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

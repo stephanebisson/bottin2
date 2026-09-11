@@ -22,6 +22,7 @@
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
+
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
               <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
@@ -45,6 +46,7 @@
               <h1 class="committee-title-repaq">{{ committee.name }}</h1>
               <div v-if="committee.description" class="committee-description-repaq">{{ committee.description }}</div>
             </div>
+
             <div class="committee-contact-repaq">
               <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
               <div v-if="committee.phone" class="committee-phone">{{ formatPhoneForDisplay(committee.phone) }}</div>
@@ -82,7 +84,6 @@
       required: true,
     },
   })
-
 
   function getRoleGroups (committee) {
     return props.roleGroupsMap[committee.id] || []

@@ -17,13 +17,16 @@
           >
             {{ hasChanges ? 'mdi-alert-circle' : 'mdi-check-circle' }}
           </v-icon>
+
           <div>
             <div class="text-h6 font-weight-bold">
               {{ hasChanges ? 'Modifications non enregistrées' : 'Tout est enregistré' }}
             </div>
+
             <div v-if="hasChanges" class="text-body-2">
               {{ changeCount }} {{ changeCount === 1 ? 'modification' : 'modifications' }} en attente
             </div>
+
             <div v-else class="text-body-2">
               Toutes les modifications ont été enregistrées
             </div>

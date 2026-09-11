@@ -147,4 +147,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   })
 }
 
+// eslint-disable-next-line unicorn/no-exports-in-scripts
 export { ADMIN_EMAIL, autoSetupAdmin }

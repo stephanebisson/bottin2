@@ -75,7 +75,7 @@ export class ClassRepository {
       return classes
     } catch (error) {
       console.error('ClassRepository: Error loading classes with teachers:', error)
-      throw new Error(`Failed to load classes: ${error.message}`)
+      throw new Error(`Failed to load classes: ${error.message}`, { cause: error })
     }
   }
 
@@ -95,7 +95,7 @@ export class ClassRepository {
       }))
     } catch (error) {
       console.error('ClassRepository: Error getting class dropdown options:', error)
-      throw new Error(`Failed to get class options: ${error.message}`)
+      throw new Error(`Failed to get class options: ${error.message}`, { cause: error })
     }
   }
 
@@ -151,7 +151,7 @@ export class ClassRepository {
       return classItem
     } catch (error) {
       console.error(`ClassRepository: Error loading class ${classLetter}:`, error)
-      throw new Error(`Failed to load class ${classLetter}: ${error.message}`)
+      throw new Error(`Failed to load class ${classLetter}: ${error.message}`, { cause: error })
     }
   }
 
@@ -208,9 +208,10 @@ export class ClassRepository {
       return await this.getClassByLetter(classLetter)
     } catch (error) {
       console.error(`ClassRepository: Error updating class ${classLetter}:`, error)
-      throw new Error(`Failed to update class ${classLetter}: ${error.message}`)
+      throw new Error(`Failed to update class ${classLetter}: ${error.message}`, { cause: error })
     }
   }
-  classesCollectionName = 'classes';
-  staffCollectionName = 'staff';
+
+  classesCollectionName = 'classes'
+  staffCollectionName = 'staff'
 }

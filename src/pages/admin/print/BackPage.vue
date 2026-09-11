@@ -32,6 +32,7 @@
         <div class="logo-container">
           <img alt="Étoile filante Logo" src="@/assets/EF_logo.jpg">
         </div>
+
         <div class="school-address">
           <p class="school-name">École alternative {{ SCHOOL_LOCATION.name }}</p>
           <p class="address-line">{{ SCHOOL_LOCATION.address }}</p>

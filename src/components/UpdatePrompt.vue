@@ -19,6 +19,7 @@
       >
         {{ $i18n('pwa.update') }}
       </v-btn>
+
       <v-btn
         icon="mdi-close"
         size="small"

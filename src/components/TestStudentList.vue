@@ -5,6 +5,7 @@
         <v-icon class="mr-2">mdi-test-tube</v-icon>
         DTO Pattern Test Component
         <v-spacer />
+
         <v-chip :color="dtoDataLoaded ? 'success' : 'warning'" small>
           {{ dtoDataLoaded ? 'DTO Loaded' : 'DTO Not Loaded' }}
         </v-chip>
@@ -72,14 +73,17 @@
           <v-col cols="6">
             <v-card variant="outlined">
               <v-card-subtitle>DTO Approach</v-card-subtitle>
+
               <v-card-text>
                 <v-list density="compact">
                   <v-list-item>
                     <v-list-item-title>Count: {{ dtoStudents.length }}</v-list-item-title>
                   </v-list-item>
+
                   <v-list-item>
                     <v-list-item-title>Load Time: {{ dtoLoadTime }}ms</v-list-item-title>
                   </v-list-item>
+
                   <v-list-item v-if="dtoError">
                     <v-list-item-title class="text-error">Error: {{ dtoError }}</v-list-item-title>
                   </v-list-item>
@@ -91,14 +95,17 @@
           <v-col cols="6">
             <v-card variant="outlined">
               <v-card-subtitle>Store Approach</v-card-subtitle>
+
               <v-card-text>
                 <v-list density="compact">
                   <v-list-item>
                     <v-list-item-title>Count: {{ storeStudents.length }}</v-list-item-title>
                   </v-list-item>
+
                   <v-list-item>
                     <v-list-item-title>Load Time: {{ storeLoadTime }}ms</v-list-item-title>
                   </v-list-item>
+
                   <v-list-item v-if="storeError">
                     <v-list-item-title class="text-error">Error: {{ storeError }}</v-list-item-title>
                   </v-list-item>
@@ -116,10 +123,12 @@
           variant="outlined"
         >
           <div class="font-weight-bold">Data Comparison Results:</div>
+
           <ul class="mt-2">
             <li>Records match: {{ comparisonResults.identical ? 'Yes' : 'No' }}</li>
             <li>DTO validation passed: {{ comparisonResults.dtoValidationPassed }} / {{ comparisonResults.totalDTO }}</li>
             <li>Store validation passed: {{ comparisonResults.storeValidationPassed }} / {{ comparisonResults.totalStore }}</li>
+
             <li v-if="comparisonResults.issues.length > 0">
               Issues found: {{ comparisonResults.issues.length }}
             </li>
@@ -134,6 +143,7 @@
           variant="outlined"
         >
           <div class="font-weight-bold">Repository Test Results:</div>
+
           <ul class="mt-2">
             <li v-for="result in repositoryTestResults.tests" :key="result.name">
               {{ result.name }}: {{ result.passed ? 'PASS' : 'FAIL' }}
@@ -150,6 +160,7 @@
           variant="outlined"
         >
           <div class="font-weight-bold">Parent Lookup Test Results:</div>
+
           <ul class="mt-2">
             <li v-for="result in parentLookupTestResults.tests" :key="result.name">
               {{ result.name }}: {{ result.passed ? 'PASS' : 'FAIL' }}
@@ -157,6 +168,7 @@
               <span v-if="result.details" class="text-body-2"> - {{ result.details }}</span>
             </li>
           </ul>
+
           <div v-if="parentLookupTestResults.sampleData" class="mt-3">
             <div class="font-weight-bold">Sample Parent Data:</div>
             <pre class="text-body-2 mt-1">{{ JSON.stringify(parentLookupTestResults.sampleData, null, 2) }}</pre>

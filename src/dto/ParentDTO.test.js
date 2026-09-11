@@ -38,7 +38,7 @@ describe('ParentDTO', () => {
           address: '  123 Main St  ',
           city: '  Montreal  ',
           postal_code: '  H1A 2B3  ',
-          interests: ['  sports  ', '', 'music', '   '],
+          interests: ['  sports  ', '', 'music', ' '.repeat(3)],
         },
         {
           first_name: 'Jean',

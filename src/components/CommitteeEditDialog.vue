@@ -6,6 +6,7 @@
         <v-icon class="mr-3">mdi-account-group-outline</v-icon>
         <span>{{ committee.name }}</span>
       </div>
+
       <v-btn
         density="comfortable"
         icon="mdi-close"
@@ -36,6 +37,7 @@
         <div class="mb-6">
           <div class="d-flex align-center justify-space-between mb-4">
             <h3 class="text-h6">{{ $i18n('committees.currentMembers') }}</h3>
+
             <v-btn
               color="primary"
               prepend-icon="mdi-plus"
@@ -60,6 +62,7 @@
                     <div class="font-weight-medium">{{ member.fullName || member.email }}</div>
                     <div class="text-body-2 text-grey-darken-1">{{ member.email }}</div>
                   </div>
+
                   <v-chip
                     :color="member.memberType === 'staff' ? 'blue' : 'grey'"
                     size="small"
@@ -122,6 +125,7 @@
                   @update:search="searchUsers"
                 />
               </v-col>
+
               <v-col cols="12" md="4">
                 <v-select
                   v-model="newMemberRole"
@@ -130,6 +134,7 @@
                   variant="outlined"
                 />
               </v-col>
+
               <v-col cols="12" md="2">
                 <div class="d-flex gap-2">
                   <v-btn
@@ -138,6 +143,7 @@
                     icon="mdi-check"
                     @click="addMember"
                   />
+
                   <v-btn
                     color="grey"
                     icon="mdi-close"
@@ -154,6 +160,7 @@
     <!-- Dialog Actions -->
     <v-card-actions class="pa-4 pt-0">
       <v-spacer />
+
       <v-btn
         color="grey"
         variant="text"
@@ -161,6 +168,7 @@
       >
         {{ $i18n('common.cancel') }}
       </v-btn>
+
       <v-btn
         color="primary"
         :disabled="!hasChanges"

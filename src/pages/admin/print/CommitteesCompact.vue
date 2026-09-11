@@ -14,6 +14,7 @@
             {{ committee.name }}
             <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
           </h3>
+
           <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
           <span v-else-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
         </div>

@@ -7,6 +7,7 @@
           {{ committee.name }}
           <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
         </h1>
+
         <div class="committee-contact">
           <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
           <div v-if="committee.phone" class="committee-phone">{{ formatPhoneForDisplay(committee.phone) }}</div>

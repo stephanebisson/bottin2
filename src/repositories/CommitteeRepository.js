@@ -34,7 +34,7 @@ export class CommitteeRepository {
       return validCommittees
     } catch (error) {
       console.error('CommitteeRepository: Error loading all committees:', error)
-      throw new Error(`Failed to load committees: ${error.message}`)
+      throw new Error(`Failed to load committees: ${error.message}`, { cause: error })
     }
   }
 
@@ -62,7 +62,7 @@ export class CommitteeRepository {
       return committee
     } catch (error) {
       console.error(`CommitteeRepository: Error loading committee ${id}:`, error)
-      throw new Error(`Failed to load committee ${id}: ${error.message}`)
+      throw new Error(`Failed to load committee ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -88,7 +88,7 @@ export class CommitteeRepository {
       return members
     } catch (error) {
       console.error(`CommitteeRepository: Error loading members for committee ${committeeId}:`, error)
-      throw new Error(`Failed to load members for committee ${committeeId}: ${error.message}`)
+      throw new Error(`Failed to load members for committee ${committeeId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -112,7 +112,7 @@ export class CommitteeRepository {
       console.log(`CommitteeRepository: Added member ${memberId} to committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error adding member ${memberId} to committee ${committeeId}:`, error)
-      throw new Error(`Failed to add member to committee: ${error.message}`)
+      throw new Error(`Failed to add member to committee: ${error.message}`, { cause: error })
     }
   }
 
@@ -133,7 +133,7 @@ export class CommitteeRepository {
       console.log(`CommitteeRepository: Removed member ${memberId} from committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error removing member ${memberId} from committee ${committeeId}:`, error)
-      throw new Error(`Failed to remove member from committee: ${error.message}`)
+      throw new Error(`Failed to remove member from committee: ${error.message}`, { cause: error })
     }
   }
 
@@ -157,7 +157,7 @@ export class CommitteeRepository {
       console.log(`CommitteeRepository: Updated member ${memberId} in committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error updating member ${memberId} in committee ${committeeId}:`, error)
-      throw new Error(`Failed to update member in committee: ${error.message}`)
+      throw new Error(`Failed to update member in committee: ${error.message}`, { cause: error })
     }
   }
 
@@ -196,7 +196,7 @@ export class CommitteeRepository {
       console.log(`CommitteeRepository: Replaced members in committee ${committeeId} with ${members.length} new members`)
     } catch (error) {
       console.error(`CommitteeRepository: Error replacing members in committee ${committeeId}:`, error)
-      throw new Error(`Failed to replace members in committee: ${error.message}`)
+      throw new Error(`Failed to replace members in committee: ${error.message}`, { cause: error })
     }
   }
 
@@ -234,7 +234,7 @@ export class CommitteeRepository {
       }
     } catch (error) {
       console.error('CommitteeRepository: Error saving committee:', error)
-      throw new Error(`Failed to save committee ${committeeDTO.name}: ${error.message}`)
+      throw new Error(`Failed to save committee ${committeeDTO.name}: ${error.message}`, { cause: error })
     }
   }
 
@@ -290,7 +290,7 @@ export class CommitteeRepository {
       console.log(`CommitteeRepository: Deleted committee ${id}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error deleting committee ${id}:`, error)
-      throw new Error(`Failed to delete committee ${id}: ${error.message}`)
+      throw new Error(`Failed to delete committee ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -317,7 +317,7 @@ export class CommitteeRepository {
       return filtered
     } catch (error) {
       console.error('CommitteeRepository: Error searching committees:', error)
-      throw new Error(`Failed to search committees: ${error.message}`)
+      throw new Error(`Failed to search committees: ${error.message}`, { cause: error })
     }
   }
 
@@ -349,8 +349,9 @@ export class CommitteeRepository {
       }
     } catch (error) {
       console.error('CommitteeRepository: Error getting stats:', error)
-      throw new Error(`Failed to get committee statistics: ${error.message}`)
+      throw new Error(`Failed to get committee statistics: ${error.message}`, { cause: error })
     }
   }
-  collectionName = 'committees';
+
+  collectionName = 'committees'
 }

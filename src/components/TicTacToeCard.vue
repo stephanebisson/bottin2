@@ -20,6 +20,7 @@
         >
           {{ $i18n('easterEgg.yourTurn') }}
         </v-chip>
+
         <v-chip
           v-else-if="winner === 'X'"
           color="success"
@@ -28,6 +29,7 @@
         >
           {{ $i18n('easterEgg.youWin') }}
         </v-chip>
+
         <v-chip
           v-else-if="winner === 'O'"
           color="error"
@@ -36,6 +38,7 @@
         >
           {{ $i18n('easterEgg.computerWins') }}
         </v-chip>
+
         <v-chip
           v-else-if="isDraw"
           color="warning"
@@ -62,6 +65,7 @@
           >
             mdi-close
           </v-icon>
+
           <v-icon
             v-else-if="cell === 'O'"
             color="error"

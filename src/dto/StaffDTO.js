@@ -38,7 +38,7 @@ export class StaffDTO {
     if (!value || typeof value !== 'string') {
       return ''
     }
-    return value.replace(/[^\d]/g, '')
+    return value.replace(/\D/g, '')
   }
 
   /**
@@ -56,7 +56,7 @@ export class StaffDTO {
    * Sanitize order input - convert to number between 1-99, default to 99
    */
   sanitizeOrder (value) {
-    if (value === null || value === undefined || value === '') {
+    if ([null, undefined, ''].includes(value)) {
       return 99
     }
     const num = Number(value)

@@ -35,6 +35,7 @@
             @update:model-value="updateField('first_name', $event)"
           />
         </v-col>
+
         <v-col cols="12" md="6">
           <v-text-field
             density="comfortable"
@@ -155,7 +156,7 @@
   const emailError = computed(() => {
     if (props.staff.email && props.staff.email.trim() !== '') {
       // Basic email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
       if (!emailRegex.test(props.staff.email)) {
         return 'Format de courriel invalide'
       }

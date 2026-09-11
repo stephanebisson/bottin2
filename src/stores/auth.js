@@ -405,7 +405,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       console.error('❌ Failed to send verification email after retries:', error_)
       setError(message)
-      throw new Error(message)
+      throw new Error(message, { cause: error_ })
     } finally {
       setLoading(false)
     }

@@ -11,7 +11,8 @@
 
     <ol class="numbered-list">
       <li>
-        <strong>Moments de coéducation</strong> en accompagnant les élèves en classe lors des :
+        <strong>Moments de coéducation</strong>
+        en accompagnant les élèves en classe lors des :
         <ul class="bullet-list">
           <li>Activités Ouvertes d'Apprentissage (AOA);</li>
           <li>Ateliers - animation ou supervision (mercredi après-midi);</li>
@@ -19,21 +20,26 @@
           <li>Périodes de travail autonome (TA);</li>
           <li>Projets de classe.</li>
         </ul>
+
         <p>C'est de cette façon que nous soutenons le plus les enseignants et nos
           élèves car plusieurs de ces moments de coéducation émanent directement
           des besoins des classes.</p>
+
         <p>Une autre façon de soutenir directement nos enseignants et élèves est de
           s'offrir comme représentant de classe.</p>
       </li>
 
       <li>
         <strong>D'autres occasions d'être avec les élèves :</strong>
+
         <ul class="bullet-list">
           <li>Bibliothèque;</li>
           <li>Sorties;</li>
           <li>Semaines thématiques (semaine de la lecture);</li>
+
           <li>Équipes et activités sportives (basket, soccer, cross-country, mois de
             l'éducation physique, etc.);</li>
+
           <li>Activités sociales (barbecue de la rentrée, déjeuner de Noël, pique-nique de fin d'année, etc.).</li>
         </ul>
       </li>

@@ -9,6 +9,7 @@
 
       <template v-for="(item, itemIndex) in section.items" :key="itemIndex">
         <p v-if="item.type === 'note'">{{ item.text }}</p>
+
         <div v-else-if="item.type === 'entry'" class="schedule-entry">
           <span class="time">{{ item.time }}</span>
           <span class="what">{{ item.what }}</span>
@@ -32,15 +33,15 @@
         { type: 'note', text: 'Période du dîner' },
         { type: 'entry', time: '13 h 10', what: 'Entrée des élèves' },
         { type: 'entry', time: '14 h 18 à 14 h 33', what: 'Récréation' },
-        { type: 'entry', time: '15 h 35', what: 'Fin des cours' }
-      ]
+        { type: 'entry', time: '15 h 35', what: 'Fin des cours' },
+      ],
     },
     {
       title: 'Mercredi',
       items: [
-        { type: 'entry', time: '14 h 30', what: 'Fin des cours' }
-      ]
-    }
+        { type: 'entry', time: '14 h 30', what: 'Fin des cours' },
+      ],
+    },
   ]
 </script>
 

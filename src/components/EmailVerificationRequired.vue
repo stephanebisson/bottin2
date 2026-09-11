@@ -7,6 +7,7 @@
             <v-icon class="mb-4" color="warning" size="64">
               mdi-email-alert
             </v-icon>
+
             <div>{{ $i18n('auth.emailVerificationRequired') }}</div>
           </v-card-title>
 
@@ -16,6 +17,7 @@
               <p class="mb-3 text-h6 text-success">
                 🎉 {{ $i18n('auth.accountCreatedSuccessfully') }}
               </p>
+
               <p class="mb-4">
                 {{ $i18n('auth.accountCreatedPleaseVerify') }}
               </p>
@@ -27,11 +29,13 @@
                     {{ $i18n('auth.step1CheckEmail') }}
                   </v-list-item-title>
                 </v-list-item>
+
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-2-circle">
                   <v-list-item-title class="text-body-2">
                     {{ $i18n('auth.step2ClickLink') }}
                   </v-list-item-title>
                 </v-list-item>
+
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-3-circle">
                   <v-list-item-title class="text-body-2">
                     {{ $i18n('auth.step3AutoRedirect') }}
@@ -46,22 +50,27 @@
                 <p class="mb-3 text-h6 text-warning">
                   🔐 {{ $i18n('auth.loginBlockedEmailNotVerified') }}
                 </p>
+
                 <p class="mb-4">
                   {{ $i18n('auth.mustVerifyBeforeAccess') }}
                 </p>
               </div>
+
               <div v-else-if="isBlockedAccess">
                 <p class="mb-3 text-h6 text-error">
                   🚫 {{ $i18n('auth.accessBlockedEmailNotVerified') }}
                 </p>
+
                 <p class="mb-4">
                   {{ $i18n('auth.verifyToUnlockAccess') }}
                 </p>
               </div>
+
               <div v-else>
                 <p class="mb-4">
                   {{ $i18n('auth.pleaseVerifyEmail') }}
                 </p>
+
                 <p class="mb-4 text-medium-emphasis">
                   {{ $i18n('auth.verificationEmailSent') }}
                 </p>
@@ -180,7 +189,6 @@
   import { useRoute, useRouter } from 'vue-router'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -365,7 +373,7 @@
       // Try to get fresh token
       try {
         const token = await auth.currentUser.getIdToken(true)
-        const tokenPayload = JSON.parse(atob(token.split('.')[1]))
+        const tokenPayload = JSON.parse(atob(token.split('.', 2)[1]))
         console.log('Token payload email_verified:', tokenPayload.email_verified)
       } catch (tokenError) {
         console.error('Failed to decode token:', tokenError)

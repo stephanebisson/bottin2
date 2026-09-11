@@ -41,6 +41,14 @@ service cloud.firestore {
       }
     }
 
+    match /actionLogs/{document} {
+      allow read, write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+    }
+
+    match /tokens/{document} {
+      allow read, write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+    }
+
     match /feedback/{document} {
       // Parents can create feedback (authenticated users with verified email)
       allow create: if request.auth != null && request.auth.token.email_verified;

@@ -263,7 +263,7 @@ function transformData (rows, tab) {
   if (tab.transformFunction) {
     const transformFunction = getTransformFunction(tab.transformFunction)
     // For committees, pass raw rows since it needs custom parsing
-    if (tab.transformFunction === 'transformCommittees' || tab.transformFunction === 'transformCECommittees' || tab.transformFunction === 'transformFondationCommittee') {
+    if (['transformCommittees', 'transformCECommittees', 'transformFondationCommittee'].includes(tab.transformFunction)) {
       return transformFunction(rows, tab) // Pass raw rows for custom parsing
     }
     return transformFunction(documents, tab) // Pass documents for other transforms
@@ -288,7 +288,7 @@ function transformParents (documents) {
   return documents.map(doc => {
     // keep only digits from phone number
     if (doc.phone) {
-      doc.phone = doc.phone.replace(/[^\d]/g, '')
+      doc.phone = doc.phone.replace(/\D/g, '')
     }
 
     // Process interests: convert TRUE checkboxes to array of interest names
@@ -518,9 +518,7 @@ function transformCommittees (rows) {
 
       // Add member to committee (avoid duplicates)
       const committee = committees.get(currentCommittee)
-      const existingMember = committee.members.find(m => m.email === parentEmail)
-
-      if (!existingMember) {
+      if (!committee.members.some(m => m.email === parentEmail)) {
         committee.members.push({
           email: parentEmail,
           parent_id: parentId,
@@ -592,7 +590,7 @@ function transformCECommittees (rows) {
     }
 
     // Skip header rows (Rôle-CE, Nom complète, etc.)
-    if (firstCell === 'Rôle-CE' || firstCell === 'Nom complèt' || firstCell === 'Nom complète du parent') {
+    if (['Rôle-CE', 'Nom complèt', 'Nom complète du parent'].includes(firstCell)) {
       continue
     }
 
@@ -804,7 +802,7 @@ async function writeToFirestore (db, documents, collectionName) {
         // Use committee name as document ID for committees
         docId = doc.name.trim()
       } else {
-        if (collectionName === 'parents' || collectionName === 'students' || collectionName === 'staff') {
+        if (['parents', 'students', 'staff'].includes(collectionName)) {
           autoIdCount++
         }
         // Auto-generate ID for other collections or if classLetter/email is missing
@@ -1013,4 +1011,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     })
 }
 
+// eslint-disable-next-line unicorn/no-exports-in-scripts
 export { syncSheetsToFirestore }

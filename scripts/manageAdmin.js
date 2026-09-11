@@ -246,7 +246,7 @@ async function listAdmins () {
     if (admins.length === 0) {
       console.log('⚠️  No admin users found')
     } else {
-      console.log(`\\n📋 Found ${admins.length} admin user(s):`)
+      console.log(String.raw`\n📋 Found ${admins.length} admin user(s):`)
       console.log(''.padEnd(80, '='))
 
       for (const [index, admin] of admins.entries()) {
@@ -379,4 +379,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   runAction()
 }
 
+// eslint-disable-next-line unicorn/no-exports-in-scripts
 export { checkStatus, grantAdmin, listAdmins, revokeAdmin }

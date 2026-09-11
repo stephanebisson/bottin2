@@ -3,13 +3,16 @@
     <div class="d-flex align-center text-caption text-disabled">
       <span v-html="$i18n('footer.copyright')" />
       <span class="mx-2">•</span>
+
       <a
         class="text-decoration-none text-disabled"
         href="mailto:bottin.etoile.filante@gmail.com"
       >
         bottin.etoile.filante@gmail.com
       </a>
+
       <span class="mx-2">•</span>
+
       <router-link
         class="game-link"
         to="/games"

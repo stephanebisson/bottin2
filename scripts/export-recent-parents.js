@@ -73,10 +73,7 @@ function convertToCSV (data) {
   }
 
   // Build CSV rows
-  const csvRows = []
-
-  // Header row
-  csvRows.push(headers.map(h => escapeField(h)).join(','))
+  const csvRows = [headers.map(h => escapeField(h)).join(',')]
 
   // Data rows
   for (const obj of data) {

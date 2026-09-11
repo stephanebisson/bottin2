@@ -3,7 +3,6 @@
  * Provides safe wrappers that check if analytics is enabled before logging events
  */
 
-import { logEvent, setUserId, setUserProperties } from 'firebase/analytics'
 import { analytics } from '@/firebase'
 
 /**
@@ -11,7 +10,7 @@ import { analytics } from '@/firebase'
  * @param {string} path - The page path (e.g., '/families')
  * @param {string} title - The page title/name
  */
-export function logPageView (path, title) {
+export async function logPageView (path, title) {
   const analyticsInstance = analytics()
 
   if (!analyticsInstance) {
@@ -20,6 +19,7 @@ export function logPageView (path, title) {
   }
 
   try {
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analyticsInstance, 'page_view', {
       page_path: path,
       page_title: title || path,
@@ -38,7 +38,7 @@ export function logPageView (path, title) {
  * Set user context for analytics
  * @param {Object} user - User object with id, role, and emailVerified
  */
-export function setUserContext (user) {
+export async function setUserContext (user) {
   const analyticsInstance = analytics()
 
   if (!analyticsInstance || !user) {
@@ -46,10 +46,8 @@ export function setUserContext (user) {
   }
 
   try {
-    // Set user ID (opaque identifier, not email)
+    const { setUserId, setUserProperties } = await import('firebase/analytics')
     setUserId(analyticsInstance, user.uid)
-
-    // Set user properties
     setUserProperties(analyticsInstance, {
       role: user.role || 'unknown',
       email_verified: user.emailVerified || false,
@@ -70,7 +68,7 @@ export function setUserContext (user) {
 /**
  * Clear user context (on logout)
  */
-export function clearUserContext () {
+export async function clearUserContext () {
   const analyticsInstance = analytics()
 
   if (!analyticsInstance) {
@@ -78,7 +76,7 @@ export function clearUserContext () {
   }
 
   try {
-    // Clear user ID
+    const { setUserId } = await import('firebase/analytics')
     setUserId(analyticsInstance, null)
 
     if (import.meta.env.DEV) {

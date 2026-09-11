@@ -22,6 +22,11 @@ export class ParentDTO {
     // Chat opt-in feature flag
     this.chat = this.sanitizeBoolean(data.chat)
 
+    // Opt-out status (set by parent via form or admin action)
+    this.optedOut = data.optedOut === true
+    // Last time the parent submitted the annual update form (set by processParentUpdateV2)
+    this.lastUpdated = data.lastUpdated || null
+
     // Metadata (these fields might exist from Firestore)
     this.createdAt = data.createdAt || null
     this.updatedAt = data.updatedAt || null
@@ -44,7 +49,7 @@ export class ParentDTO {
     if (!value || typeof value !== 'string') {
       return ''
     }
-    return value.replace(/[^\d]/g, '')
+    return value.replace(/\D/g, '')
   }
 
   /**
@@ -81,7 +86,7 @@ export class ParentDTO {
    * Sanitize coordinate value - ensure it's a valid number or null
    */
   sanitizeCoordinate (value) {
-    if (value === null || value === undefined || value === '') {
+    if ([null, undefined, ''].includes(value)) {
       return null
     }
     const num = Number(value)
@@ -300,6 +305,8 @@ export class ParentDTO {
       geolocation: this.geolocation,
       chat: this.chat,
       hasChatEnabled: this.hasChatEnabled,
+      optedOut: this.optedOut,
+      lastUpdated: this.lastUpdated,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     }

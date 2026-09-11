@@ -20,7 +20,7 @@ const nameSchema = Joi.string()
   .trim()
   .min(1)
   .max(50)
-  .pattern(/^[a-zA-Z\u00C0-\u017F\s\-']+$/) // Letters, accents, spaces, hyphens, apostrophes
+  .pattern(/^[a-z\u00C0-\u017F\s\-']+$/i) // Letters, accents, spaces, hyphens, apostrophes
   .required()
 
 const phoneSchema = Joi.string()
@@ -41,7 +41,7 @@ const postalCodeSchema = Joi.string()
 const committeeIdSchema = Joi.string()
   .min(1)
   .max(100)
-  .pattern(/^[a-zA-Z0-9\u00C0-\u017F\s\-'_]+$/)
+  .pattern(/^[\w\u00C0-\u017F\s\-']+$/)
 
 // Auth validation schemas
 const emailValidationSchema = Joi.object({

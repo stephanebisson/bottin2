@@ -36,7 +36,7 @@ const isEmulator = process.env.NODE_ENV === 'development' || args.includes('--em
 const showVerifiedOnly = args.includes('--verified')
 const showUnverifiedOnly = args.includes('--unverified')
 const formatArg = args.find(arg => arg.startsWith('--format='))
-const outputFormat = formatArg ? formatArg.split('=')[1] : 'table'
+const outputFormat = formatArg ? formatArg.split('=', 2)[1] : 'table'
 
 // Initialize Firebase Admin SDK
 if (isEmulator) {

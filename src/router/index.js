@@ -6,9 +6,7 @@
 
 import { setupLayouts } from 'virtual:generated-layouts'
 // Composables
-
 import { createRouter, createWebHistory } from 'vue-router'
-
 import { routes } from 'vue-router/auto-routes'
 import { authMiddleware, routeConfig } from '@/middleware/auth'
 import { logPageView } from '@/utils/analytics'
@@ -72,7 +70,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 // Track page views for analytics
-router.afterEach((to) => {
+router.afterEach(to => {
   // Log page view with path and route name
   logPageView(to.path, to.name || to.path)
 })

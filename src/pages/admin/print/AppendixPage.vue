@@ -2,6 +2,7 @@
   <PrintPage :id="sectionId">
     <div class="appendix-section">
       <h1 class="section-title">{{ title }}</h1>
+
       <div class="placeholder-section">
         <p class="placeholder-text">
           {{ placeholderText }}

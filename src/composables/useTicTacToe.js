@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue'
 
-export function useTicTacToe() {
+export function useTicTacToe () {
   // Board state: 3x3 grid, null = empty, 'X' = player, 'O' = computer
-  const board = ref(Array.from({length: 9}).fill(null))
+  const board = ref(Array.from({ length: 9 }, () => null))
   const currentPlayer = ref('X')
   const gameOver = ref(false)
   const winner = ref(null)
@@ -39,10 +39,14 @@ export function useTicTacToe() {
 
   // Simple AI: random move with basic strategy
   const makeComputerMove = () => {
-    if (gameOver.value) {return}
+    if (gameOver.value) {
+      return
+    }
 
     const availableMoves = getAvailableMoves()
-    if (availableMoves.length === 0) {return}
+    if (availableMoves.length === 0) {
+      return
+    }
 
     // Try to win
     for (const move of availableMoves) {
@@ -101,7 +105,7 @@ export function useTicTacToe() {
   }
 
   // Make a move
-  const makeMove = (index) => {
+  const makeMove = index => {
     if (board.value[index] || gameOver.value || currentPlayer.value !== 'X') {
       return
     }
@@ -119,7 +123,7 @@ export function useTicTacToe() {
 
   // Reset game
   const resetGame = () => {
-    board.value = Array.from({length: 9}).fill(null)
+    board.value = Array.from({ length: 9 }, () => null)
     currentPlayer.value = 'X'
     gameOver.value = false
     winner.value = null

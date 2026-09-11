@@ -54,18 +54,21 @@
 
         <!-- En lien avec le projet éducatif -->
         <h2 class="committee-category-title">En lien avec le projet éducatif</h2>
+
         <div v-for="committee in getCommitteesByNames(['Admissions', 'CAMPÉR'])" :key="committee.id" class="committee">
           <div class="committee-header-inline">
             <h3 class="committee-name">
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
+
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
               <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
+
           <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
             <CommitteeTable compact :members="committee.enrichedMembers" />
           </div>
@@ -78,18 +81,21 @@
       <div class="committees-section">
         <!-- Communications -->
         <h2 class="committee-category-title">Communications</h2>
+
         <div v-for="committee in getCommitteesByNames(['Bottin', 'Groupe Facebook', 'OPP'])" :key="committee.id" class="committee">
           <div class="committee-header-inline">
             <h3 class="committee-name">
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
+
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
               <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
+
           <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
             <CommitteeTable compact :members="committee.enrichedMembers" />
           </div>
@@ -101,18 +107,21 @@
     <PrintPage>
       <div class="committees-section">
         <h2 class="committee-category-title">Activités à l'école</h2>
+
         <div v-for="committee in getCommitteesByNames(['Ateliers', 'Bazar', 'Bibliothèque'])" :key="committee.id" class="committee">
           <div class="committee-header-inline">
             <h3 class="committee-name">
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
+
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
               <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
+
           <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
             <CommitteeTable compact :members="filterCommitteeMembers(committee)" />
           </div>
@@ -129,12 +138,14 @@
               {{ committee.name }}
               <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
             </h3>
+
             <div class="committee-contact-inline">
               <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
               <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
               <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
             </div>
           </div>
+
           <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
             <CommitteeTable compact :members="committee.enrichedMembers" />
           </div>
@@ -384,12 +395,12 @@
 
   // Conseil d'établissement (special treatment - full page)
   const conseilEtablissement = computed(() => {
-    return enrichedCommittees.value.find(c => c.name === "Conseil d'établissement") || null
+    return enrichedCommittees.value.find(c => c.name === 'Conseil d\'établissement') || null
   })
 
   // Fondation (special treatment - full page)
   const fondation = computed(() => {
-    return enrichedCommittees.value.find(c => c.name === "Fondation") || null
+    return enrichedCommittees.value.find(c => c.name === 'Fondation') || null
   })
 
   // Helper: Get committees by names
@@ -615,7 +626,7 @@
   function formatLevelCompact (level) {
     if (!level || level === 'Unknown') return ''
     if (level === 1) {
-      return '1re';
+      return '1re'
     }
     return `${level}e`
   }
@@ -788,7 +799,6 @@
       }
     })
   })
-
 
   // Get formatted school phone
   const schoolPhone = computed(() => formatPhoneForDisplay(SCHOOL_LOCATION.phone))

@@ -5,7 +5,7 @@
     </div>
 
     <h2>Les valeurs</h2>
-    
+
     <p>Les valeurs sont ces qualités qui mettent en mots notre vision, nos aspirations
       profondes et servent de base à nos actions. Dans une école comme la nôtre,
       les gestes du quotidien sont guidés par la volonté d’actualiser ces valeurs, de

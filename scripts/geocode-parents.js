@@ -71,7 +71,7 @@ function normalizeAddress (address) {
   let normalized = address
 
   // Remove apartment/unit prefixes with numbers
-  normalized = normalized.replace(/\b(app\.?|apt\.?|appt\.?|appartement|unit|unite|unité)\s*\.?\s*\d+\b/gi, '')
+  normalized = normalized.replace(/\b(app\.?|apt\.?|appt\.?|appartement|unit|unite|unité)\s*(?:\.\s*)?\d+\b/gi, '')
 
   // Remove hash patterns
   normalized = normalized.replace(/#\s*\d+\b/g, '')

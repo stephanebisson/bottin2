@@ -53,6 +53,7 @@
                 <div class="committee-name text-h6 font-weight-bold">
                   <HighlightedText :query="searchQuery" :text="committee.name" />
                 </div>
+
                 <div class="d-flex align-center gap-2">
                   <v-chip
                     class="flex-shrink-0"
@@ -62,6 +63,7 @@
                   >
                     {{ $i18n('committees.memberCount', committee.enrichedMembers.length) }}
                   </v-chip>
+
                   <v-btn
                     v-if="isAdmin"
                     class="flex-shrink-0"
@@ -80,15 +82,18 @@
                 <div v-if="committee.description" class="text-body-2 mb-2 font-italic">
                   {{ committee.description }}
                 </div>
+
                 <div v-if="committee.email || committee.phone || committee.url" class="committee-contact-info">
                   <div v-if="committee.email" class="d-flex align-center text-caption">
                     <v-icon class="me-2" size="small">mdi-email</v-icon>
                     <a class="text-white text-decoration-none" :href="`mailto:${committee.email}`">{{ committee.email }}</a>
                   </div>
+
                   <div v-if="committee.phone" class="d-flex align-center text-caption">
                     <v-icon class="me-2" size="small">mdi-phone</v-icon>
                     <a class="text-white text-decoration-none" :href="`tel:${committee.phone}`">{{ formatPhone(committee.phone) }}</a>
                   </div>
+
                   <div v-if="committee.url" class="d-flex align-center text-caption">
                     <v-icon class="me-2" size="small">mdi-web</v-icon>
                     <a class="text-white text-decoration-none" :href="ensureHttps(committee.url)" rel="noopener noreferrer" target="_blank">{{ committee.url }}</a>
@@ -106,6 +111,7 @@
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
                     {{ committee.hasMixedMemberTypes ? $i18n('committees.parentMembers') : $i18n('committees.membersHeader') }}
                   </div>
+
                   <ParentInfo
                     v-for="member in committee.parentMembers"
                     :key="member.email"
@@ -135,6 +141,7 @@
                     <v-icon class="me-2" color="primary" size="small">mdi-school</v-icon>
                     {{ $i18n('committees.staffMembers') }}
                   </div>
+
                   <ParentInfo
                     v-for="member in committee.staffMembers"
                     :key="member.email"
@@ -164,6 +171,7 @@
                     <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
                     {{ $i18n('committees.unknownMembers') }}
                   </div>
+
                   <ParentInfo
                     v-for="member in committee.unknownMembers"
                     :key="member.email"
@@ -190,6 +198,7 @@
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
                     {{ $i18n('committees.membersHeader') }}
                   </div>
+
                   <ParentInfo
                     v-for="member in committee.enrichedMembers"
                     :key="member.email"
@@ -210,6 +219,7 @@
                   />
                 </div>
               </div>
+
               <div v-else class="text-center py-4 text-grey-darken-1 text-caption">
                 <v-icon class="mb-2" color="grey-darken-2" size="24">mdi-account-group-outline</v-icon>
                 <div>{{ $i18n('committees.noMembersFound') }}</div>

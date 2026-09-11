@@ -1,4 +1,3 @@
-import { getAnalytics, isSupported } from 'firebase/analytics'
 import { initializeApp } from 'firebase/app'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
@@ -65,15 +64,15 @@ const auth = getAuth(app)
 // Initialize Analytics (only in production or when explicitly enabled)
 let _analytics = null
 async function initAnalytics () {
+  if (import.meta.env.DEV) {
+    return
+  }
   try {
-    // Check if Analytics is supported (won't work in emulator or some browsers)
+    const { isSupported, getAnalytics } = await import('firebase/analytics')
     const analyticsSupported = await isSupported()
-
-    if (analyticsSupported && (import.meta.env.PROD || import.meta.env.VITE_ENABLE_ANALYTICS === 'true')) {
+    if (analyticsSupported) {
       _analytics = getAnalytics(app)
       console.log('✅ Firebase Analytics initialized')
-    } else {
-      console.log('📊 Firebase Analytics disabled (emulator mode or unsupported)')
     }
   } catch (error) {
     console.warn('⚠️  Failed to initialize Firebase Analytics:', error.message)

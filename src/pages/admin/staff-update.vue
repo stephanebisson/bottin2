@@ -6,315 +6,197 @@
           class="mb-2"
           prepend-icon="mdi-arrow-left"
           variant="text"
-          @click="$router.push('/admin/annual-update')"
+          @click="$router.push('/admin')"
         >
           {{ $i18n('admin.backToAdminDashboard') }}
         </v-btn>
+
         <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.staffUpdate.title') }}</h1>
       </div>
     </div>
 
-    <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-1 text-grey-darken-1 mt-2">
-        {{ $i18n('admin.adminAccessRequired') }}
-      </p>
+      <p class="text-body-1 text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
+      <p class="text-body-2 text-grey mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
+
+      <v-btn class="mt-4" variant="outlined" @click="checkAdminStatus">
+        {{ $i18n('admin.refreshAdminStatus') }}
+      </v-btn>
     </div>
 
-    <!-- Admin Content -->
-    <div v-else>
-      <!-- Token Status Card -->
-      <v-card class="mb-6">
-        <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2">mdi-key</v-icon>
-          {{ $i18n('admin.staffUpdate.tokenStatus') }}
-        </v-card-title>
+    <template v-else>
+      <div v-if="saveError" class="mb-4">
+        <v-alert
+          closable
+          color="error"
+          icon="mdi-alert-circle"
+          variant="tonal"
+          @click:close="saveError = null"
+        >
+          {{ saveError }}
+        </v-alert>
+      </div>
 
-        <v-card-text>
-          <!-- Loading State -->
-          <div v-if="loading" class="text-center py-8">
-            <v-progress-circular color="primary" indeterminate size="64" />
-            <p class="text-body-1 mt-4">{{ $i18n('common.loading') }}</p>
-          </div>
+      <GroupSection
+        v-for="grp in groupData"
+        :key="grp.group"
+        class="mb-8"
+        :group="grp.group"
+        :modified-ids="modifiedIds"
+        :name="grp.name"
+        :subgroups="grp.subgroups"
+        @change="handleChange"
+      />
 
-          <!-- Token Exists -->
-          <div v-else-if="staffUpdateToken">
-            <v-alert
-              class="mb-4"
-              color="success"
-              icon="mdi-check-circle"
-              variant="tonal"
-            >
-              <div class="text-body-1">
-                {{ $i18n('admin.staffUpdate.tokenGenerated') }}
-              </div>
-            </v-alert>
+      <div class="d-flex justify-end mt-4 mb-8">
+        <v-btn
+          color="primary"
+          :disabled="!hasChanges"
+          :loading="saving"
+          prepend-icon="mdi-content-save"
+          size="large"
+          @click="handleSave"
+        >
+          {{ $i18n('admin.staffUpdate.save') }}
+        </v-btn>
+      </div>
+    </template>
 
-            <!-- Staff Update Link -->
-            <div class="d-flex flex-column gap-2">
-              <v-text-field
-                hide-details
-                label="Staff update URL"
-                :model-value="staffUpdateUrl"
-                prepend-icon="mdi-link"
-                readonly
-                variant="outlined"
-              />
-
-              <div class="d-flex gap-2">
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-open-in-new"
-                  @click="openStaffUpdateLink"
-                >
-                  {{ $i18n('admin.staffUpdate.openLink') }}
-                </v-btn>
-
-                <v-btn
-                  color="grey"
-                  prepend-icon="mdi-content-copy"
-                  variant="outlined"
-                  @click="copyStaffUpdateLink"
-                >
-                  {{ $i18n('admin.staffUpdate.copyLink') }}
-                </v-btn>
-              </div>
-            </div>
-
-            <!-- Token Info -->
-            <v-card class="mt-4" variant="outlined">
-              <v-card-text>
-                <div class="text-body-2">
-                  <strong>{{ $i18n('admin.staffUpdate.tokenCreated') }}:</strong>
-                  {{ formatDate(staffUpdateData?.createdAt) }}
-                </div>
-                <div v-if="staffUpdateData?.createdBy" class="text-body-2 mt-2">
-                  <strong>{{ $i18n('admin.staffUpdate.createdBy') }}:</strong>
-                  {{ staffUpdateData.createdBy }}
-                </div>
-              </v-card-text>
-            </v-card>
-          </div>
-
-          <!-- No Token - Show Generate Button -->
-          <div v-else class="text-center py-8">
-            <v-icon color="grey-darken-2" size="64">mdi-key-plus</v-icon>
-            <p class="text-h6 mt-4 text-grey-darken-2">
-              {{ $i18n('admin.staffUpdate.noTokenGenerated') }}
-            </p>
-            <p class="text-body-2 text-grey-darken-1 mt-2">
-              {{ $i18n('admin.staffUpdate.generateTokenInstructions') }}
-            </p>
-
-            <v-btn
-              class="mt-6"
-              color="primary"
-              :loading="generating"
-              prepend-icon="mdi-key-plus"
-              size="large"
-              @click="generateToken"
-            >
-              {{ $i18n('admin.staffUpdate.generateToken') }}
-            </v-btn>
-          </div>
-        </v-card-text>
-      </v-card>
-
-      <!-- Information Card -->
+    <v-dialog v-model="showLeaveDialog" max-width="400">
       <v-card>
-        <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2">mdi-information</v-icon>
-          {{ $i18n('admin.staffUpdate.aboutTitle') }}
-        </v-card-title>
+        <v-card-title>{{ $i18n('admin.staffUpdate.unsavedChangesTitle') }}</v-card-title>
+        <v-card-text>{{ $i18n('admin.staffUpdate.unsavedChangesText') }}</v-card-text>
 
-        <v-card-text>
-          <p class="text-body-1 mb-4">
-            {{ $i18n('admin.staffUpdate.aboutDescription') }}
-          </p>
+        <v-card-actions>
+          <v-spacer />
 
-          <v-alert
-            color="info"
-            icon="mdi-shield-check"
-            variant="tonal"
-          >
-            <div class="text-body-2">
-              <strong>{{ $i18n('admin.staffUpdate.securityNote') }}</strong>
-              {{ $i18n('admin.staffUpdate.securityNoteDescription') }}
-            </div>
-          </v-alert>
-        </v-card-text>
+          <v-btn variant="text" @click="cancelLeave">
+            {{ $i18n('admin.staffUpdate.stayOnPage') }}
+          </v-btn>
+
+          <v-btn color="error" variant="elevated" @click="confirmLeave">
+            {{ $i18n('admin.staffUpdate.leaveWithoutSaving') }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
-    </div>
-
-    <!-- Success Snackbar -->
-    <v-snackbar
-      v-model="showSuccessSnackbar"
-      color="success"
-      :timeout="3000"
-    >
-      {{ successMessage }}
-    </v-snackbar>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
-  import { getFunctionsBaseUrl } from '@/config/functions'
+  import { onBeforeRouteLeave } from 'vue-router'
+  import GroupSection from '@/components/staff-update/GroupSection.vue'
+  import {
+    GROUP_DISPLAY_NAMES,
+    GROUP_SUBGROUP_MAPPING,
+    STAFF_GROUPS,
+    SUBGROUP_DISPLAY_NAMES,
+    SUBGROUP_ICONS,
+  } from '@/config/staffGroups'
+  import { StaffRepository } from '@/repositories/StaffRepository.js'
   import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-
-  // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+
   const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
+  const staffRepository = new StaffRepository()
 
-  // State
-  const loading = ref(true)
-  const generating = ref(false)
   const isAuthorized = ref(false)
-  const staffUpdateToken = ref(null)
-  const staffUpdateData = ref(null)
-  const showSuccessSnackbar = ref(false)
-  const successMessage = ref('')
 
-  // Computed
-  const staffUpdateUrl = computed(() => {
-    if (!staffUpdateToken.value) return ''
-    const baseUrl = window.location.origin
-    return `${baseUrl}/staff-update/${staffUpdateToken.value}`
-  })
-
-  // Check admin status
   async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
     }
-
     try {
       const idTokenResult = await authStore.user.getIdTokenResult(true)
       isAuthorized.value = !!idTokenResult.claims.admin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
+    } catch {
       isAuthorized.value = false
     }
   }
 
-  // Load staff update token
-  async function loadStaffUpdateToken () {
-    try {
-      loading.value = true
+  const modifications = ref(new Map())
+  const saving = ref(false)
+  const saveError = ref(null)
 
-      const baseUrl = getFunctionsBaseUrl()
+  const effectiveStaff = computed(() =>
+    firebaseStore.staffDTO.map(s =>
+      modifications.value.has(s.id) ? modifications.value.get(s.id) : s,
+    ),
+  )
 
-      const response = await fetch(`${baseUrl}/getStaffUpdateToken`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${await authStore.user.getIdToken()}`,
-        },
-      })
+  const groupData = computed(() =>
+    STAFF_GROUPS.map(group => ({
+      group,
+      name: GROUP_DISPLAY_NAMES[group],
+      subgroups: GROUP_SUBGROUP_MAPPING[group].map(subgroup => ({
+        subgroup,
+        name: SUBGROUP_DISPLAY_NAMES[subgroup],
+        icon: SUBGROUP_ICONS[subgroup],
+        isFixed: true,
+        members: effectiveStaff.value.filter(s => s.group === group && s.subgroup === subgroup),
+      })),
+    })),
+  )
 
-      if (response.status === 404) {
-        // No token exists yet
-        staffUpdateToken.value = null
-        staffUpdateData.value = null
-        return
-      }
+  const modifiedIds = computed(() => new Set(modifications.value.keys()))
+  const hasChanges = computed(() => modifications.value.size > 0)
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      staffUpdateToken.value = data.token
-      staffUpdateData.value = data
-    } catch (error) {
-      console.error('Failed to load staff update token:', error)
-      staffUpdateToken.value = null
-      staffUpdateData.value = null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Generate new staff update token
-  async function generateToken () {
-    try {
-      generating.value = true
-
-      const baseUrl = getFunctionsBaseUrl()
-
-      const response = await fetch(`${baseUrl}/generateStaffUpdateToken`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await authStore.user.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          adminEmail: authStore.userEmail,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      staffUpdateToken.value = data.token
-      staffUpdateData.value = data
-
-      successMessage.value = $i18n('admin.staffUpdate.tokenGeneratedSuccess')
-      showSuccessSnackbar.value = true
-    } catch (error) {
-      console.error('Failed to generate staff update token:', error)
-      alert($i18n('admin.staffUpdate.tokenGenerationError'))
-    } finally {
-      generating.value = false
-    }
-  }
-
-  // Open staff update link in new tab
-  function openStaffUpdateLink () {
-    if (!staffUpdateToken.value) return
-    window.open(staffUpdateUrl.value, '_blank')
-  }
-
-  // Copy staff update link to clipboard
-  async function copyStaffUpdateLink () {
-    if (!staffUpdateToken.value) return
-
-    try {
-      await navigator.clipboard.writeText(staffUpdateUrl.value)
-      successMessage.value = $i18n('admin.staffUpdate.linkCopied')
-      showSuccessSnackbar.value = true
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error)
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea')
-      textArea.value = staffUpdateUrl.value
-      document.body.append(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      textArea.remove()
-      successMessage.value = $i18n('admin.staffUpdate.linkCopied')
-      showSuccessSnackbar.value = true
-    }
-  }
-
-  // Format date helper
-  function formatDate (timestamp) {
-    if (!timestamp) return ''
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  function handleChange (updatedStaff) {
+    const original = firebaseStore.staffDTO.find(s => s.id === updatedStaff.id)
+    if (!original) return
+    modifications.value.set(updatedStaff.id, original.withUpdates(updatedStaff))
   }
 
   onMounted(async () => {
     await checkAdminStatus()
-    if (isAuthorized.value) {
-      await loadStaffUpdateToken()
-    }
+    firebaseStore.loadStaffDTO()
   })
+
+  async function handleSave () {
+    saving.value = true
+    saveError.value = null
+    try {
+      await Promise.all([...modifications.value.values()].map(dto => staffRepository.save(dto)))
+      modifications.value.clear()
+      await firebaseStore.refreshStaffDTO()
+    } catch (error) {
+      console.error('Failed to save staff:', error)
+      saveError.value = error.message || 'Failed to save changes'
+    } finally {
+      saving.value = false
+    }
+  }
+
+  const showLeaveDialog = ref(false)
+  let pendingNext = null
+
+  onBeforeRouteLeave((to, from, next) => {
+    if (!hasChanges.value) {
+      next()
+      return
+    }
+    pendingNext = next
+    showLeaveDialog.value = true
+  })
+
+  function confirmLeave () {
+    showLeaveDialog.value = false
+    pendingNext?.()
+    pendingNext = null
+  }
+
+  function cancelLeave () {
+    showLeaveDialog.value = false
+    pendingNext?.(false)
+    pendingNext = null
+  }
 </script>

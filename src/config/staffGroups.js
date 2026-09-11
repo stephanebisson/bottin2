@@ -36,6 +36,17 @@ export const SUBGROUP_DISPLAY_NAMES = {
 }
 
 /**
+ * MDI icons for each subgroup
+ */
+export const SUBGROUP_ICONS = {
+  admin: 'mdi-briefcase',
+  teacher: 'mdi-school',
+  specialist: 'mdi-account-wrench',
+  resp: 'mdi-account-supervisor',
+  edu: 'mdi-human-greeting',
+}
+
+/**
  * Get valid subgroups for a given group
  * @param {string} group - The staff group (EF, SDG)
  * @returns {string[]} Array of valid subgroups for the group

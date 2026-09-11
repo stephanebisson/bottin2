@@ -15,6 +15,7 @@
         <v-chip color="primary" size="small" variant="flat">
           {{ $i18n('easterEgg.score') }}: {{ score }}
         </v-chip>
+
         <v-chip color="success" size="small" variant="flat">
           {{ $i18n('easterEgg.best') }}: {{ bestScore }}
         </v-chip>
@@ -30,6 +31,7 @@
       >
         {{ $i18n('easterEgg.youWin2048') }}
       </v-chip>
+
       <v-chip
         v-else-if="gameOver"
         class="mb-2"
@@ -77,6 +79,7 @@
         >
           {{ $i18n('easterEgg.continue') }}
         </v-btn>
+
         <v-btn
           color="primary"
           size="small"

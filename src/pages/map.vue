@@ -2,6 +2,7 @@
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h3 font-weight-bold">{{ $i18n('map.title') }}</h1>
+
       <v-chip
         :color="loading ? 'orange' : 'green'"
         :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-check-circle'"
@@ -44,8 +45,10 @@
       <!-- Info Card -->
       <v-card class="mt-6">
         <v-card-title>{{ $i18n('map.aboutTitle') }}</v-card-title>
+
         <v-card-text>
           <p class="mb-2">{{ $i18n('map.aboutDescription') }}</p>
+
           <v-alert
             v-if="familiesWithIncompleteAddress > 0"
             class="mt-4"
@@ -54,6 +57,7 @@
           >
             {{ $i18n('map.familiesIncompleteAddress', familiesWithIncompleteAddress) }}
           </v-alert>
+
           <v-alert
             v-if="familiesWithoutGeolocation > 0"
             class="mt-4"
@@ -73,7 +77,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import FamilyMapView from '@/components/FamilyMapView.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

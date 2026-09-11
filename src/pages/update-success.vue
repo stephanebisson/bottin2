@@ -28,6 +28,7 @@
                 <div class="text-body-1 font-weight-medium mb-2">
                   {{ $i18n('updateSuccess.createAccountTitle') }}
                 </div>
+
                 <div class="text-body-2">
                   {{ $i18n('updateSuccess.createAccountMessage') }}
                 </div>
@@ -74,6 +75,7 @@
               <p class="mb-2">
                 {{ $i18n('updateSuccess.nextSteps') }}
               </p>
+
               <ul class="text-left mt-4">
                 <li>{{ $i18n('updateSuccess.step1') }}</li>
                 <li>{{ $i18n('updateSuccess.step2') }}</li>

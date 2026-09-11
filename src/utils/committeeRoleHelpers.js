@@ -13,7 +13,9 @@ import { useI18n } from 'vue-banana-i18n'
  * normalizeRoleForI18n('Vice-président') // 'vice-president'
  */
 function normalizeRoleForI18n (role) {
-  if (!role) {return ''}
+  if (!role) {
+    return ''
+  }
 
   return role
     .toLowerCase()
@@ -41,7 +43,9 @@ function normalizeRoleForI18n (role) {
  * getRoleDisplay('SDG', 2) // 'SDG'
  */
 export function getRoleDisplay (role, count = 1) {
-  if (!role) {return ''}
+  if (!role) {
+    return ''
+  }
 
   const normalizedKey = normalizeRoleForI18n(role)
   const key = `committeeRoles.${normalizedKey}`

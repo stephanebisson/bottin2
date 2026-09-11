@@ -27,7 +27,7 @@ export class StudentRepository {
       return students
     } catch (error) {
       console.error('StudentRepository: Error loading all students:', error)
-      throw new Error(`Failed to load students: ${error.message}`)
+      throw new Error(`Failed to load students: ${error.message}`, { cause: error })
     }
   }
 
@@ -57,7 +57,7 @@ export class StudentRepository {
       return students
     } catch (error) {
       console.error(`StudentRepository: Error loading students for class ${className}:`, error)
-      throw new Error(`Failed to load students for class ${className}: ${error.message}`)
+      throw new Error(`Failed to load students for class ${className}: ${error.message}`, { cause: error })
     }
   }
 
@@ -79,7 +79,7 @@ export class StudentRepository {
       return students
     } catch (error) {
       console.error(`StudentRepository: Error loading students for level ${level}:`, error)
-      throw new Error(`Failed to load students for level ${level}: ${error.message}`)
+      throw new Error(`Failed to load students for level ${level}: ${error.message}`, { cause: error })
     }
   }
 
@@ -103,7 +103,7 @@ export class StudentRepository {
       return student
     } catch (error) {
       console.error(`StudentRepository: Error loading student ${id}:`, error)
-      throw new Error(`Failed to load student ${id}: ${error.message}`)
+      throw new Error(`Failed to load student ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -157,7 +157,7 @@ export class StudentRepository {
       }
     } catch (error) {
       console.error('StudentRepository: Error saving student:', error)
-      throw new Error(`Failed to save student ${studentDTO.fullName}: ${error.message}`)
+      throw new Error(`Failed to save student ${studentDTO.fullName}: ${error.message}`, { cause: error })
     }
   }
 
@@ -204,7 +204,7 @@ export class StudentRepository {
       console.log(`StudentRepository: Deleted student ${id}`)
     } catch (error) {
       console.error(`StudentRepository: Error deleting student ${id}:`, error)
-      throw new Error(`Failed to delete student ${id}: ${error.message}`)
+      throw new Error(`Failed to delete student ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -232,7 +232,7 @@ export class StudentRepository {
       return filtered
     } catch (error) {
       console.error(`StudentRepository: Error searching students:`, error)
-      throw new Error(`Failed to search students: ${error.message}`)
+      throw new Error(`Failed to search students: ${error.message}`, { cause: error })
     }
   }
 
@@ -292,7 +292,7 @@ export class StudentRepository {
       return results
     } catch (error) {
       console.error('StudentRepository: Error loading students with parents:', error)
-      throw new Error(`Failed to load students with parents: ${error.message}`)
+      throw new Error(`Failed to load students with parents: ${error.message}`, { cause: error })
     }
   }
 
@@ -324,8 +324,9 @@ export class StudentRepository {
       }
     } catch (error) {
       console.error('StudentRepository: Error getting stats:', error)
-      throw new Error(`Failed to get student statistics: ${error.message}`)
+      throw new Error(`Failed to get student statistics: ${error.message}`, { cause: error })
     }
   }
-  collectionName = 'students';
+
+  collectionName = 'students'
 }

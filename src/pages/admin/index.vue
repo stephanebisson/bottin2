@@ -8,6 +8,7 @@
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+
       <p class="text-body-1 text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
@@ -17,6 +18,7 @@
         <p class="text-body-2 text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
+
         <v-btn
           color="primary"
           :loading="loading"
@@ -35,8 +37,10 @@
         <v-card-text>
           <div class="d-flex align-center">
             <v-icon class="mr-4" size="48">mdi-shield-account</v-icon>
+
             <div>
               <h2 class="text-h5 font-weight-bold">{{ $i18n('admin.welcomeTitle') }}</h2>
+
               <p class="text-body-1 mt-2">
                 {{ $i18n('admin.welcomeDescription') }}
               </p>
@@ -47,36 +51,24 @@
 
       <!-- Admin Tools Grid -->
       <v-row>
-        <!-- Annual Parent Information Update -->
+        <!-- Audit Log -->
         <v-col cols="12" lg="4" md="6">
           <v-card
             class="h-100 cursor-pointer admin-card"
             hover
-            @click="handleAnnualUpdateClick"
+            @click="handleLogsClick"
           >
             <v-card-text class="text-center pa-6">
-              <v-icon class="mb-4" color="primary" size="64">mdi-calendar-sync</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.annualUpdateWorkflow') }}</h3>
+              <v-icon class="mb-4" color="primary" size="64">mdi-history</v-icon>
+              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.auditLog.title') }}</h3>
+
               <p class="text-body-2 text-grey-darken-1">
-                {{ $i18n('admin.annualUpdateDescription') }}
+                {{ $i18n('admin.auditLog.description') }}
               </p>
 
-              <!-- Quick Status -->
-              <div v-if="currentWorkflow" class="mt-4">
-                <v-chip
-                  :color="getWorkflowStatusColor(currentWorkflow.status)"
-                  size="small"
-                  variant="tonal"
-                >
-                  {{ $i18n(`admin.status.${currentWorkflow.status}`) }}
-                </v-chip>
-                <div class="text-body-2 mt-2">
-                  {{ $i18n('admin.workflowCompleted', currentWorkflow.formsSubmitted || 0, currentWorkflow.totalParents || 0) }}
-                </div>
-              </div>
-              <div v-else class="mt-4">
-                <v-chip color="grey" size="small" variant="tonal">
-                  {{ $i18n('admin.noActiveWorkflow') }}
+              <div class="mt-4">
+                <v-chip color="primary" size="small" variant="tonal">
+                  {{ $i18n('admin.auditLog.title') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -93,6 +85,7 @@
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-group</v-icon>
               <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.parentsDirectory.title') }}</h3>
+
               <p class="text-body-2 text-grey-darken-1">
                 {{ $i18n('admin.parentsDirectory.description') }}
               </p>
@@ -117,6 +110,7 @@
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-school-outline</v-icon>
               <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.studentsTable.title') }}</h3>
+
               <p class="text-body-2 text-grey-darken-1">
                 {{ $i18n('admin.studentsTable.description') }}
               </p>
@@ -137,6 +131,7 @@
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-tie-outline</v-icon>
               <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.staffUpdate.title') }}</h3>
+
               <p class="text-body-2 text-grey-darken-1">
                 {{ $i18n('admin.staffUpdate.description') }}
               </p>
@@ -152,6 +147,7 @@
                 >
                   {{ $i18n('admin.staffUpdate.openLink') }}
                 </v-btn>
+
                 <v-btn
                   class="mt-2"
                   color="grey"
@@ -163,6 +159,7 @@
                   {{ $i18n('admin.staffUpdate.copyLink') }}
                 </v-btn>
               </div>
+
               <div v-else class="mt-4">
                 <v-chip color="grey" size="small" variant="tonal">
                   {{ $i18n('admin.staffUpdate.noToken') }}
@@ -178,178 +175,95 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const router = useRouter()
   const authStore = useAuthStore()
-  const firebaseStore = useFirebaseDataStore()
 
-  // State
   const loading = ref(false)
-  const currentWorkflow = ref(null)
   const staffUpdateToken = ref(null)
-
-  // Check if user is authorized using Firebase Custom Claims
   const isAuthorized = ref(false)
-  const adminStatus = ref(null)
 
-  // Check admin status using custom claims
   async function checkAdminStatus () {
     if (!authStore.isAuthenticated || !authStore.user) {
       isAuthorized.value = false
       return
     }
-
     try {
-      // Get ID token result which includes custom claims - force refresh to get latest claims
       const idTokenResult = await authStore.user.getIdTokenResult(true)
-      const isAdmin = !!idTokenResult.claims.admin
-
-      isAuthorized.value = isAdmin
-      adminStatus.value = {
-        isAdmin,
-        claims: idTokenResult.claims,
-        email: authStore.userEmail,
-      }
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
+      isAuthorized.value = !!idTokenResult.claims.admin
+    } catch {
       isAuthorized.value = false
     }
   }
 
-  // Workflow status helpers (for dashboard overview)
-  function getWorkflowStatusColor (status) {
-    switch (status) {
-      case 'pending': { return 'warning'
-      }
-      case 'active': { return 'info'
-      }
-      case 'completed': { return 'success'
-      }
-      default: { return 'grey'
-      }
-    }
+  function handleLogsClick () {
+    router.push('/admin/logs')
   }
 
-  // Handle annual update card click
-  function handleAnnualUpdateClick () {
-    router.push('/admin/annual-update')
-  }
-
-  // Handle parents directory card click
   function handleParentsClick () {
     router.push('/admin/parents')
   }
 
-  // Handle students table card click
   function handleStudentsClick () {
     router.push('/admin/students')
   }
 
-  // Load current workflow for dashboard overview
-  async function loadWorkflowData () {
-    try {
-      const baseUrl = getFunctionsBaseUrl()
-
-      const response = await fetch(`${baseUrl}/getWorkflowStatusV2`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${await authStore.user.getIdToken()}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      currentWorkflow.value = data.current
-    } catch (error) {
-      console.error('Failed to load workflow data:', error)
-    }
-  }
-
-  // Load staff update token
   async function loadStaffUpdateToken () {
     try {
       const baseUrl = getFunctionsBaseUrl()
-
       const response = await fetch(`${baseUrl}/getStaffUpdateToken`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${await authStore.user.getIdToken()}`,
         },
       })
-
-      if (!response.ok) {
-        console.error('Failed to load staff update token:', response.status)
-        return
-      }
-
+      if (!response.ok) return
       const data = await response.json()
       staffUpdateToken.value = data.token
-    } catch (error) {
-      console.error('Failed to load staff update token:', error)
+    } catch {
+      // token unavailable — silently ignore
     }
   }
 
-  // Open staff update link in new tab
   function openStaffUpdateLink () {
     if (!staffUpdateToken.value) return
-    const baseUrl = window.location.origin
-    const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`
-    window.open(updateUrl, '_blank')
+    window.open(`${window.location.origin}/staff-update/${staffUpdateToken.value}`, '_blank')
   }
 
-  // Copy staff update link to clipboard
   async function copyStaffUpdateLink () {
     if (!staffUpdateToken.value) return
-    const baseUrl = window.location.origin
-    const updateUrl = `${baseUrl}/staff-update/${staffUpdateToken.value}`
-
+    const url = `${window.location.origin}/staff-update/${staffUpdateToken.value}`
     try {
-      await navigator.clipboard.writeText(updateUrl)
-      console.log('Staff update link copied to clipboard:', updateUrl)
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error)
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea')
-      textArea.value = updateUrl
-      document.body.append(textArea)
-      textArea.select()
+      await navigator.clipboard.writeText(url)
+    } catch {
+      const el = document.createElement('textarea')
+      el.value = url
+      document.body.append(el)
+      el.select()
       document.execCommand('copy')
-      textArea.remove()
-      console.log('Staff update link copied to clipboard (fallback):', updateUrl)
+      el.remove()
     }
   }
 
   onMounted(async () => {
     await checkAdminStatus()
     if (isAuthorized.value) {
-      await Promise.all([
-        loadWorkflowData(),
-        loadStaffUpdateToken(),
-      ])
+      await loadStaffUpdateToken()
     }
   })
 
-  // Watch for authentication changes
   watch(() => authStore.isAuthenticated, async newValue => {
     if (newValue) {
       await checkAdminStatus()
       if (isAuthorized.value) {
-        await Promise.all([
-          loadWorkflowData(),
-          loadStaffUpdateToken(),
-        ])
+        await loadStaffUpdateToken()
       }
     } else {
       isAuthorized.value = false
-      adminStatus.value = null
     }
   })
 </script>

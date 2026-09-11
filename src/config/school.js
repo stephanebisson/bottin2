@@ -15,8 +15,8 @@ export const SCHOOL_LOCATION = {
   phone: '5145965682',
 
   // Coordinates for map center
-  latitude: 45.472_694_449_225_56,
-  longitude: -73.616_867_844_490_88,
+  latitude: 45.47269444922556,
+  longitude: -73.61686784449088,
 }
 
 // Default map view settings

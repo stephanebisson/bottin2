@@ -27,7 +27,7 @@ export class ConversationRepository {
       return conversations
     } catch (error) {
       console.error('ConversationRepository: Error loading all conversations:', error)
-      throw new Error(`Failed to load conversations: ${error.message}`)
+      throw new Error(`Failed to load conversations: ${error.message}`, { cause: error })
     }
   }
 
@@ -52,7 +52,7 @@ export class ConversationRepository {
       return conversation
     } catch (error) {
       console.error(`ConversationRepository: Error loading conversation ${id}:`, error)
-      throw new Error(`Failed to load conversation ${id}: ${error.message}`)
+      throw new Error(`Failed to load conversation ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -78,7 +78,7 @@ export class ConversationRepository {
       return conversations
     } catch (error) {
       console.error(`ConversationRepository: Error loading conversations for ${userEmail}:`, error)
-      throw new Error(`Failed to load conversations for ${userEmail}: ${error.message}`)
+      throw new Error(`Failed to load conversations for ${userEmail}: ${error.message}`, { cause: error })
     }
   }
 
@@ -109,7 +109,7 @@ export class ConversationRepository {
       return conversations
     } catch (error) {
       console.error(`ConversationRepository: Error loading ${type} conversations:`, error)
-      throw new Error(`Failed to load ${type} conversations: ${error.message}`)
+      throw new Error(`Failed to load ${type} conversations: ${error.message}`, { cause: error })
     }
   }
 
@@ -138,7 +138,7 @@ export class ConversationRepository {
       return conversation
     } catch (error) {
       console.error(`ConversationRepository: Error finding conversation for context ${contextId}:`, error)
-      throw new Error(`Failed to find conversation for context ${contextId}: ${error.message}`)
+      throw new Error(`Failed to find conversation for context ${contextId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -203,7 +203,7 @@ export class ConversationRepository {
       return newConversation
     } catch (error) {
       console.error(`ConversationRepository: Error finding/creating direct conversation:`, error)
-      throw new Error(`Failed to find/create direct conversation: ${error.message}`)
+      throw new Error(`Failed to find/create direct conversation: ${error.message}`, { cause: error })
     }
   }
 
@@ -252,7 +252,7 @@ export class ConversationRepository {
       return newConversation
     } catch (error) {
       console.error(`ConversationRepository: Error finding/creating ${type} conversation:`, error)
-      throw new Error(`Failed to find/create ${type} conversation: ${error.message}`)
+      throw new Error(`Failed to find/create ${type} conversation: ${error.message}`, { cause: error })
     }
   }
 
@@ -288,7 +288,7 @@ export class ConversationRepository {
       }
     } catch (error) {
       console.error('ConversationRepository: Error saving conversation:', error)
-      throw new Error(`Failed to save conversation: ${error.message}`)
+      throw new Error(`Failed to save conversation: ${error.message}`, { cause: error })
     }
   }
 
@@ -327,7 +327,7 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Updated last message for conversation ${id}`)
     } catch (error) {
       console.error(`ConversationRepository: Error updating last message for ${id}:`, error)
-      throw new Error(`Failed to update last message for ${id}: ${error.message}`)
+      throw new Error(`Failed to update last message for ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -355,7 +355,7 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Incremented unread count for conversation ${id}`)
     } catch (error) {
       console.error(`ConversationRepository: Error incrementing unread count for ${id}:`, error)
-      throw new Error(`Failed to increment unread count for ${id}: ${error.message}`)
+      throw new Error(`Failed to increment unread count for ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -378,7 +378,7 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Marked conversation ${id} as read by ${userEmail}`)
     } catch (error) {
       console.error(`ConversationRepository: Error marking conversation ${id} as read:`, error)
-      throw new Error(`Failed to mark conversation ${id} as read: ${error.message}`)
+      throw new Error(`Failed to mark conversation ${id} as read: ${error.message}`, { cause: error })
     }
   }
 
@@ -410,7 +410,7 @@ export class ConversationRepository {
       console.log(`ConversationRepository: Deleted conversation ${id}`)
     } catch (error) {
       console.error(`ConversationRepository: Error deleting conversation ${id}:`, error)
-      throw new Error(`Failed to delete conversation ${id}: ${error.message}`)
+      throw new Error(`Failed to delete conversation ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -431,7 +431,7 @@ export class ConversationRepository {
       return totalUnread
     } catch (error) {
       console.error(`ConversationRepository: Error getting total unread count for ${userEmail}:`, error)
-      throw new Error(`Failed to get total unread count for ${userEmail}: ${error.message}`)
+      throw new Error(`Failed to get total unread count for ${userEmail}: ${error.message}`, { cause: error })
     }
   }
 
@@ -458,9 +458,9 @@ export class ConversationRepository {
       return filtered
     } catch (error) {
       console.error('ConversationRepository: Error searching conversations:', error)
-      throw new Error(`Failed to search conversations: ${error.message}`)
+      throw new Error(`Failed to search conversations: ${error.message}`, { cause: error })
     }
   }
 
-  collectionName = 'conversations';
+  collectionName = 'conversations'
 }

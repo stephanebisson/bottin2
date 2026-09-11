@@ -12,9 +12,9 @@ export function usePWA () {
    */
   const checkDisplayMode = () => {
     // Check if running in standalone mode (installed PWA)
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone || // iOS Safari
-           document.referrer.includes('android-app://')
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone // iOS Safari
+      || document.referrer.includes('android-app://')
   }
 
   onMounted(() => {

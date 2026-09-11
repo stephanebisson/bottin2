@@ -83,7 +83,7 @@ exports.startAnnualUpdateV2 = onRequest({
       return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1]
+    const idToken = authHeader.split('Bearer ', 2)[1]
     let decodedToken
 
     try {
@@ -235,7 +235,7 @@ exports.updateWorkflowProgressV2 = onRequest({
       return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1]
+    const idToken = authHeader.split('Bearer ', 2)[1]
     let decodedToken
 
     try {
@@ -310,7 +310,7 @@ exports.getWorkflowStatusV2 = onRequest({
       return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1]
+    const idToken = authHeader.split('Bearer ', 2)[1]
     let decodedToken
 
     try {
@@ -416,7 +416,7 @@ exports.completeAnnualUpdateV2 = onRequest({
       return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
     }
 
-    const idToken = authHeader.split('Bearer ')[1]
+    const idToken = authHeader.split('Bearer ', 2)[1]
     let decodedToken
 
     try {

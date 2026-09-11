@@ -1,6 +1,7 @@
 <template>
   <div v-if="rep1 || rep2" class="class-parent-reps-section">
     <strong>Représentants des parents</strong>
+
     <table class="parent-reps-table">
       <tbody>
         <tr v-if="rep1">
@@ -8,6 +9,7 @@
           <td class="parent-rep-phone-cell">{{ rep1.phone ? formatPhoneForDisplay(rep1.phone) : '' }}</td>
           <td class="parent-rep-email-cell">{{ rep1.email || '' }}</td>
         </tr>
+
         <tr v-if="rep2">
           <td class="parent-rep-name-cell">{{ rep2.name }}</td>
           <td class="parent-rep-phone-cell">{{ rep2.phone ? formatPhoneForDisplay(rep2.phone) : '' }}</td>

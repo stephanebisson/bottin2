@@ -11,10 +11,30 @@
  * 5. Starts Vite dev server
  */
 
-import { spawn } from 'node:child_process'
+import { execSync, spawn } from 'node:child_process'
+import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { autoSetupAdmin } from './autoSetupAdmin.js'
+
+// Find a binary in PATH first, then fall back to searching all nvm node versions
+function findBinary (name) {
+  try {
+    return execSync(`which ${name}`, { encoding: 'utf8' }).trim()
+  } catch {
+    const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, '.nvm')
+    const versionsDir = path.join(nvmDir, 'versions', 'node')
+    if (existsSync(versionsDir)) {
+      for (const version of readdirSync(versionsDir).toSorted().toReversed()) {
+        const candidate = path.join(versionsDir, version, 'bin', name)
+        if (existsSync(candidate)) {
+          return candidate
+        }
+      }
+    }
+    throw new Error(`"${name}" not found. Install it with: npm install -g firebase-tools`)
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,7 +44,7 @@ const RESTORE_DELAY = 5000 // Wait 5 seconds after restore
 const ADMIN_SETUP_DELAY = 3000 // Wait 3 seconds after admin setup
 
 // Configure which backup to use
-const BACKUP_FILE = '2025-11-05T17-32-25-production-backup.json'
+const BACKUP_FILE = '2025-10-17T12-05-44-production-backup.json'
 
 let emulatorProcess
 let viteProcess
@@ -93,11 +113,9 @@ async function startDevelopment () {
   try {
     // 1. Start Firebase emulator (fresh, no import)
     console.log('1️⃣  Starting Firebase emulator...')
-    emulatorProcess = spawn('firebase', [
-      'emulators:start',
-    ], {
+    const firebaseBin = findBinary('firebase')
+    emulatorProcess = spawn(firebaseBin, ['emulators:start'], {
       stdio: 'inherit',
-      shell: true,
     })
 
     emulatorProcess.on('error', error => {

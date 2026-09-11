@@ -21,7 +21,7 @@ export function sanitizeName (name) {
   const withoutAccents = normalized.replace(/[\u0300-\u036F]/g, '')
 
   // Keep only a-zA-Z
-  const cleaned = withoutAccents.replace(/[^a-zA-Z]/g, '')
+  const cleaned = withoutAccents.replace(/[^a-z]/gi, '')
 
   return cleaned
 }

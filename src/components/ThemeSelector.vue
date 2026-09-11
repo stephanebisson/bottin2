@@ -25,6 +25,7 @@
         <template #prepend>
           <v-icon :color="themeItem.color">{{ themeItem.icon }}</v-icon>
         </template>
+
         <v-list-item-title>{{ themeItem.name }}</v-list-item-title>
         <v-list-item-subtitle>{{ themeItem.description }}</v-list-item-subtitle>
       </v-list-item>
@@ -36,7 +37,9 @@
         <template #prepend>
           <v-icon>mdi-brightness-6</v-icon>
         </template>
+
         <v-list-item-title>{{ $i18n('themes.darkMode') }}</v-list-item-title>
+
         <template #append>
           <v-switch
             color="primary"

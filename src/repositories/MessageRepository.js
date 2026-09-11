@@ -32,7 +32,7 @@ export class MessageRepository {
       return message
     } catch (error) {
       console.error(`MessageRepository: Error loading message ${id}:`, error)
-      throw new Error(`Failed to load message ${id}: ${error.message}`)
+      throw new Error(`Failed to load message ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -59,7 +59,7 @@ export class MessageRepository {
       return messages
     } catch (error) {
       console.error(`MessageRepository: Error loading messages for conversation ${conversationId}:`, error)
-      throw new Error(`Failed to load messages for conversation ${conversationId}: ${error.message}`)
+      throw new Error(`Failed to load messages for conversation ${conversationId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -86,7 +86,7 @@ export class MessageRepository {
       return messages
     } catch (error) {
       console.error(`MessageRepository: Error loading messages from sender ${senderId}:`, error)
-      throw new Error(`Failed to load messages from sender ${senderId}: ${error.message}`)
+      throw new Error(`Failed to load messages from sender ${senderId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -122,7 +122,7 @@ export class MessageRepository {
       }
     } catch (error) {
       console.error('MessageRepository: Error saving message:', error)
-      throw new Error(`Failed to save message: ${error.message}`)
+      throw new Error(`Failed to save message: ${error.message}`, { cause: error })
     }
   }
 
@@ -180,7 +180,7 @@ export class MessageRepository {
       return await this.getById(id)
     } catch (error) {
       console.error(`MessageRepository: Error editing message ${id}:`, error)
-      throw new Error(`Failed to edit message ${id}: ${error.message}`)
+      throw new Error(`Failed to edit message ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -201,7 +201,7 @@ export class MessageRepository {
       console.log(`MessageRepository: Marked message ${id} as read by ${userEmail}`)
     } catch (error) {
       console.error(`MessageRepository: Error marking message ${id} as read:`, error)
-      throw new Error(`Failed to mark message ${id} as read: ${error.message}`)
+      throw new Error(`Failed to mark message ${id} as read: ${error.message}`, { cause: error })
     }
   }
 
@@ -224,7 +224,7 @@ export class MessageRepository {
       console.log(`MessageRepository: Marked ${unreadMessages.length} messages as read in conversation ${conversationId}`)
     } catch (error) {
       console.error(`MessageRepository: Error marking conversation ${conversationId} as read:`, error)
-      throw new Error(`Failed to mark conversation ${conversationId} as read: ${error.message}`)
+      throw new Error(`Failed to mark conversation ${conversationId} as read: ${error.message}`, { cause: error })
     }
   }
 
@@ -240,7 +240,7 @@ export class MessageRepository {
       console.log(`MessageRepository: Deleted message ${id}`)
     } catch (error) {
       console.error(`MessageRepository: Error deleting message ${id}:`, error)
-      throw new Error(`Failed to delete message ${id}: ${error.message}`)
+      throw new Error(`Failed to delete message ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -261,7 +261,7 @@ export class MessageRepository {
       console.log(`MessageRepository: Deleted ${messages.length} messages from conversation ${conversationId}`)
     } catch (error) {
       console.error(`MessageRepository: Error deleting messages from conversation ${conversationId}:`, error)
-      throw new Error(`Failed to delete messages from conversation ${conversationId}: ${error.message}`)
+      throw new Error(`Failed to delete messages from conversation ${conversationId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -289,7 +289,7 @@ export class MessageRepository {
       return filtered
     } catch (error) {
       console.error(`MessageRepository: Error searching messages in conversation ${conversationId}:`, error)
-      throw new Error(`Failed to search messages in conversation ${conversationId}: ${error.message}`)
+      throw new Error(`Failed to search messages in conversation ${conversationId}: ${error.message}`, { cause: error })
     }
   }
 
@@ -313,9 +313,9 @@ export class MessageRepository {
       }
     } catch (error) {
       console.error(`MessageRepository: Error getting stats for conversation ${conversationId}:`, error)
-      throw new Error(`Failed to get stats for conversation ${conversationId}: ${error.message}`)
+      throw new Error(`Failed to get stats for conversation ${conversationId}: ${error.message}`, { cause: error })
     }
   }
 
-  collectionName = 'messages';
+  collectionName = 'messages'
 }

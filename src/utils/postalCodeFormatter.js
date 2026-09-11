@@ -14,7 +14,7 @@ export function extractAlphanumeric (postalCode) {
   if (!postalCode || typeof postalCode !== 'string') {
     return ''
   }
-  return postalCode.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+  return postalCode.replace(/[^A-Z0-9]/gi, '').toUpperCase()
 }
 
 /**
@@ -135,8 +135,6 @@ export function formatPostalCodeInput (input, cursorPos = 0) {
   }
 
   let formatted = ''
-  let newCursorPos = cursorPos
-
   if (alphanumeric.length === 0) {
     return { value: '', cursorPos: 0 }
   }
@@ -158,7 +156,7 @@ export function formatPostalCodeInput (input, cursorPos = 0) {
     i++
   }
 
-  newCursorPos = i
+  const newCursorPos = i
 
   return { value: formatted, cursorPos: newCursorPos }
 }
@@ -200,7 +198,7 @@ export function isPostalCodeFormatValid (postalCode) {
   // Allow partial entry while typing
   if (alphanumeric.length < 6) {
     // Check if what's entered so far follows the pattern
-    const partialPattern = /^([A-Z](\d([A-Z](\d([A-Z](\d)?)?)?)?)?)?$/
+    const partialPattern = /^(?:[A-Z](?:\d(?:[A-Z](?:\d(?:[A-Z]\d?)?)?)?)?)?$/
     return partialPattern.test(alphanumeric)
   }
 

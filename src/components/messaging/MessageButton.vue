@@ -25,7 +25,7 @@
     type: {
       type: String,
       required: true,
-      validator: (value) => ['direct', 'class', 'committee'].includes(value),
+      validator: value => ['direct', 'class', 'committee'].includes(value),
     },
     // Context ID for class/committee conversations (e.g., 'class-3a')
     contextId: {

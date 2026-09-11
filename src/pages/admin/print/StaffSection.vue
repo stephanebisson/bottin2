@@ -36,6 +36,7 @@
           <div class="sdg-logo-space">
             <img alt="SDG Logo" class="sdg-logo" src="@/assets/SDG_logo.jpg">
           </div>
+
           <div class="sdg-info">
             <div class="sdg-name">{{ SDG_INFO.name }}</div>
             <div class="sdg-address">{{ SDG_INFO.addressLine1 }}</div>

@@ -20,7 +20,9 @@ const AT_PLACEHOLDER = '__AT__'
  * @returns {string} Sanitized email safe for Firestore field names
  */
 export function sanitizeEmailForKey (email) {
-  if (!email || typeof email !== 'string') {return ''}
+  if (!email || typeof email !== 'string') {
+    return ''
+  }
   return email
     .replace(/@/g, AT_PLACEHOLDER)
     .replace(/\./g, DOT_PLACEHOLDER)
@@ -32,7 +34,9 @@ export function sanitizeEmailForKey (email) {
  * @returns {string} Original email address
  */
 export function unsanitizeEmailKey (sanitizedEmail) {
-  if (!sanitizedEmail || typeof sanitizedEmail !== 'string') {return ''}
+  if (!sanitizedEmail || typeof sanitizedEmail !== 'string') {
+    return ''
+  }
   return sanitizedEmail
     .replace(new RegExp(DOT_PLACEHOLDER, 'g'), '.')
     .replace(new RegExp(AT_PLACEHOLDER, 'g'), '@')
@@ -79,7 +83,9 @@ export function unsanitizeEmailKeys (sanitizedObject) {
  * @returns {*} Value associated with the email
  */
 export function getByEmail (sanitizedObject, email) {
-  if (!sanitizedObject || !email) {return undefined}
+  if (!sanitizedObject || !email) {
+    return undefined
+  }
   return sanitizedObject[sanitizeEmailForKey(email)]
 }
 
@@ -90,6 +96,8 @@ export function getByEmail (sanitizedObject, email) {
  * @param {*} value - Value to set
  */
 export function setByEmail (sanitizedObject, email, value) {
-  if (!sanitizedObject || !email) {return}
+  if (!sanitizedObject || !email) {
+    return
+  }
   sanitizedObject[sanitizeEmailForKey(email)] = value
 }

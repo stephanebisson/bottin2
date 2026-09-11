@@ -18,6 +18,7 @@
           <div class="sdg-staff-name">{{ member.first_name }} {{ member.last_name }}</div>
           <div v-if="member.title" class="sdg-staff-title">{{ member.title }}</div>
         </td>
+
         <td class="sdg-phone-cell">{{ formatPhoneForDisplay(member.phone) || '' }}</td>
         <td class="sdg-email-cell">{{ member.email || '' }}</td>
       </tr>
@@ -46,7 +47,7 @@
     variant: {
       type: String,
       required: true,
-      validator: (value) => ['ef', 'sdg-resp', 'sdg-edu'].includes(value),
+      validator: value => ['ef', 'sdg-resp', 'sdg-edu'].includes(value),
     },
   })
 

@@ -16,7 +16,7 @@ import vuetify from './vuetify'
  * Flatten nested message object for vue-banana-i18n
  * Converts { nav: { home: "Home" } } to { "nav.home": "Home" }
  */
-function flattenMessages(obj, prefix = '') {
+function flattenMessages (obj, prefix = '') {
   const flattened = {}
 
   for (const [key, value] of Object.entries(obj)) {
@@ -44,8 +44,8 @@ const i18n = createI18n({
   locale: savedLocale,
   messages: {
     en: flatEnMessages,
-    fr: flatFrMessages
-  }
+    fr: flatFrMessages,
+  },
 })
 
 export function registerPlugins (app) {

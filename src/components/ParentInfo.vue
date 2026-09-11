@@ -10,6 +10,7 @@
           />
         </div>
       </div>
+
       <v-chip
         v-if="showRole && role"
         :color="role === 'Chair' || role === 'Co-Chair' ? 'primary' : 'grey'"
@@ -18,6 +19,7 @@
       >
         {{ getRoleDisplay(role) }}
       </v-chip>
+
       <v-chip
         v-else-if="showMemberType && memberType"
         :color="memberType === 'staff' ? 'blue' : 'grey'"
@@ -50,6 +52,7 @@
         <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-email</v-icon>
         <a class="text-decoration-none" :href="`mailto:${parent.email}`">{{ parent.email }}</a>
       </div>
+
       <div v-if="parent.phone" :class="variant === 'compact' ? 'text-caption d-flex align-center mb-1' : 'text-body-2 d-flex align-center mb-1'">
         <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-phone</v-icon>
         <a class="text-decoration-none" :href="`tel:${parent.phone}`">{{ formatPhone(parent.phone) }}</a>
@@ -59,6 +62,7 @@
     <!-- Address (if showAddress) -->
     <div v-if="showAddress && formattedAddress" class="text-body-2 d-flex align-center mb-1">
       <v-icon class="me-1" size="16">mdi-map-marker</v-icon>
+
       <HighlightedText
         :query="searchQuery"
         :text="formattedAddress"

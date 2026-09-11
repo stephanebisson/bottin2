@@ -27,6 +27,7 @@
           <v-list-item-title class="font-weight-bold text-body-2">
             {{ currentUserFullName }}
           </v-list-item-title>
+
           <v-list-item-subtitle class="text-caption">
             {{ authStore.userEmail }}
           </v-list-item-subtitle>
@@ -47,6 +48,7 @@
                 :title="item.title"
               />
             </template>
+
             <v-list-item
               v-for="child in item.children"
               :key="child.title"
@@ -91,7 +93,6 @@
       </template>
     </v-list>
 
-
   </v-navigation-drawer>
 </template>
 
@@ -109,7 +110,7 @@
     },
   })
 
-  const emit = defineEmits(['update:modelValue'])
+  const emit = defineEmits(['update:model-value'])
 
   const { mobile } = useDisplay()
 
@@ -119,7 +120,7 @@
 
   const drawerModel = computed({
     get: () => props.modelValue,
-    set: value => emit('update:modelValue', value),
+    set: value => emit('update:model-value', value),
   })
 
   const authStore = useAuthStore()
@@ -203,9 +204,9 @@
         icon: 'mdi-cog',
         children: [
           {
-            title: $i18n('admin.annualUpdateWorkflow'),
-            icon: 'mdi-calendar-sync',
-            to: '/admin/annual-update',
+            title: $i18n('admin.auditLog.title'),
+            icon: 'mdi-history',
+            to: '/admin/logs',
           },
           {
             title: $i18n('admin.parentsDirectory.title'),

@@ -27,7 +27,7 @@ export class ParentRepository {
       return parents
     } catch (error) {
       console.error('ParentRepository: Error loading all parents:', error)
-      throw new Error(`Failed to load parents: ${error.message}`)
+      throw new Error(`Failed to load parents: ${error.message}`, { cause: error })
     }
   }
 
@@ -52,7 +52,7 @@ export class ParentRepository {
       return parent
     } catch (error) {
       console.error(`ParentRepository: Error loading parent ${id}:`, error)
-      throw new Error(`Failed to load parent ${id}: ${error.message}`)
+      throw new Error(`Failed to load parent ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -79,7 +79,7 @@ export class ParentRepository {
       return validParents
     } catch (error) {
       console.error('ParentRepository: Error loading parents by IDs:', error)
-      throw new Error(`Failed to load parents by IDs: ${error.message}`)
+      throw new Error(`Failed to load parents by IDs: ${error.message}`, { cause: error })
     }
   }
 
@@ -101,7 +101,7 @@ export class ParentRepository {
       return parents
     } catch (error) {
       console.error(`ParentRepository: Error loading parents for city ${city}:`, error)
-      throw new Error(`Failed to load parents for city ${city}: ${error.message}`)
+      throw new Error(`Failed to load parents for city ${city}: ${error.message}`, { cause: error })
     }
   }
 
@@ -123,7 +123,7 @@ export class ParentRepository {
       return parents
     } catch (error) {
       console.error(`ParentRepository: Error loading parents with interest ${interest}:`, error)
-      throw new Error(`Failed to load parents with interest ${interest}: ${error.message}`)
+      throw new Error(`Failed to load parents with interest ${interest}: ${error.message}`, { cause: error })
     }
   }
 
@@ -152,7 +152,7 @@ export class ParentRepository {
       return parent
     } catch (error) {
       console.error(`ParentRepository: Error loading parent by email ${email}:`, error)
-      throw new Error(`Failed to load parent by email ${email}: ${error.message}`)
+      throw new Error(`Failed to load parent by email ${email}: ${error.message}`, { cause: error })
     }
   }
 
@@ -206,7 +206,7 @@ export class ParentRepository {
       }
     } catch (error) {
       console.error('ParentRepository: Error saving parent:', error)
-      throw new Error(`Failed to save parent ${parentDTO.fullName}: ${error.message}`)
+      throw new Error(`Failed to save parent ${parentDTO.fullName}: ${error.message}`, { cause: error })
     }
   }
 
@@ -253,7 +253,7 @@ export class ParentRepository {
       console.log(`ParentRepository: Deleted parent ${id}`)
     } catch (error) {
       console.error(`ParentRepository: Error deleting parent ${id}:`, error)
-      throw new Error(`Failed to delete parent ${id}: ${error.message}`)
+      throw new Error(`Failed to delete parent ${id}: ${error.message}`, { cause: error })
     }
   }
 
@@ -281,7 +281,7 @@ export class ParentRepository {
       return filtered
     } catch (error) {
       console.error(`ParentRepository: Error searching parents:`, error)
-      throw new Error(`Failed to search parents: ${error.message}`)
+      throw new Error(`Failed to search parents: ${error.message}`, { cause: error })
     }
   }
 
@@ -317,8 +317,9 @@ export class ParentRepository {
       }
     } catch (error) {
       console.error('ParentRepository: Error getting stats:', error)
-      throw new Error(`Failed to get parent statistics: ${error.message}`)
+      throw new Error(`Failed to get parent statistics: ${error.message}`, { cause: error })
     }
   }
-  collectionName = 'parents';
+
+  collectionName = 'parents'
 }

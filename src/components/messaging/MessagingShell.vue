@@ -20,6 +20,7 @@
       :current-user-email="props.currentUserEmail"
       @select-conversation="openConversation"
     />
+
     <ConversationView
       v-else
       :conversation="activeConversation"

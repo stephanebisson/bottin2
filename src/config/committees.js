@@ -94,7 +94,7 @@ export function getCommitteeRoles (committeeName) {
  * @param {string} role - Role to validate
  * @returns {boolean} True if role is valid
  */
- 
+
 export function isValidRole (committeeName, role) {
   return ALL_ROLES.includes(role)
 }

@@ -512,7 +512,8 @@
         "lastName": "Nom de famille",
         "class": "Classe",
         "level": "Niveau",
-        "parents": "Parents"
+        "parents": "Parents",
+        "log": "Historique"
       },
       "newStudent": "Nouvel élève",
       "createError": "Échec de la création de l'élève. Veuillez réessayer.",
@@ -520,6 +521,101 @@
         "firstNameRequired": "Le prénom est obligatoire",
         "lastNameRequired": "Le nom de famille est obligatoire",
         "parentRequired": "Au moins un parent est obligatoire"
+      },
+      "filterSearch": "Rechercher par nom...",
+      "filterClass": "Classe",
+      "filterLevel": "Niveau",
+      "filterUnassigned": "Non assignés seulement",
+      "xSelected": "$1 élève(s) sélectionné(s)",
+      "progressAll": "Progression annuelle",
+      "markDeparted": "Marquer comme parti",
+      "assignClass": "Assigner une classe",
+      "progressError": "Erreur lors de la progression des élèves.",
+      "departError": "Erreur lors du départ des élèves.",
+      "assignClassError": "Erreur lors de l'assignation de la classe.",
+      "progressDialog": {
+        "title": "Progression annuelle",
+        "warning": "Cette action met à jour tous les élèves en même temps. Elle ne peut pas être annulée.",
+        "autoProgress": "$1 élève(s) avanceront au niveau suivant (même classe)",
+        "needsAssignment": "$1 élève(s) devront être assignés à une nouvelle classe",
+        "graduating": "$1 élève(s) au niveau 6 seront retirés du système",
+        "invalid": "$1 élève(s) ont un niveau invalide et seront ignorés",
+        "confirm": "Confirmer la progression"
+      },
+      "departDialog": {
+        "title": "Marquer comme parti",
+        "warning": "Cette action supprime définitivement les élèves du système.",
+        "message": "$1 élève(s) seront supprimés du système.",
+        "confirm": "Confirmer le départ"
+      },
+      "assignClassDialog": {
+        "title": "Assigner une classe",
+        "message": "$1 élève(s) non assigné(s) recevront la classe sélectionnée.",
+        "selectClass": "Sélectionner une classe",
+        "confirm": "Assigner"
+      },
+      "logs": {
+        "progress_student": "Progressé",
+        "graduate_student": "Diplômé",
+        "depart_student": "Parti",
+        "assign_class": "Classe assignée"
+      }
+    },
+    "parentsTable": {
+      "filterSearch": "Rechercher par nom ou courriel...",
+      "filterClass": "Classe",
+      "filterEmailStatus": "Courriel",
+      "filterSubmitted": "Soumis",
+      "filterOptedOut": "Retirés seulement",
+      "xSelected": "$1 parent(s) sélectionné(s)",
+      "sendEmail": "Envoyer le lien de mise à jour",
+      "markOptedOut": "Marquer comme retiré",
+      "removeParent": "Retirer le parent",
+      "emailError": "Erreur lors de l'envoi du courriel.",
+      "optOutError": "Erreur lors du retrait du parent.",
+      "removeError": "Erreur lors de la suppression du parent.",
+      "sendEmailDialog": {
+        "title": "Envoyer le lien de mise à jour",
+        "alreadySent": "$1 parent(s) ont déjà reçu un lien cette année.",
+        "noEmail": "$1 parent(s) n'ont pas d'adresse courriel et seront ignorés.",
+        "message": "Un lien de mise à jour sera envoyé à $1 parent(s).",
+        "confirm": "Envoyer"
+      },
+      "optOutDialog": {
+        "title": "Marquer comme retiré",
+        "warning": "Cette action supprime les informations personnelles de ces parents du bottin.",
+        "message": "$1 parent(s) seront marqués comme retirés.",
+        "confirm": "Confirmer"
+      },
+      "removeDialog": {
+        "title": "Retirer le parent",
+        "warning": "Cette action est permanente et supprime définitivement ces parents du système.",
+        "message": "$1 parent(s) seront supprimés du système.",
+        "confirm": "Confirmer la suppression"
+      },
+      "headers": {
+        "status": "Statut",
+        "log": "Historique"
+      },
+      "status": {
+        "emailSent": "Lien envoyé",
+        "submittedOn": "Soumis le $1",
+        "optedOut": "Retiré"
+      },
+      "logs": {
+        "send_update_email": "Lien envoyé",
+        "opt_out_parent": "Retiré",
+        "remove_parent": "Supprimé"
+      },
+      "emailStatusOptions": {
+        "all": "Tous",
+        "sent": "Lien envoyé",
+        "notSent": "Non envoyé"
+      },
+      "submittedOptions": {
+        "all": "Tous",
+        "yes": "Soumis",
+        "no": "Non soumis"
       }
     },
     "newParent": "Nouveau parent",
@@ -557,29 +653,58 @@
     "selectLevel": "Sélectionner un niveau",
     "addParent": "Ajouter un parent",
     "staffUpdate": {
-      "title": "Mise à jour des informations du personnel",
-      "description": "Accéder au formulaire de mise à jour des informations du personnel avec un lien sécurisé",
-      "openLink": "Ouvrir le formulaire",
-      "copyLink": "Copier le lien",
-      "noToken": "Aucun jeton disponible",
-      "tokenStatus": "Statut du lien de mise à jour",
-      "tokenGenerated": "Le lien de mise à jour du personnel est actif",
-      "tokenCreated": "Créé le",
-      "createdBy": "Créé par",
-      "noTokenGenerated": "Aucun lien de mise à jour généré",
-      "generateTokenInstructions": "Générer un lien sécurisé pour permettre aux membres du personnel de mettre à jour leurs informations",
-      "generateToken": "Générer le lien de mise à jour",
-      "tokenGeneratedSuccess": "Lien de mise à jour généré avec succès !",
-      "tokenGenerationError": "Échec de la génération du lien de mise à jour. Veuillez réessayer.",
-      "linkCopied": "Lien copié dans le presse-papiers !",
-      "aboutTitle": "À propos des mises à jour du personnel",
-      "aboutDescription": "Le lien de mise à jour du personnel permet aux membres du personnel de consulter et de mettre à jour leurs informations sans se connecter. Partagez ce lien avec tous les membres du personnel qui doivent mettre à jour leurs informations.",
-      "securityNote": "Sécurité :",
-      "securityNoteDescription": "Ce lien utilise un jeton sécurisé qui est stocké dans la base de données. Seuls les administrateurs peuvent générer et accéder à ce lien."
+      "title": "Éditeur du personnel",
+      "save": "Enregistrer",
+      "unsavedChangesTitle": "Modifications non enregistrées",
+      "unsavedChangesText": "Vous avez des modifications non enregistrées. Si vous quittez maintenant, vos modifications seront perdues.",
+      "stayOnPage": "Rester sur la page",
+      "leaveWithoutSaving": "Quitter sans enregistrer"
     },
     "directoryPrint": {
       "title": "Bottin imprimable",
       "description": "Version imprimable du bottin scolaire pour impression professionnelle"
+    },
+    "auditLog": {
+      "title": "Journal d'audit",
+      "description": "Historique de toutes les actions administratives",
+      "filterSchoolYear": "Année scolaire",
+      "filterActionType": "Type d'action",
+      "filterEntityType": "Type",
+      "filterActor": "Rechercher par administrateur...",
+      "filterDateFrom": "Du",
+      "filterDateTo": "Au",
+      "clearFilters": "Effacer les filtres",
+      "noLogs": "Aucune entrée trouvée",
+      "allYears": "Toutes les années",
+      "headers": {
+        "timestamp": "Date",
+        "action": "Action",
+        "entityType": "Type",
+        "entityName": "Nom",
+        "actor": "Administrateur",
+        "schoolYear": "Année"
+      },
+      "entityTypes": {
+        "parent": "Parent",
+        "student": "Élève"
+      },
+      "actionTypes": {
+        "send_update_email": "Lien envoyé",
+        "opt_out_parent": "Parent retiré",
+        "remove_parent": "Parent supprimé",
+        "progress_student": "Élève progressé",
+        "graduate_student": "Élève diplômé",
+        "depart_student": "Élève parti",
+        "assign_class": "Classe assignée"
+      },
+      "actionTypeOptions": {
+        "all": "Toutes les actions"
+      },
+      "entityTypeOptions": {
+        "all": "Tous",
+        "parent": "Parents",
+        "student": "Élèves"
+      }
     }
   },
   "updateForm": {

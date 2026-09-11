@@ -13,6 +13,7 @@
         indeterminate
         size="64"
       />
+
       <div class="mt-4 text-center">
         {{ $i18n('map.loading') }}
       </div>

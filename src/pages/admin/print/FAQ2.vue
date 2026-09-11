@@ -6,6 +6,7 @@
 
     <div class="faq-item">
       <h3 class="question">Que fait-on si un enfant ne respecte pas les consignes ou a un comportement dérangeant?</h3>
+
       <div class="answer">
         <p>Vous avez le droit d'intervenir.</p>
         <p>Il y a plusieurs moyens selon la situation: faites asseoir l'élève/demandez-lui d'écouter/de se calmer/ramenez-le vers le sujet du projet/demandez à un autre élève d'aller chercher l'enseignant si nécessaire.</p>
@@ -17,6 +18,7 @@
 
     <div class="faq-item">
       <h3 class="question">Vers la fin de la période de coéducation – les 10 dernières minutes?</h3>
+
       <div class="answer">
         <p>Aidez les élèves à réfléchir sur ce qui a été fait et ce qui reste à faire (à la maison ou à la prochaine période, si nécessaire).</p>
         <p>Assurez-vous que les élèves ramassent le matériel.</p>
@@ -25,6 +27,7 @@
 
     <div class="faq-item">
       <h3 class="question">Que fait-on lorsque la période de coéducation est terminée?</h3>
+
       <div class="answer">
         <p>N'hésitez jamais à communiquer à l'enseignant, devant le ou les enfant(s), la liste des bons coups. Un peu de valorisation, ça peut faire beaucoup de bien!</p>
         <p>Si possible, partagez vos réflexions sur vos apprentissages et vos observations durant cette période, avec les parents et les enseignants.</p>

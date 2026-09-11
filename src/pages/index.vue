@@ -16,6 +16,7 @@
       <v-alert-title class="text-h5 mb-2">
         🎉 {{ $i18n('auth.emailVerifiedSuccessTitle') }}
       </v-alert-title>
+
       <div>{{ $i18n('auth.welcomeEmailVerified') }}</div>
     </v-alert>
 
@@ -66,10 +67,12 @@
               <h3 class="text-h5 font-weight-bold mb-2">{{ navItem.title }}</h3>
               <p class="text-body-2 text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
             </div>
+
             <div class="d-flex justify-center gap-3 flex-wrap">
               <v-chip v-if="!navItem.counts" :color="navItem.color" size="small" variant="outlined">
                 {{ navItem.count }} {{ navItem.countLabel }}
               </v-chip>
+
               <template v-else>
                 <v-chip
                   v-for="chipData in navItem.counts"
@@ -95,7 +98,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

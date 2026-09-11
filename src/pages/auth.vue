@@ -9,6 +9,7 @@
           indeterminate
           size="64"
         />
+
         <h3 class="text-h6 mb-2">{{ $i18n('auth.verifyingEmail') }}</h3>
         <p class="text-body-2 text-medium-emphasis">{{ $i18n('auth.pleaseWait') }}</p>
       </v-card>
@@ -29,6 +30,7 @@
           <v-alert-title class="text-h6">
             {{ $i18n('auth.emailVerifiedSuccess') }}
           </v-alert-title>
+
           <div class="mt-2">
             {{ $i18n('auth.emailVerifiedLoginPrompt') }}
           </div>
@@ -51,6 +53,7 @@
               <v-tab value="login">
                 {{ $i18n('auth.login') }}
               </v-tab>
+
               <v-tab value="register">
                 {{ $i18n('auth.register') }}
               </v-tab>

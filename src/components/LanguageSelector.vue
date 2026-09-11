@@ -25,6 +25,7 @@
         <template #prepend>
           <v-icon :color="language.color">{{ language.icon }}</v-icon>
         </template>
+
         <v-list-item-title>{{ language.name() }}</v-list-item-title>
         <v-list-item-subtitle>{{ language.nativeName() }}</v-list-item-subtitle>
       </v-list-item>
@@ -42,9 +43,9 @@
   // Get current locale reactively
   const locale = computed({
     get: () => bananaI18n.locale,
-    set: (value) => {
+    set: value => {
       bananaI18n.setLocale(value)
-    }
+    },
   })
 
   const languages = [

@@ -42,6 +42,7 @@
               <div class="d-flex flex-column flex-sm-row gap-4 mb-4">
                 <div v-if="parentProfile.email" class="d-flex align-center">
                   <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
+
                   <a
                     class="text-decoration-none"
                     :href="`mailto:${parentProfile.email}`"
@@ -52,6 +53,7 @@
 
                 <div v-if="parentProfile.phone" class="d-flex align-center">
                   <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
+
                   <a
                     class="text-decoration-none"
                     :href="`tel:${parentProfile.phone}`"
@@ -224,7 +226,6 @@
   import { getInterestNames } from '@/config/interests'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

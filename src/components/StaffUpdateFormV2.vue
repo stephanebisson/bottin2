@@ -19,6 +19,7 @@
         <div class="text-body-1">
           {{ $i18n('staffUpdate.welcome', $i18n('staff.title')) }}
         </div>
+
         <div class="text-body-2 mt-2">
           {{ $i18n('staffUpdate.instructions') }}
         </div>

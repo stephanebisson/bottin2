@@ -6,6 +6,7 @@
 
       <v-toolbar-title>
         <div>{{ conversationTitle }}</div>
+
         <div class="text-caption">
           {{ conversation.participantCount }} {{ $i18n('messages.participants') }}
         </div>
@@ -15,6 +16,7 @@
         <template #activator="{ props: menuProps }">
           <v-btn icon="mdi-dots-vertical" v-bind="menuProps" />
         </template>
+
         <v-list>
           <v-list-item @click="archiveConversation">
             <v-list-item-title>{{ $i18n('messages.archive') }}</v-list-item-title>
@@ -86,12 +88,14 @@
                   :class="{ 'text-white': isOwnMessage(message), 'opacity-70': true }"
                 >
                   <span>{{ formatTime(message.createdAt) }}</span>
+
                   <v-icon
                     v-if="isOwnMessage(message)"
                     class="ml-1"
                     :icon="message.readCount > 1 ? 'mdi-check-all' : 'mdi-check'"
                     size="16"
                   />
+
                   <span v-if="message.isEdited" class="ml-1">({{ $i18n('messages.edited') }})</span>
                 </div>
               </v-card>
@@ -122,6 +126,7 @@
 
     <!-- Message Input -->
     <v-divider />
+
     <div class="message-input pa-3">
       <v-textarea
         v-model="newMessageText"
@@ -152,6 +157,7 @@
         <div class="text-caption text-medium-emphasis">
           {{ $i18n('messages.enterToSend') }}
         </div>
+
         <div
           class="text-caption"
           :class="characterCountColor"
@@ -242,9 +248,9 @@
   })
 
   const canSend = computed(() => {
-    return newMessageText.value.trim().length > 0 &&
-      newMessageText.value.length <= 2000 &&
-      !sending.value
+    return newMessageText.value.trim().length > 0
+      && newMessageText.value.length <= 2000
+      && !sending.value
   })
 
   function isOwnMessage (message) {
@@ -376,7 +382,7 @@
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
+        snapshot => {
           messages.value = snapshot.docs
             .map(doc => {
               try {
@@ -394,7 +400,7 @@
           // Mark messages as read
           markMessagesAsRead()
         },
-        (err) => {
+        err => {
           console.error('Error loading messages:', err)
           loadingMessages.value = false
         },
@@ -423,7 +429,7 @@
     }
   }
 
-  watch(() => props.conversation?.id, (newId) => {
+  watch(() => props.conversation?.id, newId => {
     if (newId) {
       // Clean up previous listener
       if (unsubscribe) {

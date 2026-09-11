@@ -12,6 +12,7 @@
           indeterminate
           size="64"
         />
+
         <div class="mt-4 text-h6">
           Loading...
         </div>

@@ -28,6 +28,7 @@
     <div v-else-if="error" class="pa-4 text-center">
       <v-icon color="error" icon="mdi-alert-circle" size="48" />
       <p class="text-body-2 mt-2">{{ $i18n('messages.errorLoadingConversations') }}</p>
+
       <v-btn
         class="mt-2"
         color="primary"
@@ -59,6 +60,7 @@
           <span :class="{ 'font-weight-bold': conversation.hasUnreadMessages(props.currentUserEmail) }">
             {{ getConversationLabel(conversation) }}
           </span>
+
           <v-chip
             v-if="conversation.hasUnreadMessages(props.currentUserEmail)"
             class="ml-2"
@@ -85,9 +87,11 @@
     <!-- Empty State -->
     <div v-else class="flex-grow-1 d-flex flex-column align-center justify-center pa-8">
       <v-icon color="grey-lighten-1" icon="mdi-message-outline" size="64" />
+
       <p class="text-h6 text-medium-emphasis mt-4">
         {{ searchQuery ? $i18n('common.noResultsFound') : $i18n('messages.noConversations') }}
       </p>
+
       <p v-if="!searchQuery" class="text-body-2 text-medium-emphasis mt-2">
         {{ $i18n('messages.startChatting') }}
       </p>
@@ -236,7 +240,7 @@
 
       unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
+        snapshot => {
           conversations.value = snapshot.docs
             .map(doc => {
               try {
@@ -250,7 +254,7 @@
 
           loading.value = false
         },
-        (err) => {
+        err => {
           console.error('Error loading conversations:', err)
           error.value = true
           loading.value = false

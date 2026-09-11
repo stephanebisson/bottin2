@@ -130,8 +130,6 @@ export function formatPhoneInput (input, cursorPos = 0) {
   }
 
   let formatted = ''
-  let newCursorPos = cursorPos
-
   if (digits.length === 0) {
     return { value: '', cursorPos: 0 }
   }
@@ -164,7 +162,7 @@ export function formatPhoneInput (input, cursorPos = 0) {
     i++
   }
 
-  newCursorPos = i
+  const newCursorPos = i
 
   return { value: formatted, cursorPos: newCursorPos }
 }

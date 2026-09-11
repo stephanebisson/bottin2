@@ -29,6 +29,7 @@
               <v-icon>mdi-refresh</v-icon>
             </v-btn>
           </template>
+
           <span>{{ $i18n('common.refresh') }}</span>
         </v-tooltip>
       </template>
@@ -69,6 +70,7 @@
               <v-list-item-title class="font-weight-bold">
                 {{ currentUserFullName }}
               </v-list-item-title>
+
               <v-list-item-subtitle>
                 {{ authStore.userEmail }}
               </v-list-item-subtitle>
@@ -119,6 +121,7 @@
               <v-icon>mdi-account-outline</v-icon>
             </v-btn>
           </template>
+
           <span>{{ $i18n('auth.login') }}</span>
         </v-tooltip>
       </template>
@@ -190,7 +193,7 @@
     }
   })
 
-  function handleToggleMessaging() {
+  function handleToggleMessaging () {
     if (props.messagingShellRef?.toggleMessaging) {
       props.messagingShellRef.toggleMessaging()
     }

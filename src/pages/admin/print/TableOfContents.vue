@@ -2,6 +2,7 @@
   <PrintPage>
     <div class="toc">
       <h1 class="section-title">Table des matières</h1>
+
       <div class="toc-items">
         <div v-for="item in tocItems" :key="item.section" class="toc-item">
           <span class="toc-label" v-html="item.label" />
