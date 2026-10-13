@@ -6,7 +6,7 @@ import { generateParentId } from '@/utils/parentIdGenerator.js'
 /**
  * Parent Repository - Clean data access layer for parent operations
  * Handles all Firestore interactions and returns ParentDTO objects
- * Note: Parents use structured IDs: FirstName_LastName_ABC123 (see sheets-sync.js and migrate-parents-to-structured-id.js)
+ * Note: Parents use structured IDs: FirstName_LastName_ABC123 (see utils/parentIdGenerator.js)
  */
 export class ParentRepository {
   constructor () {

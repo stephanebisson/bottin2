@@ -141,7 +141,7 @@ export class StaffRepository {
 
   /**
    * Save staff member (create or update)
-   * Note: Uses email as document ID to match sheets-sync.js behavior
+   * Note: Uses email as document ID
    */
   async save (staffDTO) {
     if (!(staffDTO instanceof StaffDTO)) {

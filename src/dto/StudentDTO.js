@@ -1,7 +1,7 @@
 /**
  * Student Data Transfer Object
  * Handles data validation, transformation, and standardization for student records
- * Based on actual data structure from sheets-sync.js import script
+ * Based on the data structure originally imported from Google Sheets
  */
 export class StudentDTO {
   constructor (data = {}) {

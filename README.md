@@ -27,16 +27,11 @@ This application provides a complete school directory management system with:
 - **Firebase Cloud Functions** for server-side logic
 - **Firebase Hosting** for deployment
 
-### Data Sources
-- **Google Sheets integration** for data import/sync
-- **Automated data processing** from spreadsheets to Firestore
-
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js (v22+)
 - Firebase CLI
-- Google Cloud Service Account (for Sheets integration)
 
 ### Installation
 
@@ -72,27 +67,6 @@ This application provides a complete school directory management system with:
    # In another terminal, start the dev server
    pnpm dev
    ```
-
-## 📊 Data Management
-
-### Google Sheets Sync
-Sync data from Google Sheets to Firebase:
-
-```bash
-# Development (uses Firebase emulator)
-pnpm run sync:dev
-
-# Production (uses live Firebase)
-pnpm run sync:prod
-```
-
-### Required Sheet Structure
-The system expects Google Sheets with these collections:
-- **Students** - Student information with parent email links
-- **Parents** - Parent contact and family information  
-- **Staff** - School staff directory
-- **Classes** - Class assignments and teacher information
-- **Committees** - Committee structure and memberships
 
 ## 🔐 Authentication System
 
@@ -152,10 +126,6 @@ The system expects Google Sheets with these collections:
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your_project_id
-
-# Google Sheets Integration
-GOOGLE_SHEETS_ID=your_sheet_id
-GOOGLE_CLOUD_PROJECT_ID=your_project_id
 ```
 
 ### Firebase Functions Config
@@ -180,10 +150,6 @@ pnpm build
 
 # Deploy to Firebase
 pnpm deploy
-
-# Sync data from Google Sheets
-pnpm run sync:dev    # Development
-pnpm run sync:prod   # Production
 
 # Firebase Functions
 cd functions

@@ -59,12 +59,6 @@ The test suite covers the following high-priority algorithms:
   - Student data validation and sanitization
   - Parent relationship management
 
-### School Management Algorithms ⭐⭐
-- **Data Synchronization** (`scripts/sheets-sync.test.js`)
-  - Google Sheets to Firestore transformation logic
-  - Parent-student lookup algorithms
-  - Committee membership parsing
-
 ## Test Structure
 
 Tests follow these principles:
@@ -91,8 +85,6 @@ src/
 ├── dto/
 │   ├── ParentDTO.test.js           # Parent business logic tests
 │   └── StudentDTO.test.js          # Student business logic tests
-scripts/
-└── sheets-sync.test.js            # Data synchronization tests
 ```
 
 ## Benefits

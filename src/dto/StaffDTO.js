@@ -1,7 +1,7 @@
 /**
  * Staff Data Transfer Object
  * Handles data validation, transformation, and standardization for staff records
- * Based on actual data structure from sheets-sync.js import script
+ * Based on the data structure originally imported from Google Sheets
  */
 export class StaffDTO {
   constructor (data = {}) {
