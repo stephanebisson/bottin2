@@ -574,6 +574,7 @@
       "filterEmailStatus": "Courriel",
       "filterSubmitted": "Soumis",
       "filterOptedOut": "Retirés seulement",
+      "filterNoChildren": "Sans enfant seulement",
       "xSelected": "$1 parent(s) sélectionné(s)",
       "sendEmail": "Envoyer le lien de mise à jour",
       "markOptedOut": "Marquer comme retiré",

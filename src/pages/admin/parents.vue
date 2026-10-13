@@ -115,13 +115,21 @@
             />
           </v-col>
 
-          <v-col class="d-flex align-center" cols="6" sm="2">
+          <v-col class="d-flex flex-column justify-center" cols="6" sm="2">
             <v-switch
               v-model="filterOptedOut"
               color="warning"
               density="compact"
               hide-details
               :label="$i18n('admin.parentsTable.filterOptedOut')"
+            />
+
+            <v-switch
+              v-model="filterNoChildren"
+              color="warning"
+              density="compact"
+              hide-details
+              :label="$i18n('admin.parentsTable.filterNoChildren')"
             />
           </v-col>
         </v-row>
@@ -558,6 +566,7 @@
   const filterEmailStatus = ref('all')
   const filterSubmitted = ref('all')
   const filterOptedOut = ref(false)
+  const filterNoChildren = ref(false)
 
   // Logs
   const parentLogs = ref(new Map())
@@ -715,6 +724,10 @@
 
     if (filterOptedOut.value) {
       result = result.filter(p => p.optedOut)
+    }
+
+    if (filterNoChildren.value) {
+      result = result.filter(p => !p.childrenInfo?.length)
     }
 
     return result

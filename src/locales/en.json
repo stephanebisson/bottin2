@@ -567,6 +567,7 @@
       "filterEmailStatus": "Email",
       "filterSubmitted": "Submitted",
       "filterOptedOut": "Opted out only",
+      "filterNoChildren": "No children only",
       "xSelected": "$1 parent(s) selected",
       "sendEmail": "Send update link",
       "markOptedOut": "Mark as opted out",
