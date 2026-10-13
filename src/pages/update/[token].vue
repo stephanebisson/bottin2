@@ -210,9 +210,7 @@
                 >
                   <template #label>
                     <span
-                      v-html="$i18n('updateForm.confirmOtherParentAddress', {
-                        fullName: `<strong>${otherParentInfo.fullName}</strong>`
-                      })"
+                      v-html="$i18n('updateForm.confirmOtherParentAddress', otherParentNameHtml)"
                     />
                   </template>
                 </v-checkbox>
@@ -387,6 +385,13 @@
   const availableInterests = ref([])
   const otherParentHasAddress = ref(false)
   const otherParentInfo = ref(null)
+
+  // Escaped because it is rendered with v-html
+  const otherParentNameHtml = computed(() => {
+    const name = otherParentInfo.value?.fullName || ''
+    const escaped = name.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' })[c])
+    return `<strong>${escaped}</strong>`
+  })
   const formRef = ref(null)
   const showOptOutDialog = ref(false)
   const optingOut = ref(false)
