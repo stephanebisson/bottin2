@@ -1,8 +1,7 @@
-const admin = require('firebase-admin')
-const { FieldValue } = require('firebase-admin/firestore')
+const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const { getCurrentSchoolYear } = require('./schoolYear')
 
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Write an audit log entry to /actionLogs.

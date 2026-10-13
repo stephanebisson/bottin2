@@ -1,7 +1,7 @@
-const admin = require('firebase-admin')
+const { initializeApp } = require('firebase-admin/app')
 
 // Initialize Firebase Admin
-admin.initializeApp()
+initializeApp()
 
 const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminManagement')
 // Import all functions from separate modules

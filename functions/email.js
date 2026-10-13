@@ -1,6 +1,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
-const admin = require('firebase-admin')
+const { getAuth } = require('firebase-admin/auth')
+const { getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const nodemailer = require('nodemailer')
 const { FUNCTIONS_REGION, SIMULATE_EMAILS, EMAIL_SIMULATION_DELAY_MS } = require('./config')
@@ -15,7 +16,7 @@ const EMAIL_CONFIG = {
 }
 
 // Get Firestore instance
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Email configuration and templates
@@ -128,7 +129,7 @@ exports.sendParentUpdateEmail = onRequest({
     const idToken = authHeader.split('Bearer ', 2)[1]
     let decodedToken
     try {
-      decodedToken = await admin.auth().verifyIdToken(idToken)
+      decodedToken = await getAuth().verifyIdToken(idToken)
     } catch {
       return res.status(401).json({ error: 'Unauthorized: Invalid token' })
     }

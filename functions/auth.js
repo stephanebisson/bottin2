@@ -1,4 +1,4 @@
-const admin = require('firebase-admin')
+const { getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
@@ -6,7 +6,7 @@ const { validateFunctionData } = require('./middleware/validation')
 const { emailValidationSchema } = require('./validators/schemas')
 
 // Get Firestore instance
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Retry helper for Firestore queries with exponential backoff

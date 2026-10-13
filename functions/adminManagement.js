@@ -1,12 +1,12 @@
-const admin = require('firebase-admin')
-const { FieldValue } = require('firebase-admin/firestore')
+const { getAuth } = require('firebase-admin/auth')
+const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 const { validateCallableData } = require('./middleware/validation')
 const { setAdminClaimSchema } = require('./validators/schemas')
 
 // Get Firestore instance
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Set admin custom claim for a user
@@ -43,13 +43,13 @@ exports.setAdminClaimV2 = onCall({
     // Get user to verify they exist
     let targetUser
     try {
-      targetUser = await admin.auth().getUser(uid)
+      targetUser = await getAuth().getUser(uid)
     } catch {
       throw new HttpsError('not-found', 'User not found')
     }
 
     // Set the admin custom claim
-    await admin.auth().setCustomUserClaims(uid, {
+    await getAuth().setCustomUserClaims(uid, {
       admin: isAdmin,
       adminSetAt: new Date().toISOString(),
       adminSetBy: request.auth.uid,
@@ -94,7 +94,7 @@ exports.getAdminStatusV2 = onCall({
     }
 
     // Force token refresh to get latest claims
-    const user = await admin.auth().getUser(request.auth.uid)
+    const user = await getAuth().getUser(request.auth.uid)
     const customClaims = user.customClaims || {}
 
     return {
@@ -128,7 +128,7 @@ exports.listAdminsV2 = onCall({
     let nextPageToken
 
     do {
-      const listUsersResult = await admin.auth().listUsers(1000, nextPageToken)
+      const listUsersResult = await getAuth().listUsers(1000, nextPageToken)
 
       for (const user of listUsersResult.users) {
         if (user.customClaims?.admin) {
@@ -162,7 +162,7 @@ async function checkInitialSetup () {
     let nextPageToken
 
     do {
-      const listUsersResult = await admin.auth().listUsers(1000, nextPageToken)
+      const listUsersResult = await getAuth().listUsers(1000, nextPageToken)
 
       for (const user of listUsersResult.users) {
         if (user.customClaims?.admin) {

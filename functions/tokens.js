@@ -1,8 +1,7 @@
 const crypto = require('node:crypto')
-const admin = require('firebase-admin')
-const { FieldValue } = require('firebase-admin/firestore')
+const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 
-const db = admin.firestore()
+const db = getFirestore()
 
 function generateToken () {
   return crypto.randomBytes(32).toString('hex')

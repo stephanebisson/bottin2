@@ -1,5 +1,5 @@
-const admin = require('firebase-admin')
-const { FieldValue } = require('firebase-admin/firestore')
+const { getAuth } = require('firebase-admin/auth')
+const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
@@ -7,7 +7,7 @@ const { validateFunctionData } = require('./middleware/validation')
 const { tokenValidationSchema, parentUpdateSchema, parentOptOutSchema } = require('./validators/schemas')
 
 // Get Firestore instance
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Validate update token and return parent information
@@ -348,7 +348,7 @@ exports.processParentUpdateV2 = onRequest({
     // Check if user already has an account
     let hasAccount = false
     try {
-      await admin.auth().getUserByEmail(existingParentData.email)
+      await getAuth().getUserByEmail(existingParentData.email)
       hasAccount = true
     } catch {
       // User doesn't exist, which is fine
@@ -474,7 +474,7 @@ exports.processParentOptOutV2 = onRequest({
     // Check if user has an account
     let hasAccount = false
     try {
-      await admin.auth().getUserByEmail(parentEmail)
+      await getAuth().getUserByEmail(parentEmail)
       hasAccount = true
     } catch {
       hasAccount = false

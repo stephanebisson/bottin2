@@ -1,10 +1,10 @@
-const admin = require('firebase-admin')
-const { FieldValue } = require('firebase-admin/firestore')
+const { getAuth } = require('firebase-admin/auth')
+const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 
 // Get Firestore instance
-const db = admin.firestore()
+const db = getFirestore()
 
 /**
  * Update committee members
@@ -29,7 +29,7 @@ exports.updateCommitteeMembersV2 = onRequest({
     const idToken = authHeader.split('Bearer ', 2)[1]
 
     // Verify the ID token and get user claims
-    const decodedToken = await admin.auth().verifyIdToken(idToken)
+    const decodedToken = await getAuth().verifyIdToken(idToken)
 
     // Check if caller is an admin
     if (!decodedToken.admin) {
