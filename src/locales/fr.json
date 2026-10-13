@@ -15,6 +15,14 @@
     "staff": "Personnel",
     "committees": "Comités",
     "about": "À propos",
+    "adminMenu": {
+      "logs": "Journal",
+      "parents": "Parents",
+      "students": "Élèves",
+      "staff": "Personnel",
+      "print": "Impression",
+      "feedback": "Commentaires"
+    },
     "profile": "Mon Profil",
     "schoolDirectory": "Bottin Étoile filante",
     "schoolDirectorySystem": "Bottin en ligne",
@@ -470,10 +478,10 @@
     "parentInfo": "Information des parents",
     "existingParent": "Parent existant",
     "parentsDirectory": {
-      "title": "Répertoire des Parents",
+      "title": "Répertoire des parents",
       "description": "Voir et gérer tous les parents du système avec leurs enfants associés.",
       "viewAllParents": "Voir Tous les Parents",
-      "summary": "Aperçu du Répertoire des Parents",
+      "summary": "Aperçu du répertoire des parents",
       "totalParents": "$1 parents au total",
       "allParents": "Tous les Parents",
       "children": "Enfants",
@@ -496,7 +504,7 @@
       }
     },
     "studentsTable": {
-      "title": "Répertoire des Élèves",
+      "title": "Répertoire des élèves",
       "description": "Voir tous les élèves avec leurs informations de classe et parents",
       "viewAllStudents": "Voir Tous les Élèves",
       "tableTitle": "Tous les Élèves",

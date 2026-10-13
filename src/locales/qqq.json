@@ -20,6 +20,14 @@
     "directory": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "staff": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "committees": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
+    "adminMenu": {
+      "logs": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
+      "parents": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
+      "students": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
+      "staff": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
+      "print": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
+      "feedback": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)"
+    },
     "about": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "profile": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "schoolDirectory": "Navigation menu item. - French: Use sentence case (capitalize first word only)",

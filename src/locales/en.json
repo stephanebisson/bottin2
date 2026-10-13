@@ -15,6 +15,14 @@
     "staff": "Staff",
     "committees": "Committees",
     "about": "About",
+    "adminMenu": {
+      "logs": "Log",
+      "parents": "Parents",
+      "students": "Students",
+      "staff": "Staff",
+      "print": "Print",
+      "feedback": "Feedback"
+    },
     "profile": "My Profile",
     "schoolDirectory": "Bottin Étoile filante",
     "schoolDirectorySystem": "Online school directory",
@@ -651,6 +659,10 @@
       "unsavedChangesText": "You have unsaved changes. If you leave now, your changes will be lost.",
       "stayOnPage": "Stay on page",
       "leaveWithoutSaving": "Leave without saving"
+    },
+    "directoryPrint": {
+      "title": "Printable directory",
+      "description": "Printable version of the school directory for professional printing"
     },
     "auditLog": {
       "title": "Audit log",

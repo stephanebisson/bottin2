@@ -204,32 +204,32 @@
         icon: 'mdi-cog',
         children: [
           {
-            title: $i18n('admin.auditLog.title'),
+            title: $i18n('nav.adminMenu.logs'),
             icon: 'mdi-history',
             to: '/admin/logs',
           },
           {
-            title: $i18n('admin.parentsDirectory.title'),
+            title: $i18n('nav.adminMenu.parents'),
             icon: 'mdi-account-heart-outline',
             to: '/admin/parents',
           },
           {
-            title: $i18n('admin.studentsTable.title'),
+            title: $i18n('nav.adminMenu.students'),
             icon: 'mdi-account-school-outline',
             to: '/admin/students',
           },
           {
-            title: $i18n('admin.staffUpdate.title'),
+            title: $i18n('nav.adminMenu.staff'),
             icon: 'mdi-account-tie-outline',
             to: '/admin/staff-update',
           },
           {
-            title: $i18n('admin.directoryPrint.title'),
+            title: $i18n('nav.adminMenu.print'),
             icon: 'mdi-printer',
             to: '/admin/print',
           },
           {
-            title: $i18n('feedback.admin.title'),
+            title: $i18n('nav.adminMenu.feedback'),
             icon: 'mdi-message-text',
             to: '/admin/feedback',
           },
