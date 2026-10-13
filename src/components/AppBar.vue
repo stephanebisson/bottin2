@@ -4,7 +4,7 @@
     :class="{ 'mobile-app-bar': mobile }"
     color="primary"
     dark
-    elevation="2"
+    elevation="1"
   >
     <v-app-bar-nav-icon @click="$emit('toggle-drawer')" />
 

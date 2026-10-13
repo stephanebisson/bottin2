@@ -19,15 +19,15 @@
           </v-icon>
 
           <div>
-            <div class="text-h6 font-weight-bold">
+            <div class="text-title-large font-weight-bold">
               {{ hasChanges ? 'Modifications non enregistrées' : 'Tout est enregistré' }}
             </div>
 
-            <div v-if="hasChanges" class="text-body-2">
+            <div v-if="hasChanges" class="text-body-medium">
               {{ changeCount }} {{ changeCount === 1 ? 'modification' : 'modifications' }} en attente
             </div>
 
-            <div v-else class="text-body-2">
+            <div v-else class="text-body-medium">
               Toutes les modifications ont été enregistrées
             </div>
           </div>

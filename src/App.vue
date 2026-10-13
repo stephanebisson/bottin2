@@ -13,7 +13,7 @@
           size="64"
         />
 
-        <div class="mt-4 text-h6">
+        <div class="mt-4 text-title-large">
           Loading...
         </div>
       </div>
@@ -48,6 +48,12 @@
 </script>
 
 <style>
+  /* Restore the spacing reset Vuetify 3 applied globally (dropped in v4) */
+  @layer vuetify-core.reset {
+    ul, ol, figure, details, summary { padding: 0; margin: 0; }
+    h1, h2, h3, h4, h5, h6, p { margin: 0; }
+  }
+
   /* Hide Firebase emulator warning globally */
   .firebase-emulator-warning,
   [class*="firebase-emulator"],

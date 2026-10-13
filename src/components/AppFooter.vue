@@ -1,6 +1,6 @@
 <template>
   <v-footer class="footer-compact d-flex align-center justify-center px-4 py-2">
-    <div class="d-flex align-center text-caption text-disabled">
+    <div class="d-flex align-center text-body-small text-disabled">
       <span v-html="$i18n('footer.copyright')" />
       <span class="mx-2">•</span>
 
@@ -32,7 +32,7 @@
 }
 
 .game-link {
-  color: rgba(var(--v-theme-on-surface), 0.38);
+  color: rgb(var(--v-theme-on-surface) / 0.38);
   text-decoration: none;
   transition: all 0.2s ease;
   opacity: 0.6;

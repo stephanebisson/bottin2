@@ -1,11 +1,11 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleReset">
-    <v-card-title class="text-h5 text-center pb-2">
+    <v-card-title class="text-headline-small text-center pb-2">
       {{ $i18n('auth.resetPassword') }}
     </v-card-title>
 
     <v-card-text>
-      <p class="text-body-2 text-grey-darken-1 mb-4">
+      <p class="text-body-medium text-grey-darken-1 mb-4">
         {{ $i18n('auth.resetPasswordInstructions') }}
       </p>
 

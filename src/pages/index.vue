@@ -7,13 +7,13 @@
       border-color="success"
       class="mb-6"
       closable
-      elevation="2"
+      elevation="1"
       icon="mdi-check-circle"
       prominent
       type="success"
       @click:close="showWelcomeMessage = false"
     >
-      <v-alert-title class="text-h5 mb-2">
+      <v-alert-title class="text-headline-small mb-2">
         🎉 {{ $i18n('auth.emailVerifiedSuccessTitle') }}
       </v-alert-title>
 
@@ -22,14 +22,14 @@
 
     <!-- Header Section -->
     <div class="text-center mb-8">
-      <h1 class="text-h3 font-weight-bold mb-2">{{ $i18n('nav.schoolDirectory') }}</h1>
-      <p class="text-h6 text-grey-darken-1">{{ $i18n('dashboard.welcome') }}</p>
+      <h1 class="text-display-medium font-weight-bold mb-2">{{ $i18n('nav.schoolDirectory') }}</h1>
+      <p class="text-title-large text-grey-darken-1">{{ $i18n('dashboard.welcome') }}</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="firebaseStore.loading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('dashboard.loadingData') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('dashboard.loadingData') }}</p>
     </div>
 
     <!-- Error State -->
@@ -57,15 +57,15 @@
         >
           <v-card
             class="navigation-card pa-6 text-center d-flex flex-column"
-            elevation="2"
+            elevation="1"
             hover
             style="cursor: pointer; height: 100%; width: 100%;"
             @click="navigateTo(navItem.route)"
           >
             <div class="d-flex flex-column align-center flex-grow-1">
               <v-icon class="mb-4" :color="navItem.color" size="64">{{ navItem.icon }}</v-icon>
-              <h3 class="text-h5 font-weight-bold mb-2">{{ navItem.title }}</h3>
-              <p class="text-body-2 text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
+              <h3 class="text-headline-small font-weight-bold mb-2">{{ navItem.title }}</h3>
+              <p class="text-body-medium text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
             </div>
 
             <div class="d-flex justify-center gap-3 flex-wrap">

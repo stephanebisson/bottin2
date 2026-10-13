@@ -1,20 +1,20 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.auditLog.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.auditLog.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-1 text-grey-darken-1 mt-2">
+      <p class="text-body-large text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <div class="mt-6">
-        <p class="text-body-2 text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -31,7 +31,7 @@
 
     <div v-else>
       <!-- Filter Bar -->
-      <v-row class="mb-4" dense>
+      <v-row class="mb-4" density="compact">
         <v-col cols="6" sm="2">
           <v-select
             v-model="filterYear"
@@ -116,7 +116,7 @@
         >
           <!-- Timestamp Column -->
           <template #item.timestamp="{ item }">
-            <span class="text-body-2 text-no-wrap">{{ formatDateTime(item.timestamp) }}</span>
+            <span class="text-body-medium text-no-wrap">{{ formatDateTime(item.timestamp) }}</span>
           </template>
 
           <!-- Action Column -->
@@ -132,7 +132,7 @@
 
           <!-- Entity Type Column -->
           <template #item.entityType="{ item }">
-            <span class="text-body-2">
+            <span class="text-body-medium">
               {{ $i18n(`admin.auditLog.entityTypes.${item.entityType}`) || item.entityType }}
             </span>
           </template>

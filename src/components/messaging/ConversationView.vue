@@ -7,7 +7,7 @@
       <v-toolbar-title>
         <div>{{ conversationTitle }}</div>
 
-        <div class="text-caption">
+        <div class="text-body-small">
           {{ conversation.participantCount }} {{ $i18n('messages.participants') }}
         </div>
       </v-toolbar-title>
@@ -58,7 +58,7 @@
               :color="getAvatarColor(message.senderId)"
               size="32"
             >
-              <span class="text-caption">{{ getInitials(message.senderName) }}</span>
+              <span class="text-body-small">{{ getInitials(message.senderName) }}</span>
             </v-avatar>
 
             <!-- Message Content -->
@@ -66,7 +66,7 @@
               <!-- Sender Name (in group chats only) -->
               <div
                 v-if="!isOwnMessage(message) && !conversation.isDirect"
-                class="text-caption font-weight-bold mb-1"
+                class="text-body-small font-weight-bold mb-1"
               >
                 {{ message.senderName }}
               </div>
@@ -78,13 +78,13 @@
                 elevation="1"
                 rounded="lg"
               >
-                <div class="text-body-2" :class="{ 'text-white': isOwnMessage(message) }">
+                <div class="text-body-medium" :class="{ 'text-white': isOwnMessage(message) }">
                   {{ message.text }}
                 </div>
 
                 <!-- Timestamp & Status -->
                 <div
-                  class="d-flex align-center justify-end mt-1 text-caption"
+                  class="d-flex align-center justify-end mt-1 text-body-small"
                   :class="{ 'text-white': isOwnMessage(message), 'opacity-70': true }"
                 >
                   <span>{{ formatTime(message.createdAt) }}</span>
@@ -107,8 +107,8 @@
       <!-- No Messages -->
       <div v-else class="text-center pa-8">
         <v-icon color="grey-lighten-1" icon="mdi-message-outline" size="64" />
-        <p class="text-body-1 text-medium-emphasis mt-4">{{ $i18n('messages.noMessages') }}</p>
-        <p class="text-caption text-medium-emphasis">{{ $i18n('messages.startChatting') }}</p>
+        <p class="text-body-large text-medium-emphasis mt-4">{{ $i18n('messages.noMessages') }}</p>
+        <p class="text-body-small text-medium-emphasis">{{ $i18n('messages.startChatting') }}</p>
       </div>
 
       <!-- Scroll to Bottom Button -->
@@ -154,12 +154,12 @@
       </v-textarea>
 
       <div class="d-flex justify-space-between mt-1">
-        <div class="text-caption text-medium-emphasis">
+        <div class="text-body-small text-medium-emphasis">
           {{ $i18n('messages.enterToSend') }}
         </div>
 
         <div
-          class="text-caption"
+          class="text-body-small"
           :class="characterCountColor"
         >
           {{ $i18n('messages.characterCount', characterCount, 2000) }}

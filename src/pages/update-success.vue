@@ -1,6 +1,6 @@
 <template>
   <v-container class="py-12">
-    <v-row justify="center">
+    <v-row class="justify-center">
       <v-col cols="12" lg="6" md="8">
         <v-card>
           <v-card-text class="text-center pa-8">
@@ -8,12 +8,12 @@
             <v-icon color="success" size="80">mdi-check-circle</v-icon>
 
             <!-- Success Title -->
-            <h2 class="text-h4 font-weight-bold mt-4 mb-2 text-success">
+            <h2 class="text-headline-large font-weight-bold mt-4 mb-2 text-success">
               {{ $i18n('updateSuccess.title') }}
             </h2>
 
             <!-- Thank You Message -->
-            <p class="text-body-1 mb-6">
+            <p class="text-body-large mb-6">
               {{ $i18n('updateSuccess.message') }}
             </p>
 
@@ -25,11 +25,11 @@
                 icon="mdi-account-clock"
                 variant="tonal"
               >
-                <div class="text-body-1 font-weight-medium mb-2">
+                <div class="text-body-large font-weight-medium mb-2">
                   {{ $i18n('updateSuccess.createAccountTitle') }}
                 </div>
 
-                <div class="text-body-2">
+                <div class="text-body-medium">
                   {{ $i18n('updateSuccess.createAccountMessage') }}
                 </div>
               </v-alert>
@@ -53,7 +53,7 @@
                 icon="mdi-account-check"
                 variant="tonal"
               >
-                <div class="text-body-1">
+                <div class="text-body-large">
                   {{ $i18n('updateSuccess.accountExists') }}
                 </div>
               </v-alert>
@@ -71,7 +71,7 @@
             <!-- Additional Information -->
             <v-divider class="my-6" />
 
-            <div class="text-body-2 text-grey-darken-1">
+            <div class="text-body-medium text-grey-darken-1">
               <p class="mb-2">
                 {{ $i18n('updateSuccess.nextSteps') }}
               </p>
@@ -90,7 +90,7 @@
               icon="mdi-help-circle"
               variant="flat"
             >
-              <div class="text-body-2">
+              <div class="text-body-medium">
                 {{ $i18n('updateSuccess.questions') }}
               </div>
             </v-alert>

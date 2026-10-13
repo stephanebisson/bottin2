@@ -11,15 +11,15 @@
           {{ $i18n('admin.backToAdminDashboard') }}
         </v-btn>
 
-        <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.staffUpdate.title') }}</h1>
+        <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.staffUpdate.title') }}</h1>
       </div>
     </div>
 
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-1 text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
-      <p class="text-body-2 text-grey mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <p class="text-body-large text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
+      <p class="text-body-medium text-grey mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
 
       <v-btn class="mt-4" variant="outlined" @click="checkAdminStatus">
         {{ $i18n('admin.refreshAdminStatus') }}

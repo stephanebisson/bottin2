@@ -1,8 +1,8 @@
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height d-flex align-center flex-wrap" fluid>
     <!-- Loading overlay for email verification processing -->
     <v-overlay v-model="processingVerification" class="align-center justify-center" persistent>
-      <v-card class="pa-6 text-center" elevation="10">
+      <v-card class="pa-6 text-center" elevation="3">
         <v-progress-circular
           class="mb-4"
           color="primary"
@@ -10,12 +10,12 @@
           size="64"
         />
 
-        <h3 class="text-h6 mb-2">{{ $i18n('auth.verifyingEmail') }}</h3>
-        <p class="text-body-2 text-medium-emphasis">{{ $i18n('auth.pleaseWait') }}</p>
+        <h3 class="text-title-large mb-2">{{ $i18n('auth.verifyingEmail') }}</h3>
+        <p class="text-body-medium text-medium-emphasis">{{ $i18n('auth.pleaseWait') }}</p>
       </v-card>
     </v-overlay>
 
-    <v-row align="center" justify="center">
+    <v-row class="align-center justify-center">
       <v-col cols="12" lg="4" md="6" sm="8">
         <!-- Email Verification Success Alert -->
         <v-alert
@@ -27,7 +27,7 @@
           type="success"
           @click:close="showEmailVerifiedSuccess = false"
         >
-          <v-alert-title class="text-h6">
+          <v-alert-title class="text-title-large">
             {{ $i18n('auth.emailVerifiedSuccess') }}
           </v-alert-title>
 

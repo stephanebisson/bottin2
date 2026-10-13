@@ -5,7 +5,7 @@
       'staff-card--modified': isModified,
       'staff-card--new': staff._isNew
     }"
-    elevation="2"
+    elevation="1"
   >
     <v-card-text>
       <!-- Title Field -->

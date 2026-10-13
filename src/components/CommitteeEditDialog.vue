@@ -36,7 +36,7 @@
         <!-- Current Members -->
         <div class="mb-6">
           <div class="d-flex align-center justify-space-between mb-4">
-            <h3 class="text-h6">{{ $i18n('committees.currentMembers') }}</h3>
+            <h3 class="text-title-large">{{ $i18n('committees.currentMembers') }}</h3>
 
             <v-btn
               color="primary"
@@ -60,7 +60,7 @@
                 <div class="d-flex align-center gap-3">
                   <div>
                     <div class="font-weight-medium">{{ member.fullName || member.email }}</div>
-                    <div class="text-body-2 text-grey-darken-1">{{ member.email }}</div>
+                    <div class="text-body-medium text-grey-darken-1">{{ member.email }}</div>
                   </div>
 
                   <v-chip
@@ -108,7 +108,7 @@
         <!-- Add Member Section -->
         <v-expand-transition>
           <v-card v-if="showAddMember" class="pa-4 bg-grey-lighten-4" variant="outlined">
-            <h4 class="text-h6 mb-3 text-grey-darken-3">{{ $i18n('committees.addNewMember') }}</h4>
+            <h4 class="text-title-large mb-3 text-grey-darken-3">{{ $i18n('committees.addNewMember') }}</h4>
 
             <v-row>
               <v-col cols="12" md="6">

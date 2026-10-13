@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <v-row justify="center">
+    <v-row class="justify-center">
       <v-col cols="12" lg="6" md="8">
         <!-- Page Header -->
         <div class="text-center mb-6">
           <v-icon class="mb-4" color="primary" size="64">mdi-message-text</v-icon>
 
-          <h1 class="text-h4 font-weight-bold mb-2">
+          <h1 class="text-headline-large font-weight-bold mb-2">
             {{ $i18n('feedback.title') }}
           </h1>
 
-          <p class="text-body-1 text-grey-darken-1">
+          <p class="text-body-large text-grey-darken-1">
             {{ $i18n('feedback.description') }}
           </p>
         </div>
@@ -18,7 +18,7 @@
         <!-- Loading State -->
         <div v-if="loading" class="text-center py-12">
           <v-progress-circular color="primary" indeterminate size="64" />
-          <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
+          <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
         </div>
 
         <!-- Success Message -->

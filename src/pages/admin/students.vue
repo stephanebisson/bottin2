@@ -1,14 +1,14 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.studentsTable.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.studentsTable.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-1 text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <p class="text-body-large text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
     </div>
 
     <div v-else>
@@ -25,7 +25,7 @@
       </v-alert>
 
       <!-- Filter Bar -->
-      <v-row class="mb-4" dense>
+      <v-row class="mb-4" density="compact">
         <v-col cols="12" sm="4">
           <v-text-field
             v-model="searchQuery"
@@ -83,7 +83,7 @@
         density="compact"
         flat
       >
-        <v-toolbar-title class="text-body-2 font-weight-medium">
+        <v-toolbar-title class="text-body-medium font-weight-medium">
           {{ $i18n('admin.studentsTable.xSelected', selectedIds.length) }}
         </v-toolbar-title>
 
@@ -122,7 +122,7 @@
         <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
           <span>
             {{ $i18n('admin.studentsTable.tableTitle') }}
-            <span class="text-body-2 text-grey-darken-1 ml-2">
+            <span class="text-body-medium text-grey-darken-1 ml-2">
               {{ $i18n('admin.studentsTable.totalStudents', filteredStudents.length) }}
             </span>
           </span>
@@ -200,7 +200,7 @@
               style="min-width: 140px"
               variant="outlined"
             >
-              <template #selection="{ item: sel }">
+              <template #selection="{ internalItem: sel }">
                 <span class="font-weight-medium">{{ sel.title }}</span>
               </template>
             </v-select>
@@ -230,7 +230,7 @@
               style="min-width: 70px"
               variant="outlined"
             >
-              <template #selection="{ item: sel }">
+              <template #selection="{ internalItem: sel }">
                 <span class="font-weight-medium">{{ sel.title }}</span>
               </template>
             </v-select>
@@ -267,8 +267,8 @@
             </div>
 
             <div v-else class="d-flex flex-column">
-              <span v-if="item.parent1_id" class="text-body-2 mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
-              <span v-if="item.parent2_id" class="text-body-2">{{ getParentDisplayName(item.parent2_id) }}</span>
+              <span v-if="item.parent1_id" class="text-body-medium mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
+              <span v-if="item.parent2_id" class="text-body-medium">{{ getParentDisplayName(item.parent2_id) }}</span>
 
               <span v-if="!item.parent1_id && !item.parent2_id" class="text-grey-darken-1 font-italic">
                 {{ $i18n('admin.studentsTable.noParent') }}
@@ -335,7 +335,7 @@
           <template #no-data>
             <div class="text-center pa-12">
               <v-icon color="grey-lighten-1" size="64">mdi-school-outline</v-icon>
-              <p class="text-h6 mt-4 text-grey-darken-1">{{ $i18n('admin.studentsTable.noStudents') }}</p>
+              <p class="text-title-large mt-4 text-grey-darken-1">{{ $i18n('admin.studentsTable.noStudents') }}</p>
             </div>
           </template>
         </v-data-table>
@@ -481,30 +481,30 @@
         <v-card-title class="bg-error text-white">
           <div class="d-flex align-center">
             <v-icon class="mr-2" color="white" size="large">mdi-alert-circle</v-icon>
-            <span class="text-h5">{{ $i18n('admin.parentsDirectory.confirmDeleteStudent') }}</span>
+            <span class="text-headline-small">{{ $i18n('admin.parentsDirectory.confirmDeleteStudent') }}</span>
           </div>
         </v-card-title>
 
         <v-card-text class="pt-6">
           <v-alert class="mb-4" color="error" icon="mdi-alert" variant="tonal">
-            <div class="text-body-1 font-weight-bold mb-2">
+            <div class="text-body-large font-weight-bold mb-2">
               {{ $i18n('admin.parentsDirectory.deleteStudentWarning') }}
             </div>
           </v-alert>
 
           <div v-if="studentToDelete" class="mb-4">
-            <div class="text-h6 mb-2">{{ studentToDelete.fullName }}</div>
+            <div class="text-title-large mb-2">{{ studentToDelete.fullName }}</div>
 
-            <div class="text-body-2 text-grey-darken-1">
+            <div class="text-body-medium text-grey-darken-1">
               {{ studentToDelete.displayLevel }} - {{ studentToDelete.className }}
             </div>
           </div>
 
-          <p class="text-body-1 mb-4">{{ $i18n('admin.parentsDirectory.deleteStudentExplanation') }}</p>
+          <p class="text-body-large mb-4">{{ $i18n('admin.parentsDirectory.deleteStudentExplanation') }}</p>
           <v-divider class="my-4" />
 
           <div class="mb-4">
-            <p class="text-body-1 font-weight-bold mb-2">
+            <p class="text-body-large font-weight-bold mb-2">
               {{ $i18n('admin.parentsDirectory.deleteStudentConfirmation') }}
             </p>
 

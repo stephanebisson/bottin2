@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-1 text-grey-darken-1 mt-2">
+      <p class="text-body-large text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
-        <p class="text-body-2 text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -39,9 +39,9 @@
             <v-icon class="mr-4" size="48">mdi-shield-account</v-icon>
 
             <div>
-              <h2 class="text-h5 font-weight-bold">{{ $i18n('admin.welcomeTitle') }}</h2>
+              <h2 class="text-headline-small font-weight-bold">{{ $i18n('admin.welcomeTitle') }}</h2>
 
-              <p class="text-body-1 mt-2">
+              <p class="text-body-large mt-2">
                 {{ $i18n('admin.welcomeDescription') }}
               </p>
             </div>
@@ -60,9 +60,9 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-history</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.auditLog.title') }}</h3>
+              <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.auditLog.title') }}</h3>
 
-              <p class="text-body-2 text-grey-darken-1">
+              <p class="text-body-medium text-grey-darken-1">
                 {{ $i18n('admin.auditLog.description') }}
               </p>
 
@@ -84,9 +84,9 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-group</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.parentsDirectory.title') }}</h3>
+              <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.parentsDirectory.title') }}</h3>
 
-              <p class="text-body-2 text-grey-darken-1">
+              <p class="text-body-medium text-grey-darken-1">
                 {{ $i18n('admin.parentsDirectory.description') }}
               </p>
 
@@ -109,9 +109,9 @@
           >
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-school-outline</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.studentsTable.title') }}</h3>
+              <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.studentsTable.title') }}</h3>
 
-              <p class="text-body-2 text-grey-darken-1">
+              <p class="text-body-medium text-grey-darken-1">
                 {{ $i18n('admin.studentsTable.description') }}
               </p>
 
@@ -130,9 +130,9 @@
           <v-card class="h-100 admin-card">
             <v-card-text class="text-center pa-6">
               <v-icon class="mb-4" color="primary" size="64">mdi-account-tie-outline</v-icon>
-              <h3 class="text-h6 font-weight-bold mb-2">{{ $i18n('admin.staffUpdate.title') }}</h3>
+              <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.staffUpdate.title') }}</h3>
 
-              <p class="text-body-2 text-grey-darken-1">
+              <p class="text-body-medium text-grey-darken-1">
                 {{ $i18n('admin.staffUpdate.description') }}
               </p>
 

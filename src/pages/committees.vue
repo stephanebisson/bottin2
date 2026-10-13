@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('committees.title') }}</h1>
+    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('committees.title') }}</h1>
 
     <div v-if="firebaseStore.committeesErrorDTO" class="mb-4">
       <v-alert
@@ -14,12 +14,12 @@
 
     <div v-if="firebaseStore.committeesLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('committees.loadingCommittees') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('committees.loadingCommittees') }}</p>
     </div>
 
     <div v-else-if="firebaseStore.committeesDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-group-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('committees.noCommitteesFound') }}</p>
+      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('committees.noCommitteesFound') }}</p>
     </div>
 
     <div v-else>
@@ -50,7 +50,7 @@
             <!-- Committee Header -->
             <div class="bg-primary text-white pa-4">
               <div class="d-flex align-start justify-space-between gap-3 mb-2">
-                <div class="committee-name text-h6 font-weight-bold">
+                <div class="committee-name text-title-large font-weight-bold">
                   <HighlightedText :query="searchQuery" :text="committee.name" />
                 </div>
 
@@ -79,22 +79,22 @@
 
               <!-- Committee Details -->
               <div v-if="committee.description || committee.email || committee.phone || committee.url" class="committee-details">
-                <div v-if="committee.description" class="text-body-2 mb-2 font-italic">
+                <div v-if="committee.description" class="text-body-medium mb-2 font-italic">
                   {{ committee.description }}
                 </div>
 
                 <div v-if="committee.email || committee.phone || committee.url" class="committee-contact-info">
-                  <div v-if="committee.email" class="d-flex align-center text-caption">
+                  <div v-if="committee.email" class="d-flex align-center text-body-small">
                     <v-icon class="me-2" size="small">mdi-email</v-icon>
                     <a class="text-white text-decoration-none" :href="`mailto:${committee.email}`">{{ committee.email }}</a>
                   </div>
 
-                  <div v-if="committee.phone" class="d-flex align-center text-caption">
+                  <div v-if="committee.phone" class="d-flex align-center text-body-small">
                     <v-icon class="me-2" size="small">mdi-phone</v-icon>
                     <a class="text-white text-decoration-none" :href="`tel:${committee.phone}`">{{ formatPhone(committee.phone) }}</a>
                   </div>
 
-                  <div v-if="committee.url" class="d-flex align-center text-caption">
+                  <div v-if="committee.url" class="d-flex align-center text-body-small">
                     <v-icon class="me-2" size="small">mdi-web</v-icon>
                     <a class="text-white text-decoration-none" :href="ensureHttps(committee.url)" rel="noopener noreferrer" target="_blank">{{ committee.url }}</a>
                   </div>
@@ -107,7 +107,7 @@
               <div v-if="committee.enrichedMembers.length > 0">
                 <!-- Parent Members Section -->
                 <div v-if="committee.parentMembers.length > 0">
-                  <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
+                  <div class="text-title-small font-weight-medium mb-3 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
                     {{ committee.hasMixedMemberTypes ? $i18n('committees.parentMembers') : $i18n('committees.membersHeader') }}
                   </div>
@@ -135,7 +135,7 @@
                 <!-- Staff Members Section -->
                 <div v-if="committee.staffMembers.length > 0">
                   <div
-                    class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center"
+                    class="text-title-small font-weight-medium mb-3 d-flex align-center"
                     :class="{ 'mt-4': committee.parentMembers.length > 0 }"
                   >
                     <v-icon class="me-2" color="primary" size="small">mdi-school</v-icon>
@@ -165,7 +165,7 @@
                 <!-- Unknown Members Section (if any) -->
                 <div v-if="committee.unknownMembers.length > 0">
                   <div
-                    class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center"
+                    class="text-title-small font-weight-medium mb-3 d-flex align-center"
                     :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
                   >
                     <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
@@ -194,7 +194,7 @@
 
                 <!-- Single group fallback (committees with only one member type) -->
                 <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.unknownMembers.length === 0">
-                  <div class="text-subtitle-2 font-weight-medium mb-3 d-flex align-center">
+                  <div class="text-title-small font-weight-medium mb-3 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
                     {{ $i18n('committees.membersHeader') }}
                   </div>
@@ -220,7 +220,7 @@
                 </div>
               </div>
 
-              <div v-else class="text-center py-4 text-grey-darken-1 text-caption">
+              <div v-else class="text-center py-4 text-grey-darken-1 text-body-small">
                 <v-icon class="mb-2" color="grey-darken-2" size="24">mdi-account-group-outline</v-icon>
                 <div>{{ $i18n('committees.noMembersFound') }}</div>
               </div>

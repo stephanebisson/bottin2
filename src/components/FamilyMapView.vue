@@ -32,10 +32,10 @@
     <v-card
       v-if="!loading && geocodedFamiliesCount > 0"
       class="map-stats"
-      elevation="2"
+      elevation="1"
     >
       <v-card-text>
-        <div class="text-caption">
+        <div class="text-body-small">
           <strong>{{ geocodedFamiliesCount }}</strong> / {{ totalFamiliesCount }}
           {{ $i18n('map.familiesOnMap') }}
         </div>

@@ -1,6 +1,6 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleLogin">
-    <v-card-title class="text-h5 text-center pb-2">
+    <v-card-title class="text-headline-small text-center pb-2">
       {{ $i18n('auth.login') }}
     </v-card-title>
 

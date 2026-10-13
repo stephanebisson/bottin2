@@ -1,9 +1,9 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row align="center" justify="center">
+  <v-container class="fill-height d-flex align-center flex-wrap" fluid>
+    <v-row class="align-center justify-center">
       <v-col cols="12" lg="4" md="6">
         <v-card class="mx-auto" max-width="400">
-          <v-card-title class="text-h5 text-center pa-6">
+          <v-card-title class="text-headline-small text-center pa-6">
             <v-icon class="mb-4" color="warning" size="64">
               mdi-email-alert
             </v-icon>
@@ -14,7 +14,7 @@
           <v-card-text class="text-center">
             <!-- Step-by-step instructions for new registrations -->
             <div v-if="isNewRegistration" class="mb-4">
-              <p class="mb-3 text-h6 text-success">
+              <p class="mb-3 text-title-large text-success">
                 🎉 {{ $i18n('auth.accountCreatedSuccessfully') }}
               </p>
 
@@ -25,19 +25,19 @@
               <!-- Step-by-step guide -->
               <v-list class="bg-transparent text-start" density="compact">
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-1-circle">
-                  <v-list-item-title class="text-body-2">
+                  <v-list-item-title class="text-body-medium">
                     {{ $i18n('auth.step1CheckEmail') }}
                   </v-list-item-title>
                 </v-list-item>
 
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-2-circle">
-                  <v-list-item-title class="text-body-2">
+                  <v-list-item-title class="text-body-medium">
                     {{ $i18n('auth.step2ClickLink') }}
                   </v-list-item-title>
                 </v-list-item>
 
                 <v-list-item class="ps-0" prepend-icon="mdi-numeric-3-circle">
-                  <v-list-item-title class="text-body-2">
+                  <v-list-item-title class="text-body-medium">
                     {{ $i18n('auth.step3AutoRedirect') }}
                   </v-list-item-title>
                 </v-list-item>
@@ -47,7 +47,7 @@
             <!-- For returning users or blocked access -->
             <div v-else class="mb-4">
               <div v-if="isReturningUser">
-                <p class="mb-3 text-h6 text-warning">
+                <p class="mb-3 text-title-large text-warning">
                   🔐 {{ $i18n('auth.loginBlockedEmailNotVerified') }}
                 </p>
 
@@ -57,7 +57,7 @@
               </div>
 
               <div v-else-if="isBlockedAccess">
-                <p class="mb-3 text-h6 text-error">
+                <p class="mb-3 text-title-large text-error">
                   🚫 {{ $i18n('auth.accessBlockedEmailNotVerified') }}
                 </p>
 
@@ -131,7 +131,7 @@
               <!-- Auto-check status indicator -->
               <div v-if="autoCheckInterval && !checkingVerification" class="text-center mt-2">
                 <v-chip
-                  class="text-caption"
+                  class="text-body-small"
                   color="primary"
                   size="small"
                   variant="outlined"
@@ -143,7 +143,7 @@
 
               <div v-if="checkingVerification" class="text-center mt-2">
                 <v-chip
-                  class="text-caption"
+                  class="text-body-small"
                   color="success"
                   size="small"
                 >

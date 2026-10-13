@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('staff.title') }}</h1>
+    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('staff.title') }}</h1>
 
     <div v-if="firebaseStore.staffErrorDTO" class="mb-4">
       <v-alert
@@ -14,12 +14,12 @@
 
     <div v-if="firebaseStore.staffLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('staff.loadingStaff') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('staff.loadingStaff') }}</p>
     </div>
 
     <div v-else-if="firebaseStore.staffDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-tie-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('staff.noStaffFound') }}</p>
+      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('staff.noStaffFound') }}</p>
     </div>
 
     <div v-else>
@@ -40,7 +40,7 @@
       <!-- Staff Groups -->
       <div v-for="group in filteredStaffGroups" :key="group.name" class="mb-8">
         <!-- Group Header (h2) -->
-        <h2 class="text-h4 font-weight-bold text-primary mb-6">
+        <h2 class="text-headline-large font-weight-bold text-primary mb-6">
           {{ group.name }}
         </h2>
 
@@ -53,11 +53,11 @@
             </v-icon>
 
             <div>
-              <h3 class="text-h5 font-weight-bold text-primary">
+              <h3 class="text-headline-small font-weight-bold text-primary">
                 {{ subgroup.name }}
               </h3>
 
-              <p class="text-body-2 text-grey-darken-1 ma-0">
+              <p class="text-body-medium text-grey-darken-1 ma-0">
                 {{ $i18n('staff.memberCount', subgroup.members.length) }}
               </p>
             </div>
@@ -76,7 +76,7 @@
               <v-card class="d-flex flex-column" height="100%">
                 <!-- Staff Member Header -->
                 <v-card-title class="pb-2">
-                  <div class="text-h6 font-weight-bold">
+                  <div class="text-title-large font-weight-bold">
                     <HighlightedText
                       :query="searchQuery"
                       :text="`${member.first_name} ${member.last_name}`"
@@ -95,7 +95,7 @@
                     <div v-if="member.email" class="mb-2 d-flex align-center">
                       <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
 
-                      <a class="text-decoration-none text-body-2" :href="`mailto:${member.email}`">
+                      <a class="text-decoration-none text-body-medium" :href="`mailto:${member.email}`">
                         <HighlightedText :query="searchQuery" :text="member.email" />
                       </a>
                     </div>
@@ -103,7 +103,7 @@
                     <div v-if="member.phone" class="mb-2 d-flex align-center">
                       <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
 
-                      <a class="text-decoration-none text-body-2" :href="`tel:${member.phone}`">
+                      <a class="text-decoration-none text-body-medium" :href="`tel:${member.phone}`">
                         {{ formatPhone(member.phone) }}
                       </a>
                     </div>
@@ -113,7 +113,7 @@
                   <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
                     <v-divider class="mb-2" />
 
-                    <div class="text-subtitle-2 font-weight-medium mb-1 text-primary">
+                    <div class="text-title-small font-weight-medium mb-1 text-primary">
                       <v-icon class="me-1" size="small">mdi-school</v-icon>
                       {{ $i18n('staff.classesTaught') }}
                     </div>

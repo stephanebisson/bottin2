@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('feedback.admin.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('feedback.admin.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-1 text-grey-darken-1 mt-2">
+      <p class="text-body-large text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
-        <p class="text-body-2 text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -35,14 +35,14 @@
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
+        <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-h5 mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
+        <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
+        <p class="text-body-large text-grey-darken-1 mt-2">{{ error }}</p>
 
         <v-btn
           class="mt-4"
@@ -64,8 +64,8 @@
                   <v-icon class="mr-3" size="40">mdi-message-text</v-icon>
 
                   <div>
-                    <div class="text-h4 font-weight-bold">{{ stats.total }}</div>
-                    <div class="text-body-2">{{ $i18n('feedback.admin.totalFeedback') }}</div>
+                    <div class="text-headline-large font-weight-bold">{{ stats.total }}</div>
+                    <div class="text-body-medium">{{ $i18n('feedback.admin.totalFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -79,8 +79,8 @@
                   <v-icon class="mr-3" size="40">mdi-clock-alert</v-icon>
 
                   <div>
-                    <div class="text-h4 font-weight-bold">{{ stats.pending }}</div>
-                    <div class="text-body-2">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
+                    <div class="text-headline-large font-weight-bold">{{ stats.pending }}</div>
+                    <div class="text-body-medium">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -94,8 +94,8 @@
                   <v-icon class="mr-3" size="40">mdi-check-circle</v-icon>
 
                   <div>
-                    <div class="text-h4 font-weight-bold">{{ stats.resolved }}</div>
-                    <div class="text-body-2">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
+                    <div class="text-headline-large font-weight-bold">{{ stats.resolved }}</div>
+                    <div class="text-body-medium">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
                   </div>
                 </div>
               </v-card-text>
@@ -147,7 +147,7 @@
           >
             <!-- Date Column -->
             <template #item.createdAt="{ item }">
-              <span class="text-body-2">
+              <span class="text-body-medium">
                 {{ formatDate(item.createdAt) }}
               </span>
             </template>
@@ -156,13 +156,13 @@
             <template #item.parent_id="{ item }">
               <div>
                 <div class="font-weight-medium">{{ getParentName(item.parent_id) }}</div>
-                <div class="text-caption text-grey-darken-1">{{ getParentEmail(item.parent_id) }}</div>
+                <div class="text-body-small text-grey-darken-1">{{ getParentEmail(item.parent_id) }}</div>
               </div>
             </template>
 
             <!-- Message Column -->
             <template #item.message="{ item }">
-              <div class="text-body-2" style="max-width: 400px;">
+              <div class="text-body-medium" style="max-width: 400px;">
                 {{ item.shortMessage }}
               </div>
             </template>
@@ -237,27 +237,27 @@
                   <div class="pa-4">
                     <!-- Full Message -->
                     <div class="mb-4">
-                      <div class="text-subtitle-2 font-weight-bold mb-2">
+                      <div class="text-title-small font-weight-bold mb-2">
                         {{ $i18n('feedback.admin.fullMessage') }}
                       </div>
 
-                      <div class="text-body-1 pa-3 bg-grey-lighten-4 rounded">
+                      <div class="text-body-large pa-3 bg-grey-lighten-4 rounded">
                         {{ item.message }}
                       </div>
                     </div>
 
                     <!-- Admin Notes -->
                     <div v-if="item.hasAdminNotes">
-                      <div class="text-subtitle-2 font-weight-bold mb-2">
+                      <div class="text-title-small font-weight-bold mb-2">
                         {{ $i18n('feedback.admin.adminNotes') }}
                       </div>
 
-                      <div class="text-body-1 pa-3 bg-blue-lighten-5 rounded">
+                      <div class="text-body-large pa-3 bg-blue-lighten-5 rounded">
                         {{ item.admin_notes }}
                       </div>
                     </div>
 
-                    <div v-else class="text-body-2 text-grey-darken-1 font-italic">
+                    <div v-else class="text-body-medium text-grey-darken-1 font-italic">
                       {{ $i18n('feedback.admin.noAdminNotes') }}
                     </div>
                   </div>
@@ -273,7 +273,7 @@
     <v-dialog v-model="notesDialog" max-width="600">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ $i18n('feedback.admin.editNotes') }}</span>
+          <span class="text-headline-small">{{ $i18n('feedback.admin.editNotes') }}</span>
         </v-card-title>
 
         <v-card-text>
@@ -314,7 +314,7 @@
     <v-dialog v-model="deleteDialog" max-width="500">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ $i18n('feedback.admin.confirmDelete') }}</span>
+          <span class="text-headline-small">{{ $i18n('feedback.admin.confirmDelete') }}</span>
         </v-card-title>
 
         <v-card-text>

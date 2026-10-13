@@ -7,11 +7,11 @@
       </v-icon>
 
       <div>
-        <h3 class="text-h5 font-weight-bold text-primary">
+        <h3 class="text-headline-small font-weight-bold text-primary">
           {{ name }}
         </h3>
 
-        <p class="text-body-2 text-grey-darken-1 ma-0">
+        <p class="text-body-medium text-grey-darken-1 ma-0">
           {{ members.length }} {{ members.length === 1 ? 'membre' : 'membres' }}
         </p>
       </div>
@@ -41,7 +41,7 @@
         <v-card class="pa-6 text-center" variant="outlined">
           <v-icon color="grey-darken-2" size="48">mdi-account-off</v-icon>
 
-          <p class="text-body-1 text-grey-darken-1 mt-2 mb-0">
+          <p class="text-body-large text-grey-darken-1 mt-2 mb-0">
             Aucun membre du personnel assigné
           </p>
         </v-card>

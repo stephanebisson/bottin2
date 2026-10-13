@@ -3,14 +3,14 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('updateForm.loadingInfo') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('updateForm.loadingInfo') }}</p>
     </div>
 
     <!-- Error State with Friendly Messages -->
     <div v-else-if="error" class="text-center py-12">
       <v-icon color="warning" size="64">mdi-information-outline</v-icon>
-      <h2 class="text-h4 mt-4 text-warning">{{ getErrorTitle() }}</h2>
-      <p class="text-body-1 mt-2 text-grey-darken-1">{{ getErrorMessage() }}</p>
+      <h2 class="text-headline-large mt-4 text-warning">{{ getErrorTitle() }}</h2>
+      <p class="text-body-large mt-2 text-grey-darken-1">{{ getErrorMessage() }}</p>
 
       <!-- Action buttons based on error type -->
       <div class="mt-6">
@@ -64,11 +64,11 @@
             icon="mdi-information"
             variant="tonal"
           >
-            <div class="text-body-1">
+            <div class="text-body-large">
               {{ $i18n('updateForm.welcome', parentData.fullName || `${parentData.first_name} ${parentData.last_name}`) }}
             </div>
 
-            <div class="text-body-2 mt-2">
+            <div class="text-body-medium mt-2">
               {{ $i18n('updateForm.instructions') }}
             </div>
           </v-alert>
@@ -83,11 +83,11 @@
             icon="mdi-alert-octagon"
             variant="tonal"
           >
-            <div class="text-body-1 font-weight-medium">
+            <div class="text-body-large font-weight-medium">
               {{ $i18n('updateForm.optOutWarningBox') }}
             </div>
 
-            <div class="text-body-2 mt-2 mb-3">
+            <div class="text-body-medium mt-2 mb-3">
               {{ $i18n('updateForm.optOutWarningBoxDescription') }}
             </div>
 
@@ -112,11 +112,11 @@
             icon="mdi-information-outline"
             variant="tonal"
           >
-            <div class="text-body-1 font-weight-medium">
+            <div class="text-body-large font-weight-medium">
               {{ $i18n('updateForm.reOptInWarningBox') }}
             </div>
 
-            <div class="text-body-2 mt-2">
+            <div class="text-body-medium mt-2">
               {{ $i18n('updateForm.reOptInWarningBoxDescription') }}
             </div>
           </v-alert>
@@ -125,7 +125,7 @@
             <v-row>
               <!-- Personal Information Section -->
               <v-col cols="12">
-                <h3 class="text-h6 font-weight-bold mb-4">
+                <h3 class="text-title-large font-weight-bold mb-4">
                   <v-icon class="mr-2">mdi-account</v-icon>
                   {{ $i18n('updateForm.personalInfo') }}
                 </h3>
@@ -164,7 +164,7 @@
 
               <!-- Address Section -->
               <v-col cols="12">
-                <h3 class="text-h6 font-weight-bold mb-4 mt-4">
+                <h3 class="text-title-large font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-map-marker</v-icon>
                   {{ $i18n('updateForm.address') }}
                 </h3>
@@ -220,7 +220,7 @@
 
               <!-- Committee Memberships Section -->
               <v-col cols="12">
-                <h3 class="text-h6 font-weight-bold mb-4 mt-4">
+                <h3 class="text-title-large font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-account-group</v-icon>
                   {{ $i18n('updateForm.committees') }}
                 </h3>
@@ -228,7 +228,7 @@
 
               <v-col cols="12">
                 <div class="mb-4">
-                  <p class="text-body-2 text-grey-darken-1 mb-4">
+                  <p class="text-body-medium text-grey-darken-1 mb-4">
                     {{ $i18n('updateForm.committeeInstructions') }}
                   </p>
 
@@ -266,7 +266,7 @@
 
               <!-- Interests & Skills Section -->
               <v-col cols="12">
-                <h3 class="text-h6 font-weight-bold mb-4 mt-4">
+                <h3 class="text-title-large font-weight-bold mb-4 mt-4">
                   <v-icon class="mr-2">mdi-star</v-icon>
                   {{ $i18n('updateForm.interests') }}
                 </h3>
@@ -274,7 +274,7 @@
 
               <v-col cols="12">
                 <div class="mb-4">
-                  <p class="text-body-2 text-grey-darken-1 mb-4">
+                  <p class="text-body-medium text-grey-darken-1 mb-4">
                     {{ $i18n('updateForm.interestsInstructions') }}
                   </p>
 
@@ -321,7 +321,7 @@
         </v-card-title>
 
         <v-card-text class="pa-6">
-          <div class="text-body-1 mb-4">
+          <div class="text-body-large mb-4">
             {{ $i18n('updateForm.optOutDialogContent') }}
           </div>
 
@@ -943,7 +943,7 @@
   padding: 12px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface-variant), 0.1);
+  background-color: rgb(var(--v-theme-surface-variant) / 0.1);
 }
 
 .committee-checkbox {

@@ -1,7 +1,7 @@
 <template>
   <div class="group-section mb-10">
     <!-- Group Header -->
-    <h2 class="text-h4 font-weight-bold text-primary mb-6">
+    <h2 class="text-headline-large font-weight-bold text-primary mb-6">
       {{ name }}
     </h2>
 

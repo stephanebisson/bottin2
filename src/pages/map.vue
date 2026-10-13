@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('map.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('map.title') }}</h1>
 
       <v-chip
         :color="loading ? 'orange' : 'green'"
@@ -25,13 +25,13 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('map.loadingData') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('map.loadingData') }}</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="firebaseStore.parentsDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-map-marker-off</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('map.noDataFound') }}</p>
+      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('map.noDataFound') }}</p>
     </div>
 
     <div v-else>

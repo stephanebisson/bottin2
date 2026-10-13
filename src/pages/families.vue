@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="text-h3 font-weight-bold mb-6">{{ $i18n('directory.title') }}</h1>
+    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('directory.title') }}</h1>
 
     <!-- Error Messages -->
     <div v-if="firebaseStore.studentsErrorDTO || firebaseStore.parentsErrorDTO" class="mb-4">
@@ -27,13 +27,13 @@
     <!-- Loading State -->
     <div v-if="firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
-      <p class="text-h6 mt-4">{{ $i18n('directory.loadingData') }}</p>
+      <p class="text-title-large mt-4">{{ $i18n('directory.loadingData') }}</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="firebaseStore.studentsDTO.length === 0 && firebaseStore.parentsDTO.length === 0" class="text-center py-8">
       <v-icon color="grey-darken-2" size="64">mdi-account-multiple-outline</v-icon>
-      <p class="text-h6 mt-4 text-grey-darken-2">{{ $i18n('directory.noDataFound') }}</p>
+      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('directory.noDataFound') }}</p>
     </div>
 
     <div v-else>
@@ -91,7 +91,7 @@
           </div>
 
           <!-- Results Counter -->
-          <div class="text-caption mt-2 text-grey-darken-1">
+          <div class="text-body-small mt-2 text-grey-darken-1">
             {{ resultCountText }}
           </div>
         </v-card-text>
@@ -113,14 +113,14 @@
                 :key="student.id"
                 class="d-flex justify-space-between align-center mb-1"
               >
-                <div class="text-h6 font-weight-bold">
+                <div class="text-title-large font-weight-bold">
                   <HighlightedText
                     :query="searchQuery"
                     :text="`${student.last_name}, ${student.first_name}`"
                   />
                 </div>
 
-                <div class="text-body-1 text-right">
+                <div class="text-body-large text-right">
                   <span v-if="getTeacherName(student.className)">{{ getTeacherName(student.className) }},</span>
                   <span v-if="student.level" class="ml-2">{{ student.level }}</span>
                 </div>
@@ -166,7 +166,7 @@
               </v-col>
             </v-row>
 
-            <div v-else class="text-body-2 text-grey-darken-1">
+            <div v-else class="text-body-medium text-grey-darken-1">
               {{ $i18n('directory.noParentInfo') }}
             </div>
           </div>

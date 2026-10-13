@@ -27,14 +27,14 @@
               color="primary"
               size="80"
             >
-              <span class="text-h4 font-weight-bold">
+              <span class="text-headline-large font-weight-bold">
                 {{ getInitials(parentProfile.first_name, parentProfile.last_name) }}
               </span>
             </v-avatar>
 
             <!-- Name and Contact Info -->
             <div class="flex-grow-1 text-center text-sm-left">
-              <h1 class="text-h4 font-weight-bold mb-2">
+              <h1 class="text-headline-large font-weight-bold mb-2">
                 {{ parentProfile.first_name }} {{ parentProfile.last_name }}
               </h1>
 
@@ -66,7 +66,7 @@
               <!-- Address -->
               <div v-if="formattedAddress" class="d-flex align-center">
                 <v-icon class="me-2" color="primary" size="small">mdi-home</v-icon>
-                <span class="text-body-1">{{ formattedAddress }}</span>
+                <span class="text-body-large">{{ formattedAddress }}</span>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@
                     </div>
 
                     <div v-if="getTeacherName(child.className)" class="mt-2">
-                      <span class="text-body-2">
+                      <span class="text-body-medium">
                         {{ $i18n('profile.teacher') }}: {{ getTeacherName(child.className) }}
                       </span>
                     </div>
@@ -180,7 +180,7 @@
 
             <v-card-text v-else class="text-center py-6 text-grey-darken-1">
               <v-icon class="mb-2" size="32">mdi-account-group-outline</v-icon>
-              <p class="text-body-2">{{ $i18n('profile.noCommitteesFound') }}</p>
+              <p class="text-body-medium">{{ $i18n('profile.noCommitteesFound') }}</p>
             </v-card-text>
           </v-card>
 
@@ -213,8 +213,8 @@
     <v-card v-else-if="!loading" class="text-center py-8">
       <v-card-text>
         <v-icon class="mb-4" color="grey-darken-2" size="64">mdi-account-question</v-icon>
-        <h2 class="text-h5 mb-2">{{ $i18n('profile.noProfileFound') }}</h2>
-        <p class="text-body-1 text-grey-darken-1">{{ $i18n('profile.contactAdmin') }}</p>
+        <h2 class="text-headline-small mb-2">{{ $i18n('profile.noProfileFound') }}</h2>
+        <p class="text-body-large text-grey-darken-1">{{ $i18n('profile.contactAdmin') }}</p>
       </v-card-text>
     </v-card>
   </v-container>
@@ -364,7 +364,7 @@
     padding: 1rem !important;
   }
 
-  .text-h4 {
+  .text-headline-large {
     font-size: 1.5rem !important;
   }
 }

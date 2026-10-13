@@ -1,6 +1,6 @@
 <template>
   <v-form v-model="formValid" @submit.prevent="handleRegister">
-    <v-card-title class="text-h5 text-center pb-2">
+    <v-card-title class="text-headline-small text-center pb-2">
       {{ $i18n('auth.register') }}
     </v-card-title>
 
@@ -35,7 +35,7 @@
       />
 
       <!-- Email Authorization Status -->
-      <div v-if="email && /.+@.+\..+/.test(email)" class="text-caption mt-1 mb-3">
+      <div v-if="email && /.+@.+\..+/.test(email)" class="text-body-small mt-1 mb-3">
         <v-progress-linear
           v-if="emailValidationLoading"
           color="primary"
@@ -51,7 +51,7 @@
 
           <span v-if="userInfo.displayName">
             {{ $i18n('registerForm.welcome') }}{{ userInfo.displayName }}!
-            <span class="text-caption">({{ userInfo.userType === 'parent' ? $i18n('registerForm.parent') : $i18n('registerForm.staff') }})</span>
+            <span class="text-body-small">({{ userInfo.userType === 'parent' ? $i18n('registerForm.parent') : $i18n('registerForm.staff') }})</span>
           </span>
 
           <span v-else>
@@ -133,7 +133,7 @@
         :rules="termsRules"
       >
         <template #label>
-          <span class="text-body-2">
+          <span class="text-body-medium">
             {{ $i18n('auth.agreeToTerms') }}
           </span>
         </template>
@@ -158,12 +158,12 @@
     <v-card-actions v-if="isDevelopment" class="px-6 pb-2">
       <v-expansion-panels class="w-100" variant="accordion">
         <v-expansion-panel>
-          <v-expansion-panel-title class="text-caption">
+          <v-expansion-panel-title class="text-body-small">
             {{ $i18n('registerForm.debugInfo') }}
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
-            <div class="text-caption">
+            <div class="text-body-small">
               <div><strong>{{ $i18n('registerForm.network') }}</strong> {{ authStore.serviceHealth.isOnline ? $i18n('registerForm.online') : $i18n('registerForm.offline') }}</div>
               <div><strong>{{ $i18n('registerForm.firebase') }}</strong> {{ authStore.serviceHealth.firebaseReachable ? $i18n('registerForm.reachable') : $i18n('registerForm.unreachable') }}</div>
               <div><strong>{{ $i18n('registerForm.lastCheck') }}</strong> {{ authStore.serviceHealth.lastChecked ? new Date(authStore.serviceHealth.lastChecked).toLocaleTimeString() : $i18n('registerForm.never') }}</div>

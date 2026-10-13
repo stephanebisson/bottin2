@@ -189,6 +189,14 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
+    // Vuetify 4: avoid duplicate overlay stacks in dev (nested overlays rendering behind dialogs)
+    include: [
+      'vuetify/components/VOverlay',
+      'vuetify/components/VDialog',
+      'vuetify/components/VMenu',
+      'vuetify/components/VSelect',
+      'vuetify/components/VTooltip',
+    ],
     exclude: [
       'vue-router',
       'unplugin-vue-router/runtime',

@@ -1,14 +1,14 @@
 <template>
   <v-card
     class="tic-tac-toe-card pa-6 text-center d-flex flex-column"
-    elevation="2"
+    elevation="1"
     style="height: 100%; width: 100%;"
   >
     <div class="d-flex flex-column align-center flex-grow-1">
       <!-- Header -->
       <v-icon class="mb-3" color="success" size="48">mdi-gamepad-variant</v-icon>
-      <h3 class="text-h6 font-weight-bold mb-1">{{ $i18n('easterEgg.ticTacToe') }}</h3>
-      <p class="text-caption text-grey-darken-1 mb-4">{{ $i18n('easterEgg.takeABreak') }}</p>
+      <h3 class="text-title-large font-weight-bold mb-1">{{ $i18n('easterEgg.ticTacToe') }}</h3>
+      <p class="text-body-small text-grey-darken-1 mb-4">{{ $i18n('easterEgg.takeABreak') }}</p>
 
       <!-- Game status -->
       <div class="mb-3">
@@ -109,8 +109,8 @@
 }
 
 .game-cell {
-  background-color: rgba(var(--v-theme-surface-variant), 0.3);
-  border: 2px solid rgba(var(--v-theme-primary), 0.2);
+  background-color: color-mix(in srgb, rgb(var(--v-theme-surface-variant)) 30%, transparent);
+  border: 2px solid color-mix(in srgb, rgb(var(--v-theme-primary)) 20%, transparent);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -126,8 +126,8 @@
 }
 
 .game-cell:hover:not(.cell-disabled) {
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  border-color: rgba(var(--v-theme-primary), 0.5);
+  background-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 10%, transparent);
+  border-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 50%, transparent);
 }
 
 .game-cell.cell-disabled {

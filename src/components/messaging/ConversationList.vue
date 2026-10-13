@@ -21,13 +21,13 @@
     <!-- Loading State -->
     <div v-if="loading" class="pa-4 text-center">
       <v-progress-circular color="primary" indeterminate />
-      <p class="text-caption mt-2">{{ $i18n('common.loading') }}</p>
+      <p class="text-body-small mt-2">{{ $i18n('common.loading') }}</p>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="pa-4 text-center">
       <v-icon color="error" icon="mdi-alert-circle" size="48" />
-      <p class="text-body-2 mt-2">{{ $i18n('messages.errorLoadingConversations') }}</p>
+      <p class="text-body-medium mt-2">{{ $i18n('messages.errorLoadingConversations') }}</p>
 
       <v-btn
         class="mt-2"
@@ -77,7 +77,7 @@
 
         <!-- Timestamp -->
         <template #append>
-          <div class="text-caption text-medium-emphasis">
+          <div class="text-body-small text-medium-emphasis">
             {{ formatTimestamp(conversation.lastMessageAt) }}
           </div>
         </template>
@@ -88,11 +88,11 @@
     <div v-else class="flex-grow-1 d-flex flex-column align-center justify-center pa-8">
       <v-icon color="grey-lighten-1" icon="mdi-message-outline" size="64" />
 
-      <p class="text-h6 text-medium-emphasis mt-4">
+      <p class="text-title-large text-medium-emphasis mt-4">
         {{ searchQuery ? $i18n('common.noResultsFound') : $i18n('messages.noConversations') }}
       </p>
 
-      <p v-if="!searchQuery" class="text-body-2 text-medium-emphasis mt-2">
+      <p v-if="!searchQuery" class="text-body-medium text-medium-emphasis mt-2">
         {{ $i18n('messages.startChatting') }}
       </p>
     </div>

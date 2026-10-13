@@ -1,14 +1,14 @@
 <template>
   <v-card
     class="game-2048-card pa-6 text-center d-flex flex-column"
-    elevation="2"
+    elevation="1"
     style="height: 100%; width: 100%;"
   >
     <div class="d-flex flex-column align-center flex-grow-1">
       <!-- Header -->
       <v-icon class="mb-3" color="warning" size="48">mdi-grid</v-icon>
-      <h3 class="text-h6 font-weight-bold mb-1">{{ $i18n('easterEgg.2048') }}</h3>
-      <p class="text-caption text-grey-darken-1 mb-4">{{ $i18n('easterEgg.joinTiles') }}</p>
+      <h3 class="text-title-large font-weight-bold mb-1">{{ $i18n('easterEgg.2048') }}</h3>
+      <p class="text-body-small text-grey-darken-1 mb-4">{{ $i18n('easterEgg.joinTiles') }}</p>
 
       <!-- Score display -->
       <div class="d-flex gap-2 mb-4">
@@ -66,7 +66,7 @@
       </div>
 
       <!-- Hint -->
-      <p class="text-caption text-grey mb-3">{{ $i18n('easterEgg.useArrows') }}</p>
+      <p class="text-body-small text-grey mb-3">{{ $i18n('easterEgg.useArrows') }}</p>
 
       <!-- Buttons -->
       <div class="d-flex gap-2">

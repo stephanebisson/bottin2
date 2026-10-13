@@ -1,20 +1,20 @@
 <template>
   <v-container>
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h3 font-weight-bold">{{ $i18n('admin.parentsDirectory.title') }}</h1>
+      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.parentsDirectory.title') }}</h1>
     </div>
 
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-h5 mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-1 text-grey-darken-1 mt-2">
+      <p class="text-body-large text-grey-darken-1 mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <div class="mt-6">
-        <p class="text-body-2 text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-grey-darken-1 mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -34,14 +34,14 @@
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-h6 mt-4">{{ $i18n('common.loading') }}</p>
+        <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-h5 mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-1 text-grey-darken-1 mt-2">{{ error }}</p>
+        <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
+        <p class="text-body-large text-grey-darken-1 mt-2">{{ error }}</p>
 
         <v-btn class="mt-4" color="primary" @click="loadData">
           {{ $i18n('common.retry') }}
@@ -57,9 +57,9 @@
               <v-icon class="mr-4" size="48">mdi-account-group</v-icon>
 
               <div>
-                <h2 class="text-h5 font-weight-bold">{{ $i18n('admin.parentsDirectory.summary') }}</h2>
+                <h2 class="text-headline-small font-weight-bold">{{ $i18n('admin.parentsDirectory.summary') }}</h2>
 
-                <p class="text-body-1 mt-2">
+                <p class="text-body-large mt-2">
                   {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
                 </p>
               </div>
@@ -68,7 +68,7 @@
         </v-card>
 
         <!-- Filter Bar -->
-        <v-row class="mb-2" dense>
+        <v-row class="mb-2" density="compact">
           <v-col cols="12" sm="4">
             <v-text-field
               v-model="filterSearch"
@@ -134,7 +134,7 @@
           density="compact"
           flat
         >
-          <v-toolbar-title class="text-body-2">
+          <v-toolbar-title class="text-body-medium">
             {{ $i18n('admin.parentsTable.xSelected', selectedIds.length) }}
           </v-toolbar-title>
 
@@ -187,7 +187,7 @@
         <v-card>
           <v-card-title>
             <div class="d-flex justify-space-between align-center w-100">
-              <span class="text-h5">{{ $i18n('admin.parentsDirectory.allParents') }}</span>
+              <span class="text-headline-small">{{ $i18n('admin.parentsDirectory.allParents') }}</span>
 
               <v-btn
                 color="primary"
@@ -277,7 +277,7 @@
             <!-- Children Column -->
             <template #item.children="{ item }">
               <div v-if="item.childrenInfo && item.childrenInfo.length > 0">
-                <div class="text-body-2">
+                <div class="text-body-medium">
                   <div
                     v-for="child in item.childrenInfo"
                     :key="child.id"

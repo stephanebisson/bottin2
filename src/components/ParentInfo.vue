@@ -3,7 +3,7 @@
     <!-- Header with name and chips (for compact variant) -->
     <div v-if="variant === 'compact'" class="d-flex justify-space-between align-start mb-2">
       <div class="d-flex align-center flex-wrap">
-        <div class="text-body-2 font-weight-medium me-2">
+        <div class="text-body-medium font-weight-medium me-2">
           <HighlightedText
             :query="searchQuery"
             :text="parentName"
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Parent Name (for other variants) -->
-    <div v-else class="text-subtitle-2 font-weight-bold mb-1">
+    <div v-else class="text-title-small font-weight-bold mb-1">
       <HighlightedText
         :query="searchQuery"
         :text="parentName"
@@ -41,26 +41,26 @@
     <!-- Committees (if showCommittees) -->
     <div
       v-if="showCommittees && committees.length > 0"
-      class="text-caption mb-1 text-primary font-italic"
+      class="text-body-small mb-1 text-primary font-italic"
     >
       {{ committees.join(', ') }}
     </div>
 
     <!-- Contact Info (if showContact) -->
     <div v-if="showContact" class="contact-info">
-      <div v-if="parent.email" :class="variant === 'compact' ? 'text-caption d-flex align-center mb-1' : 'text-body-2 d-flex align-center mb-1'">
+      <div v-if="parent.email" :class="variant === 'compact' ? 'text-body-small d-flex align-center mb-1' : 'text-body-medium d-flex align-center mb-1'">
         <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-email</v-icon>
         <a class="text-decoration-none" :href="`mailto:${parent.email}`">{{ parent.email }}</a>
       </div>
 
-      <div v-if="parent.phone" :class="variant === 'compact' ? 'text-caption d-flex align-center mb-1' : 'text-body-2 d-flex align-center mb-1'">
+      <div v-if="parent.phone" :class="variant === 'compact' ? 'text-body-small d-flex align-center mb-1' : 'text-body-medium d-flex align-center mb-1'">
         <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-phone</v-icon>
         <a class="text-decoration-none" :href="`tel:${parent.phone}`">{{ formatPhone(parent.phone) }}</a>
       </div>
     </div>
 
     <!-- Address (if showAddress) -->
-    <div v-if="showAddress && formattedAddress" class="text-body-2 d-flex align-center mb-1">
+    <div v-if="showAddress && formattedAddress" class="text-body-medium d-flex align-center mb-1">
       <v-icon class="me-1" size="16">mdi-map-marker</v-icon>
 
       <HighlightedText
@@ -70,7 +70,7 @@
     </div>
 
     <!-- Interests (if showInterests) -->
-    <div v-if="showInterests && parent.interests?.length" class="text-body-2 d-flex align-center mb-2">
+    <div v-if="showInterests && parent.interests?.length" class="text-body-medium d-flex align-center mb-2">
       <v-icon class="me-1" size="16">mdi-heart</v-icon>
       <span>{{ displayedInterests }}</span>
     </div>

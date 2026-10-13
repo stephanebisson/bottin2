@@ -24,11 +24,11 @@
             </v-avatar>
           </template>
 
-          <v-list-item-title class="font-weight-bold text-body-2">
+          <v-list-item-title class="font-weight-bold text-body-medium">
             {{ currentUserFullName }}
           </v-list-item-title>
 
-          <v-list-item-subtitle class="text-caption">
+          <v-list-item-subtitle class="text-body-small">
             {{ authStore.userEmail }}
           </v-list-item-subtitle>
         </v-list-item>
@@ -74,7 +74,7 @@
       <!-- Welcome message for unauthenticated users -->
       <template v-else>
         <v-list-item class="text-center py-4">
-          <v-list-item-title class="text-body-2 text-grey-darken-1">
+          <v-list-item-title class="text-body-medium text-grey-darken-1">
             {{ $i18n('nav.pleaseLogin') }}
           </v-list-item-title>
         </v-list-item>
