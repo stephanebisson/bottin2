@@ -69,13 +69,13 @@
               v-for="member in subgroup.members"
               :key="member.id"
               cols="12"
-              lg="3"
               md="4"
               sm="6"
+              xl="3"
             >
               <v-card class="d-flex flex-column" height="100%">
                 <!-- Staff Member Header -->
-                <v-card-title class="pb-2">
+                <v-card-title class="pb-2 text-wrap">
                   <div class="text-title-large font-weight-bold">
                     <HighlightedText
                       :query="searchQuery"
