@@ -250,7 +250,7 @@
 
               <a
                 v-else-if="item.email"
-                class="text-primary text-decoration-none"
+                class="text-primary text-decoration-none parent-email"
                 :href="`mailto:${item.email}`"
               >
                 {{ item.email }}
@@ -281,9 +281,12 @@
                   <div
                     v-for="child in item.childrenInfo"
                     :key="child.id"
-                    class="mb-1"
+                    class="mb-1 text-no-wrap"
                   >
-                    {{ child.fullName }} ({{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $i18n('admin.parentsDirectory.noTeacher') }})
+                    <div>{{ child.fullName }}</div>
+                    <div class="text-caption text-medium-emphasis">
+                      {{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $i18n('admin.parentsDirectory.noTeacher') }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -638,14 +641,14 @@
   }
 
   const tableHeaders = computed(() => [
-    { title: $i18n('common.firstName'), align: 'start', sortable: false, key: 'first_name', width: '120px' },
-    { title: $i18n('common.lastName'), align: 'start', sortable: false, key: 'last_name', width: '120px' },
+    { title: $i18n('common.firstName'), align: 'start', sortable: false, key: 'first_name' },
+    { title: $i18n('common.lastName'), align: 'start', sortable: false, key: 'last_name' },
     { title: $i18n('common.email'), align: 'start', sortable: false, key: 'email' },
-    { title: $i18n('common.phone'), align: 'start', sortable: false, key: 'phone' },
-    { title: $i18n('admin.parentsDirectory.children'), align: 'start', sortable: false, key: 'children', width: '280px' },
-    { title: $i18n('admin.parentsTable.headers.status'), align: 'start', sortable: false, key: 'status', width: '200px' },
-    { title: $i18n('admin.parentsTable.headers.log'), align: 'start', sortable: false, key: 'log', width: '120px' },
-    { title: $i18n('common.actions'), key: 'actions', sortable: false, width: '100px' },
+    { title: $i18n('common.phone'), align: 'start', sortable: false, key: 'phone', nowrap: true },
+    { title: $i18n('admin.parentsDirectory.children'), align: 'start', sortable: false, key: 'children' },
+    { title: $i18n('admin.parentsTable.headers.status'), align: 'start', sortable: false, key: 'status', width: '140px' },
+    { title: $i18n('admin.parentsTable.headers.log'), align: 'start', sortable: false, key: 'log' },
+    { title: $i18n('common.actions'), key: 'actions', sortable: false },
   ])
 
   const classOptions = computed(() => {
@@ -1076,6 +1079,15 @@
 <style scoped>
   .v-data-table {
     border-radius: 0;
+  }
+
+  .v-data-table :deep(th),
+  .v-data-table :deep(td) {
+    padding-inline: 6px !important;
+  }
+
+  .parent-email {
+    overflow-wrap: anywhere;
   }
 
   :deep(.parent-no-children) {
