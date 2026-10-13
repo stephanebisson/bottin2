@@ -93,15 +93,15 @@
                   <!-- Contact Information -->
                   <div class="mb-3">
                     <div v-if="member.email" class="mb-2 d-flex align-center">
-                      <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
+                      <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-email</v-icon>
 
-                      <a class="text-decoration-none text-body-medium" :href="`mailto:${member.email}`">
+                      <a class="text-decoration-none text-body-medium staff-email" :href="`mailto:${member.email}`">
                         <HighlightedText :query="searchQuery" :text="member.email" />
                       </a>
                     </div>
 
                     <div v-if="member.phone" class="mb-2 d-flex align-center">
-                      <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
+                      <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-phone</v-icon>
 
                       <a class="text-decoration-none text-body-medium" :href="`tel:${member.phone}`">
                         {{ formatPhone(member.phone) }}
@@ -321,6 +321,11 @@ a:hover {
 
 .gap-1 {
   gap: 0.25rem;
+}
+
+.staff-email {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .staff-title {
