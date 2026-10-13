@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-  const sections = ['who', 'officer', 'collected', 'purposes', 'consent', 'access', 'providers', 'retention', 'security', 'rights', 'incidents', 'analytics', 'changes']
+  const sections = ['who', 'officer', 'collected', 'purposes', 'consent', 'access', 'providers', 'retention', 'security', 'rights', 'incidents', 'cookies', 'changes']
 </script>

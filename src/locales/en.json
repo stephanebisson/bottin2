@@ -953,7 +953,7 @@
     "officerTitle": "Person in charge of the protection of personal information",
     "officerBody": "The person who chairs the Comité Bottin is in charge of the protection of personal information. They ensure this policy is followed, answer your requests and complaints, and handle any confidentiality incident.\nTo reach them: bottin.etoile.filante@gmail.com",
     "collectedTitle": "Information we collect",
-    "collectedBody": "Parents and guardians:\n• name, email and phone number\n• address\n• interests and committee memberships\n\nStudents: name, class and level, and their link to their parents.\n\nSchool staff: name, title, email and phone number.\n\nAccount: email and password. Passwords are managed by Google Firebase; the committee never has access to them.\n\nFeedback sent to the committee.\n\nUsage data: see the \"Cookies and usage statistics\" section.",
+    "collectedBody": "Parents and guardians:\n• name, email and phone number\n• address\n• interests and committee memberships\n\nStudents: name, class and level, and their link to their parents.\n\nSchool staff: name, title, email and phone number.\n\nAccount: email and password. Passwords are managed by Google Firebase; the committee never has access to them.\n\nFeedback sent to the committee.\n\nTechnical logs: see the \"Cookies and technical logs\" section.",
     "purposesTitle": "Why we use it",
     "purposesBody": "We use this information only to:\n• help families and school staff reach each other\n• organize committees and volunteering\n• send the annual update email and directory-related communications\n• keep the directory secure and improve it\n\nWe never sell, rent or trade your information. It is never used for commercial or political purposes.",
     "consentTitle": "Your consent",
@@ -970,8 +970,8 @@
     "rightsBody": "You may:\n• access the information we hold about you\n• have it corrected\n• withdraw your consent and ask for it to be deleted\n• get a copy of it in a structured, commonly used technological format\n\nYou can correct most of your information yourself with the update form. For any other request, write to bottin.etoile.filante@gmail.com. We will reply within 30 days.\nIf you are not satisfied with our answer, you may file a complaint with the Commission d'accès à l'information du Québec.",
     "incidentsTitle": "Confidentiality incidents",
     "incidentsBody": "We record every confidentiality incident. If an incident presents a risk of serious injury, we promptly notify the Commission d'accès à l'information and the people concerned.",
-    "analyticsTitle": "Cookies and usage statistics",
-    "analyticsBody": "The directory stores your language choice and your sign-in session in your browser.\nWe use Google Analytics for Firebase to learn which pages are viewed and which types of devices are used, in order to improve the directory. These statistics are linked to an account identifier, but not to your name or email.",
+    "cookiesTitle": "Cookies and technical logs",
+    "cookiesBody": "The directory stores your language choice and your sign-in session in your browser. It does not use any analytics or advertising tools.\nOur servers keep technical logs (date, errors and IP address) to diagnose problems. They are deleted automatically after 30 days.",
     "changesTitle": "Changes",
     "changesBody": "We may change this policy. If we make a significant change, we will notify you by email or in the directory. The effective date appears at the top of the page."
   }

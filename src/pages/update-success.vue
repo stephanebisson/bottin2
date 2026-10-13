@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted } from 'vue'
+  import { computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   const route = useRoute()
   const router = useRouter()
@@ -134,9 +134,4 @@
   function goHome () {
     router.push('/')
   }
-
-  onMounted(() => {
-    // Track successful update completion (for analytics if needed)
-    console.log('Parent information update completed successfully')
-  })
 </script>

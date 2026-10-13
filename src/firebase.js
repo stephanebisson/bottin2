@@ -61,30 +61,6 @@ const db = getFirestore(app)
 // Initialize Auth
 const auth = getAuth(app)
 
-// Initialize Analytics (only in production or when explicitly enabled)
-let _analytics = null
-async function initAnalytics () {
-  if (import.meta.env.DEV) {
-    return
-  }
-  try {
-    const { isSupported, getAnalytics } = await import('firebase/analytics')
-    const analyticsSupported = await isSupported()
-    if (analyticsSupported) {
-      _analytics = getAnalytics(app)
-      console.log('✅ Firebase Analytics initialized')
-    }
-  } catch (error) {
-    console.warn('⚠️  Failed to initialize Firebase Analytics:', error.message)
-  }
-}
-
-// Initialize analytics
-initAnalytics()
-
-// Getter function for analytics (ESLint-friendly export)
-const getFirebaseAnalytics = () => _analytics
-
 // Connect to emulators in development
 if (import.meta.env.DEV) {
   // Enhanced emulator connection with better error handling
@@ -124,4 +100,4 @@ if (import.meta.env.DEV) {
   connectToEmulators()
 }
 
-export { getFirebaseAnalytics as analytics, auth, db }
+export { auth, db }

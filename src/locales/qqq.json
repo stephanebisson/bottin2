@@ -789,8 +789,8 @@
     "rightsBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item",
     "incidentsTitle": "Privacy policy page. - Section heading",
     "incidentsBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item",
-    "analyticsTitle": "Privacy policy page. - Section heading",
-    "analyticsBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item",
+    "cookiesTitle": "Privacy policy page. - Section heading",
+    "cookiesBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item",
     "changesTitle": "Privacy policy page. - Section heading",
     "changesBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item"
   }

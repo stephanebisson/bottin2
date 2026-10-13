@@ -483,7 +483,6 @@
 
       // Validate token exists
       if (!token.value) {
-        await logErrorToAnalytics('missing_token', { message: 'Token parameter missing from URL' })
         error.value = 'missing_token'
         errorType.value = 'invalid'
         return
@@ -506,8 +505,6 @@
       })
 
       if (!response.ok) {
-        let errorMessage = $i18n('updateForm.serverError')
-
         try {
           // Try to get detailed error message from server response
           const errorData = await response.json()
@@ -517,24 +514,10 @@
             error: errorData.error,
             valid: errorData.valid,
           })
-
-          if (errorData.error) {
-            errorMessage = errorData.error
-          }
         } catch (jsonError) {
           console.error('Could not parse server error response:', jsonError)
           console.error('Response status:', response.status, response.statusText)
         }
-
-        // Log error for admin review and show friendly error
-        await logErrorToAnalytics('token_validation_failed', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorMessage,
-          errorData,
-          token: token.value?.slice(0, 8) + '...',
-          retryCount: retryCount.value,
-        })
 
         // Set appropriate error type and message
         if (response.status === 404 || response.status === 410) {
@@ -553,11 +536,6 @@
       const data = await response.json()
 
       if (!data.valid) {
-        await logErrorToAnalytics('invalid_token_response', {
-          error: data.error,
-          token: token.value?.slice(0, 8) + '...',
-          retryCount: retryCount.value,
-        })
         error.value = 'invalid_token'
         errorType.value = 'expired'
         return
@@ -589,13 +567,6 @@
       }
     } catch (error_) {
       console.error('Failed to load parent data:', error_)
-      // Log error for admin review
-      await logErrorToAnalytics('load_parent_data_error', {
-        error: error_.message,
-        stack: error_.stack,
-        token: token.value?.slice(0, 8) + '...',
-        retryCount: retryCount.value,
-      })
 
       // Show friendly error message
       if (error_.message.includes('network') || error_.message.includes('fetch')) {
@@ -628,13 +599,6 @@
       })
 
       if (!response.ok) {
-        // Log error for admin review
-        await logErrorToAnalytics('opt_out_failed', {
-          status: response.status,
-          statusText: response.statusText,
-          parentEmail: parentData.value?.email || 'unknown',
-        })
-
         // Show user-friendly error
         if (response.status === 404 || response.status === 410) {
           error.value = 'expired_token'
@@ -649,11 +613,6 @@
 
       const result = await response.json()
 
-      // Log successful opt-out for analytics
-      await logErrorToAnalytics('opt_out_success', {
-        parentEmail: parentData.value?.email || 'unknown',
-      })
-
       // Redirect to success page
       router.push({
         path: '/update-success',
@@ -665,12 +624,6 @@
       })
     } catch (error_) {
       console.error('Failed to process opt-out:', error_)
-      // Log error for admin review
-      await logErrorToAnalytics('opt_out_exception', {
-        error: error_.message,
-        stack: error_.stack,
-        parentEmail: parentData.value?.email || 'unknown',
-      })
 
       // Show user-friendly error
       error.value = 'opt_out_error'
@@ -715,14 +668,6 @@
       })
 
       if (!response.ok) {
-        // Log detailed error for admin review
-        await logErrorToAnalytics('form_submission_failed', {
-          status: response.status,
-          statusText: response.statusText,
-          formData: { ...form.value, phone: '***', address: '***' },
-          parentEmail: parentData.value?.email || 'unknown',
-        })
-
         // Show user-friendly error based on status
         if (response.status === 404 || response.status === 410) {
           error.value = 'expired_token'
@@ -736,13 +681,6 @@
 
       const result = await response.json()
 
-      // Log successful submission for analytics
-      await logErrorToAnalytics('form_submission_success', {
-        parentEmail: parentData.value?.email || 'unknown',
-        committees: form.value.committees.length,
-        interests: form.value.interests.length,
-      })
-
       // Redirect to success page
       router.push({
         path: '/update-success',
@@ -753,13 +691,6 @@
       })
     } catch (error_) {
       console.error('Failed to submit form:', error_)
-      // Log error for admin review
-      await logErrorToAnalytics('form_submission_exception', {
-        error: error_.message,
-        stack: error_.stack,
-        formData: { ...form.value, phone: '***', address: '***' },
-        parentEmail: parentData.value?.email || 'unknown',
-      })
 
       // Show user-friendly error
       error.value = 'submission_error'
@@ -826,93 +757,6 @@
       default: {
         return 'An unexpected issue occurred. Our technical team has been notified and will review your request.'
       }
-    }
-  }
-
-  // Categorize errors for Firebase Analytics
-  function getErrorCategory (eventName) {
-    if (eventName.includes('token')) return 'authentication'
-    if (eventName.includes('network') || eventName.includes('fetch')) return 'network'
-    if (eventName.includes('submission')) return 'form_processing'
-    if (eventName.includes('opt_out')) return 'opt_out'
-    if (eventName.includes('server')) return 'server_error'
-    return 'unknown'
-  }
-
-  // Log event to Firebase Analytics for admin review
-  async function logErrorToAnalytics (eventName, errorDetails) {
-    try {
-      // Enhanced error context
-      const errorContext = {
-        ...errorDetails,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        referrer: document.referrer,
-        token: token.value?.slice(0, 8) + '...', // Safe partial token
-        sessionId: crypto.randomUUID(), // Unique session identifier
-      }
-
-      // Use appropriate console method based on event type
-      const isSuccessEvent = eventName.includes('success')
-      if (isSuccessEvent) {
-        console.log(`Analytics Event [${eventName}]:`, errorContext)
-      } else {
-        console.error(`Analytics Error [${eventName}]:`, errorContext)
-      }
-
-      // Firebase Analytics implementation
-      try {
-        const { analytics } = await import('@/firebase')
-        const { logEvent } = await import('firebase/analytics')
-
-        // Get analytics instance
-        const analyticsInstance = analytics()
-
-        // Only log if analytics is available
-        if (analyticsInstance) {
-          // Log to Firebase Analytics
-          await logEvent(analyticsInstance, 'parent_update_error', {
-            error_type: eventName,
-            // Firebase Analytics has parameter limitations, so we'll use key fields
-            status: errorContext.status?.toString() || 'unknown',
-            retry_count: errorContext.retryCount?.toString() || '0',
-            error_category: getErrorCategory(eventName),
-            // Custom dimensions for detailed analysis
-            custom_error_details: JSON.stringify({
-              error: errorContext.error,
-              token_partial: errorContext.token,
-              timestamp: errorContext.timestamp,
-            }).slice(0, 500), // Firebase has 500 char limit
-          })
-        }
-      } catch (analyticsError) {
-        console.error('Firebase Analytics logging failed:', analyticsError)
-      }
-
-      // For now, we'll log to console with clear formatting for admin review
-      const groupIcon = isSuccessEvent ? '✅' : '🚨'
-      console.group(`${groupIcon} FIREBASE ANALYTICS: ${eventName}`)
-      if (isSuccessEvent) {
-        console.log('Event Data:', {
-          event_name: 'parent_update_event',
-          parameters: {
-            event_type: eventName,
-            ...errorContext,
-          },
-        })
-      } else {
-        console.error('Event Data:', {
-          event_name: 'parent_update_error',
-          parameters: {
-            error_type: eventName,
-            ...errorContext,
-          },
-        })
-      }
-      console.groupEnd()
-    } catch (analyticsError) {
-      console.error('Failed to log error to analytics:', analyticsError)
     }
   }
 

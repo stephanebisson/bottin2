@@ -1,5 +1,6 @@
 const { getAuth } = require('firebase-admin/auth')
 const { FieldValue, getFirestore } = require('firebase-admin/firestore')
+const logger = require('firebase-functions/logger')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
@@ -8,6 +9,20 @@ const { tokenValidationSchema, parentUpdateSchema, parentOptOutSchema } = requir
 
 // Get Firestore instance
 const db = getFirestore()
+
+/**
+ * Log a parent update form failure. All failures share the parent_update_error
+ * message so they can be found together in Cloud Logging.
+ */
+function logUpdateFailure (endpoint, reason, token, details = {}) {
+  const log = reason === 'server_error' ? logger.error : logger.warn
+  log('parent_update_error', {
+    endpoint,
+    reason,
+    token: typeof token === 'string' ? `${token.slice(0, 8)}...` : null,
+    ...details,
+  })
+}
 
 /**
  * Validate update token and return parent information
@@ -55,14 +70,14 @@ exports.validateUpdateTokenV2 = onRequest({
     const tokenDoc = await db.collection('tokens').doc(token).get()
 
     if (!tokenDoc.exists) {
-      console.log('✗ Token not found')
+      logUpdateFailure('validateUpdateTokenV2', 'token_not_found', token)
       return res.status(404).json({ valid: false, error: 'Invalid or expired token.' })
     }
 
     const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
 
     if (!parentDoc.exists) {
-      console.log('✗ Parent not found for token')
+      logUpdateFailure('validateUpdateTokenV2', 'parent_not_found', token)
       return res.status(404).json({ valid: false, error: 'Invalid or expired token.' })
     }
 
@@ -174,6 +189,7 @@ exports.validateUpdateTokenV2 = onRequest({
   } catch (error) {
     // Handle validation errors
     if (error.code === 'invalid-argument') {
+      logUpdateFailure('validateUpdateTokenV2', 'invalid_input', req.body?.token, { error: error.message })
       return res.status(400).json({
         valid: false,
         error: error.message,
@@ -181,7 +197,7 @@ exports.validateUpdateTokenV2 = onRequest({
       })
     }
 
-    console.error('Validate token error:', error)
+    logUpdateFailure('validateUpdateTokenV2', 'server_error', req.body?.token, { error: error.message, stack: error.stack })
     res.status(500).json({
       valid: false,
       error: 'Internal server error occurred during token validation.',
@@ -237,12 +253,14 @@ exports.processParentUpdateV2 = onRequest({
     const tokenDoc = await db.collection('tokens').doc(token).get()
 
     if (!tokenDoc.exists) {
+      logUpdateFailure('processParentUpdateV2', 'token_not_found', token)
       return res.status(404).json({ error: 'Invalid or expired token.' })
     }
 
     const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
 
     if (!parentDoc.exists) {
+      logUpdateFailure('processParentUpdateV2', 'parent_not_found', token)
       return res.status(404).json({ error: 'Invalid or expired token.' })
     }
 
@@ -368,13 +386,14 @@ exports.processParentUpdateV2 = onRequest({
   } catch (error) {
     // Handle validation errors
     if (error.code === 'invalid-argument') {
+      logUpdateFailure('processParentUpdateV2', 'invalid_input', req.body?.token, { error: error.message })
       return res.status(400).json({
         error: error.message,
         details: error.details,
       })
     }
 
-    console.error('Process parent update error:', error)
+    logUpdateFailure('processParentUpdateV2', 'server_error', req.body?.token, { error: error.message, stack: error.stack })
     res.status(500).json({
       error: 'Internal server error occurred while processing update',
     })
@@ -425,12 +444,14 @@ exports.processParentOptOutV2 = onRequest({
     const tokenDoc = await db.collection('tokens').doc(token).get()
 
     if (!tokenDoc.exists) {
+      logUpdateFailure('processParentOptOutV2', 'token_not_found', token)
       return res.status(404).json({ error: 'Invalid or expired token.' })
     }
 
     const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
 
     if (!parentDoc.exists) {
+      logUpdateFailure('processParentOptOutV2', 'parent_not_found', token)
       return res.status(404).json({ error: 'Invalid or expired token.' })
     }
 
@@ -493,13 +514,14 @@ exports.processParentOptOutV2 = onRequest({
   } catch (error) {
     // Handle validation errors
     if (error.code === 'invalid-argument') {
+      logUpdateFailure('processParentOptOutV2', 'invalid_input', req.body?.token, { error: error.message })
       return res.status(400).json({
         error: error.message,
         details: error.details,
       })
     }
 
-    console.error('Process parent opt-out error:', error)
+    logUpdateFailure('processParentOptOutV2', 'server_error', req.body?.token, { error: error.message, stack: error.stack })
     res.status(500).json({
       error: 'Internal server error occurred while processing opt-out',
     })
