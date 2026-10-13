@@ -489,6 +489,7 @@
       "noChildren": "Aucun enfant",
       "noTeacher": "Aucun enseignant",
       "addNewParent": "Ajouter un nouveau parent",
+      "editParent": "Modifier le parent",
       "deleteStudent": "Supprimer l'élève",
       "confirmDeleteStudent": "Supprimer définitivement l'élève",
       "deleteStudentWarning": "Vous êtes sur le point de supprimer définitivement cet élève du système scolaire. Cette action supprimera toutes ses informations de la base de données.",

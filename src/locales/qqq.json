@@ -445,6 +445,7 @@
       "noChildren": "Administration panel",
       "noTeacher": "Administration panel",
       "addNewParent": "Administration panel",
+      "editParent": "Administration panel - Title of the dialog for editing a parent",
       "deleteStudent": "Administration panel",
       "confirmDeleteStudent": "Administration panel",
       "deleteStudentWarning": "Administration panel. - Warning message",
