@@ -479,6 +479,7 @@
         "parents": "Administration panel"
       },
       "newStudent": "Administration panel",
+      "editStudent": "Administration panel - Title of the dialog for editing a student",
       "createError": "Administration panel. - Error message",
       "validation": {
         "firstNameRequired": "Administration panel",

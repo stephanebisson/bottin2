@@ -524,6 +524,7 @@
         "log": "Historique"
       },
       "newStudent": "Nouvel élève",
+      "editStudent": "Modifier l'élève",
       "createError": "Échec de la création de l'élève. Veuillez réessayer.",
       "validation": {
         "firstNameRequired": "Le prénom est obligatoire",

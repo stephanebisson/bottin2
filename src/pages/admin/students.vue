@@ -141,7 +141,7 @@
               color="primary"
               prepend-icon="mdi-plus"
               variant="elevated"
-              @click="createNewStudent"
+              @click="openNewStudentDialog"
             >
               {{ $i18n('admin.studentsTable.newStudent') }}
             </v-btn>
@@ -163,50 +163,18 @@
         >
           <!-- First Name -->
           <template #item.first_name="{ item }">
-            <v-text-field
-              v-if="editingRows.has(item.id)"
-              v-model="item.first_name"
-              density="compact"
-              hide-details
-              variant="outlined"
-            />
-
-            <span v-else class="font-weight-medium">{{ item.first_name }}</span>
+            <span class="font-weight-medium">{{ item.first_name }}</span>
           </template>
 
           <!-- Last Name -->
           <template #item.last_name="{ item }">
-            <v-text-field
-              v-if="editingRows.has(item.id)"
-              v-model="item.last_name"
-              density="compact"
-              hide-details
-              variant="outlined"
-            />
-
-            <span v-else class="font-weight-medium">{{ item.last_name }}</span>
+            <span class="font-weight-medium">{{ item.last_name }}</span>
           </template>
 
           <!-- Class -->
           <template #item.className="{ item }">
-            <v-select
-              v-if="editingRows.has(item.id)"
-              v-model="item.className"
-              density="compact"
-              hide-details
-              item-title="text"
-              item-value="value"
-              :items="classOptions"
-              style="min-width: 140px"
-              variant="outlined"
-            >
-              <template #selection="{ internalItem: sel }">
-                <span class="font-weight-medium">{{ sel.title }}</span>
-              </template>
-            </v-select>
-
             <v-chip
-              v-else-if="!item.className"
+              v-if="!item.className"
               color="orange"
               size="small"
               variant="tonal"
@@ -221,52 +189,12 @@
 
           <!-- Level -->
           <template #item.level="{ item }">
-            <v-select
-              v-if="editingRows.has(item.id)"
-              v-model="item.level"
-              density="compact"
-              hide-details
-              :items="getLevelOptions(item.className)"
-              style="min-width: 70px"
-              variant="outlined"
-            >
-              <template #selection="{ internalItem: sel }">
-                <span class="font-weight-medium">{{ sel.title }}</span>
-              </template>
-            </v-select>
-
-            <span v-else class="font-weight-medium">{{ item.level }}</span>
+            <span class="font-weight-medium">{{ item.level }}</span>
           </template>
 
           <!-- Parents -->
           <template #item.parents="{ item }">
-            <div v-if="editingRows.has(item.id)" class="d-flex flex-column ga-1">
-              <v-autocomplete
-                v-model="item.parent1_id"
-                clearable
-                density="compact"
-                hide-details
-                item-title="fullName"
-                item-value="id"
-                :items="parentOptions"
-                placeholder="Parent 1"
-                variant="outlined"
-              />
-
-              <v-autocomplete
-                v-model="item.parent2_id"
-                clearable
-                density="compact"
-                hide-details
-                item-title="fullName"
-                item-value="id"
-                :items="parentOptions"
-                placeholder="Parent 2"
-                variant="outlined"
-              />
-            </div>
-
-            <div v-else class="d-flex flex-column">
+            <div class="d-flex flex-column">
               <span v-if="item.parent1_id" class="text-body-medium mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
               <span v-if="item.parent2_id" class="text-body-medium">{{ getParentDisplayName(item.parent2_id) }}</span>
 
@@ -291,43 +219,21 @@
           <!-- Actions -->
           <template #item.actions="{ item }">
             <div class="d-flex align-center ga-1">
-              <template v-if="!editingRows.has(item.id)">
-                <v-btn
-                  color="primary"
-                  icon="mdi-pencil"
-                  size="small"
-                  variant="text"
-                  @click="startEditing(item)"
-                />
+              <v-btn
+                color="primary"
+                icon="mdi-pencil"
+                size="small"
+                variant="text"
+                @click="openEditStudentDialog(item)"
+              />
 
-                <v-btn
-                  color="error"
-                  icon="mdi-delete"
-                  size="small"
-                  variant="text"
-                  @click="openDeleteStudentDialog(item)"
-                />
-              </template>
-
-              <template v-else>
-                <v-btn
-                  color="success"
-                  icon="mdi-check"
-                  :loading="item._saving"
-                  size="small"
-                  variant="text"
-                  @click="saveStudent(item)"
-                />
-
-                <v-btn
-                  color="grey"
-                  :disabled="item._saving"
-                  icon="mdi-close"
-                  size="small"
-                  variant="text"
-                  @click="cancelEditing(item)"
-                />
-              </template>
+              <v-btn
+                color="error"
+                icon="mdi-delete"
+                size="small"
+                variant="text"
+                @click="openDeleteStudentDialog(item)"
+              />
             </div>
           </template>
 
@@ -341,6 +247,108 @@
         </v-data-table>
       </v-card>
     </div>
+
+    <!-- Student Form Dialog -->
+    <v-dialog v-model="studentDialogOpen" max-width="500px" :persistent="studentFormSaving">
+      <v-card>
+        <v-card-title>
+          {{ editingStudent ? $i18n('admin.studentsTable.editStudent') : $i18n('admin.studentsTable.newStudent') }}
+        </v-card-title>
+
+        <v-card-text>
+          <v-text-field
+            v-model="studentForm.first_name"
+            autofocus
+            class="mb-2"
+            density="compact"
+            :label="$i18n('admin.studentsTable.headers.firstName')"
+            variant="outlined"
+          />
+
+          <v-text-field
+            v-model="studentForm.last_name"
+            class="mb-2"
+            density="compact"
+            :label="$i18n('admin.studentsTable.headers.lastName')"
+            variant="outlined"
+          />
+
+          <div class="d-flex ga-2">
+            <v-select
+              v-model="studentForm.className"
+              class="mb-2 flex-grow-1"
+              clearable
+              density="compact"
+              item-title="text"
+              item-value="value"
+              :items="classOptions"
+              :label="$i18n('admin.studentsTable.headers.class')"
+              variant="outlined"
+              @update:model-value="onStudentFormClassChange"
+            />
+
+            <v-select
+              v-model="studentForm.level"
+              class="mb-2"
+              density="compact"
+              :items="studentForm.className ? getLevelOptions(studentForm.className) : allLevelOptions"
+              :label="$i18n('admin.studentsTable.headers.level')"
+              style="max-width: 110px"
+              variant="outlined"
+            />
+          </div>
+
+          <v-autocomplete
+            v-model="studentForm.parent1_id"
+            class="mb-2"
+            clearable
+            density="compact"
+            item-title="fullName"
+            item-value="id"
+            :items="parentOptions"
+            label="Parent 1"
+            variant="outlined"
+          />
+
+          <v-autocomplete
+            v-model="studentForm.parent2_id"
+            clearable
+            density="compact"
+            item-title="fullName"
+            item-value="id"
+            :items="parentOptions"
+            label="Parent 2"
+            variant="outlined"
+          />
+
+          <v-alert
+            v-if="studentFormError"
+            class="mt-3"
+            type="error"
+            variant="tonal"
+          >
+            {{ studentFormError }}
+          </v-alert>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn :disabled="studentFormSaving" variant="text" @click="studentDialogOpen = false">
+            {{ $i18n('common.cancel') }}
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            :loading="studentFormSaving"
+            variant="tonal"
+            @click="saveStudentForm"
+          >
+            {{ $i18n('common.save') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Progress All Dialog -->
     <v-dialog v-model="showProgressDialog" max-width="600px" persistent>
@@ -550,7 +558,6 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
-  import { StudentDTO } from '@/dto/StudentDTO.js'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
@@ -569,8 +576,6 @@
   const students = ref([])
   const classOptions = ref([])
   const parentOptions = ref([])
-  const editingRows = ref(new Set())
-  const newStudent = ref(null)
   const isAuthorized = ref(false)
 
   // Filters
@@ -599,6 +604,13 @@
   const assignClassTarget = ref(null)
   const assigningClass = ref(false)
 
+  // Add / Edit
+  const studentDialogOpen = ref(false)
+  const editingStudent = ref(null)
+  const studentForm = ref({ first_name: '', last_name: '', className: null, level: null, parent1_id: null, parent2_id: null })
+  const studentFormSaving = ref(false)
+  const studentFormError = ref(null)
+
   // Delete Individual
   const showDeleteDialog = ref(false)
   const studentToDelete = ref(null)
@@ -609,13 +621,8 @@
 
   // ─── Computed ─────────────────────────────────────────────────────────────────
 
-  const displayStudents = computed(() => {
-    if (newStudent.value) return [newStudent.value, ...students.value]
-    return students.value
-  })
-
   const filteredStudents = computed(() => {
-    let result = displayStudents.value
+    let result = students.value
     if (searchQuery.value) {
       const q = searchQuery.value.toLowerCase()
       result = result.filter(s =>
@@ -788,104 +795,83 @@
     })
   }
 
-  // ─── Editing (inline row) ─────────────────────────────────────────────────────
+  // ─── Add / Edit Dialog ───────────────────────────────────────────────────────
 
-  function startEditing (studentDTO) {
-    studentDTO._originalValues = {
+  function openNewStudentDialog () {
+    editingStudent.value = null
+    studentForm.value = { first_name: '', last_name: '', className: null, level: null, parent1_id: null, parent2_id: null }
+    studentFormError.value = null
+    studentDialogOpen.value = true
+  }
+
+  function openEditStudentDialog (studentDTO) {
+    editingStudent.value = studentDTO
+    studentForm.value = {
       first_name: studentDTO.first_name,
       last_name: studentDTO.last_name,
-      className: studentDTO.className,
+      className: studentDTO.className || null,
       level: studentDTO.level,
-      parent1_id: studentDTO.parent1_id,
-      parent2_id: studentDTO.parent2_id,
+      parent1_id: studentDTO.parent1_id || null,
+      parent2_id: studentDTO.parent2_id || null,
     }
-    editingRows.value.add(studentDTO.id)
+    studentFormError.value = null
+    studentDialogOpen.value = true
   }
 
-  function cancelEditing (studentDTO) {
-    if (newStudent.value && studentDTO.id === newStudent.value.id) {
-      editingRows.value.delete(newStudent.value.id)
-      newStudent.value = null
+  function onStudentFormClassChange (classLetter) {
+    if (!classLetter) return
+    const validLevels = getValidLevelsForClass(classLetter)
+    if (!validLevels.includes(studentForm.value.level)) {
+      studentForm.value.level = validLevels.length === 1 ? validLevels[0] : null
+    }
+  }
+
+  async function saveStudentForm () {
+    const data = {
+      first_name: studentForm.value.first_name.trim(),
+      last_name: studentForm.value.last_name.trim(),
+      className: studentForm.value.className || '',
+      level: studentForm.value.level,
+      parent1_id: studentForm.value.parent1_id || null,
+      parent2_id: studentForm.value.parent2_id || null,
+    }
+    if (!data.first_name) {
+      studentFormError.value = $i18n('admin.studentsTable.validation.firstNameRequired')
       return
     }
-    if (studentDTO._originalValues) {
-      Object.assign(studentDTO, studentDTO._originalValues)
-      delete studentDTO._originalValues
-    }
-    editingRows.value.delete(studentDTO.id)
-  }
-
-  function createNewStudent () {
-    if (newStudent.value) return
-    const tempId = 'new-student-' + Date.now()
-    newStudent.value = new StudentDTO({ id: tempId, first_name: '', last_name: '', className: '', level: null, parent1_id: null, parent2_id: null })
-    editingRows.value.add(tempId)
-  }
-
-  async function saveNewStudent () {
-    if (!newStudent.value) return
-    try {
-      newStudent.value._saving = true
-      if (!newStudent.value.first_name.trim()) {
-        error.value = $i18n('admin.studentsTable.validation.firstNameRequired')
-        return
-      }
-      if (!newStudent.value.last_name.trim()) {
-        error.value = $i18n('admin.studentsTable.validation.lastNameRequired')
-        return
-      }
-      if (!newStudent.value.parent1_id && !newStudent.value.parent2_id) {
-        error.value = $i18n('admin.studentsTable.validation.parentRequired')
-        return
-      }
-      const created = await new StudentRepository().create({
-        first_name: newStudent.value.first_name.trim(),
-        last_name: newStudent.value.last_name.trim(),
-        className: newStudent.value.className,
-        level: newStudent.value.level,
-        parent1_id: newStudent.value.parent1_id || null,
-        parent2_id: newStudent.value.parent2_id || null,
-      })
-      students.value.unshift(created)
-      editingRows.value.delete(newStudent.value.id)
-      newStudent.value = null
-    } catch {
-      error.value = $i18n('admin.studentsTable.createError')
-    } finally {
-      if (newStudent.value) newStudent.value._saving = false
-    }
-  }
-
-  async function saveStudent (studentDTO) {
-    if (newStudent.value && studentDTO.id === newStudent.value.id) {
-      await saveNewStudent()
+    if (!data.last_name) {
+      studentFormError.value = $i18n('admin.studentsTable.validation.lastNameRequired')
       return
     }
+    if (!editingStudent.value && !data.parent1_id && !data.parent2_id) {
+      studentFormError.value = $i18n('admin.studentsTable.validation.parentRequired')
+      return
+    }
+
+    studentFormSaving.value = true
+    studentFormError.value = null
     try {
-      studentDTO._saving = true
-      const updated = await new StudentRepository().update(studentDTO.id, {
-        first_name: studentDTO.first_name,
-        last_name: studentDTO.last_name,
-        className: studentDTO.className,
-        level: studentDTO.level,
-        parent1_id: studentDTO.parent1_id || null,
-        parent2_id: studentDTO.parent2_id || null,
-      })
-      Object.assign(studentDTO, {
-        first_name: updated.first_name,
-        last_name: updated.last_name,
-        className: updated.className,
-        level: updated.level,
-        parent1_id: updated.parent1_id,
-        parent2_id: updated.parent2_id,
-        updatedAt: updated.updatedAt,
-      })
-      delete studentDTO._originalValues
-      editingRows.value.delete(studentDTO.id)
+      const studentDTO = editingStudent.value
+      if (studentDTO) {
+        const updated = await new StudentRepository().update(studentDTO.id, data)
+        Object.assign(studentDTO, {
+          first_name: updated.first_name,
+          last_name: updated.last_name,
+          className: updated.className,
+          level: updated.level,
+          parent1_id: updated.parent1_id,
+          parent2_id: updated.parent2_id,
+          updatedAt: updated.updatedAt,
+        })
+      } else {
+        const created = await new StudentRepository().create(data)
+        students.value.unshift(created)
+      }
+      studentDialogOpen.value = false
     } catch {
-      error.value = $i18n('admin.studentsTable.updateError')
+      studentFormError.value = $i18n(editingStudent.value ? 'admin.studentsTable.updateError' : 'admin.studentsTable.createError')
     } finally {
-      studentDTO._saving = false
+      studentFormSaving.value = false
     }
   }
 

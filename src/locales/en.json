@@ -517,6 +517,7 @@
         "log": "History"
       },
       "newStudent": "New Student",
+      "editStudent": "Edit student",
       "createError": "Failed to create student. Please try again.",
       "validation": {
         "firstNameRequired": "First name is required",
