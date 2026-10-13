@@ -34,21 +34,6 @@
         </v-tooltip>
       </template>
 
-      <!-- Messaging Icon (when authenticated and chat enabled) -->
-      <template v-if="authStore.isAuthenticated && messagingShellRef && currentUserHasChat">
-        <v-badge
-          color="error"
-          :content="unreadCount"
-          :model-value="unreadCount > 0"
-        >
-          <v-btn
-            icon="mdi-forum"
-            variant="text"
-            @click="handleToggleMessaging"
-          />
-        </v-badge>
-      </template>
-
       <!-- User Menu (when authenticated) -->
       <template v-if="authStore.isAuthenticated">
         <v-menu>
@@ -137,13 +122,6 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const props = defineProps({
-    messagingShellRef: {
-      type: Object,
-      default: null,
-    },
-  })
-
   defineEmits(['toggle-drawer'])
 
   const route = useRoute()
@@ -167,35 +145,10 @@
     return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
   })
 
-  // Check if current user has chat enabled
-  const currentUserHasChat = computed(() => {
-    return currentParent.value?.hasChatEnabled || false
-  })
-
   // Get current user's full name from parent record
   const currentUserFullName = computed(() => {
     return currentParent.value?.fullName || authStore.userDisplayName || ''
   })
-
-  // Computed property to safely access messaging shell's unread count
-  const unreadCount = computed(() => {
-    try {
-      if (!props.messagingShellRef) return 0
-      // The ref might not be set yet, or the component might not expose totalUnreadCount
-      const count = props.messagingShellRef.totalUnreadCount
-      if (typeof count === 'number') return count
-      if (count?.value !== undefined) return count.value
-      return 0
-    } catch {
-      return 0
-    }
-  })
-
-  function handleToggleMessaging () {
-    if (props.messagingShellRef?.toggleMessaging) {
-      props.messagingShellRef.toggleMessaging()
-    }
-  }
 
   const pageTitle = computed(() => {
     const routeName = route.name

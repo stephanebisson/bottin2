@@ -1,10 +1,10 @@
 /**
  * School Location Configuration
  *
- * Define the school's physical location and map display settings
+ * Define the school's physical location
  */
 
-// School physical address and coordinates
+// School physical address
 export const SCHOOL_LOCATION = {
   name: 'Étoile filante',
   address: '5619, chemin de la Côte-Saint-Antoine',
@@ -13,38 +13,6 @@ export const SCHOOL_LOCATION = {
   province: 'QC',
   country: 'Canada',
   phone: '5145965682',
-
-  // Coordinates for map center
-  latitude: 45.47269444922556,
-  longitude: -73.61686784449088,
-}
-
-// Default map view settings
-export const MAP_DEFAULT_ZOOM = 16 // Medium zoom level (1-20 scale)
-export const MAP_MIN_ZOOM = 10
-export const MAP_MAX_ZOOM = 18
-
-// Marker cluster settings
-export const CLUSTER_SETTINGS = {
-  // Maximum radius a cluster will cover from the central marker (in pixels)
-  maxClusterRadius: 80,
-
-  // Disable clustering at this zoom level and below
-  disableClusteringAtZoom: 16,
-
-  // Show coverage area when clicking cluster
-  showCoverageOnHover: false,
-
-  // Animate marker additions/removals
-  animate: true,
-}
-
-/**
- * Get the school location
- * @returns {Object} School location object with address and coordinates
- */
-export function getSchoolLocation () {
-  return SCHOOL_LOCATION
 }
 
 /**

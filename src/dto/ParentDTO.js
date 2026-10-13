@@ -15,13 +15,6 @@ export class ParentDTO {
     this.postal_code = this.sanitizeString(data.postal_code)
     this.interests = this.sanitizeInterests(data.interests)
 
-    // Geolocation fields for map display
-    this.latitude = this.sanitizeCoordinate(data.latitude)
-    this.longitude = this.sanitizeCoordinate(data.longitude)
-
-    // Chat opt-in feature flag
-    this.chat = this.sanitizeBoolean(data.chat)
-
     // Opt-out status (set by parent via form or admin action)
     this.optedOut = data.optedOut === true
     // Last time the parent submitted the annual update form (set by processParentUpdateV2)
@@ -80,17 +73,6 @@ export class ParentDTO {
       .filter(interest => interest && typeof interest === 'string')
       .map(interest => interest.trim())
       .filter(interest => interest.length > 0)
-  }
-
-  /**
-   * Sanitize coordinate value - ensure it's a valid number or null
-   */
-  sanitizeCoordinate (value) {
-    if ([null, undefined, ''].includes(value)) {
-      return null
-    }
-    const num = Number(value)
-    return Number.isNaN(num) ? null : num
   }
 
   /**
@@ -212,33 +194,6 @@ export class ParentDTO {
   }
 
   /**
-   * Check if parent has valid geolocation coordinates
-   */
-  get hasGeolocation () {
-    return this.latitude !== null
-      && this.longitude !== null
-      && !Number.isNaN(this.latitude)
-      && !Number.isNaN(this.longitude)
-  }
-
-  /**
-   * Check if parent has opted into chat feature
-   */
-  get hasChatEnabled () {
-    return this.chat === true
-  }
-
-  /**
-   * Get geolocation as object
-   * @returns {{latitude: number, longitude: number}|null} Coordinates or null if not available
-   */
-  get geolocation () {
-    return this.hasGeolocation
-      ? { latitude: this.latitude, longitude: this.longitude }
-      : null
-  }
-
-  /**
    * Transform data for Firestore storage (only raw fields, no computed fields)
    */
   toFirestore () {
@@ -251,13 +206,6 @@ export class ParentDTO {
       city: this.city,
       postal_code: this.postal_code,
       interests: this.interests,
-
-      // Geolocation
-      latitude: this.latitude,
-      longitude: this.longitude,
-
-      // Chat opt-in
-      chat: this.chat,
 
       // Metadata
       updatedAt: new Date(),
@@ -299,12 +247,6 @@ export class ParentDTO {
       hasContactInfo: this.hasContactInfo,
       hasInterests: this.hasInterests,
       interestCount: this.interestCount,
-      latitude: this.latitude,
-      longitude: this.longitude,
-      hasGeolocation: this.hasGeolocation,
-      geolocation: this.geolocation,
-      chat: this.chat,
-      hasChatEnabled: this.hasChatEnabled,
       optedOut: this.optedOut,
       lastUpdated: this.lastUpdated,
       createdAt: this.createdAt,
@@ -334,8 +276,6 @@ export class ParentDTO {
    * @param {string} [contactUpdates.address] - New address
    * @param {string} [contactUpdates.city] - New city
    * @param {string} [contactUpdates.postal_code] - New postal code
-   * @param {number} [contactUpdates.latitude] - New latitude
-   * @param {number} [contactUpdates.longitude] - New longitude
    * @returns {ParentDTO} New ParentDTO with updated contact info
    */
   updateContactInfo (contactUpdates) {
@@ -355,12 +295,6 @@ export class ParentDTO {
     }
     if (contactUpdates.postal_code !== undefined) {
       updates.postal_code = this.sanitizeString(contactUpdates.postal_code)
-    }
-    if (contactUpdates.latitude !== undefined) {
-      updates.latitude = this.sanitizeCoordinate(contactUpdates.latitude)
-    }
-    if (contactUpdates.longitude !== undefined) {
-      updates.longitude = this.sanitizeCoordinate(contactUpdates.longitude)
     }
 
     return this.withUpdates(updates)

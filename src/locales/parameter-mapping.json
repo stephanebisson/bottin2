@@ -124,13 +124,6 @@
     ],
     "themeSelector.currentTheme": [
       "theme"
-    ],
-    "messages.characterCount": [
-      "count",
-      "max"
-    ],
-    "messages.messageTooLong": [
-      "max"
     ]
   },
   "fr": {
@@ -258,13 +251,6 @@
     ],
     "themeSelector.currentTheme": [
       "theme"
-    ],
-    "messages.characterCount": [
-      "count",
-      "max"
-    ],
-    "messages.messageTooLong": [
-      "max"
     ]
   }
 }

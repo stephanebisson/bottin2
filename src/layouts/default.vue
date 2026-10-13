@@ -2,7 +2,6 @@
   <v-app>
     <AppBar
       v-if="!isPrintPage"
-      :messaging-shell-ref="messagingShellRef"
       @toggle-drawer="drawer = !drawer"
     />
 
@@ -31,62 +30,26 @@
 
     <AppFooter v-if="!isPrintPage" />
 
-    <!-- Messaging System -->
-    <MessagingShell
-      v-if="!isPrintPage && authStore.isAuthenticated && currentUserHasChat"
-      ref="messagingShellRef"
-      :chat-enabled="currentUserHasChat"
-      :current-user-email="authStore.userEmail"
-      :current-user-name="currentUserFullName"
-    />
-
     <!-- PWA Update Prompt -->
     <!-- <UpdatePrompt /> -->
   </v-app>
 </template>
 
 <script setup>
-  import { computed, provide, ref, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import AppBar from '@/components/AppBar.vue'
   import AppFooter from '@/components/AppFooter.vue'
-  import MessagingShell from '@/components/messaging/MessagingShell.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
   // import UpdatePrompt from '@/components/UpdatePrompt.vue'
   import { usePullToRefresh } from '@/composables/usePullToRefresh'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
   const { mobile } = useDisplay()
   const route = useRoute()
-
-  // Reference to MessagingShell component
-  const messagingShellRef = ref(null)
-
-  // Provide to all child components
-  provide('messagingShell', messagingShellRef)
-
-  // Get current parent
-  const currentParent = computed(() => {
-    if (!authStore.isAuthenticated || !authStore.userEmail) return null
-    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-  })
-
-  // Check if current user has chat enabled
-  const currentUserHasChat = computed(() => {
-    return currentParent.value?.hasChatEnabled || false
-  })
-
-  // Get current user's full name from parent record
-  const currentUserFullName = computed(() => {
-    return currentParent.value?.fullName || authStore.userDisplayName || ''
-  })
-
-  // Note: currentUserEmail is passed directly from authStore.userEmail to MessagingShell
 
   // Check if current route is a print page
   const isPrintPage = computed(() => {

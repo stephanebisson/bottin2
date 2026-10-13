@@ -239,10 +239,6 @@ export default defineConfig({
             if (id.includes('vuetify')) {
               return 'vendor-vuetify'
             }
-            // Leaflet map library
-            if (id.includes('leaflet')) {
-              return 'vendor-leaflet'
-            }
             // Other vendor libraries
             return 'vendor'
           }

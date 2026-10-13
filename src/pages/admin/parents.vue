@@ -913,7 +913,6 @@
           city: '',
           postal_code: '',
           interests: [],
-          chat: false,
           optedOut: true,
           updatedAt: serverTimestamp(),
         })

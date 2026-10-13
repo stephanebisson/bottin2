@@ -179,12 +179,6 @@
         icon: 'mdi-book-account',
         to: '/families',
       },
-      // Temporarily hidden while testing in production
-      // {
-      //   title: $i18n('map.title'),
-      //   icon: 'mdi-map-marker-multiple',
-      //   to: '/map',
-      // },
       {
         title: $i18n('nav.staff'),
         icon: 'mdi-account-tie',

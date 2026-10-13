@@ -472,26 +472,6 @@
                 </div>
               </div>
             </v-card-text>
-
-            <!-- Card Actions -->
-            <v-card-actions v-if="false" class="pa-3 pt-0">
-              <v-spacer />
-
-              <MessageButton
-                v-if="authStore.isAuthenticated && getClassParentIds(classItem.classLetter).length > 0"
-                color="primary"
-                :context-id="`class-${classItem.classLetter}`"
-                :context-label="{
-                  en: `${classItem.className} Parents`,
-                  fr: `Parents de ${classItem.className}`
-                }"
-                :participant-names="getClassParentNames(classItem.classLetter)"
-                :participants="getClassParentIds(classItem.classLetter)"
-                type="class"
-                variant="elevated"
-                @start-conversation="handleStartConversation"
-              />
-            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -604,9 +584,8 @@
 </template>
 
 <script setup>
-  import { computed, inject, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
-  import MessageButton from '@/components/messaging/MessageButton.vue'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
@@ -618,9 +597,6 @@
 
   // Feature flags
   const showPopups = ref(false)
-
-  // Get messaging shell reference
-  const messagingShell = inject('messagingShell', null)
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
@@ -793,53 +769,6 @@
 
   function getClassStudents (classLetter) {
     return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
-  }
-
-  // Get all unique parent emails for a class
-  function getClassParentIds (classLetter) {
-    const students = getClassStudents(classLetter)
-    const emailSet = new Set()
-
-    for (const student of students) {
-      if (student.parent1_id) {
-        emailSet.add(student.parent1_id) // parent1_id is actually an email
-      }
-      if (student.parent2_id) {
-        emailSet.add(student.parent2_id) // parent2_id is actually an email
-      }
-    }
-
-    return Array.from(emailSet)
-  }
-
-  // Get parent names map for a class (mapped by email)
-  function getClassParentNames (classLetter) {
-    const students = getClassStudents(classLetter)
-    const namesMap = {}
-
-    for (const student of students) {
-      if (student.parent1_id) {
-        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent1_id)
-        if (parent) {
-          namesMap[student.parent1_id] = parent.fullName
-        }
-      }
-      if (student.parent2_id) {
-        const parent = firebaseStore.parentsDTO.find(p => p.email === student.parent2_id)
-        if (parent) {
-          namesMap[student.parent2_id] = parent.fullName
-        }
-      }
-    }
-
-    return namesMap
-  }
-
-  // Handle starting a conversation
-  function handleStartConversation (conversationData) {
-    if (messagingShell?.value) {
-      messagingShell.value.createConversation(conversationData)
-    }
   }
 
   function getStudentsByLevel (classLetter) {

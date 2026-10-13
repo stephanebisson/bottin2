@@ -133,17 +133,13 @@
                 <ParentInfo
                   v-if="group.parent1"
                   :committees="getParentCommittees(group.parent1.id)"
-                  :current-user-email="authStore.userEmail"
-                  :current-user-name="currentUserFullName"
                   :parent="group.parent1"
                   :search-query="searchQuery"
                   show-address
                   show-committees
                   show-contact
                   show-interests
-                  :show-message-button="authStore.isAuthenticated"
                   variant="detailed"
-                  @start-conversation="handleStartConversation"
                 />
               </v-col>
 
@@ -151,17 +147,13 @@
                 <ParentInfo
                   v-if="group.parent2"
                   :committees="getParentCommittees(group.parent2.id)"
-                  :current-user-email="authStore.userEmail"
-                  :current-user-name="currentUserFullName"
                   :parent="group.parent2"
                   :search-query="searchQuery"
                   show-address
                   show-committees
                   show-contact
                   show-interests
-                  :show-message-button="authStore.isAuthenticated"
                   variant="detailed"
-                  @start-conversation="handleStartConversation"
                 />
               </v-col>
             </v-row>
@@ -192,14 +184,10 @@
             >
               <td class="py-3">
                 <ParentInfo
-                  :current-user-email="authStore.userEmail"
-                  :current-user-name="currentUserFullName"
                   :parent="parentData.parent"
                   :search-query="searchQuery"
                   show-contact
-                  :show-message-button="authStore.isAuthenticated"
                   variant="minimal"
-                  @start-conversation="handleStartConversation"
                 />
               </td>
 
@@ -243,20 +231,16 @@
 </template>
 
 <script setup>
-  import { computed, inject, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
-  // Get messaging shell reference
-  const messagingShell = inject('messagingShell', null)
-
   // Reactive state
   const searchQuery = ref('')
   const viewMode = ref('families')
@@ -264,20 +248,6 @@
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
-  const authStore = useAuthStore()
-
-  // Get current user's parent record
-  const currentUserParent = computed(() => {
-    if (!authStore.userEmail) return null
-    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-  })
-
-  // Get current user's full name from parent record
-  const currentUserFullName = computed(() => {
-    return currentUserParent.value?.fullName || authStore.userDisplayName || ''
-  })
-
-  // Note: We use authStore.userEmail directly for messaging
 
   // Class options for filtering
   const classOptions = computed(() => {
@@ -494,13 +464,6 @@
 
   function onSearchInput () {
     // Force reactivity update
-  }
-
-  // Handle starting a conversation
-  function handleStartConversation (conversationData) {
-    if (messagingShell?.value) {
-      messagingShell.value.createConversation(conversationData)
-    }
   }
 
   onMounted(async () => {

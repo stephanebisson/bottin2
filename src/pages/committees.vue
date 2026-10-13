@@ -117,18 +117,14 @@
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-grey-lighten-4'"
-                    :current-user-email="authStore.userEmail"
-                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
                     :search-query="searchQuery"
                     show-contact
                     show-member-type
-                    :show-message-button="authStore.isAuthenticated"
                     show-role
                     variant="compact"
-                    @start-conversation="handleStartConversation"
                   />
                 </div>
 
@@ -147,18 +143,14 @@
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-blue-lighten-5'"
-                    :current-user-email="authStore.userEmail"
-                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
                     :search-query="searchQuery"
                     show-contact
                     show-member-type
-                    :show-message-button="authStore.isAuthenticated"
                     show-role
                     variant="compact"
-                    @start-conversation="handleStartConversation"
                   />
                 </div>
 
@@ -177,18 +169,14 @@
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
                     :class="'bg-orange-lighten-5'"
-                    :current-user-email="authStore.userEmail"
-                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
                     :search-query="searchQuery"
                     show-contact
                     show-member-type
-                    :show-message-button="authStore.isAuthenticated"
                     show-role
                     variant="compact"
-                    @start-conversation="handleStartConversation"
                   />
                 </div>
 
@@ -204,18 +192,14 @@
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
                     :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-grey-lighten-4'"
-                    :current-user-email="authStore.userEmail"
-                    :current-user-name="currentUserFullName"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
                     :search-query="searchQuery"
                     show-contact
                     show-member-type
-                    :show-message-button="authStore.isAuthenticated"
                     show-role
                     variant="compact"
-                    @start-conversation="handleStartConversation"
                   />
                 </div>
               </div>
@@ -247,7 +231,7 @@
 </template>
 
 <script setup>
-  import { computed, inject, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
@@ -260,25 +244,9 @@
   const editDialogOpen = ref(false)
   const selectedCommittee = ref(null)
 
-  // Get messaging shell reference
-  const messagingShell = inject('messagingShell', null)
-
   // Use centralized data store
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
-
-  // Get current user's parent record
-  const currentUserParent = computed(() => {
-    if (!authStore.userEmail) return null
-    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-  })
-
-  // Get current user's full name from parent record
-  const currentUserFullName = computed(() => {
-    return currentUserParent.value?.fullName || authStore.userDisplayName || ''
-  })
-
-  // Note: We use authStore.userEmail directly for messaging
 
   // Check if user is admin
   const isAdmin = ref(false)
@@ -411,13 +379,6 @@
     // Refresh committee data to show updated members
     await firebaseStore.refreshCommitteesDTO()
     closeEditDialog()
-  }
-
-  // Handle starting a conversation
-  function handleStartConversation (conversationData) {
-    if (messagingShell?.value) {
-      messagingShell.value.createConversation(conversationData)
-    }
   }
 
   // Helper: Format phone number
