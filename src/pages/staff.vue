@@ -104,28 +104,6 @@
                     </a>
                   </div>
                 </div>
-
-                <!-- Classes Taught -->
-                <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
-                  <v-divider class="mb-2" />
-
-                  <div class="text-title-small font-weight-medium mb-1 text-primary">
-                    <v-icon class="me-1" size="small">mdi-school</v-icon>
-                    {{ $i18n('staff.classesTaught') }}
-                  </div>
-
-                  <div class="d-flex flex-wrap gap-1">
-                    <v-chip
-                      v-for="classLetter in getClassesTaught(member.id)"
-                      :key="classLetter"
-                      color="secondary"
-                      size="x-small"
-                      variant="outlined"
-                    >
-                      {{ classLetter }}
-                    </v-chip>
-                  </div>
-                </div>
               </v-card-text>
             </v-card>
           </div>
@@ -250,13 +228,6 @@
     })).filter(group => group.subgroups.length > 0)
   })
 
-  function getClassesTaught (staffId) {
-    return firebaseStore.classes
-      .filter(classItem => classItem.teacher === staffId)
-      .map(classItem => classItem.classLetter)
-      .toSorted()
-  }
-
   function getGroupIcon (group, subgroup) {
     // Icon mapping based on group/subgroup
     if (group === 'EF') {
@@ -346,10 +317,6 @@ a {
 
 a:hover {
   color: rgb(var(--v-theme-primary));
-}
-
-.gap-1 {
-  gap: 0.25rem;
 }
 
 .staff-grid {

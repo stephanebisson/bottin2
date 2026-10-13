@@ -154,7 +154,6 @@
     "ceInformation": "Staff directory page",
     "ceRole": "Staff directory page",
     "ceHierarchy": "Staff directory page",
-    "classesTaught": "Staff directory page",
     "department": "Staff directory page",
     "otherStaff": "Staff directory page",
     "memberCount": "Staff directory page. - Parameters: $1 = count. - Displays count of items",
