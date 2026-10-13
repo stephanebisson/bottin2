@@ -29,9 +29,6 @@
     </v-main>
 
     <AppFooter v-if="!isPrintPage" />
-
-    <!-- PWA Update Prompt -->
-    <!-- <UpdatePrompt /> -->
   </v-app>
 </template>
 
@@ -42,7 +39,6 @@
   import AppBar from '@/components/AppBar.vue'
   import AppFooter from '@/components/AppFooter.vue'
   import NavigationDrawer from '@/components/NavigationDrawer.vue'
-  // import UpdatePrompt from '@/components/UpdatePrompt.vue'
   import { usePullToRefresh } from '@/composables/usePullToRefresh'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 

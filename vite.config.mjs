@@ -58,12 +58,11 @@ export default defineConfig({
       renderModernChunks: true,
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      // Unregisters previously installed service workers and clears their caches;
+      // the app needs Firestore anyway, and offline caching kept serving stale versions
+      selfDestroying: true,
       includeAssets: ['favicon.svg', 'favicon.ico', 'icons/*.png'],
       manifestFilename: 'manifest.webmanifest',
-      injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-      },
       manifest: {
         name: 'Bottin Étoile filante',
         short_name: 'Bottin Étoile filante',
