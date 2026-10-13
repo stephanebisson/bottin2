@@ -22,7 +22,7 @@
       <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('staff.noStaffFound') }}</p>
     </div>
 
-    <div v-else>
+    <div v-else ref="staffListRef" :style="cardMinWidthStyle">
       <!-- Search Bar -->
       <v-card class="mb-4">
         <v-card-text>
@@ -64,76 +64,71 @@
           </div>
 
           <!-- Staff Members Grid -->
-          <v-row>
-            <v-col
+          <div class="staff-grid">
+            <v-card
               v-for="member in subgroup.members"
               :key="member.id"
-              cols="12"
-              md="4"
-              sm="6"
-              xl="3"
+              class="d-flex flex-column"
             >
-              <v-card class="d-flex flex-column" height="100%">
-                <!-- Staff Member Header -->
-                <v-card-title class="pb-2 text-wrap">
-                  <div class="text-title-large font-weight-bold">
-                    <HighlightedText
-                      :query="searchQuery"
-                      :text="`${member.first_name} ${member.last_name}`"
-                    />
-                  </div>
-                </v-card-title>
+              <!-- Staff Member Header -->
+              <v-card-title class="pb-2 text-wrap">
+                <div class="text-title-large font-weight-bold">
+                  <HighlightedText
+                    :query="searchQuery"
+                    :text="`${member.first_name} ${member.last_name}`"
+                  />
+                </div>
+              </v-card-title>
 
-                <v-card-text class="flex-grow-1 pt-0">
-                  <!-- Title -->
-                  <div v-if="member.title" class="staff-title mb-2">
-                    <HighlightedText :query="searchQuery" :text="member.title" />
-                  </div>
+              <v-card-text class="flex-grow-1 pt-0">
+                <!-- Title -->
+                <div v-if="member.title" class="staff-title mb-2">
+                  <HighlightedText :query="searchQuery" :text="member.title" />
+                </div>
 
-                  <!-- Contact Information -->
-                  <div class="mb-3">
-                    <div v-if="member.email" class="mb-2 d-flex align-center">
-                      <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-email</v-icon>
+                <!-- Contact Information -->
+                <div class="mb-3">
+                  <div v-if="member.email" class="mb-2 d-flex align-center staff-contact-row">
+                    <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-email</v-icon>
 
-                      <a class="text-decoration-none text-body-medium staff-email" :href="`mailto:${member.email}`">
-                        <HighlightedText :query="searchQuery" :text="member.email" />
-                      </a>
-                    </div>
-
-                    <div v-if="member.phone" class="mb-2 d-flex align-center">
-                      <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-phone</v-icon>
-
-                      <a class="text-decoration-none text-body-medium" :href="`tel:${member.phone}`">
-                        {{ formatPhone(member.phone) }}
-                      </a>
-                    </div>
+                    <a class="text-decoration-none text-body-medium" :href="`mailto:${member.email}`">
+                      <HighlightedText :query="searchQuery" :text="member.email" />
+                    </a>
                   </div>
 
-                  <!-- Classes Taught -->
-                  <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
-                    <v-divider class="mb-2" />
+                  <div v-if="member.phone" class="mb-2 d-flex align-center staff-contact-row">
+                    <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-phone</v-icon>
 
-                    <div class="text-title-small font-weight-medium mb-1 text-primary">
-                      <v-icon class="me-1" size="small">mdi-school</v-icon>
-                      {{ $i18n('staff.classesTaught') }}
-                    </div>
-
-                    <div class="d-flex flex-wrap gap-1">
-                      <v-chip
-                        v-for="classLetter in getClassesTaught(member.id)"
-                        :key="classLetter"
-                        color="secondary"
-                        size="x-small"
-                        variant="outlined"
-                      >
-                        {{ classLetter }}
-                      </v-chip>
-                    </div>
+                    <a class="text-decoration-none text-body-medium" :href="`tel:${member.phone}`">
+                      {{ formatPhone(member.phone) }}
+                    </a>
                   </div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+                </div>
+
+                <!-- Classes Taught -->
+                <div v-if="getClassesTaught(member.id).length > 0" class="mb-3">
+                  <v-divider class="mb-2" />
+
+                  <div class="text-title-small font-weight-medium mb-1 text-primary">
+                    <v-icon class="me-1" size="small">mdi-school</v-icon>
+                    {{ $i18n('staff.classesTaught') }}
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-1">
+                    <v-chip
+                      v-for="classLetter in getClassesTaught(member.id)"
+                      :key="classLetter"
+                      color="secondary"
+                      size="x-small"
+                      variant="outlined"
+                    >
+                      {{ classLetter }}
+                    </v-chip>
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          </div>
         </div>
       </div>
     </div>
@@ -141,7 +136,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
@@ -301,6 +296,40 @@
     return phone
   }
 
+  // Size cards so the widest contact line (usually an email) never wraps or clips.
+  // The grid then fits as many cards per row as that width allows.
+  const staffListRef = ref(null)
+  const cardMinWidth = ref(null)
+  const cardMinWidthStyle = computed(() =>
+    cardMinWidth.value ? { '--staff-card-min-width': `${cardMinWidth.value}px` } : {},
+  )
+
+  function measureCardMinWidth () {
+    const rows = staffListRef.value?.querySelectorAll('.staff-contact-row') ?? []
+    let widest = 0
+    for (const row of rows) {
+      // scrollWidth reports the full text width even while the link is clipped
+      const icon = row.querySelector('.v-icon')
+      const link = row.querySelector('a')
+      const { paddingLeft, paddingRight } = getComputedStyle(row.closest('.v-card-text'))
+      const width = icon.offsetWidth
+        + Number.parseFloat(getComputedStyle(icon).marginInlineEnd)
+        + link.scrollWidth
+        + Number.parseFloat(paddingLeft)
+        + Number.parseFloat(paddingRight)
+      widest = Math.max(widest, width)
+    }
+    cardMinWidth.value = widest ? Math.ceil(widest) : null
+  }
+
+  watch(filteredStaffGroups, measureCardMinWidth, { flush: 'post' })
+
+  onMounted(() => {
+    measureCardMinWidth()
+    // Web fonts change text widths once loaded
+    document.fonts?.ready.then(measureCardMinWidth)
+  })
+
   onMounted(async () => {
     // Load DTO data in parallel
     await Promise.all([
@@ -323,9 +352,27 @@ a:hover {
   gap: 0.25rem;
 }
 
-.staff-email {
+.staff-grid {
+  display: grid;
+  /* Cards are at least as wide as their widest contact line, at most 4 per row */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(var(--staff-card-min-width, 280px), calc((100% - 3 * 24px) / 4))), 1fr)
+  );
+  gap: 24px;
+}
+
+.staff-contact-row {
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+/* Only reached on screens narrower than the widest email */
+.staff-contact-row a {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .staff-title {
