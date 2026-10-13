@@ -83,7 +83,7 @@
               <v-card-text class="flex-grow-1 pt-0">
                 <!-- Title -->
                 <div v-if="member.title" class="staff-title mb-2">
-                  <HighlightedText :query="searchQuery" :text="member.title" />
+                  <HighlightedText :query="searchQuery" :text="displayTitle(member.title)" />
                 </div>
 
                 <!-- Contact Information -->
@@ -216,7 +216,7 @@
         members: subgroup.members.filter(member => {
           const searchFields = [
             member.fullName,
-            member.title || '',
+            displayTitle(member.title),
             member.email || '',
             member.group || '',
             member.subgroup || '',
@@ -227,6 +227,21 @@
       })).filter(subgroup => subgroup.members.length > 0),
     })).filter(group => group.subgroups.length > 0)
   })
+
+  const classCodesByLetter = computed(() =>
+    new Map(firebaseStore.classes.map(classItem => [classItem.classLetter, classItem.classCode])),
+  )
+
+  // Teacher titles name their class by letter, e.g. "3e-4e (D)" -> "3e-4e (371-471)"
+  function displayTitle (title) {
+    if (!title) {
+      return ''
+    }
+    return title.replace(/\(([A-Z])\)/g, (match, letter) => {
+      const code = classCodesByLetter.value.get(letter)
+      return code ? `(${code})` : match
+    })
+  }
 
   function getGroupIcon (group, subgroup) {
     // Icon mapping based on group/subgroup
@@ -297,6 +312,7 @@
 
   onMounted(() => {
     firebaseStore.loadStaffDTO()
+    firebaseStore.loadAllData() // Classes, for class codes in teacher titles
     measureCardMinWidth()
     // Web fonts change text widths once loaded
     document.fonts?.ready.then(measureCardMinWidth)
