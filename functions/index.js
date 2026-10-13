@@ -7,13 +7,12 @@ const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminMana
 // Import all functions from separate modules
 const { validateEmailV2 } = require('./auth')
 const { updateCommitteeMembersV2 } = require('./committees')
-const { sendParentEmailV2, sendParentUpdateEmail } = require('./email')
+const { sendParentUpdateEmail } = require('./email')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
 const { healthCheckV2 } = require('./utils')
 
 // Export all functions
 exports.validateEmailV2 = validateEmailV2
-exports.sendParentEmailV2 = sendParentEmailV2
 exports.sendParentUpdateEmail = sendParentUpdateEmail
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2

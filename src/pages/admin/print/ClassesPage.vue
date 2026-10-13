@@ -25,7 +25,7 @@
   import ClassBlock from './components/ClassBlock.vue'
   import PrintPage from './PrintPage.vue'
 
-  const props = defineProps({
+  defineProps({
     classesData: {
       type: Array,
       required: true,

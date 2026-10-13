@@ -26,10 +26,8 @@
 <script setup>
   import { onMounted, ref } from 'vue'
   import { useAuthStore } from '@/stores/auth'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const authStore = useAuthStore()
-  const firebaseStore = useFirebaseDataStore()
   const isInitializing = ref(true)
 
   onMounted(async () => {

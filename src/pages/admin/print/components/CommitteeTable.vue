@@ -51,7 +51,7 @@
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
 
-  const props = defineProps({
+  defineProps({
     members: {
       type: Array,
       default: () => [],

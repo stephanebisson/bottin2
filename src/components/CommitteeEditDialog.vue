@@ -184,7 +184,6 @@
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
   import { getCommitteeRoles } from '@/config/committees'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
 
@@ -198,7 +197,6 @@
   const emit = defineEmits(['close', 'updated'])
 
   // Stores
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
   // State

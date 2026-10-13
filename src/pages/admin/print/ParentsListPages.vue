@@ -19,7 +19,7 @@
   import ParentBlock from './components/ParentBlock.vue'
   import PrintPage from './PrintPage.vue'
 
-  const props = defineProps({
+  defineProps({
     paginatedParents: {
       type: Array,
       required: true,

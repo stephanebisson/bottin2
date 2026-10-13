@@ -15,7 +15,7 @@
 <script setup>
   import PrintPage from './PrintPage.vue'
 
-  const props = defineProps({
+  defineProps({
     title: {
       type: String,
       required: true,

@@ -171,7 +171,7 @@
 
 <script setup>
   import { collection, limit as firestoreLimit, onSnapshot, orderBy, query, where } from 'firebase/firestore'
-  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { MessageDTO } from '@/dto/MessageDTO'
   import { db } from '@/firebase'

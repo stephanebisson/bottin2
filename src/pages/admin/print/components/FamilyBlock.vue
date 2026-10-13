@@ -43,7 +43,7 @@
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay } from '@/utils/postalCodeFormatter'
 
-  const props = defineProps({
+  defineProps({
     family: {
       type: Object,
       required: true,

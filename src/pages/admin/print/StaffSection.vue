@@ -64,7 +64,7 @@
   import StaffTable from './components/StaffTable.vue'
   import PrintPage from './PrintPage.vue'
 
-  const props = defineProps({
+  defineProps({
     group: {
       type: Object,
       required: true,

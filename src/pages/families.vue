@@ -279,16 +279,6 @@
 
   // Note: We use authStore.userEmail directly for messaging
 
-  // Loading status computed
-  const loadingStatus = computed(() => {
-    if (firebaseStore.studentsLoadingDTO || firebaseStore.parentsLoadingDTO) {
-      return $i18n('common.loading')
-    }
-    const studentsCount = firebaseStore.studentsDTO.length
-    const parentsCount = firebaseStore.parentsDTO.length
-    return $i18n('directory.dataLoaded', studentsCount, parentsCount)
-  })
-
   // Class options for filtering
   const classOptions = computed(() => {
     const classes = [...new Set(

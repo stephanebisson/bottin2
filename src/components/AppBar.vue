@@ -134,7 +134,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import ThemeSelector from '@/components/ThemeSelector.vue'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -157,7 +156,6 @@
 
   // Access stores
   const firebaseStore = useFirebaseDataStore()
-  const { dataStats } = firebaseStore
   const authStore = useAuthStore()
 
   // Refresh state
@@ -228,12 +226,6 @@
         return $i18n('nav.schoolDirectory')
       }
     }
-  })
-
-  const lastUpdatedFormatted = computed(() => {
-    if (!dataStats.value.lastUpdated) return ''
-    const date = new Date(dataStats.value.lastUpdated)
-    return date.toLocaleTimeString()
   })
 
   async function handleRefresh () {

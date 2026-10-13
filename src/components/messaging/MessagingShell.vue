@@ -135,7 +135,7 @@
   }
 
   // Panel resizing (desktop only)
-  function startResize (event) {
+  function startResize () {
     isResizing.value = true
     document.addEventListener('mousemove', handleResize)
     document.addEventListener('mouseup', stopResize)

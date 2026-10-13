@@ -23,7 +23,7 @@
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
 
-  const props = defineProps({
+  defineProps({
     rep1: {
       type: Object,
       default: null,

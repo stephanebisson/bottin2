@@ -121,17 +121,6 @@
   const email = computed(() => route.query.email || '')
 
   // Navigation methods
-  function goToAccountCreation () {
-    router.push({
-      path: '/auth',
-      query: {
-        mode: 'register',
-        email: email.value,
-        fromUpdate: '1',
-      },
-    })
-  }
-
   function goToLogin () {
     router.push({
       path: '/auth',

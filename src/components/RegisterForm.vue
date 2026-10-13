@@ -208,7 +208,7 @@
   const emailRules = [
     v => !!v || $i18n('validation.emailRequired'),
     v => /.[^\n\r@\u2028\u2029]*@.+\..+/.test(v) || $i18n('validation.emailInvalid'),
-    v => emailAuthorized.value !== false || $i18n('validation.emailNotAuthorized'),
+    () => emailAuthorized.value !== false || $i18n('validation.emailNotAuthorized'),
   ]
 
   const passwordRules = [

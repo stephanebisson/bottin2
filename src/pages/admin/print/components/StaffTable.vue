@@ -39,7 +39,7 @@
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
 
-  const props = defineProps({
+  defineProps({
     members: {
       type: Array,
       required: true,

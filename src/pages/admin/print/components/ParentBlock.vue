@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-  const props = defineProps({
+  defineProps({
     parent: {
       type: Object,
       required: true,

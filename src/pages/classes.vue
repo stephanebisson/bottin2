@@ -658,25 +658,6 @@
     }
   }
 
-  // Get parents with children in a specific class
-  const getClassParents = computed(() => classLetter => {
-    const classStudents = getClassStudents(classLetter)
-    const parentIds = new Set()
-
-    for (const student of classStudents) {
-      if (student.parent1_id) parentIds.add(student.parent1_id)
-      if (student.parent2_id) parentIds.add(student.parent2_id)
-    }
-
-    return firebaseStore.parentsDTO
-      .filter(parent => parentIds.has(parent.id))
-      .map(parent => ({
-        value: parent.id,
-        title: parent.fullName,
-      }))
-      .toSorted((a, b) => a.title.localeCompare(b.title))
-  })
-
   // Get all parents for parent representative selection
   const getAllParents = computed(() => {
     return firebaseStore.parentsDTO
@@ -758,45 +739,6 @@
   }
 
   // Helper functions
-
-  function getStudentName (studentId) {
-    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
-    return student ? student.fullName : studentId
-  }
-
-  function getStudentLevel (studentId) {
-    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
-    return student ? student.level : null
-  }
-
-  function getStudentData (studentId) {
-    return firebaseStore.studentsDTO.find(s => s.id === studentId) || null
-  }
-
-  function getStudentParentById (studentId, parentNumber) {
-    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
-    if (!student) return null
-
-    const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
-    const parentId = student[parentIdField]
-
-    if (!parentId) return null
-
-    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
-  }
-
-  function getStudentSiblingsById (studentId) {
-    const student = firebaseStore.studentsDTO.find(s => s.id === studentId)
-    if (!student || (!student.parent1_id && !student.parent2_id)) return []
-
-    // Find siblings by matching parent IDs (excluding the student themselves)
-    return firebaseStore.studentsDTO.filter(s =>
-      s.id !== student.id && (
-        (student.parent1_id && (s.parent1_id === student.parent1_id || s.parent2_id === student.parent1_id))
-        || (student.parent2_id && (s.parent1_id === student.parent2_id || s.parent2_id === student.parent2_id))
-      ),
-    )
-  }
 
   function getParentName (parentId) {
     const parent = firebaseStore.parentsDTO.find(p => p.id === parentId)
@@ -991,22 +933,6 @@
   function getClassTeacher (classLetter) {
     const classItem = firebaseStore.classes.find(c => c.classLetter === classLetter)
     return classItem ? classItem.teacher : null
-  }
-
-  function getClassLevelRange (classLetter) {
-    const classStudents = getClassStudents(classLetter)
-
-    if (classStudents.length === 0) return 'No students'
-
-    // Get all unique levels for this class
-    const levels = [...new Set(classStudents.map(s => s.level).filter(level => level != null))]
-      .toSorted((a, b) => Number(a) - Number(b))
-
-    if (levels.length === 0) return 'No levels'
-    if (levels.length === 1) return levels[0].toString()
-
-    // Return range format like "1-3" for multiple levels
-    return `${levels[0]}-${levels.at(-1)}`
   }
 
   // Load data on component mount

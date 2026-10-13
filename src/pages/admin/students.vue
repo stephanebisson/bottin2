@@ -546,7 +546,7 @@
 </template>
 
 <script setup>
-  import { addDoc, collection, deleteDoc, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
+  import { addDoc, collection, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
