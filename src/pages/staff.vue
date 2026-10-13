@@ -296,17 +296,10 @@
   watch(filteredStaffGroups, measureCardMinWidth, { flush: 'post' })
 
   onMounted(() => {
+    firebaseStore.loadStaffDTO()
     measureCardMinWidth()
     // Web fonts change text widths once loaded
     document.fonts?.ready.then(measureCardMinWidth)
-  })
-
-  onMounted(async () => {
-    // Load DTO data in parallel
-    await Promise.all([
-      firebaseStore.loadStaffDTO(),
-      firebaseStore.loadAllData(), // Still need classes data
-    ])
   })
 </script>
 
