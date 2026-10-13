@@ -138,6 +138,12 @@
           </span>
         </template>
       </v-checkbox>
+
+      <!-- Opened in a new tab so the form is not lost -->
+      <div class="d-flex flex-wrap ga-4 text-body-medium ms-10">
+        <a href="/terms" rel="noopener" target="_blank">{{ $i18n('legal.termsOfUse') }}</a>
+        <a href="/privacy" rel="noopener" target="_blank">{{ $i18n('legal.privacyPolicy') }}</a>
+      </div>
     </v-card-text>
 
     <v-card-actions class="px-6 pb-6">

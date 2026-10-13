@@ -13,6 +13,18 @@
 
       <span class="mx-2">•</span>
 
+      <router-link class="text-decoration-none text-disabled" to="/terms">
+        {{ $i18n('legal.termsOfUse') }}
+      </router-link>
+
+      <span class="mx-2">•</span>
+
+      <router-link class="text-decoration-none text-disabled" to="/privacy">
+        {{ $i18n('legal.privacyPolicy') }}
+      </router-link>
+
+      <span class="mx-2">•</span>
+
       <router-link
         class="game-link"
         to="/games"

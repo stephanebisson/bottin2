@@ -126,5 +126,7 @@ export const routeConfig = {
     '/update', // Parent update forms (with token)
     '/update-success', // Update completion page
     '/email-verification-required', // Email verification page
+    '/terms', // Terms of use
+    '/privacy', // Privacy policy
   ],
 }
