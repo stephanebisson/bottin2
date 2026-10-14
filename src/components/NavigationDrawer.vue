@@ -10,8 +10,8 @@
       <!-- App Title -->
       <v-list-item
         class="mb-2"
-        :subtitle="$i18n('nav.schoolDirectory')"
-        :title="$i18n('nav.schoolDirectorySystem')"
+        :subtitle="schoolYear"
+        :title="$i18n('nav.schoolDirectory')"
       >
         <template #prepend>
           <img
@@ -91,6 +91,7 @@
   import { useDisplay } from 'vuetify'
   import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
+  import { getCurrentSchoolYear } from '@/utils/schoolYear'
 
   const props = defineProps({
     modelValue: {
@@ -111,6 +112,9 @@
   })
 
   const authStore = useAuthStore()
+
+  // Shown under the app name; admin actions and updates are tied to it
+  const schoolYear = getCurrentSchoolYear()
 
   const navigationItems = computed(() => {
     const baseItems = [
