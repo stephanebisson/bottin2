@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.classesError" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.classesError"
         :title="$i18n('classes.errorLoadingClasses')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.classesError = null"
       />
     </div>
 
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.classesLoading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-title-large mt-4">{{ $i18n('classes.loadingClasses') }}</p>
     </div>
@@ -681,7 +681,7 @@
       await classRepository.update(editingClass.value.classLetter, updates)
 
       // Refresh classes data
-      await firebaseStore.loadAllData(true)
+      await firebaseStore.loadClasses(true)
 
       console.log(`Successfully updated class ${editingClass.value.classLetter}`)
       closeEditDialog()
@@ -849,7 +849,7 @@
       firebaseStore.loadStudentsDTO(),
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
-      firebaseStore.loadAllData(), // Still need classes data
+      firebaseStore.loadClasses(),
     ])
   })
 </script>

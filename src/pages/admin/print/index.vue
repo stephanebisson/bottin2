@@ -789,7 +789,7 @@
         firebaseStore.loadCommitteesDTO(),
         firebaseStore.loadParentsDTO(),
         firebaseStore.loadStudentsDTO(),
-        firebaseStore.loadAllData(), // For classes
+        firebaseStore.loadClasses(),
       ])
     } catch (error) {
       console.error('Failed to load directory data:', error)

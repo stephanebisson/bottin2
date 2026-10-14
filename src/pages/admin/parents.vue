@@ -859,7 +859,7 @@
     error.value = null
     try {
       await Promise.all([
-        (!firebaseStore.hasData || firebaseStore.isDataStale) ? firebaseStore.loadAllData() : Promise.resolve(),
+        firebaseStore.loadClasses(),
         firebaseStore.loadStaffDTO(),
       ])
       const [parentsData, studentsData] = await Promise.all([

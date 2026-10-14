@@ -325,7 +325,7 @@
         firebaseStore.loadStudentsDTO(),
         firebaseStore.loadStaffDTO(),
         firebaseStore.loadCommitteesDTO(),
-        firebaseStore.loadAllData(), // Classes
+        firebaseStore.loadClasses(),
       ])
     } catch (error_) {
       error.value = error_.message

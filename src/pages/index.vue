@@ -21,24 +21,24 @@
     </v-alert>
 
     <!-- Loading State -->
-    <div v-if="firebaseStore.loading" class="text-center py-8">
+    <div v-if="firebaseStore.classesLoading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />
       <p class="text-title-large mt-4">{{ $i18n('dashboard.loadingData') }}</p>
     </div>
 
     <!-- Error State -->
-    <div v-if="firebaseStore.error" class="mb-4">
+    <div v-if="firebaseStore.classesError" class="mb-4">
       <v-alert
         closable
-        :text="firebaseStore.error"
+        :text="firebaseStore.classesError"
         :title="$i18n('dashboard.errorLoadingData')"
         type="error"
-        @click:close="firebaseStore.error = null"
+        @click:close="firebaseStore.classesError = null"
       />
     </div>
 
     <!-- Dashboard Content -->
-    <div v-else-if="!firebaseStore.loading">
+    <div v-else-if="!firebaseStore.classesLoading">
       <MyFamilyCard />
 
       <AdminTodoStrip
@@ -121,7 +121,7 @@
         firebaseStore.loadParentsDTO(),
         firebaseStore.loadStaffDTO(),
         firebaseStore.loadCommitteesDTO(),
-        firebaseStore.loadAllData(), // Classes
+        firebaseStore.loadClasses(),
         authStore.isAdmin ? loadAdminTodo() : Promise.resolve(),
       ])
     } catch (error) {

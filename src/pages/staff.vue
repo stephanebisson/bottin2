@@ -310,7 +310,7 @@
 
   onMounted(() => {
     firebaseStore.loadStaffDTO()
-    firebaseStore.loadAllData() // Classes, for class codes in teacher titles
+    firebaseStore.loadClasses() // For class codes in teacher titles
     measureCardMinWidth()
     // Web fonts change text widths once loaded
     document.fonts?.ready.then(measureCardMinWidth)
