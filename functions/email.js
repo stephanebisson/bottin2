@@ -89,6 +89,7 @@ function getEmailTemplate (parentName, updateUrl, schoolYear) {
       .replace(/\{\{SCHOOL_YEAR\}\}/g, schoolYear)
       .replace(/\{\{CURRENT_YEAR\}\}/g, currentYear)
       .replace(/\{\{DEADLINE\}\}/g, deadline)
+      .replace(/\{\{APP_URL\}\}/g, EMAIL_CONFIG.APP_URL)
 
     return {
       subject: `Dernière chance: ${schoolYear} - Mise à jour annuelle des informations`,
