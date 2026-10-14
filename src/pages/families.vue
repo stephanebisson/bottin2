@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('directory.title') }}</h1>
-
     <!-- Error Messages -->
     <div v-if="firebaseStore.studentsErrorDTO || firebaseStore.parentsErrorDTO" class="mb-4">
       <v-alert
@@ -237,6 +235,8 @@
   import ParentInfo from '@/components/ParentInfo.vue'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
+
+  definePage({ meta: { titleKey: 'directory.title' } })
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

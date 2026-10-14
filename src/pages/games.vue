@@ -3,7 +3,6 @@
     <!-- Header Section -->
     <div class="text-center mb-8">
       <v-icon color="success" size="64">mdi-gamepad-variant</v-icon>
-      <h1 class="text-display-medium font-weight-bold mb-2 mt-4">{{ $i18n('games.title') }}</h1>
       <p class="text-title-large text-grey-darken-1">{{ $i18n('games.subtitle') }}</p>
     </div>
 
@@ -57,6 +56,8 @@
 <script setup>
   import TicTacToeCard from '@/components/TicTacToeCard.vue'
   import Game2048Card from '@/games/2048/Game2048Card.vue'
+
+  definePage({ meta: { titleKey: 'games.title' } })
 </script>
 
 <style scoped>

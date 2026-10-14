@@ -1,9 +1,5 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.parentsDirectory.title') }}</h1>
-    </div>
-
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
@@ -50,23 +46,6 @@
 
       <!-- Parents Table -->
       <div v-else>
-        <!-- Summary Stats -->
-        <v-card class="mb-4" color="primary" variant="tonal">
-          <v-card-text>
-            <div class="d-flex align-center">
-              <v-icon class="mr-4" size="48">mdi-account-group</v-icon>
-
-              <div>
-                <h2 class="text-headline-small font-weight-bold">{{ $i18n('admin.parentsDirectory.summary') }}</h2>
-
-                <p class="text-body-large mt-2">
-                  {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
-                </p>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-
         <!-- Filter Bar -->
         <v-row class="mb-2" density="compact">
           <v-col cols="12" sm="2">
@@ -204,18 +183,21 @@
 
         <!-- Data Table -->
         <v-card>
-          <v-card-title>
-            <div class="d-flex justify-space-between align-center w-100">
-              <span class="text-headline-small">{{ $i18n('admin.parentsDirectory.allParents') }}</span>
+          <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
+            <span>
+              {{ $i18n('admin.parentsDirectory.allParents') }}
+              <span class="text-body-medium text-grey-darken-1 ml-2">
+                {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
+              </span>
+            </span>
 
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-account-plus"
-                @click="openNewParentDialog"
-              >
-                {{ $i18n('admin.parentsDirectory.addNewParent') }}
-              </v-btn>
-            </div>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-account-plus"
+              @click="openNewParentDialog"
+            >
+              {{ $i18n('admin.parentsDirectory.addNewParent') }}
+            </v-btn>
           </v-card-title>
 
           <v-data-table
@@ -622,6 +604,8 @@
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getCurrentSchoolYear, isInCurrentSchoolYear } from '@/utils/schoolYear.js'
   import { normalizeText } from '@/utils/search.js'
+
+  definePage({ meta: { titleKey: 'admin.parentsDirectory.title' } })
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)

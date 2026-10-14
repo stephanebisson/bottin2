@@ -3,6 +3,8 @@
 </template>
 
 <script setup>
+  definePage({ meta: { titleKey: 'legal.privacyPolicy' } })
+
   const providerLinks = [
     { label: 'privacy.googlePrivacyLink', href: 'https://policies.google.com/privacy' },
     { label: 'privacy.firebasePrivacyLink', href: 'https://firebase.google.com/support/privacy' },

@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('staff.title') }}</h1>
-
     <div v-if="firebaseStore.staffErrorDTO" class="mb-4">
       <v-alert
         closable
@@ -120,6 +118,8 @@
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
+
+  definePage({ meta: { titleKey: 'staff.title' } })
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

@@ -10,8 +10,6 @@
         >
           {{ $i18n('admin.backToAdminDashboard') }}
         </v-btn>
-
-        <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.staffUpdate.title') }}</h1>
       </div>
     </div>
 
@@ -100,6 +98,8 @@
   import { StaffRepository } from '@/repositories/StaffRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  definePage({ meta: { titleKey: 'admin.staffUpdate.title' } })
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)

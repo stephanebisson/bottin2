@@ -220,7 +220,6 @@
     "currentTheme": "Thème actuel: $1"
   },
   "dashboard": {
-    "welcome": "Bienvenue dans votre bottin scolaire complet",
     "loadingData": "Chargement des données du tableau de bord...",
     "students": "élèves",
     "classes": "classes",
@@ -480,7 +479,6 @@
       "title": "Répertoire des parents",
       "description": "Voir et gérer tous les parents du système avec leurs enfants associés.",
       "viewAllParents": "Voir tous les parents",
-      "summary": "Aperçu du répertoire des parents",
       "totalParents": "$1 parents au total",
       "allParents": "Tous les parents",
       "children": "Enfants",

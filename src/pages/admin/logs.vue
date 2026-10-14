@@ -1,9 +1,5 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.auditLog.title') }}</h1>
-    </div>
-
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
@@ -165,6 +161,8 @@
   import { db } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
   import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
+
+  definePage({ meta: { titleKey: 'admin.auditLog.title' } })
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)

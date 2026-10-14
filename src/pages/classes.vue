@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('classes.title') }}</h1>
-
     <div v-if="firebaseStore.error" class="mb-4">
       <v-alert
         closable
@@ -590,6 +588,8 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatGradeLevel } from '@/utils/gradeFormatter.js'
+
+  definePage({ meta: { titleKey: 'classes.title' } })
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()

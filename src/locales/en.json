@@ -220,7 +220,6 @@
     "currentTheme": "Current theme: $1"
   },
   "dashboard": {
-    "welcome": "Welcome to your comprehensive school directory",
     "loadingData": "Loading dashboard data...",
     "students": "students",
     "classes": "classes",
@@ -473,7 +472,6 @@
       "title": "Parents Directory",
       "description": "View and manage all parents in the system with their associated children.",
       "viewAllParents": "View All Parents",
-      "summary": "Parents Directory Overview",
       "totalParents": "$1 total parents",
       "allParents": "All Parents",
       "children": "Children",

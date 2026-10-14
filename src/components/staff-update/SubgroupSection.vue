@@ -7,7 +7,7 @@
       </v-icon>
 
       <div>
-        <h3 class="text-headline-small font-weight-bold text-primary">
+        <h3 class="text-title-large font-weight-bold text-primary">
           {{ name }}
         </h3>
 

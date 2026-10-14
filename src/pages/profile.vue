@@ -227,6 +227,8 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
+  definePage({ meta: { titleKey: 'nav.profile' } })
+
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)

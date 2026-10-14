@@ -202,7 +202,6 @@
     "currentTheme": "Theme selector. - Parameters: $1 = theme"
   },
   "dashboard": {
-    "welcome": "Dashboard page",
     "loadingData": "Dashboard page. - Loading indicator message",
     "students": "Dashboard page",
     "classes": "Dashboard page",
@@ -436,7 +435,6 @@
       "title": "Administration panel. - Page or section title",
       "description": "Administration panel. - Descriptive text",
       "viewAllParents": "Administration panel",
-      "summary": "Administration panel",
       "totalParents": "Administration panel. - Parameters: $1 = count",
       "allParents": "Administration panel",
       "children": "Administration panel",

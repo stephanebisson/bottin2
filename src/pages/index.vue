@@ -20,12 +20,6 @@
       <div>{{ $i18n('auth.welcomeEmailVerified') }}</div>
     </v-alert>
 
-    <!-- Header Section -->
-    <div class="text-center mb-8">
-      <h1 class="text-display-medium font-weight-bold mb-2">{{ $i18n('nav.schoolDirectory') }}</h1>
-      <p class="text-title-large text-grey-darken-1">{{ $i18n('dashboard.welcome') }}</p>
-    </div>
-
     <!-- Loading State -->
     <div v-if="firebaseStore.loading" class="text-center py-8">
       <v-progress-circular color="primary" indeterminate size="64" />

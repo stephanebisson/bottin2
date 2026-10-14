@@ -1,9 +1,5 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-display-medium font-weight-bold">{{ $i18n('admin.title') }}</h1>
-    </div>
-
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
@@ -179,6 +175,8 @@
   import { useRouter } from 'vue-router'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { useAuthStore } from '@/stores/auth'
+
+  definePage({ meta: { titleKey: 'admin.title' } })
 
   const router = useRouter()
   const authStore = useAuthStore()

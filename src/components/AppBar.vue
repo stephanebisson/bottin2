@@ -8,7 +8,7 @@
   >
     <v-app-bar-nav-icon @click="$emit('toggle-drawer')" />
 
-    <v-toolbar-title class="app-title">
+    <v-toolbar-title class="app-title" tag="h1">
       {{ pageTitle }}
     </v-toolbar-title>
 
@@ -150,36 +150,8 @@
     return currentParent.value?.fullName || authStore.userDisplayName || ''
   })
 
-  const pageTitle = computed(() => {
-    const routeName = route.name
-
-    switch (routeName) {
-      case 'classes': {
-        return $i18n('classes.title')
-      }
-      case 'students': {
-        return $i18n('students.title')
-      }
-      case 'parents': {
-        return $i18n('parents.title')
-      }
-      case 'staff': {
-        return $i18n('staff.title')
-      }
-      case 'committees': {
-        return $i18n('committees.title')
-      }
-      case 'admin': {
-        return $i18n('admin.title')
-      }
-      case 'index': {
-        return $i18n('nav.schoolDirectory')
-      }
-      default: {
-        return $i18n('nav.schoolDirectory')
-      }
-    }
-  })
+  // Pages declare their title with definePage({ meta: { titleKey } }); others show the app name
+  const pageTitle = computed(() => $i18n(route.meta.titleKey || 'nav.schoolDirectory'))
 
   async function handleRefresh () {
     try {

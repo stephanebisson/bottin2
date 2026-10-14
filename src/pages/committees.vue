@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <h1 class="text-display-medium font-weight-bold mb-6">{{ $i18n('committees.title') }}</h1>
-
     <div v-if="firebaseStore.committeesErrorDTO" class="mb-4">
       <v-alert
         closable
@@ -239,6 +237,8 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesSearch } from '@/utils/search'
+
+  definePage({ meta: { titleKey: 'committees.title' } })
 
   const searchQuery = ref('')
   const editDialogOpen = ref(false)

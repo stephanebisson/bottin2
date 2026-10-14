@@ -1,9 +1,5 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-display-medium font-weight-bold">{{ $i18n('feedback.admin.title') }}</h1>
-    </div>
-
     <!-- Access Control -->
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
@@ -353,6 +349,8 @@
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+
+  definePage({ meta: { titleKey: 'feedback.admin.title' } })
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
