@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- The four-pointed star from the school logo, white in a black circle -->
-  <circle cx="32" cy="32" r="32" fill="#000"/>
-  <path transform="translate(32 32) scale(0.78) translate(-32 -32)" d="M32 3 Q35.5 28.5 56 32 Q35.5 35.5 32 61 Q28.5 35.5 8 32 Q28.5 28.5 32 3 Z" fill="#fff"/>
+  <!-- The four-pointed star from the school logo, white in a black rounded square -->
+  <rect width="64" height="64" rx="14" fill="#000"/>
+  <path transform="translate(32 32) scale(0.9) translate(-32 -32)" d="M32 3 Q37.5 26.5 56 32 Q37.5 37.5 32 61 Q26.5 37.5 8 32 Q26.5 26.5 32 3 Z" fill="#fff"/>
 </svg>
