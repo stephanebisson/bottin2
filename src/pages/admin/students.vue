@@ -544,8 +544,8 @@
 <script setup>
   import { addDoc, collection, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute } from 'vue-router'
+  import { useTranslate } from '@/composables/useTranslate'
   import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
@@ -557,8 +557,7 @@
 
   definePage({ meta: { titleKey: 'admin.studentsTable.title' } })
 
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const authStore = useAuthStore()
 
   // ─── State ────────────────────────────────────────────────────────────────────

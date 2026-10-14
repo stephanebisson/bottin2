@@ -88,8 +88,8 @@
 
 <script setup>
   import { computed } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useDisplay } from 'vuetify'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
 
   const props = defineProps({
@@ -103,9 +103,7 @@
 
   const { mobile } = useDisplay()
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   const drawerModel = computed({
     get: () => props.modelValue,

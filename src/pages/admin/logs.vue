@@ -131,14 +131,13 @@
 <script setup>
   import { collection, getDocs, query, where } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
+  import { useTranslate } from '@/composables/useTranslate'
   import { db } from '@/firebase'
   import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
 
   definePage({ meta: { titleKey: 'admin.auditLog.title' } })
 
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   const currentSchoolYear = getCurrentSchoolYear()
   const startYear = Number.parseInt(currentSchoolYear.split('-', 1)[0])

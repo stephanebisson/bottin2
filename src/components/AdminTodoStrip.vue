@@ -32,7 +32,7 @@
 
 <script setup>
   import { computed } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
+  import { useTranslate } from '@/composables/useTranslate'
 
   // Each count is null while loading
   const props = defineProps({
@@ -42,8 +42,7 @@
     pendingFeedback: { type: Number, default: null },
   })
 
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   const items = computed(() => [
     {

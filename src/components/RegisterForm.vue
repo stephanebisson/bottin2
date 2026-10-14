@@ -184,14 +184,12 @@
 
 <script setup>
   import { computed, ref, watch } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const props = defineProps({
     // Prefills the email field, e.g. when coming from the update confirmation page
     initialEmail: { type: String, default: '' },

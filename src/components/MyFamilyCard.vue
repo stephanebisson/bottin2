@@ -63,11 +63,12 @@
 <script setup>
   import { computed } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatGradeLevel } from '@/utils/gradeFormatter'
 
   const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const firebaseStore = useFirebaseDataStore()
 
   // The signed-in user's parent record; staff-only users have none and see no card

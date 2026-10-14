@@ -117,9 +117,9 @@
 
 <script setup>
   import { computed, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
@@ -129,9 +129,7 @@
   const router = useRouter()
   const { mobile, smAndDown } = useDisplay()
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   // Access stores
   const firebaseStore = useFirebaseDataStore()

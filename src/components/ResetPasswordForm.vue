@@ -69,14 +69,13 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['back-to-login'])
 
   const authStore = useAuthStore()
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   // Form data
   const email = ref('')

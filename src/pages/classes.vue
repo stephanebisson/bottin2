@@ -590,9 +590,7 @@
 
   definePage({ meta: { titleKey: 'classes.title' } })
 
-  // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Feature flags
   const showPopups = ref(false)

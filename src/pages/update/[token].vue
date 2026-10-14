@@ -366,17 +366,15 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
+  import { useTranslate } from '@/composables/useTranslate'
   import { getCommitteeRoles } from '@/config/committees'
   import { getFunctionsBaseUrl } from '@/config/functions'
   import { getAvailableInterests } from '@/config/interests'
   import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay, formatPostalCodeForStorage, getPostalCodeValidationMessage, getSamplePostalCode, isValidPostalCodeFormat } from '@/utils/postalCodeFormatter'
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const route = useRoute()
   const router = useRouter()
   // State

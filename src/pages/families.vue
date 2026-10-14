@@ -230,17 +230,15 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField, matchesSearch } from '@/utils/search'
 
   definePage({ meta: { titleKey: 'directory.title' } })
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   // Reactive state
   const searchQuery = ref('')
   const viewMode = ref('families')

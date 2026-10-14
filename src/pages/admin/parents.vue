@@ -549,8 +549,8 @@
 <script setup>
   import { addDoc, collection, deleteDoc, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute } from 'vue-router'
+  import { useTranslate } from '@/composables/useTranslate'
   import { getFunctionsBaseUrl, secureFetch } from '@/config/functions.js'
   import { db } from '@/firebase'
   import { ParentRepository } from '@/repositories/ParentRepository.js'
@@ -562,8 +562,7 @@
 
   definePage({ meta: { titleKey: 'admin.parentsDirectory.title' } })
 
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 

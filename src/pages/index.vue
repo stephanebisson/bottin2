@@ -84,17 +84,15 @@
 <script setup>
   import { collection, getDocs, query, where } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
+  import { useTranslate } from '@/composables/useTranslate'
   import { db } from '@/firebase'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getCurrentSchoolYear, isInCurrentSchoolYear } from '@/utils/schoolYear'
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const router = useRouter()
   const route = useRoute()
 

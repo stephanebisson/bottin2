@@ -70,9 +70,9 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRouter } from 'vue-router'
   import { useAuthErrors } from '@/composables/useAuthErrors'
+  import { useTranslate } from '@/composables/useTranslate'
   import { useAuthStore } from '@/stores/auth'
 
   defineEmits(['show-reset'])
@@ -85,9 +85,7 @@
   const router = useRouter()
   const authStore = useAuthStore()
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   const { translateAuthError } = useAuthErrors()
 

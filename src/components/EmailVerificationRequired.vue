@@ -185,14 +185,12 @@
 
 <script setup>
   import { computed, onMounted, onUnmounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
+  import { useTranslate } from '@/composables/useTranslate'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()

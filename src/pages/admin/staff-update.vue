@@ -72,7 +72,6 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { onBeforeRouteLeave } from 'vue-router'
   import GroupSection from '@/components/staff-update/GroupSection.vue'
   import {
@@ -86,9 +85,6 @@
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'admin.staffUpdate.title' } })
-
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   const firebaseStore = useFirebaseDataStore()
   const staffRepository = new StaffRepository()

@@ -92,11 +92,11 @@
 <script setup>
   import { applyActionCode } from 'firebase/auth'
   import { onMounted, ref } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import LoginForm from '@/components/LoginForm.vue'
   import RegisterForm from '@/components/RegisterForm.vue'
   import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
+  import { useTranslate } from '@/composables/useTranslate'
   import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
@@ -104,9 +104,7 @@
   const route = useRoute()
   const authStore = useAuthStore()
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
 
   // Component state
   // ?tab=register&email=... opens the matching tab with the email prefilled

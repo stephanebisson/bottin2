@@ -113,17 +113,15 @@
 
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import { useTranslate } from '@/composables/useTranslate'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
 
   definePage({ meta: { titleKey: 'staff.title' } })
 
-  // Get i18n function from vue-banana-i18n
-  const bananaI18n = useI18n()
-  const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const $i18n = useTranslate()
   const searchQuery = ref('')
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
