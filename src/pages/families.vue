@@ -454,11 +454,8 @@
   function getParentCommittees (parentId) {
     if (!parentId) return []
 
-    return firebaseStore.committees
-      .filter(committee =>
-        committee.members
-        && committee.members.some(member => member.parent_id === parentId),
-      )
+    return firebaseStore.committeesDTO
+      .filter(committee => committee.hasMember(parentId))
       .map(committee => committee.name)
   }
 
@@ -472,7 +469,8 @@
       firebaseStore.loadStudentsDTO(),
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
-      firebaseStore.loadAllData(),
+      firebaseStore.loadCommitteesDTO(),
+      firebaseStore.loadAllData(), // Classes
     ])
   })
 </script>

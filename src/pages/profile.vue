@@ -325,9 +325,21 @@
     return teacher ? teacher.first_name : null
   }
 
-  // Check profile on mount - data is already loaded by App.vue
-  onMounted(() => {
-    loading.value = false
+  onMounted(async () => {
+    try {
+      await Promise.all([
+        firebaseStore.loadParentsDTO(),
+        firebaseStore.loadStudentsDTO(),
+        firebaseStore.loadStaffDTO(),
+        firebaseStore.loadCommitteesDTO(),
+        firebaseStore.loadAllData(), // Classes
+      ])
+    } catch (error_) {
+      error.value = error_.message
+      return
+    } finally {
+      loading.value = false
+    }
 
     // Check if user has a parent profile
     if (!parentProfile.value) {
