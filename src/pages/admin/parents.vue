@@ -290,7 +290,7 @@
                   size="x-small"
                   variant="tonal"
                 >
-                  {{ $i18n('admin.parentsTable.status.emailSent') }} {{ formatDate(emailSentMap.get(item.id)?.timestamp) }}
+                  {{ $i18n(`admin.parentsTable.status.sent.${getEmailVariant(emailSentMap.get(item.id))}`, formatDate(emailSentMap.get(item.id)?.timestamp)) }}
                 </v-chip>
 
                 <v-chip
@@ -410,13 +410,49 @@
         <v-card-title>{{ $i18n('admin.parentsTable.sendEmailDialog.title') }}</v-card-title>
 
         <v-card-text>
+          <v-radio-group
+            v-model="sendEmailVariant"
+            density="compact"
+            hide-details
+            :label="$i18n('admin.parentsTable.sendEmailDialog.variantLabel')"
+          >
+            <v-radio
+              v-for="variant in EMAIL_VARIANTS"
+              :key="variant"
+              :label="$i18n(`admin.parentsTable.sendEmailDialog.variants.${variant}`)"
+              :value="variant"
+            />
+          </v-radio-group>
+
           <v-alert
-            v-if="sendEmailState.alreadySent > 0"
-            class="mb-3"
+            v-if="sendEmailAlreadySent > 0"
+            class="my-3"
             type="warning"
             variant="tonal"
           >
-            {{ $i18n('admin.parentsTable.sendEmailDialog.alreadySent', sendEmailState.alreadySent) }}
+            {{ $i18n('admin.parentsTable.sendEmailDialog.alreadySent', sendEmailAlreadySent) }}
+          </v-alert>
+
+          <v-alert
+            v-if="sendEmailState.submitted.length > 0 || sendEmailState.optedOut.length > 0"
+            class="my-3"
+            type="warning"
+            variant="tonal"
+          >
+            <div v-if="sendEmailState.submitted.length > 0">
+              {{ $i18n('admin.parentsTable.sendEmailDialog.skippedSubmitted', sendEmailState.submitted.length) }}
+            </div>
+
+            <div v-if="sendEmailState.optedOut.length > 0">
+              {{ $i18n('admin.parentsTable.sendEmailDialog.skippedOptedOut', sendEmailState.optedOut.length) }}
+            </div>
+
+            <v-checkbox
+              v-model="sendEmailIncludeSkipped"
+              density="compact"
+              hide-details
+              :label="$i18n('admin.parentsTable.sendEmailDialog.includeSkipped')"
+            />
           </v-alert>
 
           <v-alert
@@ -428,7 +464,7 @@
             {{ $i18n('admin.parentsTable.sendEmailDialog.noEmail', sendEmailState.noEmail) }}
           </v-alert>
 
-          <p>{{ $i18n('admin.parentsTable.sendEmailDialog.message', sendEmailState.withEmail) }}</p>
+          <p>{{ $i18n('admin.parentsTable.sendEmailDialog.message', sendEmailTargets.length) }}</p>
 
           <v-alert
             v-if="sendEmailError"
@@ -449,7 +485,7 @@
 
           <v-btn
             color="primary"
-            :disabled="sendEmailState.withEmail === 0"
+            :disabled="sendEmailTargets.length === 0"
             :loading="sendEmailLoading"
             variant="tonal"
             @click="executeSendEmails"
@@ -593,12 +629,15 @@
   // Logs
   const parentLogs = ref(new Map())
   const emailSentMap = ref(new Map())
+  const emailVariantsSentMap = ref(new Map())
 
   // Dialog state
   const sendEmailDialogOpen = ref(false)
   const sendEmailLoading = ref(false)
   const sendEmailError = ref(null)
-  const sendEmailState = ref({ withEmail: 0, noEmail: 0, alreadySent: 0, parents: [] })
+  const sendEmailState = ref({ noEmail: 0, eligible: [], submitted: [], optedOut: [] })
+  const sendEmailVariant = ref('initial')
+  const sendEmailIncludeSkipped = ref(false)
 
   const optOutDialogOpen = ref(false)
   const optOutLoading = ref(false)
@@ -617,6 +656,8 @@
   // Repositories
   const parentRepository = new ParentRepository()
   const studentRepository = new StudentRepository()
+
+  const EMAIL_VARIANTS = ['initial', 'reminder', 'final']
 
   const LOG_CHIP_COLORS = {
     send_update_email: 'info',
@@ -646,6 +687,11 @@
     if (!parent.lastUpdated) return false
     const ts = parent.lastUpdated?.toMillis ? parent.lastUpdated.toMillis() : new Date(parent.lastUpdated).getTime()
     return ts >= schoolYearStart.getTime()
+  }
+
+  // Logs written before email versions existed have no variant: they were initial emails
+  function getEmailVariant (log) {
+    return log?.details?.variant || 'initial'
   }
 
   function getLogChip (parentId) {
@@ -692,6 +738,7 @@
   const emailStatusItems = computed(() => [
     { title: $i18n('admin.parentsTable.emailStatusOptions.all'), value: 'all' },
     { title: $i18n('admin.parentsTable.emailStatusOptions.sent'), value: 'sent' },
+    ...EMAIL_VARIANTS.map(variant => ({ title: $i18n(`admin.parentsTable.emailStatusOptions.${variant}`), value: variant })),
     { title: $i18n('admin.parentsTable.emailStatusOptions.notSent'), value: 'notSent' },
   ])
 
@@ -738,6 +785,8 @@
       result = result.filter(p => emailSentMap.value.has(p.id))
     } else if (filterEmailStatus.value === 'notSent') {
       result = result.filter(p => p.email && !emailSentMap.value.has(p.id))
+    } else if (EMAIL_VARIANTS.includes(filterEmailStatus.value)) {
+      result = result.filter(p => emailSentMap.value.has(p.id) && getEmailVariant(emailSentMap.value.get(p.id)) === filterEmailStatus.value)
     }
 
     if (filterSubmitted.value === 'yes') {
@@ -794,6 +843,7 @@
 
     const logMap = new Map()
     const emailMap = new Map()
+    const emailVariantsMap = new Map()
 
     for (const logDoc of snap.docs) {
       const data = logDoc.data()
@@ -806,10 +856,15 @@
       if (actionType === 'send_update_email' && (!emailMap.has(entityId) || ts > (emailMap.get(entityId).timestamp?.toMillis() ?? 0))) {
         emailMap.set(entityId, data)
       }
+      if (actionType === 'send_update_email') {
+        if (!emailVariantsMap.has(entityId)) emailVariantsMap.set(entityId, new Set())
+        emailVariantsMap.get(entityId).add(getEmailVariant(data))
+      }
     }
 
     parentLogs.value = logMap
     emailSentMap.value = emailMap
+    emailVariantsSentMap.value = emailVariantsMap
   }
 
   async function loadData () {
@@ -839,18 +894,29 @@
   function openSendEmailDialog () {
     const selectedParents = filteredParents.value.filter(p => selectedIds.value.includes(p.id))
     const withEmail = selectedParents.filter(p => p.email)
-    const noEmail = selectedParents.filter(p => !p.email)
-    const alreadySent = withEmail.filter(p => emailSentMap.value.has(p.id))
 
     sendEmailState.value = {
-      withEmail: withEmail.length,
-      noEmail: noEmail.length,
-      alreadySent: alreadySent.length,
-      parents: withEmail,
+      noEmail: selectedParents.length - withEmail.length,
+      eligible: withEmail.filter(p => !p.optedOut && !submittedThisYear(p)),
+      submitted: withEmail.filter(p => submittedThisYear(p)),
+      optedOut: withEmail.filter(p => p.optedOut),
     }
+    // Suggest the next version: initial until someone in the selection got an email this year
+    sendEmailVariant.value = withEmail.some(p => emailSentMap.value.has(p.id)) ? 'reminder' : 'initial'
+    sendEmailIncludeSkipped.value = false
     sendEmailError.value = null
     sendEmailDialogOpen.value = true
   }
+
+  const sendEmailTargets = computed(() => {
+    const { eligible, submitted, optedOut } = sendEmailState.value
+    if (!sendEmailIncludeSkipped.value) return eligible
+    return [...new Set([...eligible, ...submitted, ...optedOut])]
+  })
+
+  const sendEmailAlreadySent = computed(() =>
+    sendEmailTargets.value.filter(p => emailVariantsSentMap.value.get(p.id)?.has(sendEmailVariant.value)).length,
+  )
 
   async function executeSendEmails () {
     sendEmailLoading.value = true
@@ -861,19 +927,20 @@
       const baseUrl = getFunctionsBaseUrl()
       const errors = []
 
-      for (const parent of sendEmailState.value.parents) {
+      const variant = sendEmailVariant.value
+      for (const parent of sendEmailTargets.value) {
         try {
           const response = await secureFetch(`${baseUrl}/sendParentUpdateEmail`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${idToken}` },
-            body: JSON.stringify({ parentId: parent.id }),
+            body: JSON.stringify({ parentId: parent.id, variant }),
           })
           if (!response.ok) {
             const data = await response.json()
             errors.push(`${parent.fullName}: ${data.error}`)
             continue
           }
-          await writeLog({ actionType: 'send_update_email', entityId: parent.id, entityName: parent.fullName })
+          await writeLog({ actionType: 'send_update_email', entityId: parent.id, entityName: parent.fullName, details: { variant } })
         } catch (error_) {
           errors.push(`${parent.fullName}: ${error_.message}`)
         }

@@ -128,6 +128,15 @@
             >
               {{ $i18n(`admin.auditLog.actionTypes.${item.actionType}`) || item.actionType }}
             </v-chip>
+
+            <v-chip
+              v-if="item.actionType === 'send_update_email'"
+              class="ml-1"
+              size="x-small"
+              variant="outlined"
+            >
+              {{ $i18n(`admin.auditLog.variants.${item.details?.variant || 'initial'}`) }}
+            </v-chip>
           </template>
 
           <!-- Entity Type Column -->

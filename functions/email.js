@@ -74,16 +74,34 @@ function getEmailService () {
   }
 }
 
-function getEmailTemplate (parentName, updateUrl, schoolYear) {
+// Email versions: only the subject and the first paragraph differ
+const EMAIL_VARIANTS = {
+  initial: {
+    subject: schoolYear => `${schoolYear} - Mise à jour annuelle des informations`,
+    intro: '<p>Il vous faudra seulement <strong>2 minutes</strong> pour mettre à jour vos données pour le gros bottin de l\'Étoile filante!</p>',
+  },
+  reminder: {
+    subject: schoolYear => `Rappel : ${schoolYear} - Mise à jour annuelle des informations`,
+    intro: '<p>Nous n\'avons pas encore reçu la mise à jour de vos informations pour le bottin de l\'Étoile filante. Il ne vous faudra que <strong>2 minutes</strong>!</p>',
+  },
+  final: {
+    subject: schoolYear => `Dernière chance : ${schoolYear} - Mise à jour annuelle des informations`,
+    intro: '<p>Dernier rappel : la date limite pour mettre à jour vos informations pour le bottin est le <strong>{{DEADLINE}}</strong>. Sans réponse de votre part, vos informations de l\'an dernier ne seront pas reprises.</p>',
+  },
+}
+
+function getEmailTemplate (parentName, updateUrl, schoolYear, variant) {
   const currentYear = new Date().getFullYear()
   const deadline = '31 octobre' // TODO: Make this configurable based on workflow settings
   const templatePath = path.join(__dirname, 'annual-update-email.html')
+  const { subject, intro } = EMAIL_VARIANTS[variant]
 
   try {
     let html = fs.readFileSync(templatePath, 'utf8')
 
-    // Replace template variables
+    // Replace template variables (intro first: it may contain other placeholders)
     html = html
+      .replace(/\{\{INTRO\}\}/g, intro)
       .replace(/\{\{PARENT_NAME\}\}/g, parentName)
       .replace(/\{\{UPDATE_URL\}\}/g, updateUrl)
       .replace(/\{\{SCHOOL_YEAR\}\}/g, schoolYear)
@@ -92,7 +110,7 @@ function getEmailTemplate (parentName, updateUrl, schoolYear) {
       .replace(/\{\{APP_URL\}\}/g, EMAIL_CONFIG.APP_URL)
 
     return {
-      subject: `Dernière chance: ${schoolYear} - Mise à jour annuelle des informations`,
+      subject: subject(schoolYear),
       html,
     }
   } catch (error) {
@@ -139,9 +157,12 @@ exports.sendParentUpdateEmail = onRequest({
       return res.status(403).json({ error: 'Admin access required' })
     }
 
-    const { parentId } = req.body
+    const { parentId, variant = 'initial' } = req.body
     if (!parentId) {
       return res.status(400).json({ error: 'parentId is required' })
+    }
+    if (!Object.hasOwn(EMAIL_VARIANTS, variant)) {
+      return res.status(400).json({ error: `Unknown email variant: ${variant}` })
     }
 
     const parentDoc = await db.collection('parents').doc(parentId).get()
@@ -159,16 +180,16 @@ exports.sendParentUpdateEmail = onRequest({
     const updateUrl = `${EMAIL_CONFIG.APP_URL}/update/${token}`
     const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent'
 
-    const template = getEmailTemplate(parentName, updateUrl, schoolYear)
+    const template = getEmailTemplate(parentName, updateUrl, schoolYear, variant)
 
     if (SIMULATE_EMAILS) {
       console.log(`🧪 SIMULATION MODE: Simulating email send to ${parentData.email}`)
-      console.log(`📧 Subject: ${template.subject}`)
+      console.log(`📧 Variant: ${variant} | Subject: ${template.subject}`)
       console.log(`🔗 Update URL: ${updateUrl}`)
       console.log(`⏱️  Adding ${EMAIL_SIMULATION_DELAY_MS}ms delay`)
       await new Promise(resolve => setTimeout(resolve, EMAIL_SIMULATION_DELAY_MS))
       console.log(`✅ Simulated email "sent" to ${parentData.email}`)
-      return res.status(200).json({ success: true, email: parentData.email, simulated: true })
+      return res.status(200).json({ success: true, email: parentData.email, variant, simulated: true })
     }
 
     const emailService = getEmailService()
@@ -182,6 +203,7 @@ exports.sendParentUpdateEmail = onRequest({
     return res.status(200).json({
       success: true,
       email: parentData.email,
+      variant,
       sentAt: new Date().toISOString(),
       blocked: !!result.blocked,
     })

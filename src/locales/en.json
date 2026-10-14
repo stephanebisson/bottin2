@@ -579,9 +579,18 @@
       "removeError": "Error removing parent.",
       "sendEmailDialog": {
         "title": "Send update link",
-        "alreadySent": "$1 parent(s) have already received a link this year.",
+        "alreadySent": "$1 parent(s) have already received this version this year.",
         "noEmail": "$1 parent(s) have no email address and will be skipped.",
         "message": "An update link will be sent to $1 parent(s).",
+        "variantLabel": "Email version",
+        "variants": {
+          "initial": "Initial email",
+          "reminder": "Reminder",
+          "final": "Final reminder"
+        },
+        "skippedSubmitted": "$1 parent(s) have already submitted their update this year.",
+        "skippedOptedOut": "$1 parent(s) have opted out.",
+        "includeSkipped": "Include them anyway",
         "confirm": "Send"
       },
       "optOutDialog": {
@@ -601,9 +610,13 @@
         "log": "History"
       },
       "status": {
-        "emailSent": "Link sent",
         "submittedOn": "Submitted $1",
-        "optedOut": "Opted out"
+        "optedOut": "Opted out",
+        "sent": {
+          "initial": "Initial sent $1",
+          "reminder": "Reminder sent $1",
+          "final": "Final reminder sent $1"
+        }
       },
       "logs": {
         "send_update_email": "Link sent",
@@ -613,6 +626,9 @@
       "emailStatusOptions": {
         "all": "All",
         "sent": "Link sent",
+        "initial": "Initial sent",
+        "reminder": "Reminder sent",
+        "final": "Final reminder sent",
         "notSent": "Not sent"
       },
       "submittedOptions": {
@@ -707,6 +723,11 @@
         "all": "All",
         "parent": "Parents",
         "student": "Students"
+      },
+      "variants": {
+        "initial": "Initial",
+        "reminder": "Reminder",
+        "final": "Final reminder"
       }
     }
   },
@@ -745,10 +766,10 @@
     "serverError": "Unable to load your information. Please try again later.",
     "submitError": "Failed to update information. Please try again.",
     "optOutWarningBox": "Need to completely remove your information from the school directory?",
-    "optOutWarningBoxDescription": "If you prefer to remove all your personal information from the directory while keeping minimal contact for school communications, you can opt out below.",
+    "optOutWarningBoxDescription": "If you prefer to remove all your personal information from the directory, you can opt out below.",
     "optOutButton": "Remove My Information",
     "optOutDialogTitle": "Remove All Information from Directory",
-    "optOutDialogContent": "This action will remove all your personal information from the school directory, including your phone number, address, committee memberships, and interests. Only your name and email address will be kept for essential school communications.",
+    "optOutDialogContent": "This action will remove all your personal information from the school directory, including your phone number, address, committee memberships, and interests. Only your name will remain in the directory.",
     "optOutDialogWarning": "You can re-opt in at any time by accessing this form again and submitting your updated information.",
     "reOptInWarningBox": "You are currently opted out of the school directory",
     "reOptInWarningBoxDescription": "Your information has been removed from the directory. To rejoin the directory and restore your information, simply fill out and submit this form using the 'Validate' button below.",
@@ -958,7 +979,7 @@
     "purposesTitle": "Why we use it",
     "purposesBody": "We use this information only to:\n• produce the online directory and the printed directory given to every family\n• help families and school staff reach each other\n• organize committees and volunteering\n• send the annual update email and directory-related communications\n• keep the directory secure and improve it\n\nWe never sell, rent or trade your information. It is never used for commercial or political purposes.",
     "consentTitle": "Your consent",
-    "consentBody": "You give your consent by filling out the update form. You choose what you share: fields left blank appear neither in the online directory nor in the printed directory. You provide your children's information as a holder of parental authority. If you indicate that another parent lives at the same address, you confirm that they have agreed to it.\nYou may withdraw your consent at any time using the opt-out button on the update form, or by writing to us. Your information is then removed from the online directory and from future editions of the printed directory; copies already distributed cannot be recalled. Only your name and email are kept for essential school communications.",
+    "consentBody": "You give your consent by filling out the update form. You choose what you share: fields left blank appear neither in the online directory nor in the printed directory. You provide your children's information as a holder of parental authority. If you indicate that another parent lives at the same address, you confirm that they have agreed to it.\nYou may withdraw your consent at any time using the opt-out button on the update form, or by writing to us. Your information is then removed from the online directory and from future editions of the printed directory; copies already distributed cannot be recalled. Only your name, which stays in the directory, and your email, which is used to send you the annual update link, are kept.",
     "accessTitle": "Who can see your information",
     "accessBody": "The directory exists in two versions with the same content:\n• online, only people with a verified account, that is parents and school staff, can view it\n• a printed copy is given to every family at the school\n\nCommittee volunteers who administer the directory have access to all information, solely to manage it.\nWe do not share any information with anyone else, unless required by law.",
     "providersTitle": "Service providers",
