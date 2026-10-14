@@ -279,7 +279,7 @@
               class="mb-2 flex-grow-1"
               clearable
               density="compact"
-              item-title="text"
+              :item-title="c => `${c.classCode || c.value} - ${c.teacher}`"
               item-value="value"
               :items="classOptions"
               :label="$i18n('admin.studentsTable.headers.class')"

@@ -92,6 +92,7 @@ export class ClassRepository {
         text: `${classItem.classLetter} - ${classItem.teacherName}`,
         teacher: classItem.teacherName,
         classLetter: classItem.classLetter,
+        classCode: classItem.classCode,
       }))
     } catch (error) {
       console.error('ClassRepository: Error getting class dropdown options:', error)
