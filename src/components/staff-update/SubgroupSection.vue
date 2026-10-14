@@ -27,17 +27,15 @@
       >
         <StaffCard
           :group="group"
-          :is-fixed="isFixed"
           :is-modified="modifiedIds.has(member.id)"
           :staff="member"
           :subgroup="subgroup"
-          @change="handleChange"
-          @delete="handleDelete"
+          @change="emit('change', $event)"
         />
       </v-col>
 
-      <!-- Empty State for Fixed Sections -->
-      <v-col v-if="isFixed && members.length === 0" cols="12">
+      <!-- Empty State -->
+      <v-col v-if="members.length === 0" cols="12">
         <v-card class="pa-6 text-center" variant="outlined">
           <v-icon class="text-medium-emphasis" size="48">mdi-account-off</v-icon>
 
@@ -47,18 +45,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Add Button for Variable Sections -->
-    <div v-if="!isFixed" class="mt-4">
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-plus"
-        variant="outlined"
-        @click="handleAdd"
-      >
-        {{ $i18n('staffUpdate.addMember') }}
-      </v-btn>
-    </div>
   </div>
 </template>
 
@@ -66,7 +52,7 @@
   import StaffCard from './StaffCard.vue'
 
   // Props
-  const props = defineProps({
+  defineProps({
     group: {
       type: String,
       required: true,
@@ -87,10 +73,6 @@
       type: Array,
       required: true,
     },
-    isFixed: {
-      type: Boolean,
-      default: false,
-    },
     modifiedIds: {
       type: Set,
       default: () => new Set(),
@@ -98,23 +80,7 @@
   })
 
   // Emits
-  const emit = defineEmits(['change', 'delete', 'add'])
-
-  // Methods
-  function handleChange (updatedStaff) {
-    emit('change', updatedStaff)
-  }
-
-  function handleDelete (staffId) {
-    emit('delete', staffId)
-  }
-
-  function handleAdd () {
-    emit('add', {
-      group: props.group,
-      subgroup: props.subgroup,
-    })
-  }
+  const emit = defineEmits(['change'])
 </script>
 
 <style scoped>

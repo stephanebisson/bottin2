@@ -103,7 +103,6 @@
         subgroup,
         name: $i18n(`staffUpdate.subgroups.${subgroup}`),
         icon: SUBGROUP_ICONS[subgroup],
-        isFixed: true,
         members: effectiveStaff.value.filter(s => s.group === group && s.subgroup === subgroup),
       })),
     })),

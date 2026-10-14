@@ -3,9 +3,6 @@
     "staffUpdate.memberCount": [
       "count"
     ],
-    "staffUpdate.pendingChanges": [
-      "count"
-    ],
     "dashboard.withParent": [
       "names"
     ],
@@ -134,9 +131,6 @@
   },
   "fr": {
     "staffUpdate.memberCount": [
-      "count"
-    ],
-    "staffUpdate.pendingChanges": [
       "count"
     ],
     "dashboard.withParent": [

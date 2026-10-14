@@ -790,12 +790,6 @@
     "phone": "Phone",
     "memberCount": "{{PLURAL:$1|$1 member|$1 members}}",
     "noMembers": "No staff member assigned",
-    "addMember": "Add a member",
-    "unsavedChanges": "Unsaved changes",
-    "allSaved": "Everything is saved",
-    "pendingChanges": "{{PLURAL:$1|$1 pending change|$1 pending changes}}",
-    "allChangesSaved": "All changes have been saved",
-    "saveAll": "Save all",
     "validation": {
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required",

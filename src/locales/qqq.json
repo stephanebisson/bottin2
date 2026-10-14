@@ -594,12 +594,6 @@
     "phone": "Staff editor and staff directory",
     "memberCount": "Staff editor. - Parameters: $1 = count",
     "noMembers": "Staff editor and staff directory",
-    "addMember": "Staff editor and staff directory",
-    "unsavedChanges": "Staff editor and staff directory",
-    "allSaved": "Staff editor and staff directory",
-    "pendingChanges": "Staff editor save bar. - Parameters: $1 = count",
-    "allChangesSaved": "Staff editor and staff directory",
-    "saveAll": "Staff editor and staff directory",
     "validation": {
       "firstNameRequired": "Staff editor field error",
       "lastNameRequired": "Staff editor field error",

@@ -1,10 +1,7 @@
 <template>
   <v-card
     class="staff-card"
-    :class="{
-      'staff-card--modified': isModified,
-      'staff-card--new': staff._isNew
-    }"
+    :class="{ 'staff-card--modified': isModified }"
     elevation="1"
   >
     <v-card-text>
@@ -82,21 +79,6 @@
           />
         </v-col>
       </v-row>
-
-      <!-- Delete Button (only if not fixed) -->
-      <v-row v-if="!isFixed">
-        <v-col class="text-right" cols="12">
-          <v-btn
-            color="error"
-            prepend-icon="mdi-delete"
-            size="small"
-            variant="text"
-            @click="handleDelete"
-          >
-            {{ $i18n('common.delete') }}
-          </v-btn>
-        </v-col>
-      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -120,10 +102,6 @@
       type: String,
       required: true,
     },
-    isFixed: {
-      type: Boolean,
-      default: false,
-    },
     isModified: {
       type: Boolean,
       default: false,
@@ -131,7 +109,7 @@
   })
 
   // Emits
-  const emit = defineEmits(['change', 'delete'])
+  const emit = defineEmits(['change'])
 
   const $i18n = useTranslate()
 
@@ -182,10 +160,6 @@
     })
   }
 
-  function handleDelete () {
-    emit('delete', props.staff.id)
-  }
-
   // Phone formatting methods
   function formatPhoneOnBlur () {
     if (props.staff.phone) {
@@ -211,11 +185,6 @@
 .staff-card--modified {
   border-left: 4px solid #2196f3;
   background-color: #f5f9ff;
-}
-
-.staff-card--new {
-  background-color: #f1f8f4;
-  border-left: 4px solid #4caf50;
 }
 
 .v-row {

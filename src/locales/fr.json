@@ -797,12 +797,6 @@
     "phone": "Téléphone",
     "memberCount": "{{PLURAL:$1|$1 membre|$1 membres}}",
     "noMembers": "Aucun membre du personnel assigné",
-    "addMember": "Ajouter un membre",
-    "unsavedChanges": "Modifications non enregistrées",
-    "allSaved": "Tout est enregistré",
-    "pendingChanges": "{{PLURAL:$1|$1 modification en attente|$1 modifications en attente}}",
-    "allChangesSaved": "Toutes les modifications ont été enregistrées",
-    "saveAll": "Enregistrer tout",
     "validation": {
       "firstNameRequired": "Le prénom est requis",
       "lastNameRequired": "Le nom de famille est requis",

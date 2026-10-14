@@ -11,14 +11,11 @@
       :key="subgroupData.subgroup"
       :group="group"
       :icon="subgroupData.icon"
-      :is-fixed="subgroupData.isFixed"
       :members="subgroupData.members"
       :modified-ids="modifiedIds"
       :name="subgroupData.name"
       :subgroup="subgroupData.subgroup"
-      @add="$emit('add', $event)"
       @change="$emit('change', $event)"
-      @delete="$emit('delete', $event)"
     />
   </div>
 </template>
@@ -47,11 +44,5 @@
   })
 
   // Emits
-  defineEmits(['change', 'delete', 'add'])
+  defineEmits(['change'])
 </script>
-
-<style scoped>
-.group-section {
-  /* Add spacing between groups */
-}
-</style>
