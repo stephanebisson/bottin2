@@ -1,6 +1,6 @@
-// Builds the home-screen icons from the school logo: black logo on a white square.
+// Builds the home-screen icons and the favicon from the school logo: black logo on a white square.
 // Run with: node scripts/generate-pwa-icons.js
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
@@ -39,3 +39,26 @@ for (const { file, size, logo: ratio } of icons) {
     .toFile(join(iconsDir, file))
   console.log(`✅ ${file}`)
 }
+
+// Browser-tab favicon: an .ico holding PNG images, with the logo filling the square
+// since every pixel counts at 16px
+const faviconSizes = [16, 32, 48]
+const faviconImages = await Promise.all(faviconSizes.map(size =>
+  sharp(logo).resize(size, size).flatten({ background: '#ffffff' }).png().toBuffer(),
+))
+const header = Buffer.alloc(6 + 16 * faviconImages.length)
+header.writeUInt16LE(1, 2) // type: icon
+header.writeUInt16LE(faviconImages.length, 4)
+let offset = header.length
+for (const [i, image] of faviconImages.entries()) {
+  const entry = 6 + 16 * i
+  header.writeUInt8(faviconSizes[i], entry) // width
+  header.writeUInt8(faviconSizes[i], entry + 1) // height
+  header.writeUInt16LE(1, entry + 4) // colour planes
+  header.writeUInt16LE(32, entry + 6) // bits per pixel
+  header.writeUInt32LE(image.length, entry + 8)
+  header.writeUInt32LE(offset, entry + 12)
+  offset += image.length
+}
+writeFileSync(join(__dirname, '../public/favicon.ico'), Buffer.concat([header, ...faviconImages]))
+console.log('✅ favicon.ico')
