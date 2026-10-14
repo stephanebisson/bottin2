@@ -45,47 +45,41 @@
 
     <!-- Dashboard Content -->
     <div v-else-if="!firebaseStore.loading">
-      <!-- Navigation Grid -->
-      <v-row class="mb-6">
+      <MyFamilyCard />
+
+      <AdminTodoStrip
+        v-if="authStore.isAdmin"
+        :not-emailed="notEmailedCount"
+        :not-updated="notUpdatedCount"
+        :pending-feedback="pendingFeedbackCount"
+        :unassigned="unassignedCount"
+      />
+
+      <!-- Navigation Tiles -->
+      <v-row>
         <v-col
           v-for="navItem in navigationItems"
           :key="navItem.route"
-          class="d-flex"
           cols="12"
-          md="4"
+          md="3"
           sm="6"
         >
           <v-card
-            class="navigation-card pa-6 text-center d-flex flex-column"
-            elevation="1"
+            class="h-100"
             hover
-            style="cursor: pointer; height: 100%; width: 100%;"
-            @click="navigateTo(navItem.route)"
+            :to="navItem.route"
           >
-            <div class="d-flex flex-column align-center flex-grow-1">
-              <v-icon class="mb-4" :color="navItem.color" size="64">{{ navItem.icon }}</v-icon>
-              <h3 class="text-headline-small font-weight-bold mb-2">{{ navItem.title }}</h3>
-              <p class="text-body-medium text-grey-darken-1 mb-3 flex-grow-1">{{ navItem.description }}</p>
-            </div>
+            <v-card-text class="d-flex align-center ga-4">
+              <v-icon :color="navItem.color" size="40">{{ navItem.icon }}</v-icon>
 
-            <div class="d-flex justify-center gap-3 flex-wrap">
-              <v-chip v-if="!navItem.counts" :color="navItem.color" size="small" variant="outlined">
-                {{ navItem.count }} {{ navItem.countLabel }}
-              </v-chip>
+              <div>
+                <div class="text-title-medium font-weight-bold">{{ navItem.title }}</div>
 
-              <template v-else>
-                <v-chip
-                  v-for="chipData in navItem.counts"
-                  :key="chipData.label"
-                  class="mx-1"
-                  :color="navItem.color"
-                  size="small"
-                  variant="outlined"
-                >
-                  {{ chipData.count }} {{ chipData.label }}
-                </v-chip>
-              </template>
-            </div>
+                <div class="text-body-small text-medium-emphasis">
+                  {{ navItem.counts.map(c => `${c.count} ${c.label}`).join(' · ') }}
+                </div>
+              </div>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -94,10 +88,15 @@
 </template>
 
 <script setup>
+  import { collection, getDocs, query, where } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute, useRouter } from 'vue-router'
+  import { db } from '@/firebase'
+  import { FeedbackRepository } from '@/repositories/FeedbackRepository'
+  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { getCurrentSchoolYear, isInCurrentSchoolYear } from '@/utils/schoolYear'
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
@@ -119,6 +118,7 @@
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
+  const authStore = useAuthStore()
 
   // Load DTO data for dashboard
   onMounted(async () => {
@@ -128,76 +128,82 @@
         firebaseStore.loadStudentsDTO(),
         firebaseStore.loadParentsDTO(),
         firebaseStore.loadStaffDTO(),
-        firebaseStore.loadAllData(), // Still need classes and committees
+        firebaseStore.loadCommitteesDTO(),
+        firebaseStore.loadAllData(), // Classes
+        authStore.isAdmin ? loadAdminTodo() : Promise.resolve(),
       ])
     } catch (error) {
       console.error('Error during dashboard initialization:', error)
     }
   })
 
-  // Navigation items for the grid
+  // Admin to-do: same rules as the filters on the admin lists the tiles link to
+  const emailedParentIds = ref(null)
+  const pendingFeedbackCount = ref(null)
+
+  async function loadAdminTodo () {
+    try {
+      const [logsSnap, feedback] = await Promise.all([
+        getDocs(query(
+          collection(db, 'actionLogs'),
+          where('entityType', '==', 'parent'),
+          where('schoolYear', '==', getCurrentSchoolYear()),
+          where('actionType', '==', 'send_update_email'),
+        )),
+        new FeedbackRepository().getAll(),
+      ])
+      emailedParentIds.value = new Set(logsSnap.docs.map(d => d.data().entityId))
+      pendingFeedbackCount.value = feedback.filter(f => f.status === 'pending').length
+    } catch (error) {
+      console.error('Error loading admin to-do counts:', error)
+    }
+  }
+
+  const notEmailedCount = computed(() => {
+    if (!emailedParentIds.value) return null
+    return firebaseStore.parentsDTO.filter(p => p.email && !emailedParentIds.value.has(p.id)).length
+  })
+
+  const notUpdatedCount = computed(() =>
+    firebaseStore.parentsDTO.filter(p => !isInCurrentSchoolYear(p.lastUpdated)).length,
+  )
+
+  const unassignedCount = computed(() =>
+    firebaseStore.studentsDTO.filter(s => !s.className).length,
+  )
+
+  // Navigation tiles
   const navigationItems = computed(() => [
     {
       title: $i18n('nav.classes'),
-      description: $i18n('dashboard.classesDescription'),
       icon: 'mdi-school',
       color: 'primary',
       route: '/classes',
-      count: firebaseStore.classes.length,
-      countLabel: $i18n('dashboard.classes').toLowerCase(),
+      counts: [{ count: firebaseStore.classes.length, label: $i18n('dashboard.classes') }],
     },
     {
       title: $i18n('directory.title'),
-      description: $i18n('dashboard.familiesDescription'),
       icon: 'mdi-book-account',
       color: 'secondary',
       route: '/families',
       counts: [
-        {
-          count: firebaseStore.studentsDTO.length,
-          label: $i18n('dashboard.students').toLowerCase(),
-        },
-        {
-          count: firebaseStore.parentsDTO.length,
-          label: $i18n('dashboard.parents').toLowerCase(),
-        },
+        { count: firebaseStore.studentsDTO.length, label: $i18n('dashboard.students') },
+        { count: firebaseStore.parentsDTO.length, label: $i18n('dashboard.parents') },
       ],
     },
     {
       title: $i18n('nav.staff'),
-      description: $i18n('dashboard.staffDescription'),
       icon: 'mdi-account-tie',
       color: 'accent',
       route: '/staff',
-      count: firebaseStore.staffDTO.length,
-      countLabel: $i18n('dashboard.staffMembers').toLowerCase(),
+      counts: [{ count: firebaseStore.staffDTO.length, label: $i18n('dashboard.staffMembers') }],
     },
     {
       title: $i18n('nav.committees'),
-      description: $i18n('dashboard.committeesDescription'),
       icon: 'mdi-account-group',
       color: 'warning',
       route: '/committees',
-      count: firebaseStore.committees.length,
-      countLabel: $i18n('dashboard.committees').toLowerCase(),
+      counts: [{ count: firebaseStore.committeesDTO.length, label: $i18n('dashboard.committees') }],
     },
   ])
-
-  // Navigation functions
-  function navigateTo (route) {
-    router.push(route)
-  }
-
 </script>
-
-<style scoped>
-.navigation-card {
-  min-height: 280px;
-  flex: 1;
-}
-
-.navigation-card:hover {
-  transform: translateY(-4px);
-  transition: transform 0.3s ease;
-}
-</style>

@@ -1,5 +1,20 @@
 {
   "en": {
+    "dashboard.withParent": [
+      "names"
+    ],
+    "dashboard.todo.notEmailed": [
+      "count"
+    ],
+    "dashboard.todo.notUpdated": [
+      "count"
+    ],
+    "dashboard.todo.unassigned": [
+      "count"
+    ],
+    "dashboard.todo.pendingFeedback": [
+      "count"
+    ],
     "classes.classesLoaded": [
       "count"
     ],
@@ -127,6 +142,21 @@
     ]
   },
   "fr": {
+    "dashboard.withParent": [
+      "names"
+    ],
+    "dashboard.todo.notEmailed": [
+      "count"
+    ],
+    "dashboard.todo.notUpdated": [
+      "count"
+    ],
+    "dashboard.todo.unassigned": [
+      "count"
+    ],
+    "dashboard.todo.pendingFeedback": [
+      "count"
+    ],
     "classes.classesLoaded": [
       "count"
     ],

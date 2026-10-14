@@ -349,6 +349,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useRoute } from 'vue-router'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
@@ -366,7 +367,7 @@
   const feedback = ref([])
   const parents = ref([])
   const searchText = ref('')
-  const statusFilter = ref('all')
+  const statusFilter = ref(useRoute().query.status === 'pending' ? 'pending' : 'all')
   const expanded = ref([])
 
   // Authorization

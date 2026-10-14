@@ -21,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref(null)
   const isInitialized = ref(false)
+  const isAdmin = ref(false) // From the admin custom claim; refreshed on each auth state change
   const registrationDisabled = ref(false) // Registration enabled for authorized parents/staff
 
   // Getters
@@ -189,6 +190,7 @@ export const useAuthStore = defineStore('auth', () => {
       authStateUnsubscribe = onAuthStateChanged(auth, async firebaseUser => {
         // Always set the user, regardless of verification status
         user.value = firebaseUser
+        await refreshAdminStatus()
 
         if (!isInitialized.value) {
           isInitialized.value = true
@@ -207,6 +209,22 @@ export const useAuthStore = defineStore('auth', () => {
         }
       })
     })
+  }
+
+  // Read the admin custom claim. Pass forceRefresh to pick up a claim granted since sign-in.
+  const refreshAdminStatus = async (forceRefresh = false) => {
+    if (!user.value) {
+      isAdmin.value = false
+      return false
+    }
+    try {
+      const idTokenResult = await user.value.getIdTokenResult(forceRefresh)
+      isAdmin.value = !!idTokenResult.claims.admin
+    } catch (error_) {
+      console.error('Failed to check admin status:', error_)
+      isAdmin.value = false
+    }
+    return isAdmin.value
   }
 
   // Register new user (only if email exists in parents or staff collections)
@@ -525,6 +543,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isInitialized,
+    isAdmin,
     serviceHealth,
     registrationDisabled,
 
@@ -536,6 +555,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Actions
     initializeAuth,
+    refreshAdminStatus,
     register,
     login,
     logout,

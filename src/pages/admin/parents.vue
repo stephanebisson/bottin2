@@ -613,13 +613,14 @@
   import { addDoc, collection, deleteDoc, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useRoute } from 'vue-router'
   import { getFunctionsBaseUrl, secureFetch } from '@/config/functions.js'
   import { db } from '@/firebase'
   import { ParentRepository } from '@/repositories/ParentRepository.js'
   import { StudentRepository } from '@/repositories/StudentRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-  import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
+  import { getCurrentSchoolYear, isInCurrentSchoolYear } from '@/utils/schoolYear.js'
   import { normalizeText } from '@/utils/search.js'
 
   const bananaI18n = useI18n()
@@ -628,8 +629,6 @@
   const firebaseStore = useFirebaseDataStore()
 
   const currentSchoolYear = getCurrentSchoolYear()
-  const schoolYearStartYear = Number.parseInt(currentSchoolYear.split('-', 1)[0])
-  const schoolYearStart = new Date(schoolYearStartYear, 6, 1)
 
   // State
   const loading = ref(false)
@@ -647,11 +646,12 @@
   const tablePage = ref(1)
   const recentlyAddedIds = ref([])
 
-  // Filters
+  // Filters (email status and submitted can be preset from the URL, e.g. links from the home page)
+  const route = useRoute()
   const filterSearch = ref('')
   const filterClass = ref(null)
-  const filterEmailStatus = ref('all')
-  const filterSubmitted = ref('all')
+  const filterEmailStatus = ref(route.query.emailStatus === 'notSent' ? 'notSent' : 'all')
+  const filterSubmitted = ref(route.query.submitted === 'no' ? 'no' : 'all')
   const filterAccount = ref('all')
   const filterOptedOut = ref(false)
   const filterNoChildren = ref(false)
@@ -717,9 +717,7 @@
   }
 
   function submittedThisYear (parent) {
-    if (!parent.lastUpdated) return false
-    const ts = parent.lastUpdated?.toMillis ? parent.lastUpdated.toMillis() : new Date(parent.lastUpdated).getTime()
-    return ts >= schoolYearStart.getTime()
+    return isInCurrentSchoolYear(parent.lastUpdated)
   }
 
   // Logs written before email versions existed have no variant: they were initial emails

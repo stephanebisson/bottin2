@@ -557,6 +557,7 @@
   import { addDoc, collection, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useRoute } from 'vue-router'
   import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
@@ -583,7 +584,7 @@
   const searchQuery = ref('')
   const filterClass = ref(null)
   const filterLevel = ref(null)
-  const showUnassignedOnly = ref(false)
+  const showUnassignedOnly = ref(useRoute().query.unassigned === '1')
 
   // Selection
   const selectedIds = ref([])
