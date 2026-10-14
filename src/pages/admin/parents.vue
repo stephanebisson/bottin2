@@ -69,7 +69,7 @@
 
         <!-- Filter Bar -->
         <v-row class="mb-2" density="compact">
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="2">
             <v-text-field
               v-model="filterSearch"
               clearable
@@ -111,6 +111,17 @@
               hide-details
               :items="submittedItems"
               :label="$i18n('admin.parentsTable.filterSubmitted')"
+              variant="outlined"
+            />
+          </v-col>
+
+          <v-col cols="6" sm="2">
+            <v-select
+              v-model="filterAccount"
+              density="compact"
+              hide-details
+              :items="accountItems"
+              :label="$i18n('admin.parentsTable.filterAccount')"
               variant="outlined"
             />
           </v-col>
@@ -291,6 +302,24 @@
                   variant="tonal"
                 >
                   {{ $i18n(`admin.parentsTable.status.sent.${getEmailVariant(emailSentMap.get(item.id))}`, formatDate(emailSentMap.get(item.id)?.timestamp)) }}
+                </v-chip>
+
+                <v-chip
+                  v-if="accountStatuses.get(item.id) === 'active'"
+                  color="primary"
+                  size="x-small"
+                  variant="tonal"
+                >
+                  {{ $i18n('admin.parentsTable.status.accountActive') }}
+                </v-chip>
+
+                <v-chip
+                  v-else-if="accountStatuses.get(item.id) === 'unverified'"
+                  color="grey"
+                  size="x-small"
+                  variant="tonal"
+                >
+                  {{ $i18n('admin.parentsTable.status.accountUnverified') }}
                 </v-chip>
 
                 <v-chip
@@ -623,6 +652,7 @@
   const filterClass = ref(null)
   const filterEmailStatus = ref('all')
   const filterSubmitted = ref('all')
+  const filterAccount = ref('all')
   const filterOptedOut = ref(false)
   const filterNoChildren = ref(false)
 
@@ -630,6 +660,9 @@
   const parentLogs = ref(new Map())
   const emailSentMap = ref(new Map())
   const emailVariantsSentMap = ref(new Map())
+
+  // Online directory account status by parent ID: 'active' | 'unverified' | 'none'
+  const accountStatuses = ref(new Map())
 
   // Dialog state
   const sendEmailDialogOpen = ref(false)
@@ -742,6 +775,12 @@
     { title: $i18n('admin.parentsTable.emailStatusOptions.notSent'), value: 'notSent' },
   ])
 
+  const accountItems = computed(() => [
+    { title: $i18n('admin.parentsTable.accountOptions.all'), value: 'all' },
+    { title: $i18n('admin.parentsTable.accountOptions.active'), value: 'active' },
+    { title: $i18n('admin.parentsTable.accountOptions.notActive'), value: 'notActive' },
+  ])
+
   const submittedItems = computed(() => [
     { title: $i18n('admin.parentsTable.submittedOptions.all'), value: 'all' },
     { title: $i18n('admin.parentsTable.submittedOptions.yes'), value: 'yes' },
@@ -793,6 +832,12 @@
       result = result.filter(p => submittedThisYear(p))
     } else if (filterSubmitted.value === 'no') {
       result = result.filter(p => !submittedThisYear(p))
+    }
+
+    if (filterAccount.value === 'active') {
+      result = result.filter(p => accountStatuses.value.get(p.id) === 'active')
+    } else if (filterAccount.value === 'notActive') {
+      result = result.filter(p => accountStatuses.value.get(p.id) !== 'active')
     }
 
     if (filterOptedOut.value) {
@@ -867,6 +912,17 @@
     emailVariantsSentMap.value = emailVariantsMap
   }
 
+  async function loadAccountStatuses () {
+    const idToken = await authStore.user.getIdToken()
+    const response = await secureFetch(`${getFunctionsBaseUrl()}/getParentAccountStatuses`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${idToken}` },
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error)
+    accountStatuses.value = new Map(Object.entries(data.statuses))
+  }
+
   async function loadData () {
     loading.value = true
     error.value = null
@@ -881,7 +937,7 @@
       ])
       parents.value = parentsData
       students.value = studentsData
-      await loadParentLogs()
+      await Promise.all([loadParentLogs(), loadAccountStatuses()])
     } catch (error_) {
       error.value = error_.message || 'Failed to load data'
     } finally {
@@ -935,12 +991,17 @@
             headers: { Authorization: `Bearer ${idToken}` },
             body: JSON.stringify({ parentId: parent.id, variant }),
           })
+          const data = await response.json()
           if (!response.ok) {
-            const data = await response.json()
             errors.push(`${parent.fullName}: ${data.error}`)
             continue
           }
-          await writeLog({ actionType: 'send_update_email', entityId: parent.id, entityName: parent.fullName, details: { variant } })
+          await writeLog({
+            actionType: 'send_update_email',
+            entityId: parent.id,
+            entityName: parent.fullName,
+            details: { variant, accountStatus: data.accountStatus },
+          })
         } catch (error_) {
           errors.push(`${parent.fullName}: ${error_.message}`)
         }

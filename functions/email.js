@@ -4,6 +4,7 @@ const { getAuth } = require('firebase-admin/auth')
 const { getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const nodemailer = require('nodemailer')
+const { getAccountStatus } = require('./accounts')
 const { FUNCTIONS_REGION, SIMULATE_EMAILS, EMAIL_SIMULATION_DELAY_MS } = require('./config')
 const { getCurrentSchoolYear } = require('./schoolYear')
 const { generateOrReuseToken } = require('./tokens')
@@ -90,7 +91,14 @@ const EMAIL_VARIANTS = {
   },
 }
 
-function getEmailTemplate (parentName, updateUrl, schoolYear, variant) {
+// Online directory paragraph, by account status (see accounts.js)
+const ONLINE_DIRECTORY_TEXTS = {
+  none: '<p><strong>💻 Le bottin en ligne est maintenant disponible!</strong> Créez votre compte sur <a href="{{APP_URL}}/auth">{{APP_URL_LABEL}}</a> avec l\'adresse courriel à laquelle vous avez reçu ce message. Vous pourrez consulter le bottin en tout temps sur votre téléphone ou votre ordinateur.</p>',
+  unverified: '<p><strong>💻 Votre compte pour le bottin en ligne est presque prêt!</strong> Il ne reste qu\'à confirmer votre adresse courriel. Connectez-vous sur <a href="{{APP_URL}}/auth">{{APP_URL_LABEL}}</a> pour recevoir un nouveau lien de confirmation.</p>',
+  active: '<p><strong>💻 Le bottin en ligne vous attend!</strong> Vous avez déjà un compte : connectez-vous sur <a href="{{APP_URL}}">{{APP_URL_LABEL}}</a> pour retrouver en tout temps les coordonnées des familles de l\'école, sur votre téléphone ou votre ordinateur.</p>',
+}
+
+function getEmailTemplate (parentName, updateUrl, schoolYear, variant, accountStatus) {
   const currentYear = new Date().getFullYear()
   const deadline = '31 octobre' // TODO: Make this configurable based on workflow settings
   const templatePath = path.join(__dirname, 'annual-update-email.html')
@@ -102,6 +110,8 @@ function getEmailTemplate (parentName, updateUrl, schoolYear, variant) {
     // Replace template variables (intro first: it may contain other placeholders)
     html = html
       .replace(/\{\{INTRO\}\}/g, intro)
+      .replace(/\{\{ONLINE_DIRECTORY\}\}/g, ONLINE_DIRECTORY_TEXTS[accountStatus])
+      .replace(/\{\{APP_URL_LABEL\}\}/g, EMAIL_CONFIG.APP_URL.replace(/^https?:\/\//, ''))
       .replace(/\{\{PARENT_NAME\}\}/g, parentName)
       .replace(/\{\{UPDATE_URL\}\}/g, updateUrl)
       .replace(/\{\{SCHOOL_YEAR\}\}/g, schoolYear)
@@ -180,16 +190,17 @@ exports.sendParentUpdateEmail = onRequest({
     const updateUrl = `${EMAIL_CONFIG.APP_URL}/update/${token}`
     const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent'
 
-    const template = getEmailTemplate(parentName, updateUrl, schoolYear, variant)
+    const accountStatus = await getAccountStatus(parentData.email)
+    const template = getEmailTemplate(parentName, updateUrl, schoolYear, variant, accountStatus)
 
     if (SIMULATE_EMAILS) {
       console.log(`🧪 SIMULATION MODE: Simulating email send to ${parentData.email}`)
-      console.log(`📧 Variant: ${variant} | Subject: ${template.subject}`)
+      console.log(`📧 Variant: ${variant} | Account: ${accountStatus} | Subject: ${template.subject}`)
       console.log(`🔗 Update URL: ${updateUrl}`)
       console.log(`⏱️  Adding ${EMAIL_SIMULATION_DELAY_MS}ms delay`)
       await new Promise(resolve => setTimeout(resolve, EMAIL_SIMULATION_DELAY_MS))
       console.log(`✅ Simulated email "sent" to ${parentData.email}`)
-      return res.status(200).json({ success: true, email: parentData.email, variant, simulated: true })
+      return res.status(200).json({ success: true, email: parentData.email, variant, accountStatus, simulated: true })
     }
 
     const emailService = getEmailService()
@@ -204,6 +215,7 @@ exports.sendParentUpdateEmail = onRequest({
       success: true,
       email: parentData.email,
       variant,
+      accountStatus,
       sentAt: new Date().toISOString(),
       blocked: !!result.blocked,
     })

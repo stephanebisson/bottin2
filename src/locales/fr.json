@@ -575,6 +575,7 @@
       "filterClass": "Classe",
       "filterEmailStatus": "Courriel",
       "filterSubmitted": "Soumis",
+      "filterAccount": "Compte en ligne",
       "filterOptedOut": "Retirés seulement",
       "filterNoChildren": "Sans enfant seulement",
       "xSelected": "$1 parent(s) sélectionné(s)",
@@ -623,7 +624,9 @@
           "initial": "Initial envoyé $1",
           "reminder": "Rappel envoyé $1",
           "final": "Dernier rappel envoyé $1"
-        }
+        },
+        "accountActive": "Compte activé",
+        "accountUnverified": "Compte non confirmé"
       },
       "logs": {
         "send_update_email": "Lien envoyé",
@@ -642,6 +645,11 @@
         "all": "Tous",
         "yes": "Soumis",
         "no": "Non soumis"
+      },
+      "accountOptions": {
+        "all": "Tous",
+        "active": "Activé",
+        "notActive": "Non activé"
       }
     },
     "newParent": "Nouveau parent",

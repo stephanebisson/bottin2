@@ -568,6 +568,7 @@
       "filterClass": "Class",
       "filterEmailStatus": "Email",
       "filterSubmitted": "Submitted",
+      "filterAccount": "Online account",
       "filterOptedOut": "Opted out only",
       "filterNoChildren": "No children only",
       "xSelected": "$1 parent(s) selected",
@@ -616,7 +617,9 @@
           "initial": "Initial sent $1",
           "reminder": "Reminder sent $1",
           "final": "Final reminder sent $1"
-        }
+        },
+        "accountActive": "Account active",
+        "accountUnverified": "Account unconfirmed"
       },
       "logs": {
         "send_update_email": "Link sent",
@@ -635,6 +638,11 @@
         "all": "All",
         "yes": "Submitted",
         "no": "Not submitted"
+      },
+      "accountOptions": {
+        "all": "All",
+        "active": "Active",
+        "notActive": "Not active"
       }
     },
     "newParent": "New parent",
