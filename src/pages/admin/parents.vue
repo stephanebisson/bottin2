@@ -46,83 +46,65 @@
 
       <!-- Parents Table -->
       <div v-else>
-        <!-- Filter Bar -->
-        <v-row class="mb-2" density="compact">
-          <v-col cols="12" sm="2">
-            <v-text-field
-              v-model="filterSearch"
-              clearable
-              density="compact"
-              hide-details
-              :placeholder="$i18n('admin.parentsTable.filterSearch')"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-            />
-          </v-col>
+        <!-- Filter Bar: wraps onto more lines when space runs out -->
+        <div class="d-flex flex-wrap align-center ga-2 mb-4">
+          <v-text-field
+            v-model="filterSearch"
+            class="filter-search"
+            clearable
+            density="compact"
+            hide-details
+            :placeholder="$i18n('admin.parentsTable.filterSearch')"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+          />
 
-          <v-col cols="6" sm="2">
-            <v-select
-              v-model="filterClass"
-              clearable
-              density="compact"
-              hide-details
-              :items="classOptions"
-              :label="$i18n('admin.parentsTable.filterClass')"
-              variant="outlined"
-            />
-          </v-col>
+          <v-select
+            v-model="filterClass"
+            class="filter-select"
+            clearable
+            density="compact"
+            hide-details
+            :items="classOptions"
+            :label="$i18n('admin.parentsTable.filterClass')"
+            variant="outlined"
+          />
 
-          <v-col cols="6" sm="2">
-            <v-select
-              v-model="filterEmailStatus"
-              density="compact"
-              hide-details
-              :items="emailStatusItems"
-              :label="$i18n('admin.parentsTable.filterEmailStatus')"
-              variant="outlined"
-            />
-          </v-col>
+          <v-select
+            v-model="filterEmailStatus"
+            class="filter-select"
+            density="compact"
+            hide-details
+            :items="emailStatusItems"
+            :label="$i18n('admin.parentsTable.filterEmailStatus')"
+            variant="outlined"
+          />
 
-          <v-col cols="6" sm="2">
-            <v-select
-              v-model="filterSubmitted"
-              density="compact"
-              hide-details
-              :items="submittedItems"
-              :label="$i18n('admin.parentsTable.filterSubmitted')"
-              variant="outlined"
-            />
-          </v-col>
+          <v-select
+            v-model="filterSubmitted"
+            class="filter-select"
+            density="compact"
+            hide-details
+            :items="submittedItems"
+            :label="$i18n('admin.parentsTable.filterSubmitted')"
+            variant="outlined"
+          />
 
-          <v-col cols="6" sm="2">
-            <v-select
-              v-model="filterAccount"
-              density="compact"
-              hide-details
-              :items="accountItems"
-              :label="$i18n('admin.parentsTable.filterAccount')"
-              variant="outlined"
-            />
-          </v-col>
+          <v-select
+            v-model="filterAccount"
+            class="filter-select"
+            density="compact"
+            hide-details
+            :items="accountItems"
+            :label="$i18n('admin.parentsTable.filterAccount')"
+            variant="outlined"
+          />
 
-          <v-col class="d-flex flex-column justify-center" cols="6" sm="2">
-            <v-switch
-              v-model="filterOptedOut"
-              color="warning"
-              density="compact"
-              hide-details
-              :label="$i18n('admin.parentsTable.filterOptedOut')"
-            />
-
-            <v-switch
-              v-model="filterNoChildren"
-              color="warning"
-              density="compact"
-              hide-details
-              :label="$i18n('admin.parentsTable.filterNoChildren')"
-            />
-          </v-col>
-        </v-row>
+          <v-chip-group v-model="toggleFilters" color="warning" filter multiple>
+            <v-chip value="optedOut">{{ $i18n('admin.parentsTable.filterOptedOut') }}</v-chip>
+            <v-chip value="noChildren">{{ $i18n('admin.parentsTable.filterNoChildren') }}</v-chip>
+          </v-chip-group>
+        </div>
 
         <!-- Selection Toolbar -->
         <v-toolbar
@@ -639,6 +621,15 @@
   const filterAccount = ref('all')
   const filterOptedOut = ref(false)
   const filterNoChildren = ref(false)
+
+  // The two on/off filters, shown as chips
+  const toggleFilters = computed({
+    get: () => [filterOptedOut.value && 'optedOut', filterNoChildren.value && 'noChildren'].filter(Boolean),
+    set: values => {
+      filterOptedOut.value = values.includes('optedOut')
+      filterNoChildren.value = values.includes('noChildren')
+    },
+  })
 
   // Logs
   const parentLogs = ref(new Map())
@@ -1174,6 +1165,15 @@
   .v-data-table :deep(th),
   .v-data-table :deep(td) {
     padding-inline: 6px !important;
+  }
+
+  .filter-search {
+    flex: 1 1 320px;
+  }
+
+  .filter-select {
+    flex: 1 1 160px;
+    max-width: 220px;
   }
 
   .parent-email {
