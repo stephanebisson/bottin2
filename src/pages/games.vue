@@ -3,7 +3,7 @@
     <!-- Header Section -->
     <div class="text-center mb-8">
       <v-icon color="success" size="64">mdi-gamepad-variant</v-icon>
-      <p class="text-title-large text-grey-darken-1">{{ $i18n('games.subtitle') }}</p>
+      <p class="text-title-large text-medium-emphasis">{{ $i18n('games.subtitle') }}</p>
     </div>
 
     <!-- Games Grid -->
@@ -43,9 +43,9 @@
           style="height: 100%; width: 100%; opacity: 0.5;"
         >
           <div class="d-flex flex-column align-center flex-grow-1">
-            <v-icon class="mb-3" color="grey" size="48">mdi-lock</v-icon>
-            <h3 class="text-title-large font-weight-bold mb-1 text-grey">{{ $i18n('games.comingSoon') }}</h3>
-            <p class="text-body-small text-grey">{{ $i18n('games.moreGames') }}</p>
+            <v-icon class="mb-3 text-disabled" size="48">mdi-lock</v-icon>
+            <h3 class="text-title-large font-weight-bold mb-1 text-disabled">{{ $i18n('games.comingSoon') }}</h3>
+            <p class="text-body-small text-disabled">{{ $i18n('games.moreGames') }}</p>
           </div>
         </v-card>
       </v-col>

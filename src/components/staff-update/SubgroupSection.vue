@@ -11,7 +11,7 @@
           {{ name }}
         </h3>
 
-        <p class="text-body-medium text-grey-darken-1 ma-0">
+        <p class="text-body-medium text-medium-emphasis ma-0">
           {{ members.length }} {{ members.length === 1 ? 'membre' : 'membres' }}
         </p>
       </div>
@@ -39,9 +39,9 @@
       <!-- Empty State for Fixed Sections -->
       <v-col v-if="isFixed && members.length === 0" cols="12">
         <v-card class="pa-6 text-center" variant="outlined">
-          <v-icon color="grey-darken-2" size="48">mdi-account-off</v-icon>
+          <v-icon class="text-medium-emphasis" size="48">mdi-account-off</v-icon>
 
-          <p class="text-body-large text-grey-darken-1 mt-2 mb-0">
+          <p class="text-body-large text-medium-emphasis mt-2 mb-0">
             Aucun membre du personnel assigné
           </p>
         </v-card>

@@ -5,12 +5,12 @@
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-large text-grey-darken-1 mt-2">
+      <p class="text-body-large text-medium-emphasis mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <div class="mt-6">
-        <p class="text-body-medium text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-medium-emphasis mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -144,7 +144,7 @@
 
           <!-- No data slot -->
           <template #no-data>
-            <div class="text-center py-8 text-grey">
+            <div class="text-center py-8 text-medium-emphasis">
               {{ $i18n('admin.auditLog.noLogs') }}
             </div>
           </template>

@@ -5,7 +5,7 @@
     </v-card-title>
 
     <v-card-text>
-      <p class="text-body-medium text-grey-darken-1 mb-4">
+      <p class="text-body-medium text-medium-emphasis mb-4">
         {{ $i18n('auth.resetPasswordInstructions') }}
       </p>
 

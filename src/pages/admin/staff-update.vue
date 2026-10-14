@@ -16,8 +16,8 @@
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-large text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
-      <p class="text-body-medium text-grey mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
+      <p class="text-body-large text-medium-emphasis mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
+      <p class="text-body-medium text-medium-emphasis mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
 
       <v-btn class="mt-4" variant="outlined" @click="checkAdminStatus">
         {{ $i18n('admin.refreshAdminStatus') }}

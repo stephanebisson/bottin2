@@ -5,13 +5,13 @@
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-large text-grey-darken-1 mt-2">
+      <p class="text-body-large text-medium-emphasis mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
-        <p class="text-body-medium text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-medium-emphasis mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -38,7 +38,7 @@
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
         <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-large text-grey-darken-1 mt-2">{{ error }}</p>
+        <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
 
         <v-btn
           class="mt-4"
@@ -152,7 +152,7 @@
             <template #item.parent_id="{ item }">
               <div>
                 <div class="font-weight-medium">{{ getParentName(item.parent_id) }}</div>
-                <div class="text-body-small text-grey-darken-1">{{ getParentEmail(item.parent_id) }}</div>
+                <div class="text-body-small text-medium-emphasis">{{ getParentEmail(item.parent_id) }}</div>
               </div>
             </template>
 
@@ -237,7 +237,7 @@
                         {{ $i18n('feedback.admin.fullMessage') }}
                       </div>
 
-                      <div class="text-body-large pa-3 bg-grey-lighten-4 rounded">
+                      <div class="text-body-large pa-3 bg-surface-light rounded">
                         {{ item.message }}
                       </div>
                     </div>
@@ -253,7 +253,7 @@
                       </div>
                     </div>
 
-                    <div v-else class="text-body-medium text-grey-darken-1 font-italic">
+                    <div v-else class="text-body-medium text-medium-emphasis font-italic">
                       {{ $i18n('feedback.admin.noAdminNotes') }}
                     </div>
                   </div>
@@ -287,7 +287,6 @@
           <v-spacer />
 
           <v-btn
-            color="grey"
             variant="text"
             @click="closeNotesDialog"
           >
@@ -321,7 +320,6 @@
           <v-spacer />
 
           <v-btn
-            color="grey"
             variant="text"
             @click="deleteDialog = false"
           >

@@ -47,7 +47,7 @@
             <!-- Contact Information -->
             <v-alert
               class="mt-6"
-              color="grey-lighten-4"
+              color="surface-light"
               icon="mdi-help-circle"
               variant="flat"
             >

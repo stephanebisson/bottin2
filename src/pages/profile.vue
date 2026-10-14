@@ -134,7 +134,7 @@
               </v-list>
             </v-card-text>
 
-            <v-card-text v-else class="text-center py-6 text-grey-darken-1">
+            <v-card-text v-else class="text-center py-6 text-medium-emphasis">
               <v-icon class="mb-2" size="48">mdi-account-child-outline</v-icon>
               <p>{{ $i18n('profile.noChildrenFound') }}</p>
             </v-card-text>
@@ -178,7 +178,7 @@
               </v-list>
             </v-card-text>
 
-            <v-card-text v-else class="text-center py-6 text-grey-darken-1">
+            <v-card-text v-else class="text-center py-6 text-medium-emphasis">
               <v-icon class="mb-2" size="32">mdi-account-group-outline</v-icon>
               <p class="text-body-medium">{{ $i18n('profile.noCommitteesFound') }}</p>
             </v-card-text>
@@ -212,9 +212,9 @@
     <!-- No Profile Found -->
     <v-card v-else-if="!loading" class="text-center py-8">
       <v-card-text>
-        <v-icon class="mb-4" color="grey-darken-2" size="64">mdi-account-question</v-icon>
+        <v-icon class="mb-4 text-medium-emphasis" size="64">mdi-account-question</v-icon>
         <h2 class="text-headline-small mb-2">{{ $i18n('profile.noProfileFound') }}</h2>
-        <p class="text-body-large text-grey-darken-1">{{ $i18n('profile.contactAdmin') }}</p>
+        <p class="text-body-large text-medium-emphasis">{{ $i18n('profile.contactAdmin') }}</p>
       </v-card-text>
     </v-card>
   </v-container>

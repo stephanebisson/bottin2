@@ -10,7 +10,7 @@
     <div v-else-if="error" class="text-center py-12">
       <v-icon color="warning" size="64">mdi-information-outline</v-icon>
       <h2 class="text-headline-large mt-4 text-warning">{{ getErrorTitle() }}</h2>
-      <p class="text-body-large mt-2 text-grey-darken-1">{{ getErrorMessage() }}</p>
+      <p class="text-body-large mt-2 text-medium-emphasis">{{ getErrorMessage() }}</p>
 
       <!-- Action buttons based on error type -->
       <div class="mt-6">
@@ -226,7 +226,7 @@
 
               <v-col cols="12">
                 <div class="mb-4">
-                  <p class="text-body-medium text-grey-darken-1 mb-4">
+                  <p class="text-body-medium text-medium-emphasis mb-4">
                     {{ $i18n('updateForm.committeeInstructions') }}
                   </p>
 
@@ -272,7 +272,7 @@
 
               <v-col cols="12">
                 <div class="mb-4">
-                  <p class="text-body-medium text-grey-darken-1 mb-4">
+                  <p class="text-body-medium text-medium-emphasis mb-4">
                     {{ $i18n('updateForm.interestsInstructions') }}
                   </p>
 
@@ -343,7 +343,6 @@
           <v-spacer />
 
           <v-btn
-            color="grey"
             :disabled="optingOut"
             variant="outlined"
             @click="showOptOutDialog = false"

@@ -60,7 +60,7 @@
                 <div class="d-flex align-center gap-3">
                   <div>
                     <div class="font-weight-medium">{{ member.fullName || member.email }}</div>
-                    <div class="text-body-medium text-grey-darken-1">{{ member.email }}</div>
+                    <div class="text-body-medium text-medium-emphasis">{{ member.email }}</div>
                   </div>
 
                   <v-chip
@@ -99,16 +99,16 @@
             </v-card>
           </div>
 
-          <div v-else class="text-center py-4 text-grey-darken-1">
-            <v-icon class="mb-2" color="grey-darken-2" size="48">mdi-account-group-outline</v-icon>
+          <div v-else class="text-center py-4 text-medium-emphasis">
+            <v-icon class="mb-2 text-medium-emphasis" size="48">mdi-account-group-outline</v-icon>
             <div>{{ $i18n('committees.noMembers') }}</div>
           </div>
         </div>
 
         <!-- Add Member Section -->
         <v-expand-transition>
-          <v-card v-if="showAddMember" class="pa-4 bg-grey-lighten-4" variant="outlined">
-            <h4 class="text-title-large mb-3 text-grey-darken-3">{{ $i18n('committees.addNewMember') }}</h4>
+          <v-card v-if="showAddMember" class="pa-4 bg-surface-light" variant="outlined">
+            <h4 class="text-title-large mb-3 text-medium-emphasis">{{ $i18n('committees.addNewMember') }}</h4>
 
             <v-row>
               <v-col cols="12" md="6">
@@ -145,7 +145,6 @@
                   />
 
                   <v-btn
-                    color="grey"
                     icon="mdi-close"
                     @click="cancelAddMember"
                   />
@@ -162,7 +161,6 @@
       <v-spacer />
 
       <v-btn
-        color="grey"
         variant="text"
         @click="$emit('close')"
       >

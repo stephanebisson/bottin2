@@ -6,7 +6,7 @@
         <div class="text-center mb-6">
           <v-icon class="mb-4" color="primary" size="64">mdi-message-text</v-icon>
 
-          <p class="text-body-large text-grey-darken-1">
+          <p class="text-body-large text-medium-emphasis">
             {{ $i18n('feedback.description') }}
           </p>
         </div>

@@ -5,12 +5,12 @@
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-large text-grey-darken-1 mt-2">
+      <p class="text-body-large text-medium-emphasis mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <div class="mt-6">
-        <p class="text-body-medium text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-medium-emphasis mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -37,7 +37,7 @@
       <div v-else-if="error" class="text-center py-12">
         <v-icon color="error" size="64">mdi-alert-circle</v-icon>
         <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-large text-grey-darken-1 mt-2">{{ error }}</p>
+        <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
 
         <v-btn class="mt-4" color="primary" @click="loadData">
           {{ $i18n('common.retry') }}
@@ -168,7 +168,7 @@
           <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
             <span>
               {{ $i18n('admin.parentsDirectory.allParents') }}
-              <span class="text-body-medium text-grey-darken-1 ml-2">
+              <span class="text-body-medium text-medium-emphasis ml-2">
                 {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
               </span>
             </span>
@@ -215,13 +215,13 @@
                 {{ item.email }}
               </a>
 
-              <span v-else class="text-grey-darken-1 font-italic">{{ $i18n('common.notProvided') }}</span>
+              <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
             </template>
 
             <!-- Phone Column -->
             <template #item.phone="{ item }">
               <span v-if="item.phone">{{ item.displayPhone }}</span>
-              <span v-else class="text-grey-darken-1 font-italic">{{ $i18n('common.notProvided') }}</span>
+              <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
             </template>
 
             <!-- Children Column -->
@@ -242,7 +242,7 @@
                 </div>
               </div>
 
-              <span v-else class="text-grey-darken-1 font-italic">
+              <span v-else class="text-medium-emphasis font-italic">
                 {{ $i18n('admin.parentsDirectory.noChildren') }}
               </span>
             </template>
@@ -279,7 +279,6 @@
 
                 <v-chip
                   v-else-if="accountStatuses.get(item.id) === 'unverified'"
-                  color="grey"
                   size="x-small"
                   variant="tonal"
                 >

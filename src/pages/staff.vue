@@ -16,8 +16,8 @@
     </div>
 
     <div v-else-if="firebaseStore.staffDTO.length === 0" class="text-center py-8">
-      <v-icon color="grey-darken-2" size="64">mdi-account-tie-outline</v-icon>
-      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('staff.noStaffFound') }}</p>
+      <v-icon class="text-medium-emphasis" size="64">mdi-account-tie-outline</v-icon>
+      <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('staff.noStaffFound') }}</p>
     </div>
 
     <div v-else ref="staffListRef" :style="cardMinWidthStyle">
@@ -55,7 +55,7 @@
                 {{ subgroup.name }}
               </h3>
 
-              <p class="text-body-medium text-grey-darken-1 ma-0">
+              <p class="text-body-medium text-medium-emphasis ma-0">
                 {{ $i18n('staff.memberCount', subgroup.members.length) }}
               </p>
             </div>

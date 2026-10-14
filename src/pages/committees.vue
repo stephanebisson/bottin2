@@ -16,8 +16,8 @@
     </div>
 
     <div v-else-if="firebaseStore.committeesDTO.length === 0" class="text-center py-8">
-      <v-icon color="grey-darken-2" size="64">mdi-account-group-outline</v-icon>
-      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('committees.noCommitteesFound') }}</p>
+      <v-icon class="text-medium-emphasis" size="64">mdi-account-group-outline</v-icon>
+      <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('committees.noCommitteesFound') }}</p>
     </div>
 
     <div v-else>
@@ -114,7 +114,7 @@
                     v-for="member in committee.parentMembers"
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
-                    :class="'bg-grey-lighten-4'"
+                    :class="'bg-surface-light'"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -189,7 +189,7 @@
                     v-for="member in committee.enrichedMembers"
                     :key="member.email"
                     class="member-item-compact mb-2 rounded"
-                    :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-grey-lighten-4'"
+                    :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-surface-light'"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -202,8 +202,8 @@
                 </div>
               </div>
 
-              <div v-else class="text-center py-4 text-grey-darken-1 text-body-small">
-                <v-icon class="mb-2" color="grey-darken-2" size="24">mdi-account-group-outline</v-icon>
+              <div v-else class="text-center py-4 text-medium-emphasis text-body-small">
+                <v-icon class="mb-2 text-medium-emphasis" size="24">mdi-account-group-outline</v-icon>
                 <div>{{ $i18n('committees.noMembersFound') }}</div>
               </div>
             </v-card-text>
@@ -448,7 +448,7 @@
   border-left-color: rgb(var(--v-theme-blue));
 }
 
-.member-item-compact.bg-grey-lighten-4 .parent-info {
+.member-item-compact.bg-surface-light .parent-info {
   border-left-color: rgb(var(--v-theme-grey));
 }
 

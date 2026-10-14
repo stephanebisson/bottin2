@@ -4,7 +4,7 @@
     <div v-if="!isAuthorized" class="text-center py-12">
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-large text-grey-darken-1 mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
+      <p class="text-body-large text-medium-emphasis mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
     </div>
 
     <div v-else>
@@ -118,7 +118,7 @@
         <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
           <span>
             {{ $i18n('admin.studentsTable.tableTitle') }}
-            <span class="text-body-medium text-grey-darken-1 ml-2">
+            <span class="text-body-medium text-medium-emphasis ml-2">
               {{ $i18n('admin.studentsTable.totalStudents', filteredStudents.length) }}
             </span>
           </span>
@@ -194,7 +194,7 @@
               <span v-if="item.parent1_id" class="text-body-medium mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
               <span v-if="item.parent2_id" class="text-body-medium">{{ getParentDisplayName(item.parent2_id) }}</span>
 
-              <span v-if="!item.parent1_id && !item.parent2_id" class="text-grey-darken-1 font-italic">
+              <span v-if="!item.parent1_id && !item.parent2_id" class="text-medium-emphasis font-italic">
                 {{ $i18n('admin.studentsTable.noParent') }}
               </span>
             </div>
@@ -236,8 +236,8 @@
           <!-- No data -->
           <template #no-data>
             <div class="text-center pa-12">
-              <v-icon color="grey-lighten-1" size="64">mdi-school-outline</v-icon>
-              <p class="text-title-large mt-4 text-grey-darken-1">{{ $i18n('admin.studentsTable.noStudents') }}</p>
+              <v-icon class="text-medium-emphasis" size="64">mdi-school-outline</v-icon>
+              <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('admin.studentsTable.noStudents') }}</p>
             </div>
           </template>
         </v-data-table>
@@ -376,7 +376,7 @@
             </div>
 
             <div v-if="progressionPlan.invalid.length > 0" class="d-flex align-center ga-2">
-              <v-icon color="grey">mdi-alert-circle-outline</v-icon>
+              <v-icon class="text-medium-emphasis">mdi-alert-circle-outline</v-icon>
               <span>{{ $i18n('admin.studentsTable.progressDialog.invalid', progressionPlan.invalid.length) }}</span>
             </div>
           </div>
@@ -385,7 +385,7 @@
         <v-card-actions>
           <v-spacer />
 
-          <v-btn color="grey" :disabled="progressingAll" variant="text" @click="showProgressDialog = false">
+          <v-btn :disabled="progressingAll" variant="text" @click="showProgressDialog = false">
             {{ $i18n('common.cancel') }}
           </v-btn>
 
@@ -411,7 +411,7 @@
 
           <p class="mb-3">{{ $i18n('admin.studentsTable.departDialog.message', selectedIds.length) }}</p>
 
-          <v-list class="bg-grey-lighten-4 rounded" density="compact">
+          <v-list class="bg-surface-light rounded" density="compact">
             <v-list-item
               v-for="student in selectedStudents"
               :key="student.id"
@@ -424,7 +424,7 @@
         <v-card-actions>
           <v-spacer />
 
-          <v-btn color="grey" :disabled="departingInProgress" variant="text" @click="showDepartDialog = false">
+          <v-btn :disabled="departingInProgress" variant="text" @click="showDepartDialog = false">
             {{ $i18n('common.cancel') }}
           </v-btn>
 
@@ -462,7 +462,7 @@
         <v-card-actions>
           <v-spacer />
 
-          <v-btn color="grey" :disabled="assigningClass" variant="text" @click="showAssignClassDialog = false">
+          <v-btn :disabled="assigningClass" variant="text" @click="showAssignClassDialog = false">
             {{ $i18n('common.cancel') }}
           </v-btn>
 
@@ -499,7 +499,7 @@
           <div v-if="studentToDelete" class="mb-4">
             <div class="text-title-large mb-2">{{ studentToDelete.fullName }}</div>
 
-            <div class="text-body-medium text-grey-darken-1">
+            <div class="text-body-medium text-medium-emphasis">
               {{ studentToDelete.displayLevel }} - {{ studentToDelete.className }}
             </div>
           </div>
@@ -530,7 +530,7 @@
         <v-card-actions>
           <v-spacer />
 
-          <v-btn color="grey" :disabled="deletingStudent" variant="text" @click="cancelDeleteStudent">
+          <v-btn :disabled="deletingStudent" variant="text" @click="cancelDeleteStudent">
             {{ $i18n('common.cancel') }}
           </v-btn>
 

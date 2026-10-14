@@ -64,7 +64,7 @@
       <!-- Welcome message for unauthenticated users -->
       <template v-else>
         <v-list-item class="text-center py-4">
-          <v-list-item-title class="text-body-medium text-grey-darken-1">
+          <v-list-item-title class="text-body-medium text-medium-emphasis">
             {{ $i18n('nav.pleaseLogin') }}
           </v-list-item-title>
         </v-list-item>

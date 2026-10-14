@@ -30,8 +30,8 @@
 
     <!-- Empty State -->
     <div v-else-if="firebaseStore.studentsDTO.length === 0 && firebaseStore.parentsDTO.length === 0" class="text-center py-8">
-      <v-icon color="grey-darken-2" size="64">mdi-account-multiple-outline</v-icon>
-      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('directory.noDataFound') }}</p>
+      <v-icon class="text-medium-emphasis" size="64">mdi-account-multiple-outline</v-icon>
+      <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('directory.noDataFound') }}</p>
     </div>
 
     <div v-else>
@@ -89,7 +89,7 @@
           </div>
 
           <!-- Results Counter -->
-          <div class="text-body-small mt-2 text-grey-darken-1">
+          <div class="text-body-small mt-2 text-medium-emphasis">
             {{ resultCountText }}
           </div>
         </v-card-text>
@@ -156,7 +156,7 @@
               </v-col>
             </v-row>
 
-            <div v-else class="text-body-medium text-grey-darken-1">
+            <div v-else class="text-body-medium text-medium-emphasis">
               {{ $i18n('directory.noParentInfo') }}
             </div>
           </div>
@@ -203,7 +203,7 @@
                   </div>
                 </div>
 
-                <div v-else class="text-grey-darken-1">
+                <div v-else class="text-medium-emphasis">
                   {{ $i18n('directory.noChildren') }}
                 </div>
               </td>

@@ -5,13 +5,13 @@
       <v-icon color="error" size="64">mdi-shield-alert</v-icon>
       <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
 
-      <p class="text-body-large text-grey-darken-1 mt-2">
+      <p class="text-body-large text-medium-emphasis mt-2">
         {{ $i18n('admin.adminAccessRequired') }}
       </p>
 
       <!-- Manual Refresh Button for newly granted admins -->
       <div class="mt-6">
-        <p class="text-body-medium text-grey-darken-1 mb-4">
+        <p class="text-body-medium text-medium-emphasis mb-4">
           {{ $i18n('admin.refreshPermissionsInstructions') }}
         </p>
 
@@ -58,7 +58,7 @@
               <v-icon class="mb-4" color="primary" size="64">mdi-history</v-icon>
               <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.auditLog.title') }}</h3>
 
-              <p class="text-body-medium text-grey-darken-1">
+              <p class="text-body-medium text-medium-emphasis">
                 {{ $i18n('admin.auditLog.description') }}
               </p>
 
@@ -82,7 +82,7 @@
               <v-icon class="mb-4" color="primary" size="64">mdi-account-group</v-icon>
               <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.parentsDirectory.title') }}</h3>
 
-              <p class="text-body-medium text-grey-darken-1">
+              <p class="text-body-medium text-medium-emphasis">
                 {{ $i18n('admin.parentsDirectory.description') }}
               </p>
 
@@ -107,7 +107,7 @@
               <v-icon class="mb-4" color="primary" size="64">mdi-school-outline</v-icon>
               <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.studentsTable.title') }}</h3>
 
-              <p class="text-body-medium text-grey-darken-1">
+              <p class="text-body-medium text-medium-emphasis">
                 {{ $i18n('admin.studentsTable.description') }}
               </p>
 
@@ -128,7 +128,7 @@
               <v-icon class="mb-4" color="primary" size="64">mdi-account-tie-outline</v-icon>
               <h3 class="text-title-large font-weight-bold mb-2">{{ $i18n('admin.staffUpdate.title') }}</h3>
 
-              <p class="text-body-medium text-grey-darken-1">
+              <p class="text-body-medium text-medium-emphasis">
                 {{ $i18n('admin.staffUpdate.description') }}
               </p>
 
@@ -146,7 +146,6 @@
 
                 <v-btn
                   class="mt-2"
-                  color="grey"
                   prepend-icon="mdi-content-copy"
                   size="small"
                   variant="text"
@@ -157,7 +156,7 @@
               </div>
 
               <div v-else class="mt-4">
-                <v-chip color="grey" size="small" variant="tonal">
+                <v-chip size="small" variant="tonal">
                   {{ $i18n('admin.staffUpdate.noToken') }}
                 </v-chip>
               </div>

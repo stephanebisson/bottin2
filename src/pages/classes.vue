@@ -16,8 +16,8 @@
     </div>
 
     <div v-else-if="firebaseStore.classes.length === 0" class="text-center py-8">
-      <v-icon color="grey-darken-2" size="64">mdi-school-outline</v-icon>
-      <p class="text-title-large mt-4 text-grey-darken-2">{{ $i18n('classes.noClassesFound') }}</p>
+      <v-icon class="text-medium-emphasis" size="64">mdi-school-outline</v-icon>
+      <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('classes.noClassesFound') }}</p>
     </div>
 
     <div v-else>
@@ -201,7 +201,7 @@
                                 </div>
                               </div>
 
-                              <div v-else class="text-body-small text-grey">
+                              <div v-else class="text-body-small text-medium-emphasis">
                                 {{ $i18n('classes.noChildrenFound') }}
                               </div>
                             </div>
@@ -294,7 +294,7 @@
                                 </div>
                               </div>
 
-                              <div v-else class="text-body-small text-grey">
+                              <div v-else class="text-body-small text-medium-emphasis">
                                 {{ $i18n('classes.noChildrenFound') }}
                               </div>
                             </div>
@@ -345,7 +345,7 @@
                               {{ formatGradeLevel(levelData.level, bananaI18n.locale) }}
                             </v-chip>
 
-                            <span class="text-body-small text-grey">
+                            <span class="text-body-small text-medium-emphasis">
                               {{ $i18n('classes.studentCount', levelData.students.length) }}
                             </span>
                           </div>
@@ -415,7 +415,7 @@
                                         </div>
                                       </div>
 
-                                      <div v-if="!getStudentParent(student, 1) && !getStudentParent(student, 2)" class="text-body-small text-grey">
+                                      <div v-if="!getStudentParent(student, 1) && !getStudentParent(student, 2)" class="text-body-small text-medium-emphasis">
                                         {{ $i18n('classes.noParentInfoFound') }}
                                       </div>
                                     </div>
@@ -441,7 +441,7 @@
                                         </div>
                                       </div>
 
-                                      <div v-else class="text-body-small text-grey">
+                                      <div v-else class="text-body-small text-medium-emphasis">
                                         {{ $i18n('classes.noSiblingsFound') }}
                                       </div>
                                     </div>
@@ -464,7 +464,7 @@
                     </template>
                   </template>
 
-                  <div v-else class="text-body-medium text-grey">
+                  <div v-else class="text-body-medium text-medium-emphasis">
                     {{ $i18n('classes.noStudentsFound') }}
                   </div>
                 </div>
@@ -558,7 +558,6 @@
           <v-spacer />
 
           <v-btn
-            color="grey"
             :disabled="savingClass"
             variant="text"
             @click="closeEditDialog"
