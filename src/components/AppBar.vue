@@ -196,19 +196,19 @@
     padding-top: env(safe-area-inset-top);
   }
 
-  /* App title responsive handling */
+  /* App title takes the room the buttons leave, and ellipsizes only when that runs out */
   .app-title {
     flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  /* On mobile, reduce title size and ensure proper spacing */
+  /* On mobile, reduce title size */
   @media (max-width: 600px) {
     .app-title {
       font-size: 1.1rem !important;
-      max-width: calc(100vw - 200px);
     }
   }
 </style>
