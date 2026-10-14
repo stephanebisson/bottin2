@@ -115,7 +115,7 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import { useTranslate } from '@/composables/useTranslate'
-  import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
+  import { GROUP_SUBGROUP_MAPPING, STAFF_GROUPS } from '@/config/staffGroups'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { matchesAnyField } from '@/utils/search'
 
@@ -159,7 +159,7 @@
 
           groupSubgroups.push({
             subgroup,
-            name: SUBGROUP_DISPLAY_NAMES[subgroup] || subgroup,
+            name: $i18n(`staffUpdate.subgroups.${subgroup}`),
             members: sortedMembers,
           })
         }
@@ -169,7 +169,7 @@
       if (groupSubgroups.length > 0) {
         hierarchicalGroups.push({
           group,
-          name: GROUP_DISPLAY_NAMES[group] || group,
+          name: $i18n(`staffUpdate.groups.${group}`),
           subgroups: groupSubgroups,
         })
       }

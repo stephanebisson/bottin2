@@ -12,7 +12,7 @@
         </h3>
 
         <p class="text-body-medium text-medium-emphasis ma-0">
-          {{ members.length }} {{ members.length === 1 ? 'membre' : 'membres' }}
+          {{ $i18n('staffUpdate.memberCount', members.length) }}
         </p>
       </div>
     </div>
@@ -42,7 +42,7 @@
           <v-icon class="text-medium-emphasis" size="48">mdi-account-off</v-icon>
 
           <p class="text-body-large text-medium-emphasis mt-2 mb-0">
-            Aucun membre du personnel assigné
+            {{ $i18n('staffUpdate.noMembers') }}
           </p>
         </v-card>
       </v-col>
@@ -56,7 +56,7 @@
         variant="outlined"
         @click="handleAdd"
       >
-        Ajouter un membre
+        {{ $i18n('staffUpdate.addMember') }}
       </v-btn>
     </div>
   </div>

@@ -74,18 +74,14 @@
   import { computed, onMounted, ref } from 'vue'
   import { onBeforeRouteLeave } from 'vue-router'
   import GroupSection from '@/components/staff-update/GroupSection.vue'
-  import {
-    GROUP_DISPLAY_NAMES,
-    GROUP_SUBGROUP_MAPPING,
-    STAFF_GROUPS,
-    SUBGROUP_DISPLAY_NAMES,
-    SUBGROUP_ICONS,
-  } from '@/config/staffGroups'
+  import { useTranslate } from '@/composables/useTranslate'
+  import { GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_ICONS } from '@/config/staffGroups'
   import { StaffRepository } from '@/repositories/StaffRepository.js'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'admin.staffUpdate.title' } })
 
+  const $i18n = useTranslate()
   const firebaseStore = useFirebaseDataStore()
   const staffRepository = new StaffRepository()
 
@@ -102,10 +98,10 @@
   const groupData = computed(() =>
     STAFF_GROUPS.map(group => ({
       group,
-      name: GROUP_DISPLAY_NAMES[group],
+      name: $i18n(`staffUpdate.groups.${group}`),
       subgroups: GROUP_SUBGROUP_MAPPING[group].map(subgroup => ({
         subgroup,
-        name: SUBGROUP_DISPLAY_NAMES[subgroup],
+        name: $i18n(`staffUpdate.subgroups.${subgroup}`),
         icon: SUBGROUP_ICONS[subgroup],
         isFixed: true,
         members: effectiveStaff.value.filter(s => s.group === group && s.subgroup === subgroup),

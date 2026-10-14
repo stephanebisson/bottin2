@@ -20,15 +20,15 @@
 
           <div>
             <div class="text-title-large font-weight-bold">
-              {{ hasChanges ? 'Modifications non enregistrées' : 'Tout est enregistré' }}
+              {{ hasChanges ? $i18n('staffUpdate.unsavedChanges') : $i18n('staffUpdate.allSaved') }}
             </div>
 
             <div v-if="hasChanges" class="text-body-medium">
-              {{ changeCount }} {{ changeCount === 1 ? 'modification' : 'modifications' }} en attente
+              {{ $i18n('staffUpdate.pendingChanges', changeCount) }}
             </div>
 
             <div v-else class="text-body-medium">
-              Toutes les modifications ont été enregistrées
+              {{ $i18n('staffUpdate.allChangesSaved') }}
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@
           variant="elevated"
           @click="$emit('save')"
         >
-          Enregistrer tout
+          {{ $i18n('staffUpdate.saveAll') }}
         </v-btn>
       </div>
     </v-container>

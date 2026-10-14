@@ -6,11 +6,18 @@
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { en, fr } from 'vuetify/locale'
 // Styles
 import 'vuetify/styles'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  // Vuetify's own texts (tables, pagination…); the footer link switches it with the app
+  locale: {
+    locale: localStorage.getItem('bottin-locale') || 'fr',
+    fallback: 'fr',
+    messages: { en, fr },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {

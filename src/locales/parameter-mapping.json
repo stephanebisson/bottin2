@@ -1,5 +1,11 @@
 {
   "en": {
+    "staffUpdate.memberCount": [
+      "count"
+    ],
+    "staffUpdate.pendingChanges": [
+      "count"
+    ],
     "dashboard.withParent": [
       "names"
     ],
@@ -112,15 +118,6 @@
     ],
     "updateForm.confirmOtherParentAddress": [
       "fullName"
-    ],
-    "staffUpdate.welcome": [
-      "name"
-    ],
-    "staffUpdate.totalStaff": [
-      "count"
-    ],
-    "staffUpdate.changedItems": [
-      "count"
     ],
     "map.dataLoaded": [
       "parents"
@@ -136,6 +133,12 @@
     ]
   },
   "fr": {
+    "staffUpdate.memberCount": [
+      "count"
+    ],
+    "staffUpdate.pendingChanges": [
+      "count"
+    ],
     "dashboard.withParent": [
       "names"
     ],
@@ -248,15 +251,6 @@
     ],
     "updateForm.confirmOtherParentAddress": [
       "fullName"
-    ],
-    "staffUpdate.welcome": [
-      "name"
-    ],
-    "staffUpdate.totalStaff": [
-      "count"
-    ],
-    "staffUpdate.changedItems": [
-      "count"
     ],
     "map.dataLoaded": [
       "parents"

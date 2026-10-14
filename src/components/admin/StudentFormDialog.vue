@@ -55,7 +55,7 @@
         item-title="fullName"
         item-value="id"
         :items="parentOptions"
-        label="Parent 1"
+        :label="$i18n('admin.parent1')"
         variant="outlined"
       />
 
@@ -66,7 +66,7 @@
         item-title="fullName"
         item-value="id"
         :items="parentOptions"
-        label="Parent 2"
+        :label="$i18n('admin.parent2')"
         variant="outlined"
       />
 

@@ -14,7 +14,7 @@
           <v-text-field
             density="comfortable"
             hide-details
-            label="Titre"
+            :label="$i18n('staffUpdate.title')"
             :model-value="staff.title"
             variant="outlined"
             @update:model-value="updateField('title', $event)"
@@ -29,7 +29,7 @@
             density="comfortable"
             :error-messages="firstNameError"
             hide-details="auto"
-            label="Prénom *"
+            :label="`${$i18n('staffUpdate.firstName')} *`"
             :model-value="staff.first_name"
             variant="outlined"
             @update:model-value="updateField('first_name', $event)"
@@ -41,7 +41,7 @@
             density="comfortable"
             :error-messages="lastNameError"
             hide-details="auto"
-            :label="lastNameRequired ? 'Nom de famille *' : 'Nom de famille'"
+            :label="lastNameRequired ? `${$i18n('staffUpdate.lastName')} *` : $i18n('staffUpdate.lastName')"
             :model-value="staff.last_name"
             variant="outlined"
             @update:model-value="updateField('last_name', $event)"
@@ -56,7 +56,7 @@
             density="comfortable"
             :error-messages="emailError"
             hide-details="auto"
-            label="Courriel"
+            :label="$i18n('staffUpdate.email')"
             :model-value="staff.email"
             type="email"
             variant="outlined"
@@ -72,7 +72,7 @@
             density="comfortable"
             :error-messages="phoneError"
             hide-details="auto"
-            label="Téléphone"
+            :label="$i18n('staffUpdate.phone')"
             :model-value="staff.phone"
             placeholder="(123) 456-7890"
             type="tel"
@@ -93,7 +93,7 @@
             variant="text"
             @click="handleDelete"
           >
-            Supprimer
+            {{ $i18n('common.delete') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -103,6 +103,7 @@
 
 <script setup>
   import { computed } from 'vue'
+  import { useTranslate } from '@/composables/useTranslate'
   import { formatPhoneForDisplay, formatPhoneForStorage, isValidPhoneFormat } from '@/utils/phoneFormatter'
 
   // Props
@@ -132,6 +133,8 @@
   // Emits
   const emit = defineEmits(['change', 'delete'])
 
+  const $i18n = useTranslate()
+
   // Computed
   // Last name is only optional for SDG/edu
   const lastNameRequired = computed(() => {
@@ -141,14 +144,14 @@
   // Validation
   const firstNameError = computed(() => {
     if (!props.staff.first_name || props.staff.first_name.trim() === '') {
-      return 'Le prénom est requis'
+      return $i18n('staffUpdate.validation.firstNameRequired')
     }
     return null
   })
 
   const lastNameError = computed(() => {
     if (lastNameRequired.value && (!props.staff.last_name || props.staff.last_name.trim() === '')) {
-      return 'Le nom de famille est requis'
+      return $i18n('staffUpdate.validation.lastNameRequired')
     }
     return null
   })
@@ -158,7 +161,7 @@
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
       if (!emailRegex.test(props.staff.email)) {
-        return 'Format de courriel invalide'
+        return $i18n('staffUpdate.validation.invalidEmail')
       }
     }
     return null
@@ -166,7 +169,7 @@
 
   const phoneError = computed(() => {
     if (props.staff.phone && props.staff.phone.trim() !== '' && !isValidPhoneFormat(props.staff.phone)) {
-      return 'Numéro de téléphone invalide (10 chiffres requis)'
+      return $i18n('staffUpdate.validation.invalidPhone')
     }
     return null
   })

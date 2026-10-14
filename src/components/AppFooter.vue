@@ -50,8 +50,10 @@
 <script setup>
   import { computed } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useLocale } from 'vuetify'
 
   const bananaI18n = useI18n()
+  const vuetifyLocale = useLocale()
 
   // Each language is shown in its own name so it is recognizable to its speakers
   const otherLanguage = computed(() => bananaI18n.locale === 'fr'
@@ -61,6 +63,7 @@
   function switchLanguage () {
     const code = otherLanguage.value.code
     bananaI18n.setLocale(code)
+    vuetifyLocale.current.value = code
     localStorage.setItem('bottin-locale', code)
     document.documentElement.lang = code
   }
