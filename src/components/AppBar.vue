@@ -43,8 +43,9 @@
               icon
               variant="text"
             >
-              <v-avatar color="primary" size="32">
-                <v-icon>mdi-account</v-icon>
+              <v-avatar color="surface" size="32">
+                <span v-if="userInitials" class="text-body-medium font-weight-bold text-primary">{{ userInitials }}</span>
+                <v-icon v-else color="primary">mdi-account</v-icon>
               </v-avatar>
             </v-btn>
           </template>
@@ -148,6 +149,13 @@
   // Get current user's full name from parent record
   const currentUserFullName = computed(() => {
     return currentParent.value?.fullName || authStore.userDisplayName || ''
+  })
+
+  // Initials from the parent record; the avatar shows an icon when there is none
+  const userInitials = computed(() => {
+    const parent = currentParent.value
+    if (!parent) return ''
+    return `${parent.first_name.charAt(0)}${parent.last_name.charAt(0)}`.toUpperCase()
   })
 
   // Pages declare their title with definePage({ meta: { titleKey } }); others show the app name

@@ -10,29 +10,19 @@
       <!-- App Title -->
       <v-list-item
         class="mb-2"
-        prepend-icon="mdi-book-open-page-variant"
         :subtitle="$i18n('nav.schoolDirectory')"
         :title="$i18n('nav.schoolDirectorySystem')"
-      />
-
-      <!-- User Info (when authenticated) -->
-      <template v-if="authStore.isAuthenticated">
-        <v-list-item class="mb-2 bg-primary-lighten-5">
-          <template #prepend>
-            <v-avatar color="primary" size="40">
-              <v-icon>mdi-account</v-icon>
-            </v-avatar>
-          </template>
-
-          <v-list-item-title class="font-weight-bold text-body-medium">
-            {{ currentUserFullName }}
-          </v-list-item-title>
-
-          <v-list-item-subtitle class="text-body-small">
-            {{ authStore.userEmail }}
-          </v-list-item-subtitle>
-        </v-list-item>
-      </template>
+      >
+        <template #prepend>
+          <img
+            alt=""
+            class="me-4"
+            height="48"
+            src="@/assets/EF_logo_small.png"
+            width="48"
+          >
+        </template>
+      </v-list-item>
 
       <v-divider />
 
@@ -101,7 +91,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import { useDisplay } from 'vuetify'
   import { useAuthStore } from '@/stores/auth'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const props = defineProps({
     modelValue: {
@@ -124,14 +113,6 @@
   })
 
   const authStore = useAuthStore()
-  const firebaseStore = useFirebaseDataStore()
-
-  // Get current user's full name from parent record
-  const currentUserFullName = computed(() => {
-    if (!authStore.userEmail) return authStore.userDisplayName || ''
-    const currentParent = firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-    return currentParent?.fullName || authStore.userDisplayName || ''
-  })
 
   // Admin status tracking
   const isAdmin = ref(false)
