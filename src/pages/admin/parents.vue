@@ -298,76 +298,13 @@
     </div>
 
     <!-- Parent Form Dialog -->
-    <v-dialog v-model="parentDialogOpen" max-width="500" :persistent="parentFormSaving">
-      <v-card>
-        <v-card-title>
-          {{ editingParent ? $i18n('admin.parentsDirectory.editParent') : $i18n('admin.parentsDirectory.addNewParent') }}
-        </v-card-title>
-
-        <v-card-text>
-          <v-text-field
-            v-model="parentForm.first_name"
-            autofocus
-            class="mb-2"
-            density="compact"
-            :label="$i18n('common.firstName')"
-            variant="outlined"
-          />
-
-          <v-text-field
-            v-model="parentForm.last_name"
-            class="mb-2"
-            density="compact"
-            :label="$i18n('common.lastName')"
-            variant="outlined"
-          />
-
-          <v-text-field
-            v-model="parentForm.email"
-            class="mb-2"
-            density="compact"
-            :label="$i18n('common.email')"
-            :placeholder="$i18n('common.optional')"
-            type="email"
-            variant="outlined"
-          />
-
-          <v-text-field
-            v-model="parentForm.phone"
-            density="compact"
-            :label="$i18n('common.phone')"
-            :placeholder="$i18n('common.optional')"
-            type="tel"
-            variant="outlined"
-          />
-
-          <v-alert
-            v-if="parentFormError"
-            class="mt-3"
-            type="error"
-            variant="tonal"
-          >
-            {{ parentFormError }}
-          </v-alert>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-
-          <v-btn :disabled="parentFormSaving" variant="text" @click="parentDialogOpen = false">
-            {{ $i18n('common.cancel') }}
-          </v-btn>
-
-          <v-btn
-            color="primary"
-            :loading="parentFormSaving"
-            variant="tonal"
-            @click="saveParentForm"
-          >
-            {{ $i18n('common.save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+    <v-dialog v-model="parentDialogOpen" max-width="500" persistent>
+      <ParentFormDialog
+        v-if="parentDialogOpen"
+        :parent="editingParent"
+        @close="parentDialogOpen = false"
+        @saved="onParentSaved"
+      />
     </v-dialog>
 
     <!-- Send Email Dialog -->
@@ -550,6 +487,7 @@
   import { addDoc, collection, deleteDoc, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useRoute } from 'vue-router'
+  import ParentFormDialog from '@/components/admin/ParentFormDialog.vue'
   import { useTranslate } from '@/composables/useTranslate'
   import { getFunctionsBaseUrl, secureFetch } from '@/config/functions.js'
   import { db } from '@/firebase'
@@ -628,9 +566,6 @@
 
   const parentDialogOpen = ref(false)
   const editingParent = ref(null)
-  const parentForm = ref({ first_name: '', last_name: '', email: '', phone: '' })
-  const parentFormSaving = ref(false)
-  const parentFormError = ref(null)
 
   // Repositories
   const parentRepository = new ParentRepository()
@@ -1047,64 +982,31 @@
 
   function openNewParentDialog () {
     editingParent.value = null
-    parentForm.value = { first_name: '', last_name: '', email: '', phone: '' }
-    parentFormError.value = null
     parentDialogOpen.value = true
   }
 
   function openEditParentDialog (parentDTO) {
     editingParent.value = parentDTO
-    parentForm.value = {
-      first_name: parentDTO.first_name,
-      last_name: parentDTO.last_name,
-      email: parentDTO.email || '',
-      phone: parentDTO.phone || '',
-    }
-    parentFormError.value = null
     parentDialogOpen.value = true
   }
 
-  async function saveParentForm () {
-    const data = {
-      first_name: parentForm.value.first_name.trim(),
-      last_name: parentForm.value.last_name.trim(),
-      email: parentForm.value.email.trim(),
-      phone: parentForm.value.phone.trim(),
+  // New parents are pinned at the top of the list until the admin sorts by a column
+  function onParentSaved ({ parent, created }) {
+    if (created) {
+      parents.value.push(parent)
+      sortBy.value = []
+      recentlyAddedIds.value = [parent.id, ...recentlyAddedIds.value]
+      tablePage.value = 1
+    } else {
+      Object.assign(editingParent.value, {
+        first_name: parent.first_name,
+        last_name: parent.last_name,
+        email: parent.email,
+        phone: parent.phone,
+        updatedAt: parent.updatedAt,
+      })
     }
-    if (!data.first_name || !data.last_name) {
-      parentFormError.value = $i18n('admin.parentsDirectory.validation.required')
-      return
-    }
-    const emailPattern = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
-    if (data.email && !emailPattern.test(data.email)) {
-      parentFormError.value = $i18n('admin.parentsDirectory.validation.invalidEmail')
-      return
-    }
-
-    parentFormSaving.value = true
-    parentFormError.value = null
-    try {
-      const parentDTO = editingParent.value
-      if (parentDTO) {
-        const updatedParentDTO = await parentRepository.update(parentDTO.id, data)
-        parentDTO.first_name = updatedParentDTO.first_name
-        parentDTO.last_name = updatedParentDTO.last_name
-        parentDTO.email = updatedParentDTO.email
-        parentDTO.phone = updatedParentDTO.phone
-        parentDTO.updatedAt = updatedParentDTO.updatedAt
-      } else {
-        const createdParentDTO = await parentRepository.create(data)
-        parents.value.push(createdParentDTO)
-        sortBy.value = []
-        recentlyAddedIds.value = [createdParentDTO.id, ...recentlyAddedIds.value]
-        tablePage.value = 1
-      }
-      parentDialogOpen.value = false
-    } catch (error_) {
-      parentFormError.value = error_.message
-    } finally {
-      parentFormSaving.value = false
-    }
+    parentDialogOpen.value = false
   }
 
   onMounted(async () => {

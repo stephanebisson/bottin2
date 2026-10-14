@@ -237,105 +237,15 @@
     </v-card>
 
     <!-- Student Form Dialog -->
-    <v-dialog v-model="studentDialogOpen" max-width="500px" :persistent="studentFormSaving">
-      <v-card>
-        <v-card-title>
-          {{ editingStudent ? $i18n('admin.studentsTable.editStudent') : $i18n('admin.studentsTable.newStudent') }}
-        </v-card-title>
-
-        <v-card-text>
-          <v-text-field
-            v-model="studentForm.first_name"
-            autofocus
-            class="mb-2"
-            density="compact"
-            :label="$i18n('admin.studentsTable.headers.firstName')"
-            variant="outlined"
-          />
-
-          <v-text-field
-            v-model="studentForm.last_name"
-            class="mb-2"
-            density="compact"
-            :label="$i18n('admin.studentsTable.headers.lastName')"
-            variant="outlined"
-          />
-
-          <div class="d-flex ga-2">
-            <v-select
-              v-model="studentForm.className"
-              class="mb-2 flex-grow-1"
-              clearable
-              density="compact"
-              :item-title="c => `${c.classCode || c.value} - ${c.teacher}`"
-              item-value="value"
-              :items="classOptions"
-              :label="$i18n('admin.studentsTable.headers.class')"
-              variant="outlined"
-              @update:model-value="onStudentFormClassChange"
-            />
-
-            <v-select
-              v-model="studentForm.level"
-              class="mb-2"
-              density="compact"
-              :items="studentForm.className ? getLevelOptions(studentForm.className) : allLevelOptions"
-              :label="$i18n('admin.studentsTable.headers.level')"
-              style="max-width: 110px"
-              variant="outlined"
-            />
-          </div>
-
-          <v-autocomplete
-            v-model="studentForm.parent1_id"
-            class="mb-2"
-            clearable
-            density="compact"
-            item-title="fullName"
-            item-value="id"
-            :items="parentOptions"
-            label="Parent 1"
-            variant="outlined"
-          />
-
-          <v-autocomplete
-            v-model="studentForm.parent2_id"
-            clearable
-            density="compact"
-            item-title="fullName"
-            item-value="id"
-            :items="parentOptions"
-            label="Parent 2"
-            variant="outlined"
-          />
-
-          <v-alert
-            v-if="studentFormError"
-            class="mt-3"
-            type="error"
-            variant="tonal"
-          >
-            {{ studentFormError }}
-          </v-alert>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-
-          <v-btn :disabled="studentFormSaving" variant="text" @click="studentDialogOpen = false">
-            {{ $i18n('common.cancel') }}
-          </v-btn>
-
-          <v-btn
-            color="primary"
-            :loading="studentFormSaving"
-            variant="tonal"
-            @click="saveStudentForm"
-          >
-            {{ $i18n('common.save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+    <v-dialog v-model="studentDialogOpen" max-width="500px" persistent>
+      <StudentFormDialog
+        v-if="studentDialogOpen"
+        :class-options="classOptions"
+        :parent-options="parentOptions"
+        :student="editingStudent"
+        @close="studentDialogOpen = false"
+        @saved="onStudentSaved"
+      />
     </v-dialog>
 
     <!-- Progress All Dialog -->
@@ -545,8 +455,9 @@
   import { addDoc, collection, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useRoute } from 'vue-router'
+  import StudentFormDialog from '@/components/admin/StudentFormDialog.vue'
   import { useTranslate } from '@/composables/useTranslate'
-  import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
+  import { CLASS_LEVEL_MAPPING } from '@/config/classLevels'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
@@ -597,9 +508,6 @@
   // Add / Edit
   const studentDialogOpen = ref(false)
   const editingStudent = ref(null)
-  const studentForm = ref({ first_name: '', last_name: '', className: null, level: null, parent1_id: null, parent2_id: null })
-  const studentFormSaving = ref(false)
-  const studentFormError = ref(null)
 
   // Delete Individual
   const showDeleteDialog = ref(false)
@@ -753,10 +661,6 @@
 
   // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  function getLevelOptions (classLetter) {
-    return getValidLevelsForClass(classLetter).map(level => ({ title: String(level), value: level }))
-  }
-
   function getParentDisplayName (parentId) {
     return parentOptions.value.find(p => p.id === parentId)?.fullName ?? parentId
   }
@@ -776,80 +680,29 @@
 
   function openNewStudentDialog () {
     editingStudent.value = null
-    studentForm.value = { first_name: '', last_name: '', className: null, level: null, parent1_id: null, parent2_id: null }
-    studentFormError.value = null
     studentDialogOpen.value = true
   }
 
   function openEditStudentDialog (studentDTO) {
     editingStudent.value = studentDTO
-    studentForm.value = {
-      first_name: studentDTO.first_name,
-      last_name: studentDTO.last_name,
-      className: studentDTO.className || null,
-      level: studentDTO.level,
-      parent1_id: studentDTO.parent1_id || null,
-      parent2_id: studentDTO.parent2_id || null,
-    }
-    studentFormError.value = null
     studentDialogOpen.value = true
   }
 
-  function onStudentFormClassChange (classLetter) {
-    if (!classLetter) return
-    const validLevels = getValidLevelsForClass(classLetter)
-    if (!validLevels.includes(studentForm.value.level)) {
-      studentForm.value.level = validLevels.length === 1 ? validLevels[0] : null
+  function onStudentSaved ({ student, created }) {
+    if (created) {
+      students.value.unshift(student)
+    } else {
+      Object.assign(editingStudent.value, {
+        first_name: student.first_name,
+        last_name: student.last_name,
+        className: student.className,
+        level: student.level,
+        parent1_id: student.parent1_id,
+        parent2_id: student.parent2_id,
+        updatedAt: student.updatedAt,
+      })
     }
-  }
-
-  async function saveStudentForm () {
-    const data = {
-      first_name: studentForm.value.first_name.trim(),
-      last_name: studentForm.value.last_name.trim(),
-      className: studentForm.value.className || '',
-      level: studentForm.value.level,
-      parent1_id: studentForm.value.parent1_id || null,
-      parent2_id: studentForm.value.parent2_id || null,
-    }
-    if (!data.first_name) {
-      studentFormError.value = $i18n('admin.studentsTable.validation.firstNameRequired')
-      return
-    }
-    if (!data.last_name) {
-      studentFormError.value = $i18n('admin.studentsTable.validation.lastNameRequired')
-      return
-    }
-    if (!editingStudent.value && !data.parent1_id && !data.parent2_id) {
-      studentFormError.value = $i18n('admin.studentsTable.validation.parentRequired')
-      return
-    }
-
-    studentFormSaving.value = true
-    studentFormError.value = null
-    try {
-      const studentDTO = editingStudent.value
-      if (studentDTO) {
-        const updated = await new StudentRepository().update(studentDTO.id, data)
-        Object.assign(studentDTO, {
-          first_name: updated.first_name,
-          last_name: updated.last_name,
-          className: updated.className,
-          level: updated.level,
-          parent1_id: updated.parent1_id,
-          parent2_id: updated.parent2_id,
-          updatedAt: updated.updatedAt,
-        })
-      } else {
-        const created = await new StudentRepository().create(data)
-        students.value.unshift(created)
-      }
-      studentDialogOpen.value = false
-    } catch {
-      studentFormError.value = $i18n(editingStudent.value ? 'admin.studentsTable.updateError' : 'admin.studentsTable.createError')
-    } finally {
-      studentFormSaving.value = false
-    }
+    studentDialogOpen.value = false
   }
 
   // ─── Progress All ─────────────────────────────────────────────────────────────
