@@ -1,18 +1,5 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <v-btn
-          class="mb-2"
-          prepend-icon="mdi-arrow-left"
-          variant="text"
-          @click="$router.push('/admin')"
-        >
-          {{ $i18n('admin.backToAdminDashboard') }}
-        </v-btn>
-      </div>
-    </div>
-
     <div v-if="saveError" class="mb-4">
       <v-alert
         closable

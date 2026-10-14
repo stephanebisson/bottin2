@@ -412,11 +412,8 @@
     "clearSelection": "Effacer la sélection",
     "pending": "En attente",
     "overallStatus": "État global",
-    "welcomeTitle": "Bienvenue au tableau de bord administrateur",
-    "welcomeDescription": "Gérez votre système de bottin scolaire et les tâches administratives.",
     "annualUpdateDescription": "Gérez le processus de mise à jour annuelle des informations parents, envoyez des notifications, et suivez les réponses.",
     "workflowCompleted": "$1/$2 complétés",
-    "backToAdminDashboard": "Retour au tableau de bord administrateur",
     "totalStudents": "Total des élèves",
     "needsAssignment": "Assignation requise",
     "graduating": "Finissants",
@@ -461,8 +458,6 @@
     "existingParent": "Parent existant",
     "parentsDirectory": {
       "title": "Répertoire des parents",
-      "description": "Voir et gérer tous les parents du système avec leurs enfants associés.",
-      "viewAllParents": "Voir tous les parents",
       "totalParents": "$1 parents au total",
       "allParents": "Tous les parents",
       "children": "Enfants",
@@ -487,8 +482,6 @@
     },
     "studentsTable": {
       "title": "Répertoire des élèves",
-      "description": "Voir tous les élèves avec leurs informations de classe et parents",
-      "viewAllStudents": "Voir tous les élèves",
       "tableTitle": "Tous les élèves",
       "loading": "Chargement des élèves...",
       "loadError": "Échec du chargement des élèves. Veuillez réessayer.",
@@ -669,8 +662,6 @@
     "addParent": "Ajouter un parent",
     "staffUpdate": {
       "title": "Éditeur du personnel",
-      "description": "Modifier les coordonnées du personnel affichées dans le bottin",
-      "openEditor": "Modifier le personnel",
       "save": "Enregistrer",
       "unsavedChangesTitle": "Modifications non enregistrées",
       "unsavedChangesText": "Vous avez des modifications non enregistrées. Si vous quittez maintenant, vos modifications seront perdues.",
@@ -683,7 +674,6 @@
     },
     "auditLog": {
       "title": "Journal d'audit",
-      "description": "Historique de toutes les actions administratives",
       "filterSchoolYear": "Année scolaire",
       "filterActionType": "Type d'action",
       "filterEntityType": "Type",

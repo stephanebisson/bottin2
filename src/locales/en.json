@@ -405,11 +405,8 @@
     "clearSelection": "Clear Selection",
     "pending": "Pending",
     "overallStatus": "Overall Status",
-    "welcomeTitle": "Welcome to Admin Dashboard",
-    "welcomeDescription": "Manage your school directory system and administrative tasks.",
     "annualUpdateDescription": "Manage the annual parent information update process, send notifications, and track responses.",
     "workflowCompleted": "$1/$2 completed",
-    "backToAdminDashboard": "Back to Admin Dashboard",
     "totalStudents": "Total Students",
     "needsAssignment": "Needs Assignment",
     "graduating": "Graduating",
@@ -454,8 +451,6 @@
     "existingParent": "Existing parent",
     "parentsDirectory": {
       "title": "Parents Directory",
-      "description": "View and manage all parents in the system with their associated children.",
-      "viewAllParents": "View All Parents",
       "totalParents": "$1 total parents",
       "allParents": "All Parents",
       "children": "Children",
@@ -480,8 +475,6 @@
     },
     "studentsTable": {
       "title": "Students Directory",
-      "description": "View all students with class and parent information",
-      "viewAllStudents": "View All Students",
       "tableTitle": "All Students",
       "loading": "Loading students...",
       "loadError": "Failed to load students. Please try again.",
@@ -662,8 +655,6 @@
     "addParent": "Add Parent",
     "staffUpdate": {
       "title": "Staff editor",
-      "description": "Edit the staff details shown in the directory",
-      "openEditor": "Edit staff",
       "save": "Save",
       "unsavedChangesTitle": "Unsaved changes",
       "unsavedChangesText": "You have unsaved changes. If you leave now, your changes will be lost.",
@@ -676,7 +667,6 @@
     },
     "auditLog": {
       "title": "Audit log",
-      "description": "History of all administrative actions",
       "filterSchoolYear": "School year",
       "filterActionType": "Action type",
       "filterEntityType": "Type",
