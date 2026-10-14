@@ -26,8 +26,11 @@ export function normalizeText (text) {
  * @returns {boolean} True if query matches text
  */
 export function matchesSearch (text, query) {
-  if (!query || !text) {
+  if (!query) {
     return true
+  }
+  if (!text) {
+    return false
   }
 
   const normalizedText = normalizeText(text)

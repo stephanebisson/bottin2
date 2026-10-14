@@ -75,9 +75,9 @@ describe('Search Utilities', () => {
       // Edge cases
       ['', '', true], // Empty query matches everything
       ['Hello', '', true], // Empty query matches everything
-      ['', 'hello', true], // Empty text with query returns true (see line 29-31)
-      [null, 'hello', true], // null text with query returns true
-      [undefined, 'hello', true], // undefined text with query returns true
+      ['', 'hello', false], // Empty text never matches a query
+      [null, 'hello', false], // null text never matches a query
+      [undefined, 'hello', false], // undefined text never matches a query
       ['hello', null, true], // null query returns true
       ['hello', undefined, true], // undefined query returns true
     ])('should match text="%s" query="%s" as %s', (text, query, expected) => {
@@ -104,7 +104,7 @@ describe('Search Utilities', () => {
       // Empty cases
       [testFields, '', true], // Empty query matches
       [[], 'john', false], // No fields to search, should return false
-      [[''], 'john', true], // Empty field returns true due to matchesSearch behavior
+      [[''], 'john', false], // Empty field never matches a query
     ])('should search fields %j for query "%s" as %s', (fields, query, expected) => {
       expect(matchesAnyField(fields, query)).toBe(expected)
     })
@@ -113,7 +113,7 @@ describe('Search Utilities', () => {
       const fieldsWithNulls = ['John', null, undefined, 'Developer']
       expect(matchesAnyField(fieldsWithNulls, 'john')).toBe(true)
       expect(matchesAnyField(fieldsWithNulls, 'developer')).toBe(true)
-      expect(matchesAnyField(fieldsWithNulls, 'xyz')).toBe(true) // null/undefined return true in matchesSearch
+      expect(matchesAnyField(fieldsWithNulls, 'xyz')).toBe(false)
     })
   })
 
@@ -190,7 +190,7 @@ describe('Search Utilities', () => {
       }).not.toThrow()
 
       const result = filterBySearch(dataWithMissingFields, 'complete', ['user.name'])
-      expect(result).toHaveLength(4) // All match due to null/undefined handling in matchesSearch
+      expect(result).toHaveLength(1)
     })
   })
 
