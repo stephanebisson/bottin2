@@ -62,12 +62,12 @@
             <v-tabs-window v-model="activeTab">
               <!-- Login Tab -->
               <v-tabs-window-item value="login">
-                <LoginForm @show-reset="showReset = true" />
+                <LoginForm :initial-email="prefillEmail" @show-reset="showReset = true" />
               </v-tabs-window-item>
 
               <!-- Register Tab -->
               <v-tabs-window-item value="register">
-                <RegisterForm />
+                <RegisterForm :initial-email="prefillEmail" />
               </v-tabs-window-item>
             </v-tabs-window>
           </template>
@@ -109,7 +109,9 @@
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
   // Component state
-  const activeTab = ref('login')
+  // ?tab=register&email=... opens the matching tab with the email prefilled
+  const activeTab = ref(route.query.tab === 'register' ? 'register' : 'login')
+  const prefillEmail = typeof route.query.email === 'string' ? route.query.email : ''
   const showReset = ref(false)
   const showEmailVerifiedSuccess = ref(false)
   const processingVerification = ref(false)

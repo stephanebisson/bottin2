@@ -591,17 +591,17 @@
   "updateSuccess": {
     "title": "Update success page. - Page or section title",
     "message": "Update success page",
-    "createAccountTitle": "Update success page. - Page or section title",
-    "createAccountMessage": "Update success page",
+    "optedOutMessage": "Update success page, shown after the parent opted out",
+    "noAccountTitle": "Update success page. - Section title",
+    "noAccountMessage": "Update success page. $1 - the parent's email address",
     "createAccount": "Update success page",
-    "accountExists": "Update success page",
+    "unverifiedTitle": "Update success page. - Section title",
+    "unverifiedMessage": "Update success page",
     "signIn": "Update success page",
-    "nextSteps": "Update success page",
-    "step1": "Update success page",
-    "step2": "Update success page",
-    "step3": "Update success page",
-    "questions": "Update success page",
-    "backHome": "Update success page"
+    "activeTitle": "Update success page. - Section title",
+    "activeMessage": "Update success page",
+    "openDirectory": "Update success page",
+    "questions": "Update success page"
   },
   "staffUpdate": {
     "title": "Staff information update form. - Page or section title",

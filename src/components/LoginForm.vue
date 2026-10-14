@@ -77,6 +77,11 @@
 
   defineEmits(['show-reset'])
 
+  const props = defineProps({
+    // Prefills the email field, e.g. when coming from the update confirmation page
+    initialEmail: { type: String, default: '' },
+  })
+
   const router = useRouter()
   const authStore = useAuthStore()
 
@@ -87,7 +92,7 @@
   const { translateAuthError } = useAuthErrors()
 
   // Form data
-  const email = ref('')
+  const email = ref(props.initialEmail)
   const password = ref('')
   const showPassword = ref(false)
   const formValid = ref(false)

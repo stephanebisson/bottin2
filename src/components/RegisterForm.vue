@@ -192,6 +192,11 @@
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
+  const props = defineProps({
+    // Prefills the email field, e.g. when coming from the update confirmation page
+    initialEmail: { type: String, default: '' },
+  })
+
   const router = useRouter()
   const authStore = useAuthStore()
   const { translateAuthError } = useAuthErrors()
@@ -200,7 +205,7 @@
   const isDevelopment = computed(() => import.meta.env.DEV)
 
   // Form data
-  const email = ref('')
+  const email = ref(props.initialEmail)
   const password = ref('')
   const confirmPassword = ref('')
   const showPassword = ref(false)
@@ -266,7 +271,7 @@
         emailValidationLoading.value = false
       }
     }, 500)
-  })
+  }, { immediate: true })
 
   // Handle registration
   async function handleRegister () {

@@ -1,7 +1,7 @@
-const { getAuth } = require('firebase-admin/auth')
 const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const logger = require('firebase-functions/logger')
 const { onRequest } = require('firebase-functions/v2/https')
+const { getAccountStatus } = require('./accounts')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
 const { validateFunctionData } = require('./middleware/validation')
@@ -363,15 +363,8 @@ exports.processParentUpdateV2 = onRequest({
       )
     }
 
-    // Check if user already has an account
-    let hasAccount = false
-    try {
-      await getAuth().getUserByEmail(existingParentData.email)
-      hasAccount = true
-    } catch {
-      // User doesn't exist, which is fine
-      hasAccount = false
-    }
+    // Online directory account status, for the confirmation page
+    const accountStatus = await getAccountStatus(existingParentData.email)
 
     // Commit all updates
     await batch.commit()
@@ -381,7 +374,7 @@ exports.processParentUpdateV2 = onRequest({
     res.status(200).json({
       success: true,
       message: 'Parent information updated successfully',
-      hasAccount,
+      accountStatus,
     })
   } catch (error) {
     // Handle validation errors
@@ -492,14 +485,8 @@ exports.processParentOptOutV2 = onRequest({
       }
     }
 
-    // Check if user has an account
-    let hasAccount = false
-    try {
-      await getAuth().getUserByEmail(parentEmail)
-      hasAccount = true
-    } catch {
-      hasAccount = false
-    }
+    // Online directory account status, for the confirmation page
+    const accountStatus = await getAccountStatus(parentEmail)
 
     // Commit all changes
     await batch.commit()
@@ -509,7 +496,7 @@ exports.processParentOptOutV2 = onRequest({
     res.status(200).json({
       success: true,
       message: 'Successfully opted out and removed personal information',
-      hasAccount,
+      accountStatus,
     })
   } catch (error) {
     // Handle validation errors

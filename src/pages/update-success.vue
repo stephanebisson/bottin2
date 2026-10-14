@@ -14,73 +14,34 @@
 
             <!-- Thank You Message -->
             <p class="text-body-large mb-6">
-              {{ $i18n('updateSuccess.message') }}
+              {{ optedOut ? $i18n('updateSuccess.optedOutMessage') : $i18n('updateSuccess.message') }}
             </p>
 
-            <!-- Account Creation Section -->
-            <div v-if="!hasAccount" class="mb-6">
+            <!-- Online Directory Account Section -->
+            <div class="mb-6">
               <v-alert
-                class="mb-4"
-                color="warning"
-                icon="mdi-account-clock"
+                class="mb-4 text-left"
+                :color="accountSection.color"
+                :icon="accountSection.icon"
                 variant="tonal"
               >
                 <div class="text-body-large font-weight-medium mb-2">
-                  {{ $i18n('updateSuccess.createAccountTitle') }}
+                  {{ $i18n(accountSection.title) }}
                 </div>
 
                 <div class="text-body-medium">
-                  {{ $i18n('updateSuccess.createAccountMessage') }}
+                  {{ $i18n(accountSection.message, email) }}
                 </div>
               </v-alert>
 
               <v-btn
                 color="primary"
-                disabled
-                prepend-icon="mdi-account-clock"
+                :prepend-icon="accountSection.buttonIcon"
                 size="large"
-                variant="outlined"
+                @click="goToAuth"
               >
-                {{ $i18n('updateSuccess.createAccount') }}
+                {{ $i18n(accountSection.button) }}
               </v-btn>
-            </div>
-
-            <!-- Account Exists Section -->
-            <div v-else class="mb-6">
-              <v-alert
-                class="mb-4"
-                color="success"
-                icon="mdi-account-check"
-                variant="tonal"
-              >
-                <div class="text-body-large">
-                  {{ $i18n('updateSuccess.accountExists') }}
-                </div>
-              </v-alert>
-
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-login"
-                size="large"
-                @click="goToLogin"
-              >
-                {{ $i18n('updateSuccess.signIn') }}
-              </v-btn>
-            </div>
-
-            <!-- Additional Information -->
-            <v-divider class="my-6" />
-
-            <div class="text-body-medium text-grey-darken-1">
-              <p class="mb-2">
-                {{ $i18n('updateSuccess.nextSteps') }}
-              </p>
-
-              <ul class="text-left mt-4">
-                <li>{{ $i18n('updateSuccess.step1') }}</li>
-                <li>{{ $i18n('updateSuccess.step2') }}</li>
-                <li>{{ $i18n('updateSuccess.step3') }}</li>
-              </ul>
             </div>
 
             <!-- Contact Information -->
@@ -94,16 +55,6 @@
                 {{ $i18n('updateSuccess.questions') }}
               </div>
             </v-alert>
-
-            <!-- Home Button -->
-            <v-btn
-              class="mt-4"
-              color="grey"
-              variant="outlined"
-              @click="goHome"
-            >
-              {{ $i18n('updateSuccess.backHome') }}
-            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
@@ -116,22 +67,49 @@
   import { useRoute, useRouter } from 'vue-router'
   const route = useRoute()
   const router = useRouter()
-  // Get query parameters
-  const hasAccount = computed(() => route.query.hasAccount === '1')
-  const email = computed(() => route.query.email || '')
 
-  // Navigation methods
-  function goToLogin () {
-    router.push({
-      path: '/auth',
-      query: {
-        mode: 'login',
-        email: email.value,
-      },
-    })
+  // Online directory account status: 'active' | 'unverified' | 'none'
+  const accountStatus = computed(() => route.query.account || 'none')
+  const email = computed(() => route.query.email || '')
+  const optedOut = computed(() => route.query.optedOut === '1')
+
+  const ACCOUNT_SECTIONS = {
+    none: {
+      color: 'info',
+      icon: 'mdi-account-plus',
+      title: 'updateSuccess.noAccountTitle',
+      message: 'updateSuccess.noAccountMessage',
+      button: 'updateSuccess.createAccount',
+      buttonIcon: 'mdi-account-plus',
+      tab: 'register',
+    },
+    unverified: {
+      color: 'warning',
+      icon: 'mdi-email-alert',
+      title: 'updateSuccess.unverifiedTitle',
+      message: 'updateSuccess.unverifiedMessage',
+      button: 'updateSuccess.signIn',
+      buttonIcon: 'mdi-login',
+      tab: 'login',
+    },
+    active: {
+      color: 'success',
+      icon: 'mdi-account-check',
+      title: 'updateSuccess.activeTitle',
+      message: 'updateSuccess.activeMessage',
+      button: 'updateSuccess.openDirectory',
+      buttonIcon: 'mdi-book-open-variant',
+      tab: 'login',
+    },
   }
 
-  function goHome () {
-    router.push('/')
+  const accountSection = computed(() => ACCOUNT_SECTIONS[accountStatus.value] || ACCOUNT_SECTIONS.none)
+
+  // /auth sends already signed-in users straight to the directory
+  function goToAuth () {
+    router.push({
+      path: '/auth',
+      query: { tab: accountSection.value.tab, email: email.value },
+    })
   }
 </script>

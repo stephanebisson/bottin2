@@ -623,7 +623,7 @@
       router.push({
         path: '/update-success',
         query: {
-          hasAccount: result.hasAccount ? '1' : '0',
+          account: result.accountStatus,
           email: parentData.value.email,
           optedOut: '1',
         },
@@ -691,7 +691,7 @@
       router.push({
         path: '/update-success',
         query: {
-          hasAccount: result.hasAccount ? '1' : '0',
+          account: result.accountStatus,
           email: parentData.value.email,
         },
       })
