@@ -46,7 +46,7 @@
                 </span>
 
                 <v-btn
-                  v-if="isAdmin"
+                  v-if="authStore.isAdmin"
                   color="white"
                   icon="mdi-pencil"
                   size="x-small"
@@ -600,8 +600,6 @@
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
   const authStore = useAuthStore()
-  // Admin state
-  const isAdmin = ref(false)
   const classRepository = new ClassRepository()
 
   // Edit dialog state
@@ -616,22 +614,6 @@
   })
   const savingClass = ref(false)
   const editError = ref(null)
-
-  // Check admin status
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAdmin.value = false
-      return
-    }
-
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAdmin.value = !!idTokenResult.claims.admin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
-      isAdmin.value = false
-    }
-  }
 
   // Get all parents for parent representative selection
   const getAllParents = computed(() => {
@@ -865,7 +847,6 @@
 
   // Load data on component mount
   onMounted(async () => {
-    await checkAdminStatus()
     await Promise.all([
       firebaseStore.loadStudentsDTO(),
       firebaseStore.loadParentsDTO(),

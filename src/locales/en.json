@@ -345,8 +345,6 @@
   },
   "admin": {
     "title": "Administration",
-    "accessDenied": "Access Denied",
-    "adminAccessRequired": "Administrative access required to view this page.",
     "annualUpdateWorkflow": "Annual Parent Information Update",
     "currentWorkflow": "Current Workflow Status",
     "currentWorkflowStatus": "Current Workflow Status",
@@ -408,8 +406,6 @@
     "clearSelection": "Clear Selection",
     "pending": "Pending",
     "overallStatus": "Overall Status",
-    "refreshPermissionsInstructions": "Just granted admin access? Try refreshing your permissions:",
-    "refreshAdminStatus": "Refresh Admin Status",
     "welcomeTitle": "Welcome to Admin Dashboard",
     "welcomeDescription": "Manage your school directory system and administrative tasks.",
     "annualUpdateDescription": "Manage the annual parent information update process, send notifications, and track responses.",

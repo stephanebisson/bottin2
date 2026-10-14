@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-  import { computed, ref, watch } from 'vue'
+  import { computed } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { useDisplay } from 'vuetify'
   import { useAuthStore } from '@/stores/auth'
@@ -113,35 +113,6 @@
   })
 
   const authStore = useAuthStore()
-
-  // Admin status tracking
-  const isAdmin = ref(false)
-
-  // Check admin status using Firebase Custom Claims
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAdmin.value = false
-      return
-    }
-
-    try {
-      // Get ID token result which includes custom claims
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAdmin.value = !!idTokenResult.claims.admin
-    } catch (error) {
-      console.error('Failed to check admin status in nav:', error)
-      isAdmin.value = false
-    }
-  }
-
-  // Watch for authentication changes
-  watch(() => authStore.isAuthenticated, async newValue => {
-    if (newValue) {
-      await checkAdminStatus()
-    } else {
-      isAdmin.value = false
-    }
-  }, { immediate: true })
 
   const navigationItems = computed(() => {
     const baseItems = [
@@ -173,7 +144,7 @@
     ]
 
     // Only add admin link if user is admin
-    if (isAdmin.value) {
+    if (authStore.isAdmin) {
       baseItems.push({
         title: $i18n('admin.title'),
         icon: 'mdi-cog',

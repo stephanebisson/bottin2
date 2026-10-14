@@ -1,12 +1,5 @@
 <template>
-  <div v-if="!isAuthorized" class="access-denied">
-    <div class="access-denied-content">
-      <h1>Accès refusé</h1>
-      <p>Vous devez être administrateur pour accéder à cette page.</p>
-    </div>
-  </div>
-
-  <div v-else-if="loading" class="loading">
+  <div v-if="loading" class="loading">
     <div class="loading-content">
       <p>Chargement des données du bottin...</p>
     </div>
@@ -192,7 +185,6 @@
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import BackPage from './BackPage.vue'
@@ -213,29 +205,11 @@
   import TitlePage from './TitlePage.vue'
 
   // Store references
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
   const { reset: resetPageRegistry } = usePrintPageRegistry()
 
   // State
-  const isAuthorized = ref(false)
   const loading = ref(true)
-
-  // Check admin status
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAuthorized.value = !!idTokenResult.claims.admin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
-      isAuthorized.value = false
-    }
-  }
 
   // Staff grouping (hierarchical: groups contain subgroups)
   const groupedStaff = computed(() => {
@@ -828,12 +802,7 @@
     // Reset the page registry for fresh page counting
     resetPageRegistry()
 
-    await checkAdminStatus()
-    if (isAuthorized.value) {
-      await loadData()
-    } else {
-      loading.value = false
-    }
+    await loadData()
   })
 </script>
 
@@ -858,26 +827,6 @@
     min-height: 100vh;
     padding: 2rem 0;
   }
-}
-
-/* Access Denied */
-.access-denied {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.access-denied-content {
-  text-align: center;
-  padding: 2rem;
-}
-
-.access-denied h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #d32f2f;
 }
 
 /* Loading */

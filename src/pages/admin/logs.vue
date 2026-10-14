@@ -1,156 +1,130 @@
 <template>
   <v-container>
     <!-- Access Control -->
-    <div v-if="!isAuthorized" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-
-      <p class="text-body-large text-medium-emphasis mt-2">
-        {{ $i18n('admin.adminAccessRequired') }}
-      </p>
-
-      <div class="mt-6">
-        <p class="text-body-medium text-medium-emphasis mb-4">
-          {{ $i18n('admin.refreshPermissionsInstructions') }}
-        </p>
-
-        <v-btn
-          color="primary"
-          :loading="authLoading"
-          prepend-icon="mdi-refresh"
-          @click="checkAdminStatus"
-        >
-          {{ $i18n('admin.refreshAdminStatus') }}
-        </v-btn>
-      </div>
-    </div>
-
-    <div v-else>
-      <!-- Filter Bar -->
-      <v-row class="mb-4" density="compact">
-        <v-col cols="6" sm="2">
-          <v-select
-            v-model="filterYear"
-            density="compact"
-            hide-details
-            :items="schoolYearOptions"
-            :label="$i18n('admin.auditLog.filterSchoolYear')"
-            variant="outlined"
-            @update:model-value="loadLogs"
-          />
-        </v-col>
-
-        <v-col cols="6" sm="2">
-          <v-select
-            v-model="filterActionType"
-            clearable
-            density="compact"
-            hide-details
-            :items="actionTypeItems"
-            :label="$i18n('admin.auditLog.filterActionType')"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col cols="6" sm="2">
-          <v-select
-            v-model="filterEntityType"
-            clearable
-            density="compact"
-            hide-details
-            :items="entityTypeItems"
-            :label="$i18n('admin.auditLog.filterEntityType')"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col cols="12" sm="3">
-          <v-text-field
-            v-model="filterActor"
-            clearable
-            density="compact"
-            hide-details
-            :placeholder="$i18n('admin.auditLog.filterActor')"
-            prepend-inner-icon="mdi-account-search"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col cols="6" sm="2">
-          <v-text-field
-            v-model="filterDateFrom"
-            clearable
-            density="compact"
-            hide-details
-            :label="$i18n('admin.auditLog.filterDateFrom')"
-            type="date"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col class="d-flex align-center justify-center" cols="6" sm="1">
-          <v-btn
-            density="compact"
-            icon="mdi-filter-remove"
-            :title="$i18n('admin.auditLog.clearFilters')"
-            variant="text"
-            @click="clearFilters"
-          />
-        </v-col>
-      </v-row>
-
-      <!-- Data Table -->
-      <v-card>
-        <v-data-table
-          class="elevation-0"
+    <!-- Filter Bar -->
+    <v-row class="mb-4" density="compact">
+      <v-col cols="6" sm="2">
+        <v-select
+          v-model="filterYear"
           density="compact"
-          :headers="tableHeaders"
-          :items="filteredLogs"
-          :items-per-page="50"
-          :loading="loading"
-          :sort-by="[{ key: 'timestamp', order: 'desc' }]"
-        >
-          <!-- Timestamp Column -->
-          <template #item.timestamp="{ item }">
-            <span class="text-body-medium text-no-wrap">{{ formatDateTime(item.timestamp) }}</span>
-          </template>
+          hide-details
+          :items="schoolYearOptions"
+          :label="$i18n('admin.auditLog.filterSchoolYear')"
+          variant="outlined"
+          @update:model-value="loadLogs"
+        />
+      </v-col>
 
-          <!-- Action Column -->
-          <template #item.actionType="{ item }">
-            <v-chip
-              :color="ACTION_COLORS[item.actionType] || 'grey'"
-              size="x-small"
-              variant="tonal"
-            >
-              {{ $i18n(`admin.auditLog.actionTypes.${item.actionType}`) || item.actionType }}
-            </v-chip>
+      <v-col cols="6" sm="2">
+        <v-select
+          v-model="filterActionType"
+          clearable
+          density="compact"
+          hide-details
+          :items="actionTypeItems"
+          :label="$i18n('admin.auditLog.filterActionType')"
+          variant="outlined"
+        />
+      </v-col>
 
-            <v-chip
-              v-if="item.actionType === 'send_update_email'"
-              class="ml-1"
-              size="x-small"
-              variant="outlined"
-            >
-              {{ $i18n(`admin.auditLog.variants.${item.details?.variant || 'initial'}`) }}
-            </v-chip>
-          </template>
+      <v-col cols="6" sm="2">
+        <v-select
+          v-model="filterEntityType"
+          clearable
+          density="compact"
+          hide-details
+          :items="entityTypeItems"
+          :label="$i18n('admin.auditLog.filterEntityType')"
+          variant="outlined"
+        />
+      </v-col>
 
-          <!-- Entity Type Column -->
-          <template #item.entityType="{ item }">
-            <span class="text-body-medium">
-              {{ $i18n(`admin.auditLog.entityTypes.${item.entityType}`) || item.entityType }}
-            </span>
-          </template>
+      <v-col cols="12" sm="3">
+        <v-text-field
+          v-model="filterActor"
+          clearable
+          density="compact"
+          hide-details
+          :placeholder="$i18n('admin.auditLog.filterActor')"
+          prepend-inner-icon="mdi-account-search"
+          variant="outlined"
+        />
+      </v-col>
 
-          <!-- No data slot -->
-          <template #no-data>
-            <div class="text-center py-8 text-medium-emphasis">
-              {{ $i18n('admin.auditLog.noLogs') }}
-            </div>
-          </template>
-        </v-data-table>
-      </v-card>
-    </div>
+      <v-col cols="6" sm="2">
+        <v-text-field
+          v-model="filterDateFrom"
+          clearable
+          density="compact"
+          hide-details
+          :label="$i18n('admin.auditLog.filterDateFrom')"
+          type="date"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col class="d-flex align-center justify-center" cols="6" sm="1">
+        <v-btn
+          density="compact"
+          icon="mdi-filter-remove"
+          :title="$i18n('admin.auditLog.clearFilters')"
+          variant="text"
+          @click="clearFilters"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Data Table -->
+    <v-card>
+      <v-data-table
+        class="elevation-0"
+        density="compact"
+        :headers="tableHeaders"
+        :items="filteredLogs"
+        :items-per-page="50"
+        :loading="loading"
+        :sort-by="[{ key: 'timestamp', order: 'desc' }]"
+      >
+        <!-- Timestamp Column -->
+        <template #item.timestamp="{ item }">
+          <span class="text-body-medium text-no-wrap">{{ formatDateTime(item.timestamp) }}</span>
+        </template>
+
+        <!-- Action Column -->
+        <template #item.actionType="{ item }">
+          <v-chip
+            :color="ACTION_COLORS[item.actionType] || 'grey'"
+            size="x-small"
+            variant="tonal"
+          >
+            {{ $i18n(`admin.auditLog.actionTypes.${item.actionType}`) || item.actionType }}
+          </v-chip>
+
+          <v-chip
+            v-if="item.actionType === 'send_update_email'"
+            class="ml-1"
+            size="x-small"
+            variant="outlined"
+          >
+            {{ $i18n(`admin.auditLog.variants.${item.details?.variant || 'initial'}`) }}
+          </v-chip>
+        </template>
+
+        <!-- Entity Type Column -->
+        <template #item.entityType="{ item }">
+          <span class="text-body-medium">
+            {{ $i18n(`admin.auditLog.entityTypes.${item.entityType}`) || item.entityType }}
+          </span>
+        </template>
+
+        <!-- No data slot -->
+        <template #no-data>
+          <div class="text-center py-8 text-medium-emphasis">
+            {{ $i18n('admin.auditLog.noLogs') }}
+          </div>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 </template>
 
@@ -159,20 +133,16 @@
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { db } from '@/firebase'
-  import { useAuthStore } from '@/stores/auth'
   import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
 
   definePage({ meta: { titleKey: 'admin.auditLog.title' } })
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
-  const authStore = useAuthStore()
 
   const currentSchoolYear = getCurrentSchoolYear()
   const startYear = Number.parseInt(currentSchoolYear.split('-', 1)[0])
 
-  const isAuthorized = ref(false)
-  const authLoading = ref(false)
   const loading = ref(false)
   const logs = ref([])
 
@@ -191,22 +161,6 @@
     graduate_student: 'secondary',
     depart_student: 'error',
     assign_class: 'primary',
-  }
-
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-    try {
-      authLoading.value = true
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAuthorized.value = !!idTokenResult.claims.admin
-    } catch {
-      isAuthorized.value = false
-    } finally {
-      authLoading.value = false
-    }
   }
 
   const schoolYearOptions = computed(() => {
@@ -305,9 +259,6 @@
   }
 
   onMounted(async () => {
-    await checkAdminStatus()
-    if (isAuthorized.value) {
-      await loadLogs()
-    }
+    await loadLogs()
   })
 </script>

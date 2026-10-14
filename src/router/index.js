@@ -43,11 +43,13 @@ router.beforeEach(async (to, from, next) => {
   // Always initialize auth first
   await authMiddleware.initializeAuth(to, from, () => {})
 
+  // Admin pages require the admin claim
+  if (to.path === '/admin' || to.path.startsWith('/admin/')) {
+    return authMiddleware.requireAdmin(to, from, next)
+  }
+
   // Check if route requires authentication
-  const requiresAuth = routeConfig.protected.some(protectedPath => {
-    // Exact match or admin sub-route
-    return to.path === protectedPath || (protectedPath === '/admin' && to.path.startsWith('/admin'))
-  })
+  const requiresAuth = routeConfig.protected.includes(to.path)
 
   if (requiresAuth) {
     return authMiddleware.requireAuth(to, from, next)

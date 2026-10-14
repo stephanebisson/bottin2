@@ -1,268 +1,241 @@
 <template>
   <v-container>
     <!-- Access Control -->
-    <div v-if="!isAuthorized" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-
-      <p class="text-body-large text-medium-emphasis mt-2">
-        {{ $i18n('admin.adminAccessRequired') }}
-      </p>
-
-      <!-- Manual Refresh Button for newly granted admins -->
-      <div class="mt-6">
-        <p class="text-body-medium text-medium-emphasis mb-4">
-          {{ $i18n('admin.refreshPermissionsInstructions') }}
-        </p>
-
-        <v-btn
-          color="primary"
-          :loading="loading"
-          prepend-icon="mdi-refresh"
-          @click="checkAdminStatus"
-        >
-          {{ $i18n('admin.refreshAdminStatus') }}
-        </v-btn>
-      </div>
+    <!-- Feedback Management -->
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <v-progress-circular color="primary" indeterminate size="64" />
+      <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
     </div>
 
-    <!-- Feedback Management -->
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <v-icon color="error" size="64">mdi-alert-circle</v-icon>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
+      <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
+
+      <v-btn
+        class="mt-4"
+        color="primary"
+        @click="loadData"
+      >
+        {{ $i18n('common.retry') }}
+      </v-btn>
+    </div>
+
+    <!-- Feedback Content -->
     <div v-else>
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center py-12">
-        <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
-      </div>
+      <!-- Summary Stats -->
+      <v-row class="mb-6">
+        <v-col cols="12" md="4">
+          <v-card color="primary" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center">
+                <v-icon class="mr-3" size="40">mdi-message-text</v-icon>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="text-center py-12">
-        <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
+                <div>
+                  <div class="text-headline-large font-weight-bold">{{ stats.total }}</div>
+                  <div class="text-body-medium">{{ $i18n('feedback.admin.totalFeedback') }}</div>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
 
-        <v-btn
-          class="mt-4"
-          color="primary"
-          @click="loadData"
+        <v-col cols="12" md="4">
+          <v-card color="warning" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center">
+                <v-icon class="mr-3" size="40">mdi-clock-alert</v-icon>
+
+                <div>
+                  <div class="text-headline-large font-weight-bold">{{ stats.pending }}</div>
+                  <div class="text-body-medium">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="4">
+          <v-card color="success" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center">
+                <v-icon class="mr-3" size="40">mdi-check-circle</v-icon>
+
+                <div>
+                  <div class="text-headline-large font-weight-bold">{{ stats.resolved }}</div>
+                  <div class="text-body-medium">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Filters -->
+      <v-card class="mb-6">
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="searchText"
+                clearable
+                density="compact"
+                hide-details
+                :label="$i18n('common.search')"
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+              />
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-select
+                v-model="statusFilter"
+                chips
+                density="compact"
+                hide-details
+                :items="statusFilterOptions"
+                :label="$i18n('feedback.admin.filterByStatus')"
+                variant="outlined"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+
+      <!-- Data Table -->
+      <v-card>
+        <v-data-table
+          class="elevation-0"
+          :expanded="expanded"
+          :headers="tableHeaders"
+          :items="filteredFeedback"
+          :items-per-page="25"
+          :search="searchText"
+          show-expand
         >
-          {{ $i18n('common.retry') }}
-        </v-btn>
-      </div>
+          <!-- Date Column -->
+          <template #item.createdAt="{ item }">
+            <span class="text-body-medium">
+              {{ formatDate(item.createdAt) }}
+            </span>
+          </template>
 
-      <!-- Feedback Content -->
-      <div v-else>
-        <!-- Summary Stats -->
-        <v-row class="mb-6">
-          <v-col cols="12" md="4">
-            <v-card color="primary" variant="tonal">
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon class="mr-3" size="40">mdi-message-text</v-icon>
+          <!-- Parent Column -->
+          <template #item.parent_id="{ item }">
+            <div>
+              <div class="font-weight-medium">{{ getParentName(item.parent_id) }}</div>
+              <div class="text-body-small text-medium-emphasis">{{ getParentEmail(item.parent_id) }}</div>
+            </div>
+          </template>
 
-                  <div>
-                    <div class="text-headline-large font-weight-bold">{{ stats.total }}</div>
-                    <div class="text-body-medium">{{ $i18n('feedback.admin.totalFeedback') }}</div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
+          <!-- Message Column -->
+          <template #item.message="{ item }">
+            <div class="text-body-medium" style="max-width: 400px;">
+              {{ item.shortMessage }}
+            </div>
+          </template>
 
-          <v-col cols="12" md="4">
-            <v-card color="warning" variant="tonal">
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon class="mr-3" size="40">mdi-clock-alert</v-icon>
+          <!-- Status Column -->
+          <template #item.status="{ item }">
+            <v-chip
+              :color="item.status === 'resolved' ? 'success' : 'warning'"
+              size="small"
+              variant="flat"
+            >
+              {{ item.displayStatus }}
+            </v-chip>
+          </template>
 
-                  <div>
-                    <div class="text-headline-large font-weight-bold">{{ stats.pending }}</div>
-                    <div class="text-body-medium">{{ $i18n('feedback.admin.pendingFeedback') }}</div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <v-card color="success" variant="tonal">
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon class="mr-3" size="40">mdi-check-circle</v-icon>
-
-                  <div>
-                    <div class="text-headline-large font-weight-bold">{{ stats.resolved }}</div>
-                    <div class="text-body-medium">{{ $i18n('feedback.admin.resolvedFeedback') }}</div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <!-- Filters -->
-        <v-card class="mb-6">
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="searchText"
-                  clearable
-                  density="compact"
-                  hide-details
-                  :label="$i18n('common.search')"
-                  prepend-inner-icon="mdi-magnify"
-                  variant="outlined"
-                />
-              </v-col>
-
-              <v-col cols="12" md="6">
-                <v-select
-                  v-model="statusFilter"
-                  chips
-                  density="compact"
-                  hide-details
-                  :items="statusFilterOptions"
-                  :label="$i18n('feedback.admin.filterByStatus')"
-                  variant="outlined"
-                />
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-
-        <!-- Data Table -->
-        <v-card>
-          <v-data-table
-            class="elevation-0"
-            :expanded="expanded"
-            :headers="tableHeaders"
-            :items="filteredFeedback"
-            :items-per-page="25"
-            :search="searchText"
-            show-expand
-          >
-            <!-- Date Column -->
-            <template #item.createdAt="{ item }">
-              <span class="text-body-medium">
-                {{ formatDate(item.createdAt) }}
-              </span>
-            </template>
-
-            <!-- Parent Column -->
-            <template #item.parent_id="{ item }">
-              <div>
-                <div class="font-weight-medium">{{ getParentName(item.parent_id) }}</div>
-                <div class="text-body-small text-medium-emphasis">{{ getParentEmail(item.parent_id) }}</div>
-              </div>
-            </template>
-
-            <!-- Message Column -->
-            <template #item.message="{ item }">
-              <div class="text-body-medium" style="max-width: 400px;">
-                {{ item.shortMessage }}
-              </div>
-            </template>
-
-            <!-- Status Column -->
-            <template #item.status="{ item }">
-              <v-chip
-                :color="item.status === 'resolved' ? 'success' : 'warning'"
+          <!-- Actions Column -->
+          <template #item.actions="{ item }">
+            <div class="d-flex align-center ga-1">
+              <!-- Toggle Status Button -->
+              <v-btn
+                :color="item.status === 'pending' ? 'success' : 'warning'"
+                :icon="item.status === 'pending' ? 'mdi-check' : 'mdi-clock-alert'"
+                :loading="item._updating"
                 size="small"
-                variant="flat"
+                variant="text"
+                @click="toggleStatus(item)"
               >
-                {{ item.displayStatus }}
-              </v-chip>
-            </template>
+                <v-icon />
 
-            <!-- Actions Column -->
-            <template #item.actions="{ item }">
-              <div class="d-flex align-center ga-1">
-                <!-- Toggle Status Button -->
-                <v-btn
-                  :color="item.status === 'pending' ? 'success' : 'warning'"
-                  :icon="item.status === 'pending' ? 'mdi-check' : 'mdi-clock-alert'"
-                  :loading="item._updating"
-                  size="small"
-                  variant="text"
-                  @click="toggleStatus(item)"
-                >
-                  <v-icon />
+                <v-tooltip activator="parent" location="top">
+                  {{ item.status === 'pending' ? $i18n('feedback.admin.markAsResolved') : $i18n('feedback.admin.markAsPending') }}
+                </v-tooltip>
+              </v-btn>
 
-                  <v-tooltip activator="parent" location="top">
-                    {{ item.status === 'pending' ? $i18n('feedback.admin.markAsResolved') : $i18n('feedback.admin.markAsPending') }}
-                  </v-tooltip>
-                </v-btn>
+              <!-- Add Notes Button -->
+              <v-btn
+                color="primary"
+                icon="mdi-note-edit"
+                size="small"
+                variant="text"
+                @click="openNotesDialog(item)"
+              >
+                <v-icon />
 
-                <!-- Add Notes Button -->
-                <v-btn
-                  color="primary"
-                  icon="mdi-note-edit"
-                  size="small"
-                  variant="text"
-                  @click="openNotesDialog(item)"
-                >
-                  <v-icon />
+                <v-tooltip activator="parent" location="top">
+                  {{ $i18n('feedback.admin.editNotes') }}
+                </v-tooltip>
+              </v-btn>
 
-                  <v-tooltip activator="parent" location="top">
-                    {{ $i18n('feedback.admin.editNotes') }}
-                  </v-tooltip>
-                </v-btn>
+              <!-- Delete Button -->
+              <v-btn
+                color="error"
+                icon="mdi-delete"
+                :loading="item._deleting"
+                size="small"
+                variant="text"
+                @click="confirmDelete(item)"
+              >
+                <v-icon />
 
-                <!-- Delete Button -->
-                <v-btn
-                  color="error"
-                  icon="mdi-delete"
-                  :loading="item._deleting"
-                  size="small"
-                  variant="text"
-                  @click="confirmDelete(item)"
-                >
-                  <v-icon />
+                <v-tooltip activator="parent" location="top">
+                  {{ $i18n('common.delete') }}
+                </v-tooltip>
+              </v-btn>
+            </div>
+          </template>
 
-                  <v-tooltip activator="parent" location="top">
-                    {{ $i18n('common.delete') }}
-                  </v-tooltip>
-                </v-btn>
-              </div>
-            </template>
-
-            <!-- Expanded Row -->
-            <template #expanded-row="{ columns, item }">
-              <tr>
-                <td :colspan="columns.length">
-                  <div class="pa-4">
-                    <!-- Full Message -->
-                    <div class="mb-4">
-                      <div class="text-title-small font-weight-bold mb-2">
-                        {{ $i18n('feedback.admin.fullMessage') }}
-                      </div>
-
-                      <div class="text-body-large pa-3 bg-surface-light rounded">
-                        {{ item.message }}
-                      </div>
+          <!-- Expanded Row -->
+          <template #expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length">
+                <div class="pa-4">
+                  <!-- Full Message -->
+                  <div class="mb-4">
+                    <div class="text-title-small font-weight-bold mb-2">
+                      {{ $i18n('feedback.admin.fullMessage') }}
                     </div>
 
-                    <!-- Admin Notes -->
-                    <div v-if="item.hasAdminNotes">
-                      <div class="text-title-small font-weight-bold mb-2">
-                        {{ $i18n('feedback.admin.adminNotes') }}
-                      </div>
-
-                      <div class="text-body-large pa-3 bg-blue-lighten-5 rounded">
-                        {{ item.admin_notes }}
-                      </div>
-                    </div>
-
-                    <div v-else class="text-body-medium text-medium-emphasis font-italic">
-                      {{ $i18n('feedback.admin.noAdminNotes') }}
+                    <div class="text-body-large pa-3 bg-surface-light rounded">
+                      {{ item.message }}
                     </div>
                   </div>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-        </v-card>
-      </div>
+
+                  <!-- Admin Notes -->
+                  <div v-if="item.hasAdminNotes">
+                    <div class="text-title-small font-weight-bold mb-2">
+                      {{ $i18n('feedback.admin.adminNotes') }}
+                    </div>
+
+                    <div class="text-body-large pa-3 bg-blue-lighten-5 rounded">
+                      {{ item.admin_notes }}
+                    </div>
+                  </div>
+
+                  <div v-else class="text-body-medium text-medium-emphasis font-italic">
+                    {{ $i18n('feedback.admin.noAdminNotes') }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-card>
     </div>
 
     <!-- Admin Notes Dialog -->
@@ -345,7 +318,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute } from 'vue-router'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'feedback.admin.title' } })
@@ -353,7 +325,6 @@
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
   const feedbackRepository = new FeedbackRepository()
 
@@ -366,9 +337,6 @@
   const statusFilter = ref(useRoute().query.status === 'pending' ? 'pending' : 'all')
   const expanded = ref([])
 
-  // Authorization
-  const isAuthorized = ref(false)
-
   // Notes dialog
   const notesDialog = ref(false)
   const editingFeedback = ref(null)
@@ -379,23 +347,6 @@
   const deleteDialog = ref(false)
   const feedbackToDelete = ref(null)
   const deleting = ref(false)
-
-  // Check admin status using custom claims
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      const isAdmin = !!idTokenResult.claims.admin
-      isAuthorized.value = isAdmin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
-      isAuthorized.value = false
-    }
-  }
 
   // Status filter options
   const statusFilterOptions = computed(() => [
@@ -572,9 +523,6 @@
 
   // Initialize
   onMounted(async () => {
-    await checkAdminStatus()
-    if (isAuthorized.value) {
-      await loadData()
-    }
+    await loadData()
   })
 </script>

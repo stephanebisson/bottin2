@@ -13,54 +13,41 @@
       </div>
     </div>
 
-    <div v-if="!isAuthorized" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-large text-medium-emphasis mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
-      <p class="text-body-medium text-medium-emphasis mt-2">{{ $i18n('admin.refreshPermissionsInstructions') }}</p>
-
-      <v-btn class="mt-4" variant="outlined" @click="checkAdminStatus">
-        {{ $i18n('admin.refreshAdminStatus') }}
-      </v-btn>
+    <div v-if="saveError" class="mb-4">
+      <v-alert
+        closable
+        color="error"
+        icon="mdi-alert-circle"
+        variant="tonal"
+        @click:close="saveError = null"
+      >
+        {{ saveError }}
+      </v-alert>
     </div>
 
-    <template v-else>
-      <div v-if="saveError" class="mb-4">
-        <v-alert
-          closable
-          color="error"
-          icon="mdi-alert-circle"
-          variant="tonal"
-          @click:close="saveError = null"
-        >
-          {{ saveError }}
-        </v-alert>
-      </div>
+    <GroupSection
+      v-for="grp in groupData"
+      :key="grp.group"
+      class="mb-8"
+      :group="grp.group"
+      :modified-ids="modifiedIds"
+      :name="grp.name"
+      :subgroups="grp.subgroups"
+      @change="handleChange"
+    />
 
-      <GroupSection
-        v-for="grp in groupData"
-        :key="grp.group"
-        class="mb-8"
-        :group="grp.group"
-        :modified-ids="modifiedIds"
-        :name="grp.name"
-        :subgroups="grp.subgroups"
-        @change="handleChange"
-      />
-
-      <div class="d-flex justify-end mt-4 mb-8">
-        <v-btn
-          color="primary"
-          :disabled="!hasChanges"
-          :loading="saving"
-          prepend-icon="mdi-content-save"
-          size="large"
-          @click="handleSave"
-        >
-          {{ $i18n('admin.staffUpdate.save') }}
-        </v-btn>
-      </div>
-    </template>
+    <div class="d-flex justify-end mt-4 mb-8">
+      <v-btn
+        color="primary"
+        :disabled="!hasChanges"
+        :loading="saving"
+        prepend-icon="mdi-content-save"
+        size="large"
+        @click="handleSave"
+      >
+        {{ $i18n('admin.staffUpdate.save') }}
+      </v-btn>
+    </div>
 
     <v-dialog v-model="showLeaveDialog" max-width="400">
       <v-card>
@@ -96,7 +83,6 @@
     SUBGROUP_ICONS,
   } from '@/config/staffGroups'
   import { StaffRepository } from '@/repositories/StaffRepository.js'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'admin.staffUpdate.title' } })
@@ -104,24 +90,8 @@
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
 
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
   const staffRepository = new StaffRepository()
-
-  const isAuthorized = ref(false)
-
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAuthorized.value = !!idTokenResult.claims.admin
-    } catch {
-      isAuthorized.value = false
-    }
-  }
 
   const modifications = ref(new Map())
   const saving = ref(false)
@@ -157,7 +127,6 @@
   }
 
   onMounted(async () => {
-    await checkAdminStatus()
     firebaseStore.loadStaffDTO()
   })
 

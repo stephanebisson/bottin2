@@ -33,6 +33,29 @@ export const authMiddleware = {
   },
 
   /**
+   * Middleware for admin pages: requireAuth, then the admin claim.
+   * Non-admins go to the home page.
+   */
+  requireAdmin: async (to, from, next) => {
+    const authStore = useAuthStore()
+
+    if (!authStore.isInitialized) {
+      await authStore.initializeAuth()
+    }
+
+    if (!authStore.isAuthenticated || !authStore.isEmailVerified) {
+      return authMiddleware.requireAuth(to, from, next)
+    }
+
+    // A claim granted since sign-in is only in a refreshed token
+    if (!authStore.isAdmin) {
+      await authStore.refreshAdminStatus(true)
+    }
+
+    next(authStore.isAdmin ? undefined : '/')
+  },
+
+  /**
    * Middleware to redirect authenticated users away from auth pages
    * Redirects to home if user is already authenticated
    */

@@ -1,248 +1,240 @@
 <template>
   <v-container>
     <!-- Access Control -->
-    <div v-if="!isAuthorized" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
-      <p class="text-body-large text-medium-emphasis mt-2">{{ $i18n('admin.adminAccessRequired') }}</p>
-    </div>
+    <!-- Error -->
+    <v-alert
+      v-if="error"
+      class="mb-4"
+      closable
+      color="error"
+      icon="mdi-alert-circle"
+      @click:close="error = null"
+    >
+      {{ error }}
+    </v-alert>
 
-    <div v-else>
-      <!-- Error -->
-      <v-alert
-        v-if="error"
-        class="mb-4"
-        closable
-        color="error"
-        icon="mdi-alert-circle"
-        @click:close="error = null"
-      >
-        {{ error }}
-      </v-alert>
-
-      <!-- Filter Bar -->
-      <v-row class="mb-4" density="compact">
-        <v-col cols="12" sm="4">
-          <v-text-field
-            v-model="searchQuery"
-            clearable
-            density="compact"
-            hide-details
-            :label="$i18n('admin.studentsTable.filterSearch')"
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col cols="6" sm="2">
-          <v-select
-            v-model="filterClass"
-            clearable
-            density="compact"
-            hide-details
-            item-title="text"
-            item-value="value"
-            :items="classOptions"
-            :label="$i18n('admin.studentsTable.filterClass')"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col cols="6" sm="2">
-          <v-select
-            v-model="filterLevel"
-            clearable
-            density="compact"
-            hide-details
-            :items="allLevelOptions"
-            :label="$i18n('admin.studentsTable.filterLevel')"
-            variant="outlined"
-          />
-        </v-col>
-
-        <v-col class="d-flex align-center" cols="12" sm="4">
-          <v-switch
-            v-model="showUnassignedOnly"
-            color="warning"
-            density="compact"
-            hide-details
-            :label="$i18n('admin.studentsTable.filterUnassigned')"
-          />
-        </v-col>
-      </v-row>
-
-      <!-- Selection Toolbar -->
-      <v-toolbar
-        v-if="selectedIds.length > 0"
-        class="mb-2 rounded"
-        color="blue-grey-lighten-5"
-        density="compact"
-        flat
-      >
-        <v-toolbar-title class="text-body-medium font-weight-medium">
-          {{ $i18n('admin.studentsTable.xSelected', selectedIds.length) }}
-        </v-toolbar-title>
-
-        <v-btn
-          v-if="hasUnassignedSelected"
-          class="mr-2"
-          prepend-icon="mdi-google-classroom"
-          size="small"
-          variant="tonal"
-          @click="openAssignClassDialog"
-        >
-          {{ $i18n('admin.studentsTable.assignClass') }}
-        </v-btn>
-
-        <v-btn
-          class="mr-2"
-          color="error"
-          prepend-icon="mdi-logout"
-          size="small"
-          variant="tonal"
-          @click="openDepartDialog"
-        >
-          {{ $i18n('admin.studentsTable.markDeparted') }}
-        </v-btn>
-
-        <v-btn
-          icon="mdi-close"
-          size="small"
-          variant="text"
-          @click="selectedIds = []"
+    <!-- Filter Bar -->
+    <v-row class="mb-4" density="compact">
+      <v-col cols="12" sm="4">
+        <v-text-field
+          v-model="searchQuery"
+          clearable
+          density="compact"
+          hide-details
+          :label="$i18n('admin.studentsTable.filterSearch')"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
         />
-      </v-toolbar>
+      </v-col>
 
-      <!-- Main Card -->
-      <v-card>
-        <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
-          <span>
-            {{ $i18n('admin.studentsTable.tableTitle') }}
-            <span class="text-body-medium text-medium-emphasis ml-2">
-              {{ $i18n('admin.studentsTable.totalStudents', filteredStudents.length) }}
-            </span>
+      <v-col cols="6" sm="2">
+        <v-select
+          v-model="filterClass"
+          clearable
+          density="compact"
+          hide-details
+          item-title="text"
+          item-value="value"
+          :items="classOptions"
+          :label="$i18n('admin.studentsTable.filterClass')"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="6" sm="2">
+        <v-select
+          v-model="filterLevel"
+          clearable
+          density="compact"
+          hide-details
+          :items="allLevelOptions"
+          :label="$i18n('admin.studentsTable.filterLevel')"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col class="d-flex align-center" cols="12" sm="4">
+        <v-switch
+          v-model="showUnassignedOnly"
+          color="warning"
+          density="compact"
+          hide-details
+          :label="$i18n('admin.studentsTable.filterUnassigned')"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Selection Toolbar -->
+    <v-toolbar
+      v-if="selectedIds.length > 0"
+      class="mb-2 rounded"
+      color="blue-grey-lighten-5"
+      density="compact"
+      flat
+    >
+      <v-toolbar-title class="text-body-medium font-weight-medium">
+        {{ $i18n('admin.studentsTable.xSelected', selectedIds.length) }}
+      </v-toolbar-title>
+
+      <v-btn
+        v-if="hasUnassignedSelected"
+        class="mr-2"
+        prepend-icon="mdi-google-classroom"
+        size="small"
+        variant="tonal"
+        @click="openAssignClassDialog"
+      >
+        {{ $i18n('admin.studentsTable.assignClass') }}
+      </v-btn>
+
+      <v-btn
+        class="mr-2"
+        color="error"
+        prepend-icon="mdi-logout"
+        size="small"
+        variant="tonal"
+        @click="openDepartDialog"
+      >
+        {{ $i18n('admin.studentsTable.markDeparted') }}
+      </v-btn>
+
+      <v-btn
+        icon="mdi-close"
+        size="small"
+        variant="text"
+        @click="selectedIds = []"
+      />
+    </v-toolbar>
+
+    <!-- Main Card -->
+    <v-card>
+      <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
+        <span>
+          {{ $i18n('admin.studentsTable.tableTitle') }}
+          <span class="text-body-medium text-medium-emphasis ml-2">
+            {{ $i18n('admin.studentsTable.totalStudents', filteredStudents.length) }}
           </span>
+        </span>
 
-          <div class="d-flex align-center ga-2">
-            <v-btn
-              color="warning"
-              prepend-icon="mdi-school"
-              variant="elevated"
-              @click="openProgressDialog"
-            >
-              {{ $i18n('admin.studentsTable.progressAll') }}
-            </v-btn>
+        <div class="d-flex align-center ga-2">
+          <v-btn
+            color="warning"
+            prepend-icon="mdi-school"
+            variant="elevated"
+            @click="openProgressDialog"
+          >
+            {{ $i18n('admin.studentsTable.progressAll') }}
+          </v-btn>
 
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            variant="elevated"
+            @click="openNewStudentDialog"
+          >
+            {{ $i18n('admin.studentsTable.newStudent') }}
+          </v-btn>
+        </div>
+      </v-card-title>
+
+      <!-- Data Table -->
+      <v-data-table
+        v-model="selectedIds"
+        class="elevation-0"
+        disable-sort
+        :headers="headers"
+        item-value="id"
+        :items="filteredStudents"
+        :items-per-page="50"
+        :loading="loading"
+        show-select
+        :sort-by="[]"
+      >
+        <!-- First Name -->
+        <template #item.first_name="{ item }">
+          <span class="font-weight-medium">{{ item.first_name }}</span>
+        </template>
+
+        <!-- Last Name -->
+        <template #item.last_name="{ item }">
+          <span class="font-weight-medium">{{ item.last_name }}</span>
+        </template>
+
+        <!-- Class -->
+        <template #item.className="{ item }">
+          <v-chip
+            v-if="!item.className"
+            color="orange"
+            size="small"
+            variant="tonal"
+          >
+            —
+          </v-chip>
+
+          <span v-else class="font-weight-medium">
+            {{ classOptions.find(c => c.value === item.className)?.text || item.className }}
+          </span>
+        </template>
+
+        <!-- Level -->
+        <template #item.level="{ item }">
+          <span class="font-weight-medium">{{ item.level }}</span>
+        </template>
+
+        <!-- Parents -->
+        <template #item.parents="{ item }">
+          <div class="d-flex flex-column">
+            <span v-if="item.parent1_id" class="text-body-medium mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
+            <span v-if="item.parent2_id" class="text-body-medium">{{ getParentDisplayName(item.parent2_id) }}</span>
+
+            <span v-if="!item.parent1_id && !item.parent2_id" class="text-medium-emphasis font-italic">
+              {{ $i18n('admin.studentsTable.noParent') }}
+            </span>
+          </div>
+        </template>
+
+        <!-- Log chip -->
+        <template #item.log="{ item }">
+          <v-chip
+            v-if="getLogChip(item.id)"
+            :color="getLogChipColor(item.id)"
+            size="small"
+            variant="tonal"
+          >
+            {{ getLogChip(item.id) }}
+          </v-chip>
+        </template>
+
+        <!-- Actions -->
+        <template #item.actions="{ item }">
+          <div class="d-flex align-center ga-1">
             <v-btn
               color="primary"
-              prepend-icon="mdi-plus"
-              variant="elevated"
-              @click="openNewStudentDialog"
-            >
-              {{ $i18n('admin.studentsTable.newStudent') }}
-            </v-btn>
+              icon="mdi-pencil"
+              size="small"
+              variant="text"
+              @click="openEditStudentDialog(item)"
+            />
+
+            <v-btn
+              color="error"
+              icon="mdi-delete"
+              size="small"
+              variant="text"
+              @click="openDeleteStudentDialog(item)"
+            />
           </div>
-        </v-card-title>
+        </template>
 
-        <!-- Data Table -->
-        <v-data-table
-          v-model="selectedIds"
-          class="elevation-0"
-          disable-sort
-          :headers="headers"
-          item-value="id"
-          :items="filteredStudents"
-          :items-per-page="50"
-          :loading="loading"
-          show-select
-          :sort-by="[]"
-        >
-          <!-- First Name -->
-          <template #item.first_name="{ item }">
-            <span class="font-weight-medium">{{ item.first_name }}</span>
-          </template>
-
-          <!-- Last Name -->
-          <template #item.last_name="{ item }">
-            <span class="font-weight-medium">{{ item.last_name }}</span>
-          </template>
-
-          <!-- Class -->
-          <template #item.className="{ item }">
-            <v-chip
-              v-if="!item.className"
-              color="orange"
-              size="small"
-              variant="tonal"
-            >
-              —
-            </v-chip>
-
-            <span v-else class="font-weight-medium">
-              {{ classOptions.find(c => c.value === item.className)?.text || item.className }}
-            </span>
-          </template>
-
-          <!-- Level -->
-          <template #item.level="{ item }">
-            <span class="font-weight-medium">{{ item.level }}</span>
-          </template>
-
-          <!-- Parents -->
-          <template #item.parents="{ item }">
-            <div class="d-flex flex-column">
-              <span v-if="item.parent1_id" class="text-body-medium mb-1">{{ getParentDisplayName(item.parent1_id) }}</span>
-              <span v-if="item.parent2_id" class="text-body-medium">{{ getParentDisplayName(item.parent2_id) }}</span>
-
-              <span v-if="!item.parent1_id && !item.parent2_id" class="text-medium-emphasis font-italic">
-                {{ $i18n('admin.studentsTable.noParent') }}
-              </span>
-            </div>
-          </template>
-
-          <!-- Log chip -->
-          <template #item.log="{ item }">
-            <v-chip
-              v-if="getLogChip(item.id)"
-              :color="getLogChipColor(item.id)"
-              size="small"
-              variant="tonal"
-            >
-              {{ getLogChip(item.id) }}
-            </v-chip>
-          </template>
-
-          <!-- Actions -->
-          <template #item.actions="{ item }">
-            <div class="d-flex align-center ga-1">
-              <v-btn
-                color="primary"
-                icon="mdi-pencil"
-                size="small"
-                variant="text"
-                @click="openEditStudentDialog(item)"
-              />
-
-              <v-btn
-                color="error"
-                icon="mdi-delete"
-                size="small"
-                variant="text"
-                @click="openDeleteStudentDialog(item)"
-              />
-            </div>
-          </template>
-
-          <!-- No data -->
-          <template #no-data>
-            <div class="text-center pa-12">
-              <v-icon class="text-medium-emphasis" size="64">mdi-school-outline</v-icon>
-              <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('admin.studentsTable.noStudents') }}</p>
-            </div>
-          </template>
-        </v-data-table>
-      </v-card>
-    </div>
+        <!-- No data -->
+        <template #no-data>
+          <div class="text-center pa-12">
+            <v-icon class="text-medium-emphasis" size="64">mdi-school-outline</v-icon>
+            <p class="text-title-large mt-4 text-medium-emphasis">{{ $i18n('admin.studentsTable.noStudents') }}</p>
+          </div>
+        </template>
+      </v-data-table>
+    </v-card>
 
     <!-- Student Form Dialog -->
     <v-dialog v-model="studentDialogOpen" max-width="500px" :persistent="studentFormSaving">
@@ -551,7 +543,7 @@
 
 <script setup>
   import { addDoc, collection, doc, getDocs, query, serverTimestamp, where, writeBatch } from 'firebase/firestore'
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute } from 'vue-router'
   import { CLASS_LEVEL_MAPPING, getValidLevelsForClass } from '@/config/classLevels'
@@ -576,7 +568,6 @@
   const students = ref([])
   const classOptions = ref([])
   const parentOptions = ref([])
-  const isAuthorized = ref(false)
 
   // Filters
   const searchQuery = ref('')
@@ -679,19 +670,6 @@
   ])
 
   // ─── Auth ─────────────────────────────────────────────────────────────────────
-
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-    try {
-      const result = await authStore.user.getIdTokenResult(true)
-      isAuthorized.value = !!result.claims.admin
-    } catch {
-      isAuthorized.value = false
-    }
-  }
 
   // ─── Data Loading ─────────────────────────────────────────────────────────────
 
@@ -1053,22 +1031,8 @@
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
-  async function initialize () {
-    await checkAdminStatus()
-    if (isAuthorized.value) {
-      await Promise.all([loadStudents(), loadClassOptions(), loadParentOptions()])
-      await loadStudentLogs()
-    }
-  }
-
-  onMounted(initialize)
-
-  watch(() => authStore.isAuthenticated, async isAuth => {
-    if (isAuth) {
-      await initialize()
-    } else {
-      isAuthorized.value = false
-      students.value = []
-    }
+  onMounted(async () => {
+    await Promise.all([loadStudents(), loadClassOptions(), loadParentOptions()])
+    await loadStudentLogs()
   })
 </script>

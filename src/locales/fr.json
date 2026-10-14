@@ -352,8 +352,6 @@
   },
   "admin": {
     "title": "Administration",
-    "accessDenied": "Accès refusé",
-    "adminAccessRequired": "Accès administrateur requis pour voir cette page.",
     "annualUpdateWorkflow": "Mise à jour annuelle des informations parents",
     "currentWorkflow": "État du processus actuel",
     "currentWorkflowStatus": "État du processus actuel",
@@ -415,8 +413,6 @@
     "clearSelection": "Effacer la sélection",
     "pending": "En attente",
     "overallStatus": "État global",
-    "refreshPermissionsInstructions": "Vous venez d'obtenir l'accès administrateur? Essayez de rafraîchir vos permissions:",
-    "refreshAdminStatus": "Rafraîchir le statut administrateur",
     "welcomeTitle": "Bienvenue au tableau de bord administrateur",
     "welcomeDescription": "Gérez votre système de bottin scolaire et les tâches administratives.",
     "annualUpdateDescription": "Gérez le processus de mise à jour annuelle des informations parents, envoyez des notifications, et suivez les réponses.",

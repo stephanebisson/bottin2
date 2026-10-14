@@ -63,7 +63,7 @@
                   </v-chip>
 
                   <v-btn
-                    v-if="isAdmin"
+                    v-if="authStore.isAdmin"
                     class="flex-shrink-0"
                     color="white"
                     density="compact"
@@ -248,23 +248,6 @@
   const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
-  // Check if user is admin
-  const isAdmin = ref(false)
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAdmin.value = false
-      return
-    }
-
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAdmin.value = !!idTokenResult.claims.admin
-    } catch (error) {
-      console.error('Failed to check admin status:', error)
-      isAdmin.value = false
-    }
-  }
-
   const enrichedCommittees = computed(() => {
     return firebaseStore.committeesDTO.map(committee => {
       // Enrich members with full information from parents and staff
@@ -410,7 +393,6 @@
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
       firebaseStore.loadCommitteesDTO(),
-      checkAdminStatus(),
     ])
   })
 </script>

@@ -1,326 +1,300 @@
 <template>
   <v-container>
     <!-- Access Control -->
-    <div v-if="!isAuthorized" class="text-center py-12">
-      <v-icon color="error" size="64">mdi-shield-alert</v-icon>
-      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('admin.accessDenied') }}</h2>
+    <!-- Parents Directory -->
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <v-progress-circular color="primary" indeterminate size="64" />
+      <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
+    </div>
 
-      <p class="text-body-large text-medium-emphasis mt-2">
-        {{ $i18n('admin.adminAccessRequired') }}
-      </p>
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <v-icon color="error" size="64">mdi-alert-circle</v-icon>
+      <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
+      <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
 
-      <div class="mt-6">
-        <p class="text-body-medium text-medium-emphasis mb-4">
-          {{ $i18n('admin.refreshPermissionsInstructions') }}
-        </p>
+      <v-btn class="mt-4" color="primary" @click="loadData">
+        {{ $i18n('common.retry') }}
+      </v-btn>
+    </div>
+
+    <!-- Parents Table -->
+    <div v-else>
+      <!-- Filter Bar: wraps onto more lines when space runs out -->
+      <div class="d-flex flex-wrap align-center ga-2 mb-4">
+        <v-text-field
+          v-model="filterSearch"
+          class="filter-search"
+          clearable
+          density="compact"
+          hide-details
+          :placeholder="$i18n('admin.parentsTable.filterSearch')"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+        />
+
+        <v-select
+          v-model="filterClass"
+          class="filter-select"
+          clearable
+          density="compact"
+          hide-details
+          :items="classOptions"
+          :label="$i18n('admin.parentsTable.filterClass')"
+          variant="outlined"
+        />
+
+        <v-select
+          v-model="filterEmailStatus"
+          class="filter-select"
+          density="compact"
+          hide-details
+          :items="emailStatusItems"
+          :label="$i18n('admin.parentsTable.filterEmailStatus')"
+          variant="outlined"
+        />
+
+        <v-select
+          v-model="filterSubmitted"
+          class="filter-select"
+          density="compact"
+          hide-details
+          :items="submittedItems"
+          :label="$i18n('admin.parentsTable.filterSubmitted')"
+          variant="outlined"
+        />
+
+        <v-select
+          v-model="filterAccount"
+          class="filter-select"
+          density="compact"
+          hide-details
+          :items="accountItems"
+          :label="$i18n('admin.parentsTable.filterAccount')"
+          variant="outlined"
+        />
+
+        <v-chip-group v-model="toggleFilters" color="warning" filter multiple>
+          <v-chip value="optedOut">{{ $i18n('admin.parentsTable.filterOptedOut') }}</v-chip>
+          <v-chip value="noChildren">{{ $i18n('admin.parentsTable.filterNoChildren') }}</v-chip>
+        </v-chip-group>
+      </div>
+
+      <!-- Selection Toolbar -->
+      <v-toolbar
+        v-if="selectedIds.length > 0"
+        class="mb-2 rounded"
+        color="blue-grey-lighten-5"
+        density="compact"
+        flat
+      >
+        <v-toolbar-title class="text-body-medium">
+          {{ $i18n('admin.parentsTable.xSelected', selectedIds.length) }}
+        </v-toolbar-title>
 
         <v-btn
           color="primary"
-          :loading="loading"
-          prepend-icon="mdi-refresh"
-          @click="checkAdminStatus"
-        >
-          {{ $i18n('admin.refreshAdminStatus') }}
-        </v-btn>
-      </div>
-    </div>
-
-    <!-- Parents Directory -->
-    <div v-else>
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center py-12">
-        <v-progress-circular color="primary" indeterminate size="64" />
-        <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="error" class="text-center py-12">
-        <v-icon color="error" size="64">mdi-alert-circle</v-icon>
-        <h2 class="text-headline-small mt-4 text-error">{{ $i18n('common.error') }}</h2>
-        <p class="text-body-large text-medium-emphasis mt-2">{{ error }}</p>
-
-        <v-btn class="mt-4" color="primary" @click="loadData">
-          {{ $i18n('common.retry') }}
-        </v-btn>
-      </div>
-
-      <!-- Parents Table -->
-      <div v-else>
-        <!-- Filter Bar: wraps onto more lines when space runs out -->
-        <div class="d-flex flex-wrap align-center ga-2 mb-4">
-          <v-text-field
-            v-model="filterSearch"
-            class="filter-search"
-            clearable
-            density="compact"
-            hide-details
-            :placeholder="$i18n('admin.parentsTable.filterSearch')"
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-          />
-
-          <v-select
-            v-model="filterClass"
-            class="filter-select"
-            clearable
-            density="compact"
-            hide-details
-            :items="classOptions"
-            :label="$i18n('admin.parentsTable.filterClass')"
-            variant="outlined"
-          />
-
-          <v-select
-            v-model="filterEmailStatus"
-            class="filter-select"
-            density="compact"
-            hide-details
-            :items="emailStatusItems"
-            :label="$i18n('admin.parentsTable.filterEmailStatus')"
-            variant="outlined"
-          />
-
-          <v-select
-            v-model="filterSubmitted"
-            class="filter-select"
-            density="compact"
-            hide-details
-            :items="submittedItems"
-            :label="$i18n('admin.parentsTable.filterSubmitted')"
-            variant="outlined"
-          />
-
-          <v-select
-            v-model="filterAccount"
-            class="filter-select"
-            density="compact"
-            hide-details
-            :items="accountItems"
-            :label="$i18n('admin.parentsTable.filterAccount')"
-            variant="outlined"
-          />
-
-          <v-chip-group v-model="toggleFilters" color="warning" filter multiple>
-            <v-chip value="optedOut">{{ $i18n('admin.parentsTable.filterOptedOut') }}</v-chip>
-            <v-chip value="noChildren">{{ $i18n('admin.parentsTable.filterNoChildren') }}</v-chip>
-          </v-chip-group>
-        </div>
-
-        <!-- Selection Toolbar -->
-        <v-toolbar
-          v-if="selectedIds.length > 0"
-          class="mb-2 rounded"
-          color="blue-grey-lighten-5"
           density="compact"
-          flat
+          prepend-icon="mdi-email-send"
+          size="small"
+          variant="tonal"
+          @click="openSendEmailDialog"
         >
-          <v-toolbar-title class="text-body-medium">
-            {{ $i18n('admin.parentsTable.xSelected', selectedIds.length) }}
-          </v-toolbar-title>
+          {{ $i18n('admin.parentsTable.sendEmail') }}
+        </v-btn>
+
+        <v-btn
+          class="ml-2"
+          color="warning"
+          density="compact"
+          prepend-icon="mdi-account-remove"
+          size="small"
+          variant="tonal"
+          @click="openOptOutDialog"
+        >
+          {{ $i18n('admin.parentsTable.markOptedOut') }}
+        </v-btn>
+
+        <v-btn
+          class="ml-2"
+          color="error"
+          density="compact"
+          prepend-icon="mdi-delete"
+          size="small"
+          variant="tonal"
+          @click="openRemoveDialog"
+        >
+          {{ $i18n('admin.parentsTable.removeParent') }}
+        </v-btn>
+
+        <v-btn
+          class="ml-2"
+          density="compact"
+          icon="mdi-close"
+          size="small"
+          variant="text"
+          @click="selectedIds = []"
+        />
+      </v-toolbar>
+
+      <!-- Data Table -->
+      <v-card>
+        <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
+          <span>
+            {{ $i18n('admin.parentsDirectory.allParents') }}
+            <span class="text-body-medium text-medium-emphasis ml-2">
+              {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
+            </span>
+          </span>
 
           <v-btn
             color="primary"
-            density="compact"
-            prepend-icon="mdi-email-send"
-            size="small"
-            variant="tonal"
-            @click="openSendEmailDialog"
+            prepend-icon="mdi-account-plus"
+            @click="openNewParentDialog"
           >
-            {{ $i18n('admin.parentsTable.sendEmail') }}
+            {{ $i18n('admin.parentsDirectory.addNewParent') }}
           </v-btn>
+        </v-card-title>
 
-          <v-btn
-            class="ml-2"
-            color="warning"
-            density="compact"
-            prepend-icon="mdi-account-remove"
-            size="small"
-            variant="tonal"
-            @click="openOptOutDialog"
-          >
-            {{ $i18n('admin.parentsTable.markOptedOut') }}
-          </v-btn>
+        <v-data-table
+          v-model="selectedIds"
+          v-model:page="tablePage"
+          v-model:sort-by="sortBy"
+          class="elevation-0"
+          :headers="tableHeaders"
+          item-value="id"
+          :items="tableParents"
+          :items-per-page="50"
+          :row-props="getRowProps"
+          show-select
+          @update:sort-by="recentlyAddedIds = []"
+        >
+          <!-- First Name Column -->
+          <template #item.first_name="{ item }">
+            <span class="font-weight-medium">{{ item.first_name }}</span>
+          </template>
 
-          <v-btn
-            class="ml-2"
-            color="error"
-            density="compact"
-            prepend-icon="mdi-delete"
-            size="small"
-            variant="tonal"
-            @click="openRemoveDialog"
-          >
-            {{ $i18n('admin.parentsTable.removeParent') }}
-          </v-btn>
+          <!-- Last Name Column -->
+          <template #item.last_name="{ item }">
+            <span class="font-weight-medium">{{ item.last_name }}</span>
+          </template>
 
-          <v-btn
-            class="ml-2"
-            density="compact"
-            icon="mdi-close"
-            size="small"
-            variant="text"
-            @click="selectedIds = []"
-          />
-        </v-toolbar>
-
-        <!-- Data Table -->
-        <v-card>
-          <v-card-title class="d-flex flex-wrap align-center justify-space-between ga-2 pa-4">
-            <span>
-              {{ $i18n('admin.parentsDirectory.allParents') }}
-              <span class="text-body-medium text-medium-emphasis ml-2">
-                {{ $i18n('admin.parentsDirectory.totalParents', filteredParents.length) }}
-              </span>
-            </span>
-
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-account-plus"
-              @click="openNewParentDialog"
+          <!-- Email Column -->
+          <template #item.email="{ item }">
+            <a
+              v-if="item.email"
+              class="text-primary text-decoration-none parent-email"
+              :href="`mailto:${item.email}`"
             >
-              {{ $i18n('admin.parentsDirectory.addNewParent') }}
-            </v-btn>
-          </v-card-title>
+              {{ item.email }}
+            </a>
 
-          <v-data-table
-            v-model="selectedIds"
-            v-model:page="tablePage"
-            v-model:sort-by="sortBy"
-            class="elevation-0"
-            :headers="tableHeaders"
-            item-value="id"
-            :items="tableParents"
-            :items-per-page="50"
-            :row-props="getRowProps"
-            show-select
-            @update:sort-by="recentlyAddedIds = []"
-          >
-            <!-- First Name Column -->
-            <template #item.first_name="{ item }">
-              <span class="font-weight-medium">{{ item.first_name }}</span>
-            </template>
+            <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
+          </template>
 
-            <!-- Last Name Column -->
-            <template #item.last_name="{ item }">
-              <span class="font-weight-medium">{{ item.last_name }}</span>
-            </template>
+          <!-- Phone Column -->
+          <template #item.phone="{ item }">
+            <span v-if="item.phone">{{ item.displayPhone }}</span>
+            <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
+          </template>
 
-            <!-- Email Column -->
-            <template #item.email="{ item }">
-              <a
-                v-if="item.email"
-                class="text-primary text-decoration-none parent-email"
-                :href="`mailto:${item.email}`"
-              >
-                {{ item.email }}
-              </a>
+          <!-- Children Column -->
+          <template #item.children="{ item }">
+            <div v-if="item.childrenInfo && item.childrenInfo.length > 0">
+              <div class="text-body-medium">
+                <div
+                  v-for="child in item.childrenInfo"
+                  :key="child.id"
+                  class="mb-1 text-no-wrap"
+                >
+                  <div>{{ child.fullName }}</div>
 
-              <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
-            </template>
-
-            <!-- Phone Column -->
-            <template #item.phone="{ item }">
-              <span v-if="item.phone">{{ item.displayPhone }}</span>
-              <span v-else class="text-medium-emphasis font-italic">{{ $i18n('common.notProvided') }}</span>
-            </template>
-
-            <!-- Children Column -->
-            <template #item.children="{ item }">
-              <div v-if="item.childrenInfo && item.childrenInfo.length > 0">
-                <div class="text-body-medium">
-                  <div
-                    v-for="child in item.childrenInfo"
-                    :key="child.id"
-                    class="mb-1 text-no-wrap"
-                  >
-                    <div>{{ child.fullName }}</div>
-
-                    <div class="text-caption text-medium-emphasis">
-                      {{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $i18n('admin.parentsDirectory.noTeacher') }}
-                    </div>
+                  <div class="text-caption text-medium-emphasis">
+                    {{ child.displayLevel }} - {{ getTeacherName(getClassTeacher(child.className)) || $i18n('admin.parentsDirectory.noTeacher') }}
                   </div>
                 </div>
               </div>
+            </div>
 
-              <span v-else class="text-medium-emphasis font-italic">
-                {{ $i18n('admin.parentsDirectory.noChildren') }}
-              </span>
-            </template>
+            <span v-else class="text-medium-emphasis font-italic">
+              {{ $i18n('admin.parentsDirectory.noChildren') }}
+            </span>
+          </template>
 
-            <!-- Status Column -->
-            <template #item.status="{ item }">
-              <div class="d-flex flex-wrap ga-1">
-                <v-chip
-                  v-if="item.optedOut"
-                  color="error"
-                  size="x-small"
-                  variant="tonal"
-                >
-                  {{ $i18n('admin.parentsTable.status.optedOut') }}
-                </v-chip>
-
-                <v-chip
-                  v-if="emailSentMap.get(item.id)"
-                  color="info"
-                  size="x-small"
-                  variant="tonal"
-                >
-                  {{ $i18n(`admin.parentsTable.status.sent.${getEmailVariant(emailSentMap.get(item.id))}`, formatDate(emailSentMap.get(item.id)?.timestamp)) }}
-                </v-chip>
-
-                <v-chip
-                  v-if="accountStatuses.get(item.id) === 'active'"
-                  color="primary"
-                  size="x-small"
-                  variant="tonal"
-                >
-                  {{ $i18n('admin.parentsTable.status.accountActive') }}
-                </v-chip>
-
-                <v-chip
-                  v-else-if="accountStatuses.get(item.id) === 'unverified'"
-                  size="x-small"
-                  variant="tonal"
-                >
-                  {{ $i18n('admin.parentsTable.status.accountUnverified') }}
-                </v-chip>
-
-                <v-chip
-                  v-if="submittedThisYear(item)"
-                  color="success"
-                  size="x-small"
-                  variant="tonal"
-                >
-                  {{ $i18n('admin.parentsTable.status.submittedOn', formatDate(item.lastUpdated)) }}
-                </v-chip>
-              </div>
-            </template>
-
-            <!-- Log Column -->
-            <template #item.log="{ item }">
+          <!-- Status Column -->
+          <template #item.status="{ item }">
+            <div class="d-flex flex-wrap ga-1">
               <v-chip
-                v-if="parentLogs.get(item.id)"
-                :color="getLogChipColor(item.id)"
+                v-if="item.optedOut"
+                color="error"
                 size="x-small"
                 variant="tonal"
               >
-                {{ getLogChip(item.id) }}
+                {{ $i18n('admin.parentsTable.status.optedOut') }}
               </v-chip>
-            </template>
 
-            <!-- Actions Column -->
-            <template #item.actions="{ item }">
-              <v-btn
+              <v-chip
+                v-if="emailSentMap.get(item.id)"
+                color="info"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ $i18n(`admin.parentsTable.status.sent.${getEmailVariant(emailSentMap.get(item.id))}`, formatDate(emailSentMap.get(item.id)?.timestamp)) }}
+              </v-chip>
+
+              <v-chip
+                v-if="accountStatuses.get(item.id) === 'active'"
                 color="primary"
-                icon="mdi-pencil"
-                size="small"
-                variant="text"
-                @click="openEditParentDialog(item)"
-              />
-            </template>
-          </v-data-table>
-        </v-card>
-      </div>
+                size="x-small"
+                variant="tonal"
+              >
+                {{ $i18n('admin.parentsTable.status.accountActive') }}
+              </v-chip>
+
+              <v-chip
+                v-else-if="accountStatuses.get(item.id) === 'unverified'"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ $i18n('admin.parentsTable.status.accountUnverified') }}
+              </v-chip>
+
+              <v-chip
+                v-if="submittedThisYear(item)"
+                color="success"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ $i18n('admin.parentsTable.status.submittedOn', formatDate(item.lastUpdated)) }}
+              </v-chip>
+            </div>
+          </template>
+
+          <!-- Log Column -->
+          <template #item.log="{ item }">
+            <v-chip
+              v-if="parentLogs.get(item.id)"
+              :color="getLogChipColor(item.id)"
+              size="x-small"
+              variant="tonal"
+            >
+              {{ getLogChip(item.id) }}
+            </v-chip>
+          </template>
+
+          <!-- Actions Column -->
+          <template #item.actions="{ item }">
+            <v-btn
+              color="primary"
+              icon="mdi-pencil"
+              size="small"
+              variant="text"
+              @click="openEditParentDialog(item)"
+            />
+          </template>
+        </v-data-table>
+      </v-card>
     </div>
 
     <!-- Parent Form Dialog -->
@@ -600,7 +574,6 @@
   const error = ref(null)
   const parents = ref([])
   const students = ref([])
-  const isAuthorized = ref(false)
 
   // Selection
   const selectedIds = ref([])
@@ -709,19 +682,6 @@
     const log = parentLogs.value.get(parentId)
     if (!log) return 'grey'
     return LOG_CHIP_COLORS[log.actionType] || 'grey'
-  }
-
-  async function checkAdminStatus () {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      isAuthorized.value = false
-      return
-    }
-    try {
-      const idTokenResult = await authStore.user.getIdTokenResult(true)
-      isAuthorized.value = !!idTokenResult.claims.admin
-    } catch {
-      isAuthorized.value = false
-    }
   }
 
   const tableHeaders = computed(() => [
@@ -1149,10 +1109,7 @@
   }
 
   onMounted(async () => {
-    await checkAdminStatus()
-    if (isAuthorized.value) {
-      await loadData()
-    }
+    await loadData()
   })
 </script>
 

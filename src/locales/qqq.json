@@ -319,8 +319,6 @@
   },
   "admin": {
     "title": "Administration panel. - Page or section title",
-    "accessDenied": "Administration panel",
-    "adminAccessRequired": "Administration panel",
     "annualUpdateWorkflow": "Administration panel",
     "currentWorkflow": "Administration panel",
     "currentWorkflowStatus": "Administration panel",
@@ -371,8 +369,6 @@
     "clearSelection": "Administration panel",
     "pending": "Administration panel",
     "overallStatus": "Administration panel",
-    "refreshPermissionsInstructions": "Administration panel",
-    "refreshAdminStatus": "Administration panel",
     "welcomeTitle": "Administration panel. - Page or section title",
     "welcomeDescription": "Administration panel. - Descriptive text",
     "annualUpdateDescription": "Administration panel. - Descriptive text",
