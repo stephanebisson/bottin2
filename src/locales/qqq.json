@@ -190,17 +190,6 @@
     "selectUser": "Committees page",
     "noMembers": "Committees page"
   },
-  "themes": {
-    "chooseTheme": "Theme selector",
-    "academicExcellence": "Theme selector",
-    "academicExcellenceDesc": "Theme selector",
-    "knowledgeHub": "Theme selector",
-    "knowledgeHubDesc": "Theme selector",
-    "modernSchool": "Theme selector",
-    "modernSchoolDesc": "Theme selector",
-    "darkMode": "Theme selector",
-    "currentTheme": "Theme selector. - Parameters: $1 = theme"
-  },
   "dashboard": {
     "loadingData": "Dashboard page. - Loading indicator message",
     "students": "Dashboard page",
@@ -707,10 +696,6 @@
     "notChecked": "Application",
     "authorized": "Application",
     "notAuthorized": "Application"
-  },
-  "themeSelector": {
-    "currentTheme": "Application. - Parameters: $1 = theme",
-    "custom": "Application"
   },
   "easterEgg": {
     "ticTacToe": "Easter egg feature",

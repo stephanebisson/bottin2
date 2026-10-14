@@ -208,17 +208,6 @@
     "enseignant(e)": "{{PLURAL:$1|Teacher|Teachers}}",
     "administratrices et administrateurs": "{{PLURAL:$1|Board member|Board members}}"
   },
-  "themes": {
-    "chooseTheme": "Choose Your Theme",
-    "academicExcellence": "🎓 Academic Excellence",
-    "academicExcellenceDesc": "Deep blues and warm oranges",
-    "knowledgeHub": "📚 Knowledge Hub",
-    "knowledgeHubDesc": "Forest greens and warm browns",
-    "modernSchool": "🌟 Modern School",
-    "modernSchoolDesc": "Contemporary teals and cyans",
-    "darkMode": "Dark Mode",
-    "currentTheme": "Current theme: $1"
-  },
   "dashboard": {
     "loadingData": "Loading dashboard data...",
     "students": "students",
@@ -903,10 +892,6 @@
     "notChecked": "Not checked",
     "authorized": "✅ Authorized",
     "notAuthorized": "❌ Not authorized"
-  },
-  "themeSelector": {
-    "currentTheme": "Current theme: $1",
-    "custom": "Custom"
   },
   "games": {
     "title": "Games",

@@ -208,17 +208,6 @@
     "enseignant(e)": "{{PLURAL:$1|Enseignant(e)|Enseignant(e)s}}",
     "administratrices et administrateurs": "{{PLURAL:$1|Administratrice et administrateur|Administratrices et administrateurs}}"
   },
-  "themes": {
-    "chooseTheme": "Choisissez votre thème",
-    "academicExcellence": "🎓 Excellence académique",
-    "academicExcellenceDesc": "Bleus profonds et oranges chauds",
-    "knowledgeHub": "📚 Centre du savoir",
-    "knowledgeHubDesc": "Verts forêt et bruns chauds",
-    "modernSchool": "🌟 École moderne",
-    "modernSchoolDesc": "Sarcelles contemporaines et cyans",
-    "darkMode": "Mode sombre",
-    "currentTheme": "Thème actuel: $1"
-  },
   "dashboard": {
     "loadingData": "Chargement des données du tableau de bord...",
     "students": "élèves",
@@ -910,10 +899,6 @@
     "notChecked": "Pas vérifié",
     "authorized": "✅ Autorisé",
     "notAuthorized": "❌ Non autorisé"
-  },
-  "themeSelector": {
-    "currentTheme": "Thème actuel: $1",
-    "custom": "Personnalisé"
   },
   "games": {
     "title": "Jeux",

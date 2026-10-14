@@ -73,9 +73,6 @@
     "committees.memberCount": [
       "count"
     ],
-    "themes.currentTheme": [
-      "theme"
-    ],
     "auth.autoCheckingIn": [
       "seconds"
     ],
@@ -136,9 +133,6 @@
     ],
     "footer.switchLanguage": [
       "language"
-    ],
-    "themeSelector.currentTheme": [
-      "theme"
     ]
   },
   "fr": {
@@ -215,9 +209,6 @@
     "committees.memberCount": [
       "count"
     ],
-    "themes.currentTheme": [
-      "theme"
-    ],
     "auth.autoCheckingIn": [
       "seconds"
     ],
@@ -278,9 +269,6 @@
     ],
     "footer.switchLanguage": [
       "language"
-    ],
-    "themeSelector.currentTheme": [
-      "theme"
     ]
   }
 }
