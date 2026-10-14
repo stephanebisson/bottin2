@@ -294,6 +294,12 @@
 
               <!-- Submit Button -->
               <v-col class="text-center pt-6" cols="12">
+                <!-- Privacy notice at the point of collection (Law 25); opens in a new tab so the form is not lost -->
+                <p class="text-body-small text-medium-emphasis mb-4 mx-auto privacy-notice">
+                  {{ $i18n('updateForm.privacyNotice') }}
+                  <a href="/privacy" rel="noopener" target="_blank">{{ $i18n('legal.privacyPolicy') }}</a>
+                </p>
+
                 <v-btn
                   color="primary"
                   :loading="submitting"
@@ -766,6 +772,10 @@
 </script>
 
 <style scoped>
+.privacy-notice {
+  max-width: 600px;
+}
+
 .v-card-title {
   border-radius: 4px 4px 0 0;
   word-wrap: break-word;

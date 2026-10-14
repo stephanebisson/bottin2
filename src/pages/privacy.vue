@@ -3,5 +3,10 @@
 </template>
 
 <script setup>
-  const sections = ['who', 'officer', 'collected', 'purposes', 'consent', 'access', 'providers', 'retention', 'security', 'rights', 'incidents', 'cookies', 'changes']
+  const providerLinks = [
+    { label: 'privacy.googlePrivacyLink', href: 'https://policies.google.com/privacy' },
+    { label: 'privacy.firebasePrivacyLink', href: 'https://firebase.google.com/support/privacy' },
+  ]
+
+  const sections = ['who', 'officer', 'collected', 'purposes', 'consent', 'access', { id: 'providers', links: providerLinks }, 'retention', 'security', 'rights', 'incidents', 'cookies', 'changes']
 </script>
