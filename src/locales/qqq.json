@@ -505,6 +505,8 @@
     "addParent": "Administration panel",
     "staffUpdate": {
       "title": "Administration panel. - Page or section title",
+      "description": "Admin dashboard. - Description of the staff editor card",
+      "openEditor": "Admin dashboard. - Chip on the staff editor card",
       "description": "Administration panel. - Descriptive text",
       "openLink": "Administration panel",
       "copyLink": "Administration panel",

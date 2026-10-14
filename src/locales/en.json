@@ -663,6 +663,8 @@
     "addParent": "Add Parent",
     "staffUpdate": {
       "title": "Staff editor",
+      "description": "Edit the staff details shown in the directory",
+      "openEditor": "Edit staff",
       "save": "Save",
       "unsavedChangesTitle": "Unsaved changes",
       "unsavedChangesText": "You have unsaved changes. If you leave now, your changes will be lost.",

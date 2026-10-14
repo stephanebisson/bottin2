@@ -670,6 +670,8 @@
     "addParent": "Ajouter un parent",
     "staffUpdate": {
       "title": "Éditeur du personnel",
+      "description": "Modifier les coordonnées du personnel affichées dans le bottin",
+      "openEditor": "Modifier le personnel",
       "save": "Enregistrer",
       "unsavedChangesTitle": "Modifications non enregistrées",
       "unsavedChangesText": "Vous avez des modifications non enregistrées. Si vous quittez maintenant, vos modifications seront perdues.",

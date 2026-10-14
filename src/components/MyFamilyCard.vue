@@ -63,21 +63,15 @@
 <script setup>
   import { computed } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
-  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatGradeLevel } from '@/utils/gradeFormatter'
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
-  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
 
   // The signed-in user's parent record; staff-only users have none and see no card
-  const parent = computed(() => {
-    const email = authStore.userEmail.toLowerCase()
-    if (!email) return null
-    return firebaseStore.parentsDTO.find(p => p.email && p.email.toLowerCase() === email) || null
-  })
+  const parent = computed(() => firebaseStore.currentParent)
 
   const children = computed(() => {
     if (!parent.value) return []

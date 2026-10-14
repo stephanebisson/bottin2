@@ -240,13 +240,7 @@
   const error = ref(null)
 
   // Get current user's profile data
-  const parentProfile = computed(() => {
-    if (!authStore.user?.email) return null
-
-    return firebaseStore.parentsDTO.find(parent =>
-      parent.email && parent.email.toLowerCase() === authStore.user.email.toLowerCase(),
-    )
-  })
+  const parentProfile = computed(() => firebaseStore.currentParent)
 
   // Get children for this parent
   const children = computed(() => {
@@ -330,7 +324,6 @@
   onMounted(async () => {
     try {
       await Promise.all([
-        firebaseStore.loadParentsDTO(),
         firebaseStore.loadStudentsDTO(),
         firebaseStore.loadStaffDTO(),
         firebaseStore.loadCommitteesDTO(),

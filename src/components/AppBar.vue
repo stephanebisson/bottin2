@@ -140,11 +140,7 @@
   // Refresh state
   const isRefreshing = ref(false)
 
-  // Get current parent
-  const currentParent = computed(() => {
-    if (!authStore.isAuthenticated || !authStore.userEmail) return null
-    return firebaseStore.parentsDTO.find(p => p.email === authStore.userEmail)
-  })
+  const currentParent = computed(() => firebaseStore.currentParent)
 
   // Get current user's full name from parent record
   const currentUserFullName = computed(() => {

@@ -11,12 +11,6 @@
           </p>
         </div>
 
-        <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <v-progress-circular color="primary" indeterminate size="64" />
-          <p class="text-title-large mt-4">{{ $i18n('common.loading') }}</p>
-        </div>
-
         <!-- Success Message -->
         <v-alert
           v-if="successMessage"
@@ -39,7 +33,7 @@
         />
 
         <!-- Feedback Form -->
-        <v-card v-if="!loading">
+        <v-card>
           <v-card-text class="pa-6">
             <v-form
               ref="formRef"
@@ -93,20 +87,18 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
-  import { ParentRepository } from '@/repositories/ParentRepository'
-  import { useAuthStore } from '@/stores/auth'
+  import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'feedback.title' } })
 
   // Get i18n function from vue-banana-i18n
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
-  const authStore = useAuthStore()
+  const firebaseStore = useFirebaseDataStore()
   const feedbackRepository = new FeedbackRepository()
-  const parentRepository = new ParentRepository()
 
   // Component state
   const formRef = ref(null)
@@ -115,8 +107,7 @@
   const submitting = ref(false)
   const successMessage = ref(null)
   const errorMessage = ref(null)
-  const loading = ref(true)
-  const parentProfile = ref(null)
+  const parentProfile = computed(() => firebaseStore.currentParent)
 
   // Validation rules
   const messageRules = [
@@ -162,28 +153,9 @@
     }
   }
 
-  // Load current user's parent record on mount
-  onMounted(async () => {
-    try {
-      loading.value = true
-
-      // Ensure we have user auth data
-      if (!authStore.isAuthenticated || !authStore.user?.email) {
-        errorMessage.value = 'User must be authenticated to submit feedback'
-        return
-      }
-
-      // Load only this user's parent record by email
-      parentProfile.value = await parentRepository.getByEmail(authStore.user.email)
-
-      if (!parentProfile.value) {
-        errorMessage.value = $i18n('feedback.error.parentNotFound')
-      }
-    } catch (error) {
-      console.error('Error loading parent data:', error)
-      errorMessage.value = 'Failed to load your profile data'
-    } finally {
-      loading.value = false
+  onMounted(() => {
+    if (!parentProfile.value) {
+      errorMessage.value = $i18n('feedback.error.parentNotFound')
     }
   })
 </script>

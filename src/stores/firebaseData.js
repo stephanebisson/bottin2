@@ -40,6 +40,11 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   const committeesErrorDTO = ref(null)
   const committeesLastUpdatedDTO = ref(null)
 
+  // The signed-in user's own parent record (null for staff-only users),
+  // loaded on sign-in so pages don't need all parents to know who "me" is
+  const currentParent = ref(null)
+  const currentParentEmail = ref(null)
+
   // Repository instances
   const studentRepository = new StudentRepository()
   const parentRepository = new ParentRepository()
@@ -463,6 +468,21 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
    * Load all DTO data at once (parents, students, staff, committees, classes)
    * This should be called once during app initialization
    */
+  const loadCurrentParent = async email => {
+    currentParentEmail.value = email || null
+    if (!email) {
+      currentParent.value = null
+      return null
+    }
+    try {
+      currentParent.value = await parentRepository.getByEmail(email)
+    } catch (error_) {
+      console.error('Error loading current parent:', error_)
+      currentParent.value = null
+    }
+    return currentParent.value
+  }
+
   const loadAllDTOData = async (forceRefresh = false) => {
     console.log('Loading all DTO data...')
 
@@ -474,6 +494,7 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
         loadStaffDTO(forceRefresh),
         loadCommitteesDTO(forceRefresh),
         loadAllData(forceRefresh), // Legacy: classes and committees
+        forceRefresh ? loadCurrentParent(currentParentEmail.value) : Promise.resolve(),
       ])
 
       console.log('All DTO data loaded successfully')
@@ -517,6 +538,10 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
   })
 
   return {
+    // ===== CURRENT USER =====
+    currentParent,
+    loadCurrentParent,
+
     // ===== LEGACY API (classes and committees only) =====
     classes,
     committees,

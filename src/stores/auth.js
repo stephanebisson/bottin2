@@ -11,6 +11,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { getFunctionsBaseUrl, secureFetch } from '@/config/functions'
 import { auth } from '@/firebase'
+import { useFirebaseDataStore } from '@/stores/firebaseData'
 
 export const useAuthStore = defineStore('auth', () => {
   // Get current locale from localStorage (same as vue-banana-i18n uses)
@@ -190,7 +191,11 @@ export const useAuthStore = defineStore('auth', () => {
       authStateUnsubscribe = onAuthStateChanged(auth, async firebaseUser => {
         // Always set the user, regardless of verification status
         user.value = firebaseUser
-        await refreshAdminStatus()
+        await Promise.all([
+          refreshAdminStatus(),
+          // Directory data is only readable with a verified email
+          useFirebaseDataStore().loadCurrentParent(firebaseUser?.emailVerified ? firebaseUser.email : null),
+        ])
 
         if (!isInitialized.value) {
           isInitialized.value = true
@@ -454,6 +459,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (isVerified) {
         console.log('🎉 Email verification detected!')
+        await useFirebaseDataStore().loadCurrentParent(auth.currentUser.email)
       } else {
         console.log('❌ Email still not verified after refresh')
         console.log('   This could mean:')
