@@ -609,7 +609,7 @@
       },
       "removeDialog": {
         "title": "Retirer le parent",
-        "warning": "Cette action est permanente et supprime définitivement ces parents du système.",
+        "warning": "Cette action est permanente et supprime définitivement ces parents du système. Leur compte du bottin en ligne sera désactivé.",
         "message": "$1 parent(s) seront supprimés du système.",
         "confirm": "Confirmer la suppression"
       },
