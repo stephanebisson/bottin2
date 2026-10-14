@@ -34,6 +34,7 @@ function flattenMessages (obj, prefix = '') {
 
 // Get saved locale from localStorage, default to French (Canadian school)
 const savedLocale = localStorage.getItem('bottin-locale') || 'fr'
+document.documentElement.lang = savedLocale
 
 // Flatten messages for vue-banana-i18n
 const flatEnMessages = flattenMessages(enMessages)

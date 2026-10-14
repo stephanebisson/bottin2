@@ -53,8 +53,6 @@
     "interests": "Common UI element. - French: Use sentence case (capitalize first word only)",
     "clear": "Common UI element. - French: Use sentence case (capitalize first word only)",
     "close": "Common UI element. - French: Use sentence case (capitalize first word only)",
-    "language": "Common UI element. - French: Use sentence case (capitalize first word only)",
-    "chooseLanguage": "Common UI element. - French: Use sentence case (capitalize first word only)",
     "cancel": "Common UI element. - French: Use sentence case (capitalize first word only)",
     "save": "Common UI element. - French: Use sentence case (capitalize first word only)",
     "delete": "Common UI element. - French: Use sentence case (capitalize first word only)",
@@ -692,13 +690,6 @@
     "organizationName": "Page footer",
     "sendFeedback": "Page footer",
     "switchLanguage": "Page footer. - Parameters: $1 = language"
-  },
-  "languageSelector": {
-    "french": "Language selector component",
-    "frenchNative": "Language selector component",
-    "english": "Language selector component",
-    "englishNative": "Language selector component",
-    "unknown": "Language selector component"
   },
   "registerForm": {
     "welcome": "Application",

@@ -25,6 +25,18 @@
 
       <span class="mx-2">•</span>
 
+      <a
+        :aria-label="$i18n('footer.switchLanguage', otherLanguage.name)"
+        class="text-decoration-none text-disabled"
+        href="#"
+        :lang="otherLanguage.code"
+        @click.prevent="switchLanguage"
+      >
+        {{ otherLanguage.name }}
+      </a>
+
+      <span class="mx-2">•</span>
+
       <router-link
         class="game-link"
         to="/games"
@@ -36,6 +48,22 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
+
+  const bananaI18n = useI18n()
+
+  // Each language is shown in its own name so it is recognizable to its speakers
+  const otherLanguage = computed(() => bananaI18n.locale === 'fr'
+    ? { code: 'en', name: 'English' }
+    : { code: 'fr', name: 'Français' })
+
+  function switchLanguage () {
+    const code = otherLanguage.value.code
+    bananaI18n.setLocale(code)
+    localStorage.setItem('bottin-locale', code)
+    document.documentElement.lang = code
+  }
 </script>
 
 <style scoped>

@@ -47,8 +47,6 @@
     "interests": "Intérêts",
     "clear": "Effacer",
     "close": "Fermer",
-    "language": "Langue",
-    "chooseLanguage": "Choisir la langue",
     "cancel": "Annuler",
     "save": "Sauvegarder",
     "delete": "Supprimer",
@@ -895,13 +893,6 @@
     "organizationName": "Bottin Étoile Filante",
     "sendFeedback": "Commentaires",
     "switchLanguage": "Basculer vers $1"
-  },
-  "languageSelector": {
-    "french": "Français",
-    "frenchNative": "French",
-    "english": "English",
-    "englishNative": "Anglais",
-    "unknown": "Inconnu"
   },
   "registerForm": {
     "welcome": "Bienvenue ",
