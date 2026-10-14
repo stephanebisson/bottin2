@@ -564,6 +564,7 @@
   import { StudentRepository } from '@/repositories/StudentRepository'
   import { useAuthStore } from '@/stores/auth'
   import { getCurrentSchoolYear } from '@/utils/schoolYear'
+  import { normalizeText } from '@/utils/search'
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
@@ -624,9 +625,9 @@
   const filteredStudents = computed(() => {
     let result = students.value
     if (searchQuery.value) {
-      const q = searchQuery.value.toLowerCase()
+      const q = normalizeText(searchQuery.value)
       result = result.filter(s =>
-        s.first_name.toLowerCase().includes(q) || s.last_name.toLowerCase().includes(q),
+        normalizeText(s.first_name).includes(q) || normalizeText(s.last_name).includes(q),
       )
     }
     if (filterClass.value) result = result.filter(s => s.className === filterClass.value)

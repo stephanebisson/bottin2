@@ -555,6 +555,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
+  import { normalizeText } from '@/utils/search.js'
 
   const bananaI18n = useI18n()
   const $i18n = (key, ...params) => bananaI18n.i18n(key, ...params)
@@ -719,11 +720,11 @@
     let result = sortedParents.value
 
     if (filterSearch.value) {
-      const search = filterSearch.value.toLowerCase()
+      const search = normalizeText(filterSearch.value)
       result = result.filter(p =>
-        p.first_name.toLowerCase().includes(search)
-        || p.last_name.toLowerCase().includes(search)
-        || p.email.toLowerCase().includes(search),
+        normalizeText(p.first_name).includes(search)
+        || normalizeText(p.last_name).includes(search)
+        || normalizeText(p.email).includes(search),
       )
     }
 
