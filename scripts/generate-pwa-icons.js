@@ -1,6 +1,7 @@
-// Builds the home-screen icons and the favicon from the school logo: black logo on a white square.
+// Builds the home-screen icons from the school logo (black logo on a white square)
+// and favicon.ico from public/favicon.svg.
 // Run with: node scripts/generate-pwa-icons.js
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
@@ -40,11 +41,12 @@ for (const { file, size, logo: ratio } of icons) {
   console.log(`✅ ${file}`)
 }
 
-// Browser-tab favicon: an .ico holding PNG images, with the logo filling the square
-// since every pixel counts at 16px
+// Browser-tab favicon: the logo's lettering is unreadable at 16px, so the tab uses
+// public/favicon.svg (the logo's star). Browsers without SVG favicons get this .ico copy.
+const faviconSvg = readFileSync(join(__dirname, '../public/favicon.svg'))
 const faviconSizes = [16, 32, 48]
 const faviconImages = await Promise.all(faviconSizes.map(size =>
-  sharp(logo).resize(size, size).flatten({ background: '#ffffff' }).png().toBuffer(),
+  sharp(faviconSvg, { density: 300 }).resize(size, size).png().toBuffer(),
 ))
 const header = Buffer.alloc(6 + 16 * faviconImages.length)
 header.writeUInt16LE(1, 2) // type: icon

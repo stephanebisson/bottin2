@@ -61,7 +61,7 @@ export default defineConfig({
       // Unregisters previously installed service workers and clears their caches;
       // the app needs Firestore anyway, and offline caching kept serving stale versions
       selfDestroying: true,
-      includeAssets: ['favicon.ico', 'icons/*.png'],
+      includeAssets: ['favicon.svg', 'favicon.ico', 'icons/*.png'],
       manifestFilename: 'manifest.webmanifest',
       manifest: {
         name: 'Bottin Étoile filante',
