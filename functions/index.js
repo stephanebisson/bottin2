@@ -3,7 +3,7 @@ const { initializeApp } = require('firebase-admin/app')
 // Initialize Firebase Admin
 initializeApp()
 
-const { getParentAccountStatuses, setParentAccountsDisabled } = require('./accounts')
+const { deleteOrphanedParentAccount, getParentAccountStatuses } = require('./accounts')
 const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminManagement')
 // Import all functions from separate modules
 const { validateEmailV2 } = require('./auth')
@@ -16,7 +16,7 @@ const { healthCheckV2 } = require('./utils')
 exports.validateEmailV2 = validateEmailV2
 exports.sendParentUpdateEmail = sendParentUpdateEmail
 exports.getParentAccountStatuses = getParentAccountStatuses
-exports.setParentAccountsDisabled = setParentAccountsDisabled
+exports.deleteOrphanedParentAccount = deleteOrphanedParentAccount
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2
 exports.processParentOptOutV2 = processParentOptOutV2

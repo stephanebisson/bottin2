@@ -682,8 +682,6 @@
 
   const parentDialogOpen = ref(false)
   const editingParent = ref(null)
-  // Set while a saved parent's account still needs re-enabling, so a retried save tries again
-  const accountEnablePending = ref(false)
   const parentForm = ref({ first_name: '', last_name: '', email: '', phone: '' })
   const parentFormSaving = ref(false)
   const parentFormError = ref(null)
@@ -925,17 +923,6 @@
     accountStatuses.value = new Map(Object.entries(data.statuses))
   }
 
-  async function setParentAccountsDisabled (parentIds, disabled) {
-    const idToken = await authStore.user.getIdToken()
-    const response = await secureFetch(`${getFunctionsBaseUrl()}/setParentAccountsDisabled`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${idToken}` },
-      body: JSON.stringify({ parentIds, disabled }),
-    })
-    const data = await response.json()
-    if (!response.ok) throw new Error(data.error)
-  }
-
   async function loadData () {
     loading.value = true
     error.value = null
@@ -1104,9 +1091,6 @@
     const selectedParents = filteredParents.value.filter(p => selectedIds.value.includes(p.id))
 
     try {
-      // Disable accounts first: the function looks up emails from the parent records
-      await setParentAccountsDisabled(selectedParents.map(p => p.id), true)
-
       const batch = writeBatch(db)
       for (const parent of selectedParents) {
         batch.delete(doc(db, 'parents', parent.id))
@@ -1132,7 +1116,6 @@
 
   function openNewParentDialog () {
     editingParent.value = null
-    accountEnablePending.value = false
     parentForm.value = { first_name: '', last_name: '', email: '', phone: '' }
     parentFormError.value = null
     parentDialogOpen.value = true
@@ -1140,7 +1123,6 @@
 
   function openEditParentDialog (parentDTO) {
     editingParent.value = parentDTO
-    accountEnablePending.value = false
     parentForm.value = {
       first_name: parentDTO.first_name,
       last_name: parentDTO.last_name,
@@ -1173,33 +1155,18 @@
     try {
       const parentDTO = editingParent.value
       if (parentDTO) {
-        const emailChanged = data.email.toLowerCase() !== (parentDTO.email || '').toLowerCase()
         const updatedParentDTO = await parentRepository.update(parentDTO.id, data)
         parentDTO.first_name = updatedParentDTO.first_name
         parentDTO.last_name = updatedParentDTO.last_name
         parentDTO.email = updatedParentDTO.email
         parentDTO.phone = updatedParentDTO.phone
         parentDTO.updatedAt = updatedParentDTO.updatedAt
-        // Re-enable the account of a parent who was removed, then re-added under this email
-        if ((emailChanged || accountEnablePending.value) && data.email) {
-          accountEnablePending.value = true
-          await setParentAccountsDisabled([parentDTO.id], false)
-          accountEnablePending.value = false
-        }
       } else {
         const createdParentDTO = await parentRepository.create(data)
         parents.value.push(createdParentDTO)
         sortBy.value = []
         recentlyAddedIds.value = [createdParentDTO.id, ...recentlyAddedIds.value]
         tablePage.value = 1
-        // From here a retried save must update this parent, not create a duplicate
-        editingParent.value = createdParentDTO
-        // Re-enable the account of a parent who was removed and is now re-added
-        if (data.email) {
-          accountEnablePending.value = true
-          await setParentAccountsDisabled([createdParentDTO.id], false)
-          accountEnablePending.value = false
-        }
       }
       parentDialogOpen.value = false
     } catch (error_) {

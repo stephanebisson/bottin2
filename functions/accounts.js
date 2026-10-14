@@ -1,5 +1,6 @@
 const { getAuth } = require('firebase-admin/auth')
 const { getFirestore } = require('firebase-admin/firestore')
+const { onDocumentWritten } = require('firebase-functions/v2/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
 const { FUNCTIONS_REGION } = require('./config')
 
@@ -94,90 +95,34 @@ exports.getParentAccountStatuses = onRequest({
 })
 
 /**
- * Disable or re-enable the online directory accounts of parents (admin only).
- * Disable is called before the parent records are deleted; an account is left
- * active when another remaining parent record shares its email.
- * Enable is called after a parent is added or its email changes, so a parent
- * who was removed and re-added can sign in again.
+ * Delete the online directory account of an email that leaves the parents
+ * collection: the parent was removed, or an admin changed their email.
+ * Parents cannot change their own email; with a new email they sign up again.
+ * The account is kept when another parent record still has that email.
  */
-exports.setParentAccountsDisabled = onRequest({
+exports.deleteOrphanedParentAccount = onDocumentWritten({
   region: FUNCTIONS_REGION,
-  cors: {
-    origin: [
-      'https://bottin-etoile-filante.org',
-      'http://localhost:3000',
-      'http://localhost:5173',
-    ],
-    methods: ['POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  },
-}, async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' })
+  document: 'parents/{parentId}',
+}, async event => {
+  const oldEmail = event.data.before.data()?.email?.toLowerCase().trim()
+  const newEmail = event.data.after.data()?.email?.toLowerCase().trim()
+  if (!oldEmail || oldEmail === newEmail) {
+    return
+  }
+
+  const stillUsed = await db.collection('parents').where('email', '==', oldEmail).limit(1).get()
+  if (!stillUsed.empty) {
+    return
   }
 
   try {
-    const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' })
-    }
-
-    let decodedToken
-    try {
-      decodedToken = await getAuth().verifyIdToken(authHeader.split('Bearer ', 2)[1])
-    } catch {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
-    }
-
-    if (!decodedToken.admin) {
-      return res.status(403).json({ error: 'Admin access required' })
-    }
-
-    const { parentIds, disabled } = req.body || {}
-    if (!Array.isArray(parentIds) || parentIds.some(id => typeof id !== 'string' || !id)) {
-      return res.status(400).json({ error: 'parentIds must be an array of parent IDs' })
-    }
-    if (typeof disabled !== 'boolean') {
-      return res.status(400).json({ error: 'disabled must be a boolean' })
-    }
-
-    const targetIds = new Set(parentIds)
-    const parentsSnap = await db.collection('parents').get()
-    const targetEmails = new Set()
-    const otherEmails = new Set()
-    for (const parentDoc of parentsSnap.docs) {
-      const email = parentDoc.data().email?.toLowerCase().trim()
-      if (email) {
-        (targetIds.has(parentDoc.id) ? targetEmails : otherEmails).add(email)
-      }
-    }
-
-    let updated = 0
-    for (const email of targetEmails) {
-      if (disabled && otherEmails.has(email)) {
-        continue
-      }
-      try {
-        const user = await getAuth().getUserByEmail(email)
-        if (user.disabled !== disabled) {
-          await getAuth().updateUser(user.uid, { disabled })
-          if (disabled) {
-            await getAuth().revokeRefreshTokens(user.uid)
-          }
-          updated++
-        }
-      } catch (error) {
-        if (error.code !== 'auth/user-not-found') {
-          throw error
-        }
-      }
-    }
-
-    return res.status(200).json({ updated })
+    const user = await getAuth().getUserByEmail(oldEmail)
+    await getAuth().deleteUser(user.uid)
+    console.log(`Deleted account of parent ${event.params.parentId}`)
   } catch (error) {
-    console.error('Set parent accounts disabled error:', error)
-    return res.status(500).json({ error: error.message || 'Internal server error' })
+    if (error.code !== 'auth/user-not-found') {
+      throw error
+    }
   }
 })
 

@@ -602,7 +602,7 @@
       },
       "removeDialog": {
         "title": "Remove parent",
-        "warning": "This action is permanent and will definitively remove these parents from the system. Their online directory account will be deactivated.",
+        "warning": "This action is permanent and will definitively remove these parents from the system. Their online directory account will be deleted.",
         "message": "$1 parent(s) will be removed from the system.",
         "confirm": "Confirm removal"
       },
