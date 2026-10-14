@@ -158,12 +158,9 @@
   async function handleRefresh () {
     try {
       isRefreshing.value = true
-      console.log('AppBar: Refreshing all data...')
 
       // Force refresh all DTO data (bypasses cache)
       await firebaseStore.loadAllDTOData(true)
-
-      console.log('AppBar: All data refreshed successfully')
     } catch (error) {
       console.error('AppBar: Error refreshing data', error)
     } finally {

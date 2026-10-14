@@ -17,11 +17,9 @@ export class StaffRepository {
    */
   async getAll () {
     try {
-      console.log('StaffRepository: Loading all staff...')
       const snapshot = await getDocs(this.collectionRef)
 
       const staff = StaffDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StaffRepository: Loaded ${staff.length} valid staff members`)
 
       return staff
     } catch (error) {
@@ -36,17 +34,14 @@ export class StaffRepository {
    */
   async getById (id) {
     try {
-      console.log(`StaffRepository: Loading staff member ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`StaffRepository: Staff member ${id} not found`)
         return null
       }
 
       const staffMember = StaffDTO.fromFirestore(docSnap)
-      console.log(`StaffRepository: Loaded staff member ${staffMember.fullName}`)
 
       return staffMember
     } catch (error) {
@@ -65,15 +60,12 @@ export class StaffRepository {
     }
 
     try {
-      console.log(`StaffRepository: Loading ${ids.length} staff members by IDs...`)
-
       // Load all staff members in parallel
       const staffPromises = ids.map(id => this.getById(id))
       const staff = await Promise.all(staffPromises)
 
       // Filter out null results (staff not found)
       const validStaff = staff.filter(s => s !== null)
-      console.log(`StaffRepository: Loaded ${validStaff.length}/${ids.length} staff members by IDs`)
 
       return validStaff
     } catch (error) {
@@ -87,7 +79,6 @@ export class StaffRepository {
    */
   async getByTitle (title) {
     try {
-      console.log(`StaffRepository: Loading staff with title ${title}...`)
       const q = query(
         this.collectionRef,
         where('title', '==', title),
@@ -95,7 +86,6 @@ export class StaffRepository {
       const snapshot = await getDocs(q)
 
       const staff = StaffDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StaffRepository: Loaded ${staff.length} staff members with title ${title}`)
 
       return staff
     } catch (error) {
@@ -109,7 +99,6 @@ export class StaffRepository {
    */
   async getWithCERoles () {
     try {
-      console.log('StaffRepository: Loading staff with CE roles...')
       const q = query(
         this.collectionRef,
         where('ce_role', '!=', ''),
@@ -117,7 +106,6 @@ export class StaffRepository {
       const snapshot = await getDocs(q)
 
       const staff = StaffDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StaffRepository: Loaded ${staff.length} staff members with CE roles`)
 
       return staff
     } catch (error) {
@@ -131,7 +119,6 @@ export class StaffRepository {
    */
   async getInDirectory () {
     try {
-      console.log('StaffRepository: Loading all staff for directory...')
       return await this.getAll()
     } catch (error) {
       console.error('StaffRepository: Error loading staff in directory:', error)
@@ -158,26 +145,20 @@ export class StaffRepository {
 
       if (staffDTO.id) {
         // Update existing staff member
-        console.log(`StaffRepository: Updating staff member ${staffDTO.id} (${staffDTO.fullName})...`)
         const docRef = doc(db, this.collectionName, staffDTO.id)
         await updateDoc(docRef, firestoreData)
-        console.log(`StaffRepository: Updated staff member ${staffDTO.fullName}`)
         return staffDTO.id
       } else {
         // Create new staff member - use email as document ID if available, otherwise let Firestore generate ID
         const docId = staffDTO.email || null
 
         if (docId) {
-          console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName} with email ID...`)
           const docRef = doc(db, this.collectionName, docId)
           await setDoc(docRef, firestoreData)
-          console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
           return docId
         } else {
-          console.log(`StaffRepository: Creating new staff member ${staffDTO.fullName} with generated ID...`)
           const docRef = doc(collection(db, this.collectionName))
           await setDoc(docRef, firestoreData)
-          console.log(`StaffRepository: Created staff member ${staffDTO.fullName}`)
           return docRef.id
         }
       }
@@ -224,10 +205,8 @@ export class StaffRepository {
    */
   async delete (id) {
     try {
-      console.log(`StaffRepository: Deleting staff member ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       await deleteDoc(docRef)
-      console.log(`StaffRepository: Deleted staff member ${id}`)
     } catch (error) {
       console.error(`StaffRepository: Error deleting staff member ${id}:`, error)
       throw new Error(`Failed to delete staff member ${id}: ${error.message}`, { cause: error })
@@ -243,8 +222,6 @@ export class StaffRepository {
     }
 
     try {
-      console.log(`StaffRepository: Searching staff for "${searchText}"...`)
-
       // For now, we'll load all staff and filter client-side
       // In production, you might want to use Algolia or similar for better search
       const staff = await this.getAll()
@@ -254,7 +231,6 @@ export class StaffRepository {
         staffMember.getSearchableText().includes(searchLower),
       )
 
-      console.log(`StaffRepository: Found ${filtered.length} staff members matching "${searchText}"`)
       return filtered
     } catch (error) {
       console.error(`StaffRepository: Error searching staff:`, error)

@@ -39,7 +39,6 @@ export const useAuthStore = defineStore('auth', () => {
   const setFirebaseLanguage = () => {
     const currentLocale = getCurrentLocale()
     auth.languageCode = currentLocale
-    console.log(`🌐 Firebase auth language set to: ${currentLocale}`)
   }
 
   // Email validation cache to reduce API calls
@@ -56,7 +55,6 @@ export const useAuthStore = defineStore('auth', () => {
   // Monitor network connectivity
   const updateOnlineStatus = () => {
     serviceHealth.value.isOnline = navigator.onLine
-    console.log(serviceHealth.value.isOnline ? '🌐 Back online' : '📴 Gone offline')
   }
 
   // Add network event listeners
@@ -93,13 +91,11 @@ export const useAuthStore = defineStore('auth', () => {
       const cacheKey = email.toLowerCase().trim()
       const cached = validationCache.get(cacheKey)
       if (cached && (Date.now() - cached.timestamp) < CACHE_TIMEOUT) {
-        console.log('Using cached email validation result')
         return cached.data
       }
 
       // Use consistent base URL from config
       const baseUrl = getFunctionsBaseUrl()
-      console.log('Validating email with:', baseUrl)
 
       // Use retry logic for the API call with secure fetch
       const result = await retryWithBackoff(async () => {
@@ -200,17 +196,6 @@ export const useAuthStore = defineStore('auth', () => {
         if (!isInitialized.value) {
           isInitialized.value = true
           resolve(firebaseUser)
-        }
-
-        if (firebaseUser) {
-          // Log verification status changes for debugging
-          console.log('Auth state changed:', {
-            hasEmail: !!firebaseUser.email,
-            verified: firebaseUser.emailVerified,
-            hasUid: !!firebaseUser.uid,
-          })
-        } else {
-          console.log('User signed out')
         }
       })
     })
@@ -354,7 +339,6 @@ export const useAuthStore = defineStore('auth', () => {
         return await fn()
       } catch (error) {
         lastError = error
-        console.log(`Attempt ${attempt} failed:`, error.message)
 
         if (attempt === maxRetries) {
           throw lastError
@@ -362,7 +346,6 @@ export const useAuthStore = defineStore('auth', () => {
 
         // Exponential backoff: 1s, 2s, 4s
         const delay = baseDelay * Math.pow(2, attempt - 1)
-        console.log(`Retrying in ${delay}ms...`)
         await new Promise(resolve => setTimeout(resolve, delay))
       }
     }
@@ -391,7 +374,6 @@ export const useAuthStore = defineStore('auth', () => {
         await sendEmailVerification(user.value, actionCodeSettings)
       }, 3, 1000)
 
-      console.log('✅ Verification email sent successfully')
       return { success: true, message: 'Verification email sent successfully' }
     } catch (error_) {
       let message = getAuthErrorMessage(error_)
@@ -424,27 +406,18 @@ export const useAuthStore = defineStore('auth', () => {
         return false
       }
 
-      console.log('🔄 Refreshing user verification status...')
-      console.log('   Current user verification status:', {
-        hasEmail: !!auth.currentUser.email,
-        hasUid: !!auth.currentUser.uid,
-        emailVerified: auth.currentUser.emailVerified,
-      })
-
       // Force reload user data from Firebase
       await auth.currentUser.reload()
 
       // Force refresh the auth token (this is crucial for emulator)
       try {
         await auth.currentUser.getIdToken(true) // Force refresh token
-        console.log('✅ Auth token refreshed successfully')
       } catch (tokenError) {
         console.warn('⚠️  Token refresh failed:', tokenError.message)
       }
 
       // Emulator-specific workaround: sometimes needs a small delay
       if (import.meta.env.DEV) {
-        console.log('🔧 Emulator mode: adding small delay for sync')
         await new Promise(resolve => setTimeout(resolve, 500))
 
         // Try one more reload after delay
@@ -455,17 +428,9 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = auth.currentUser
 
       const isVerified = auth.currentUser.emailVerified
-      console.log('📧 Email verification status after refresh:', isVerified)
 
       if (isVerified) {
-        console.log('🎉 Email verification detected!')
         await useFirebaseDataStore().loadCurrentParent(auth.currentUser.email)
-      } else {
-        console.log('❌ Email still not verified after refresh')
-        console.log('   This could mean:')
-        console.log('   1. Email link not clicked yet')
-        console.log('   2. Different browser/device was used')
-        console.log('   3. Emulator sync delay')
       }
 
       return isVerified

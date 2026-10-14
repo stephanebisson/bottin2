@@ -17,7 +17,6 @@ export class CommitteeRepository {
    */
   async getAll () {
     try {
-      console.log('CommitteeRepository: Loading all committees...')
       const snapshot = await getDocs(this.collectionRef)
 
       // Load all committees with their members in parallel
@@ -28,8 +27,6 @@ export class CommitteeRepository {
 
       const committees = await Promise.all(committeePromises)
       const validCommittees = committees.filter(c => c.isValid())
-
-      console.log(`CommitteeRepository: Loaded ${validCommittees.length} valid committees`)
 
       return validCommittees
     } catch (error) {
@@ -44,20 +41,16 @@ export class CommitteeRepository {
    */
   async getById (id) {
     try {
-      console.log(`CommitteeRepository: Loading committee ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`CommitteeRepository: Committee ${id} not found`)
         return null
       }
 
       // Load members from subcollection
       const membersSnapshot = await getDocs(collection(docRef, 'members'))
       const committee = CommitteeDTO.fromFirestoreWithMembers(docSnap, membersSnapshot)
-
-      console.log(`CommitteeRepository: Loaded committee ${committee.name} with ${committee.memberCount} members`)
 
       return committee
     } catch (error) {
@@ -74,7 +67,6 @@ export class CommitteeRepository {
    */
   async getMembers (committeeId) {
     try {
-      console.log(`CommitteeRepository: Loading members for committee ${committeeId}...`)
       const committeeRef = doc(db, this.collectionName, committeeId)
       const membersSnapshot = await getDocs(collection(committeeRef, 'members'))
 
@@ -82,8 +74,6 @@ export class CommitteeRepository {
         memberId: memberDoc.id, // This is the parent/staff ID
         ...memberDoc.data(), // { role, member_type }
       }))
-
-      console.log(`CommitteeRepository: Loaded ${members.length} members for committee ${committeeId}`)
 
       return members
     } catch (error) {
@@ -100,16 +90,12 @@ export class CommitteeRepository {
    */
   async addMember (committeeId, memberId, memberData) {
     try {
-      console.log(`CommitteeRepository: Adding member ${memberId} to committee ${committeeId}...`)
-
       const committeeRef = doc(db, this.collectionName, committeeId)
       const memberRef = doc(committeeRef, 'members', memberId)
 
       const memberToSave = CommitteeDTO.memberToFirestore(memberData)
 
       await setDoc(memberRef, memberToSave)
-
-      console.log(`CommitteeRepository: Added member ${memberId} to committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error adding member ${memberId} to committee ${committeeId}:`, error)
       throw new Error(`Failed to add member to committee: ${error.message}`, { cause: error })
@@ -123,14 +109,10 @@ export class CommitteeRepository {
    */
   async removeMember (committeeId, memberId) {
     try {
-      console.log(`CommitteeRepository: Removing member ${memberId} from committee ${committeeId}...`)
-
       const committeeRef = doc(db, this.collectionName, committeeId)
       const memberRef = doc(committeeRef, 'members', memberId)
 
       await deleteDoc(memberRef)
-
-      console.log(`CommitteeRepository: Removed member ${memberId} from committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error removing member ${memberId} from committee ${committeeId}:`, error)
       throw new Error(`Failed to remove member from committee: ${error.message}`, { cause: error })
@@ -145,16 +127,12 @@ export class CommitteeRepository {
    */
   async updateMember (committeeId, memberId, memberData) {
     try {
-      console.log(`CommitteeRepository: Updating member ${memberId} in committee ${committeeId}...`)
-
       const committeeRef = doc(db, this.collectionName, committeeId)
       const memberRef = doc(committeeRef, 'members', memberId)
 
       const memberToSave = CommitteeDTO.memberToFirestore(memberData)
 
       await updateDoc(memberRef, memberToSave)
-
-      console.log(`CommitteeRepository: Updated member ${memberId} in committee ${committeeId}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error updating member ${memberId} in committee ${committeeId}:`, error)
       throw new Error(`Failed to update member in committee: ${error.message}`, { cause: error })
@@ -169,8 +147,6 @@ export class CommitteeRepository {
    */
   async replaceMembers (committeeId, members) {
     try {
-      console.log(`CommitteeRepository: Replacing all members in committee ${committeeId}...`)
-
       const committeeRef = doc(db, this.collectionName, committeeId)
 
       // Get existing members
@@ -192,8 +168,6 @@ export class CommitteeRepository {
         return setDoc(memberRef, memberToSave)
       })
       await Promise.all(addPromises)
-
-      console.log(`CommitteeRepository: Replaced members in committee ${committeeId} with ${members.length} new members`)
     } catch (error) {
       console.error(`CommitteeRepository: Error replacing members in committee ${committeeId}:`, error)
       throw new Error(`Failed to replace members in committee: ${error.message}`, { cause: error })
@@ -220,16 +194,12 @@ export class CommitteeRepository {
 
       if (committeeDTO.id) {
         // Update existing committee
-        console.log(`CommitteeRepository: Updating committee ${committeeDTO.id} (${committeeDTO.name})...`)
         const docRef = doc(db, this.collectionName, committeeDTO.id)
         await updateDoc(docRef, firestoreData)
-        console.log(`CommitteeRepository: Updated committee ${committeeDTO.name}`)
         return committeeDTO.id
       } else {
         // Create new committee
-        console.log(`CommitteeRepository: Creating new committee ${committeeDTO.name}...`)
         const docRef = await addDoc(this.collectionRef, firestoreData)
-        console.log(`CommitteeRepository: Created committee ${committeeDTO.name} with ID ${docRef.id}`)
         return docRef.id
       }
     } catch (error) {
@@ -275,8 +245,6 @@ export class CommitteeRepository {
    */
   async delete (id) {
     try {
-      console.log(`CommitteeRepository: Deleting committee ${id}...`)
-
       const committeeRef = doc(db, this.collectionName, id)
 
       // Delete all members first
@@ -286,8 +254,6 @@ export class CommitteeRepository {
 
       // Delete the committee document
       await deleteDoc(committeeRef)
-
-      console.log(`CommitteeRepository: Deleted committee ${id}`)
     } catch (error) {
       console.error(`CommitteeRepository: Error deleting committee ${id}:`, error)
       throw new Error(`Failed to delete committee ${id}: ${error.message}`, { cause: error })
@@ -303,8 +269,6 @@ export class CommitteeRepository {
     }
 
     try {
-      console.log(`CommitteeRepository: Searching committees for "${searchText}"...`)
-
       // Load all committees and filter client-side
       const committees = await this.getAll()
 
@@ -313,7 +277,6 @@ export class CommitteeRepository {
         committee.getSearchableText().includes(searchLower),
       )
 
-      console.log(`CommitteeRepository: Found ${filtered.length} committees matching "${searchText}"`)
       return filtered
     } catch (error) {
       console.error('CommitteeRepository: Error searching committees:', error)

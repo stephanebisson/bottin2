@@ -259,7 +259,6 @@
     "verifyToUnlockAccess": "Authentication flow",
     "autoCheckingIn": "Authentication flow. - Parameters: $1 = seconds",
     "checkingVerification": "Authentication flow",
-    "debugUserState": "Authentication flow",
     "differentBrowserHint": "Authentication flow",
     "noInternetConnection": "Authentication flow",
     "emailValidationServiceUnavailable": "Authentication flow",

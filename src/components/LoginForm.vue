@@ -118,7 +118,6 @@
     } catch (error) {
       // Check if error is due to unverified email
       if (error.message === 'EMAIL_NOT_VERIFIED') {
-        console.log('📧 Email not verified, redirecting to verification page')
         // Clear the error since we're handling it with a redirect
         authStore.clearError()
         // Redirect to email verification page (user is still logged in)

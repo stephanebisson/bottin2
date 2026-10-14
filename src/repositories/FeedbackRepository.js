@@ -17,12 +17,10 @@ export class FeedbackRepository {
    */
   async getAll () {
     try {
-      console.log('FeedbackRepository: Loading all feedback...')
       const q = query(this.collectionRef, orderBy('createdAt', 'desc'))
       const snapshot = await getDocs(q)
 
       const feedback = FeedbackDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`FeedbackRepository: Loaded ${feedback.length} valid feedback items`)
 
       return feedback
     } catch (error) {
@@ -37,17 +35,14 @@ export class FeedbackRepository {
    */
   async getById (id) {
     try {
-      console.log(`FeedbackRepository: Loading feedback ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`FeedbackRepository: Feedback ${id} not found`)
         return null
       }
 
       const feedback = FeedbackDTO.fromFirestore(docSnap)
-      console.log(`FeedbackRepository: Loaded feedback ${id}`)
 
       return feedback
     } catch (error) {
@@ -62,7 +57,6 @@ export class FeedbackRepository {
    */
   async getByParentId (parentId) {
     try {
-      console.log(`FeedbackRepository: Loading feedback for parent ${parentId}...`)
       const q = query(
         this.collectionRef,
         where('parent_id', '==', parentId),
@@ -71,7 +65,6 @@ export class FeedbackRepository {
       const snapshot = await getDocs(q)
 
       const feedback = FeedbackDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`FeedbackRepository: Loaded ${feedback.length} feedback items for parent ${parentId}`)
 
       return feedback
     } catch (error) {
@@ -86,7 +79,6 @@ export class FeedbackRepository {
    */
   async getByStatus (status) {
     try {
-      console.log(`FeedbackRepository: Loading ${status} feedback...`)
       const q = query(
         this.collectionRef,
         where('status', '==', status),
@@ -95,7 +87,6 @@ export class FeedbackRepository {
       const snapshot = await getDocs(q)
 
       const feedback = FeedbackDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`FeedbackRepository: Loaded ${feedback.length} ${status} feedback items`)
 
       return feedback
     } catch (error) {
@@ -122,16 +113,12 @@ export class FeedbackRepository {
 
       if (feedbackDTO.id) {
         // Update existing feedback
-        console.log(`FeedbackRepository: Updating feedback ${feedbackDTO.id}...`)
         const docRef = doc(db, this.collectionName, feedbackDTO.id)
         await updateDoc(docRef, firestoreData)
-        console.log(`FeedbackRepository: Updated feedback ${feedbackDTO.id}`)
         return feedbackDTO.id
       } else {
         // Create new feedback
-        console.log('FeedbackRepository: Creating new feedback...')
         const docRef = await addDoc(this.collectionRef, firestoreData)
-        console.log(`FeedbackRepository: Created feedback with ID ${docRef.id}`)
         return docRef.id
       }
     } catch (error) {
@@ -199,10 +186,8 @@ export class FeedbackRepository {
    */
   async delete (id) {
     try {
-      console.log(`FeedbackRepository: Deleting feedback ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       await deleteDoc(docRef)
-      console.log(`FeedbackRepository: Deleted feedback ${id}`)
     } catch (error) {
       console.error(`FeedbackRepository: Error deleting feedback ${id}:`, error)
       throw new Error(`Failed to delete feedback ${id}: ${error.message}`, { cause: error })
@@ -218,8 +203,6 @@ export class FeedbackRepository {
     }
 
     try {
-      console.log(`FeedbackRepository: Searching feedback for "${searchText}"...`)
-
       // Load all feedback and filter client-side
       const allFeedback = await this.getAll()
 
@@ -228,7 +211,6 @@ export class FeedbackRepository {
         feedback.getSearchableText().includes(searchLower),
       )
 
-      console.log(`FeedbackRepository: Found ${filtered.length} feedback items matching "${searchText}"`)
       return filtered
     } catch (error) {
       console.error('FeedbackRepository: Error searching feedback:', error)

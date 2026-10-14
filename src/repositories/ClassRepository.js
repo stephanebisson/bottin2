@@ -17,8 +17,6 @@ export class ClassRepository {
    */
   async getAllClassesWithTeachers () {
     try {
-      console.log('ClassRepository: Loading all classes with teacher info...')
-
       // Get all classes
       const classesSnapshot = await getDocs(this.classesCollectionRef)
       const classes = []
@@ -71,7 +69,6 @@ export class ClassRepository {
       // Sort by class letter
       classes.sort((a, b) => a.classLetter.localeCompare(b.classLetter))
 
-      console.log(`ClassRepository: Loaded ${classes.length} classes with teacher info`)
       return classes
     } catch (error) {
       console.error('ClassRepository: Error loading classes with teachers:', error)
@@ -107,13 +104,10 @@ export class ClassRepository {
    */
   async getClassByLetter (classLetter) {
     try {
-      console.log(`ClassRepository: Loading class ${classLetter}...`)
-
       const docRef = doc(db, this.classesCollectionName, classLetter)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`ClassRepository: Class ${classLetter} not found`)
         return null
       }
 
@@ -148,7 +142,6 @@ export class ClassRepository {
         parent_rep_2: classData.parent_rep_2,
       }
 
-      console.log(`ClassRepository: Loaded class ${classItem.classLetter} - ${classItem.teacherName}`)
       return classItem
     } catch (error) {
       console.error(`ClassRepository: Error loading class ${classLetter}:`, error)
@@ -169,8 +162,6 @@ export class ClassRepository {
    */
   async update (classLetter, updates) {
     try {
-      console.log(`ClassRepository: Updating class ${classLetter}...`, updates)
-
       const docRef = doc(db, this.classesCollectionName, classLetter)
 
       // First check if document exists
@@ -202,8 +193,6 @@ export class ClassRepository {
 
       // Update the document
       await updateDoc(docRef, updateData)
-
-      console.log(`ClassRepository: Successfully updated class ${classLetter}`)
 
       // Return the updated class
       return await this.getClassByLetter(classLetter)

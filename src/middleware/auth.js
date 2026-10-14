@@ -71,7 +71,6 @@ export const authMiddleware = {
     const hasActionCode = to.query.mode && to.query.oobCode
     if (hasActionCode) {
       // Allow access to auth page to process the action code
-      console.log('🔓 Allowing access to /auth for action code processing:', to.query.mode)
       next()
       return
     }
@@ -80,7 +79,6 @@ export const authMiddleware = {
     const showingVerifiedSuccess = to.query.emailVerified === 'true'
     if (showingVerifiedSuccess) {
       // Allow access to show the success message
-      console.log('🔓 Allowing access to /auth to show email verified success')
       next()
       return
     }

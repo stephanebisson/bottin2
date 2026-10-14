@@ -167,8 +167,6 @@ export function validateSecurityConfig () {
     console.error('Security configuration errors:', errors)
     throw new Error(`Security validation failed: ${errors.join(', ')}`)
   }
-
-  console.log('✅ Security configuration validated')
 }
 
 /**
@@ -193,8 +191,6 @@ export function initSecurity () {
         document.head.append(cspMeta)
       }
       cspMeta.setAttribute('content', cspString)
-
-      console.log('✅ Content Security Policy configured')
     }
   } catch (error) {
     console.error('Security initialization failed:', error)

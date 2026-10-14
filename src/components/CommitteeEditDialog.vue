@@ -361,7 +361,6 @@
         membersToSave,
       )
 
-      console.log('Committee members updated successfully')
       emit('updated')
     } catch (error_) {
       console.error('Error saving committee members:', error_)

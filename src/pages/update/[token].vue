@@ -493,12 +493,6 @@
 
       const baseUrl = getFunctionsBaseUrl()
 
-      console.log('Loading parent data with:', {
-        token: token.value,
-        tokenLength: token.value?.length,
-        baseUrl,
-      })
-
       const response = await fetch(`${baseUrl}/validateUpdateTokenV2`, {
         method: 'POST',
         headers: {

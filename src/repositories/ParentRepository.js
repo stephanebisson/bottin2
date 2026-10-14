@@ -18,11 +18,9 @@ export class ParentRepository {
    */
   async getAll () {
     try {
-      console.log('ParentRepository: Loading all parents...')
       const snapshot = await getDocs(this.collectionRef)
 
       const parents = ParentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`ParentRepository: Loaded ${parents.length} valid parents`)
 
       return parents
     } catch (error) {
@@ -37,17 +35,14 @@ export class ParentRepository {
    */
   async getById (id) {
     try {
-      console.log(`ParentRepository: Loading parent ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`ParentRepository: Parent ${id} not found`)
         return null
       }
 
       const parent = ParentDTO.fromFirestore(docSnap)
-      console.log(`ParentRepository: Loaded parent ${parent.fullName}`)
 
       return parent
     } catch (error) {
@@ -66,15 +61,12 @@ export class ParentRepository {
     }
 
     try {
-      console.log(`ParentRepository: Loading ${ids.length} parents by IDs...`)
-
       // Load all parents in parallel
       const parentPromises = ids.map(id => this.getById(id))
       const parents = await Promise.all(parentPromises)
 
       // Filter out null results (parents not found)
       const validParents = parents.filter(p => p !== null)
-      console.log(`ParentRepository: Loaded ${validParents.length}/${ids.length} parents by IDs`)
 
       return validParents
     } catch (error) {
@@ -88,7 +80,6 @@ export class ParentRepository {
    */
   async getByCity (city) {
     try {
-      console.log(`ParentRepository: Loading parents for city ${city}...`)
       const q = query(
         this.collectionRef,
         where('city', '==', city),
@@ -96,7 +87,6 @@ export class ParentRepository {
       const snapshot = await getDocs(q)
 
       const parents = ParentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`ParentRepository: Loaded ${parents.length} parents for city ${city}`)
 
       return parents
     } catch (error) {
@@ -110,7 +100,6 @@ export class ParentRepository {
    */
   async getByInterest (interest) {
     try {
-      console.log(`ParentRepository: Loading parents with interest ${interest}...`)
       const q = query(
         this.collectionRef,
         where('interests', 'array-contains', interest.toLowerCase()),
@@ -118,7 +107,6 @@ export class ParentRepository {
       const snapshot = await getDocs(q)
 
       const parents = ParentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`ParentRepository: Loaded ${parents.length} parents with interest ${interest}`)
 
       return parents
     } catch (error) {
@@ -134,7 +122,6 @@ export class ParentRepository {
   async getByEmail (email) {
     try {
       const emailLower = email.toLowerCase().trim()
-      console.log(`ParentRepository: Loading parent with email ${emailLower}...`)
       const q = query(
         this.collectionRef,
         where('email', '==', emailLower),
@@ -142,12 +129,10 @@ export class ParentRepository {
       const snapshot = await getDocs(q)
 
       if (snapshot.empty) {
-        console.log(`ParentRepository: No parent found with email ${emailLower}`)
         return null
       }
 
       const parent = ParentDTO.fromFirestore(snapshot.docs[0])
-      console.log(`ParentRepository: Loaded parent ${parent.fullName}`)
 
       return parent
     } catch (error) {
@@ -176,10 +161,8 @@ export class ParentRepository {
 
       if (parentDTO.id) {
         // Update existing parent
-        console.log(`ParentRepository: Updating parent ${parentDTO.id} (${parentDTO.fullName})...`)
         const docRef = doc(db, this.collectionName, parentDTO.id)
         await updateDoc(docRef, firestoreData)
-        console.log(`ParentRepository: Updated parent ${parentDTO.fullName}`)
         return parentDTO.id
       } else {
         // Create new parent with structured ID, fallback to auto-generated ID on error
@@ -188,10 +171,8 @@ export class ParentRepository {
             first_name: parentDTO.first_name,
             last_name: parentDTO.last_name,
           })
-          console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with structured ID ${structuredId}...`)
           const docRef = doc(db, this.collectionName, structuredId)
           await setDoc(docRef, firestoreData)
-          console.log(`ParentRepository: Created parent ${parentDTO.fullName} with structured ID ${structuredId}`)
           return structuredId
         } catch (idError) {
           console.warn(`ParentRepository: Failed to generate structured ID for ${parentDTO.fullName}, falling back to auto-generated ID:`, idError.message)
@@ -199,9 +180,7 @@ export class ParentRepository {
         }
 
         // Fallback: Create new parent with auto-generated ID
-        console.log(`ParentRepository: Creating new parent ${parentDTO.fullName} with auto-generated ID...`)
         const docRef = await addDoc(this.collectionRef, firestoreData)
-        console.log(`ParentRepository: Created parent ${parentDTO.fullName} with ID ${docRef.id}`)
         return docRef.id
       }
     } catch (error) {
@@ -247,10 +226,8 @@ export class ParentRepository {
    */
   async delete (id) {
     try {
-      console.log(`ParentRepository: Deleting parent ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       await deleteDoc(docRef)
-      console.log(`ParentRepository: Deleted parent ${id}`)
     } catch (error) {
       console.error(`ParentRepository: Error deleting parent ${id}:`, error)
       throw new Error(`Failed to delete parent ${id}: ${error.message}`, { cause: error })
@@ -266,8 +243,6 @@ export class ParentRepository {
     }
 
     try {
-      console.log(`ParentRepository: Searching parents for "${searchText}"...`)
-
       // For now, we'll load all parents and filter client-side
       // In production, you might want to use Algolia or similar for better search
       const parents = await this.getAll()
@@ -277,7 +252,6 @@ export class ParentRepository {
         parent.getSearchableText().includes(searchLower),
       )
 
-      console.log(`ParentRepository: Found ${filtered.length} parents matching "${searchText}"`)
       return filtered
     } catch (error) {
       console.error(`ParentRepository: Error searching parents:`, error)

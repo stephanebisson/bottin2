@@ -683,7 +683,6 @@
       // Refresh classes data
       await firebaseStore.loadClasses(true)
 
-      console.log(`Successfully updated class ${editingClass.value.classLetter}`)
       closeEditDialog()
     } catch (error) {
       console.error('Failed to update class:', error)

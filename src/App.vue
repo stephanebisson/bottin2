@@ -38,7 +38,6 @@
       }
 
       // Data will be loaded lazily by individual routes/pages as needed
-      console.log('App: Auth initialized, ready for navigation')
     } catch (error) {
       console.error('App initialization error:', error)
     } finally {

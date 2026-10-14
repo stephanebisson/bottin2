@@ -77,21 +77,9 @@
 
     // Check if content height exceeds container height
     const element = pageRef.value
-    const overflow = element.scrollHeight > element.clientHeight
-
     // Add a small threshold to avoid false positives from rounding/subpixel rendering
     const threshold = 2 // 2 pixels tolerance
     hasOverflow.value = (element.scrollHeight - element.clientHeight) > threshold
-
-    // Debug logging in dev mode
-    if (overflow) {
-      console.log('Page overflow check:', {
-        scrollHeight: element.scrollHeight,
-        clientHeight: element.clientHeight,
-        difference: element.scrollHeight - element.clientHeight,
-        hasOverflow: hasOverflow.value,
-      })
-    }
   }
 </script>
 

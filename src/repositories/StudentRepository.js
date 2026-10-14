@@ -18,11 +18,9 @@ export class StudentRepository {
    */
   async getAll () {
     try {
-      console.log('StudentRepository: Loading all students...')
       const snapshot = await getDocs(this.collectionRef)
 
       const students = StudentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StudentRepository: Loaded ${students.length} valid students`)
 
       return students
     } catch (error) {
@@ -44,7 +42,6 @@ export class StudentRepository {
    */
   async getByClassName (className) {
     try {
-      console.log(`StudentRepository: Loading students for class ${className}...`)
       const q = query(
         this.collectionRef,
         where('className', '==', className),
@@ -52,7 +49,6 @@ export class StudentRepository {
       const snapshot = await getDocs(q)
 
       const students = StudentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StudentRepository: Loaded ${students.length} students for class ${className}`)
 
       return students
     } catch (error) {
@@ -66,7 +62,6 @@ export class StudentRepository {
    */
   async getByLevel (level) {
     try {
-      console.log(`StudentRepository: Loading students for level ${level}...`)
       const q = query(
         this.collectionRef,
         where('level', '==', level),
@@ -74,7 +69,6 @@ export class StudentRepository {
       const snapshot = await getDocs(q)
 
       const students = StudentDTO.fromFirestoreSnapshot(snapshot)
-      console.log(`StudentRepository: Loaded ${students.length} students for level ${level}`)
 
       return students
     } catch (error) {
@@ -88,17 +82,14 @@ export class StudentRepository {
    */
   async getById (id) {
     try {
-      console.log(`StudentRepository: Loading student ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       const docSnap = await getDoc(docRef)
 
       if (!docSnap.exists()) {
-        console.log(`StudentRepository: Student ${id} not found`)
         return null
       }
 
       const student = StudentDTO.fromFirestore(docSnap)
-      console.log(`StudentRepository: Loaded student ${student.fullName}`)
 
       return student
     } catch (error) {
@@ -127,10 +118,8 @@ export class StudentRepository {
 
       if (studentDTO.id) {
         // Update existing student
-        console.log(`StudentRepository: Updating student ${studentDTO.id} (${studentDTO.fullName})...`)
         const docRef = doc(db, this.collectionName, studentDTO.id)
         await updateDoc(docRef, firestoreData)
-        console.log(`StudentRepository: Updated student ${studentDTO.fullName}`)
         return studentDTO.id
       } else {
         // Create new student with structured ID, fallback to auto-generated ID on error
@@ -139,10 +128,8 @@ export class StudentRepository {
             first_name: studentDTO.first_name,
             last_name: studentDTO.last_name,
           })
-          console.log(`StudentRepository: Creating new student ${studentDTO.fullName} with structured ID ${structuredId}...`)
           const docRef = doc(db, this.collectionName, structuredId)
           await setDoc(docRef, firestoreData)
-          console.log(`StudentRepository: Created student ${studentDTO.fullName} with structured ID ${structuredId}`)
           return structuredId
         } catch (idError) {
           console.warn(`StudentRepository: Failed to generate structured ID for ${studentDTO.fullName}, falling back to auto-generated ID:`, idError.message)
@@ -150,9 +137,7 @@ export class StudentRepository {
         }
 
         // Fallback: Create new student with auto-generated ID
-        console.log(`StudentRepository: Creating new student ${studentDTO.fullName} with auto-generated ID...`)
         const docRef = await addDoc(this.collectionRef, firestoreData)
-        console.log(`StudentRepository: Created student ${studentDTO.fullName} with ID ${docRef.id}`)
         return docRef.id
       }
     } catch (error) {
@@ -198,10 +183,8 @@ export class StudentRepository {
    */
   async delete (id) {
     try {
-      console.log(`StudentRepository: Deleting student ${id}...`)
       const docRef = doc(db, this.collectionName, id)
       await deleteDoc(docRef)
-      console.log(`StudentRepository: Deleted student ${id}`)
     } catch (error) {
       console.error(`StudentRepository: Error deleting student ${id}:`, error)
       throw new Error(`Failed to delete student ${id}: ${error.message}`, { cause: error })
@@ -217,8 +200,6 @@ export class StudentRepository {
     }
 
     try {
-      console.log(`StudentRepository: Searching students for "${searchText}"...`)
-
       // For now, we'll load all students and filter client-side
       // In production, you might want to use Algolia or similar for better search
       const students = await this.getAll()
@@ -228,7 +209,6 @@ export class StudentRepository {
         student.getSearchableText().includes(searchLower),
       )
 
-      console.log(`StudentRepository: Found ${filtered.length} students matching "${searchText}"`)
       return filtered
     } catch (error) {
       console.error(`StudentRepository: Error searching students:`, error)
@@ -243,7 +223,6 @@ export class StudentRepository {
    */
   async getAllWithParents (parentRepository) {
     try {
-      console.log('StudentRepository: Loading all students with parent data...')
       const students = await this.getAll()
 
       // Get all unique parent IDs
@@ -253,8 +232,6 @@ export class StudentRepository {
           parentIds.add(id)
         }
       }
-
-      console.log(`StudentRepository: Found ${parentIds.size} unique parent IDs to lookup`)
 
       // Bulk load all parents
       const parentLookup = new Map()
@@ -270,7 +247,6 @@ export class StudentRepository {
       })
 
       await Promise.all(parentLoadPromises)
-      console.log(`StudentRepository: Loaded ${parentLookup.size} parent records`)
 
       // Create result with populated parent data
       const results = students.map(student => {
@@ -288,7 +264,6 @@ export class StudentRepository {
         }
       })
 
-      console.log(`StudentRepository: Created ${results.length} student-parent records`)
       return results
     } catch (error) {
       console.error('StudentRepository: Error loading students with parents:', error)

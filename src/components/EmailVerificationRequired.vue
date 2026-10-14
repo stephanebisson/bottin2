@@ -162,19 +162,6 @@
               >
                 {{ $i18n('auth.logout') }}
               </v-btn>
-
-              <!-- Debug button for development -->
-              <v-btn
-                v-if="isDevelopment"
-                block
-                class="mt-2"
-                color="info"
-                size="small"
-                variant="outlined"
-                @click="debugUserState"
-              >
-                {{ $i18n('auth.debugUserState') }}
-              </v-btn>
             </v-col>
           </v-card-actions>
         </v-card>
@@ -184,10 +171,9 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onUnmounted, ref } from 'vue'
+  import { onMounted, onUnmounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useTranslate } from '@/composables/useTranslate'
-  import { auth } from '@/firebase'
   import { useAuthStore } from '@/stores/auth'
 
   const $i18n = useTranslate()
@@ -195,7 +181,6 @@
   const route = useRoute()
   const authStore = useAuthStore()
   // Development mode check
-  const isDevelopment = computed(() => import.meta.env.DEV)
 
   // Component state
   const verificationSent = ref(false)
@@ -247,12 +232,10 @@
 
     try {
       checkingVerification.value = true
-      console.log('Auto-checking email verification status...')
 
       const isVerified = await authStore.refreshUser()
 
       if (isVerified) {
-        console.log('🎉 Email verified! Redirecting to home page...')
         stopAutoCheck()
 
         // Show success message briefly before redirect
@@ -285,8 +268,6 @@
   }
 
   async function manualRefresh () {
-    console.log('👆 Manual refresh button clicked')
-
     // Clear any existing errors
     authStore.clearError()
     checkingVerification.value = true
@@ -296,7 +277,6 @@
       const isVerified = await authStore.refreshUser()
 
       if (isVerified) {
-        console.log('🎉 Manual refresh detected verification!')
         verificationSent.value = true
 
         // Stop auto-checking and redirect
@@ -308,8 +288,6 @@
           })
         }, 1500)
       } else {
-        console.log('❌ Manual refresh - still not verified')
-
         // Add helpful debugging info for user
         authStore.setError(
           $i18n('auth.emailStillNotVerified') + $i18n('auth.differentBrowserHint'),
@@ -325,21 +303,16 @@
 
   // Lifecycle hooks
   onMounted(() => {
-    console.log('📧 Email verification page loaded')
     if (isNewRegistration.value) {
-      console.log('🆕 New registration - starting auto-verification check')
       startAutoCheck()
     } else if (isReturningUser.value) {
-      console.log('🔄 Returning user with unverified email - starting auto-verification check')
       startAutoCheck()
     } else if (isBlockedAccess.value) {
-      console.log('🚫 User blocked from accessing protected route - starting auto-verification check')
       startAutoCheck()
     }
   })
 
   onUnmounted(() => {
-    console.log('🧹 Cleaning up verification page')
     stopAutoCheck()
   })
 
@@ -352,32 +325,4 @@
     }
   }
 
-  // Debug function for development
-  async function debugUserState () {
-    console.log('🔧 === DEBUG USER STATE ===')
-    console.log('Current route query:', route.query)
-    console.log('Auth store user:', authStore.user)
-    console.log('Auth store isEmailVerified:', authStore.isEmailVerified)
-    console.log('Firebase auth.currentUser:', auth.currentUser)
-
-    if (auth.currentUser) {
-      console.log('Firebase user details:', {
-        email: auth.currentUser.email,
-        emailVerified: auth.currentUser.emailVerified,
-        uid: auth.currentUser.uid,
-        providerData: auth.currentUser.providerData,
-      })
-
-      // Try to get fresh token
-      try {
-        const token = await auth.currentUser.getIdToken(true)
-        const tokenPayload = JSON.parse(atob(token.split('.', 2)[1]))
-        console.log('Token payload email_verified:', tokenPayload.email_verified)
-      } catch (tokenError) {
-        console.error('Failed to decode token:', tokenError)
-      }
-    }
-
-    console.log('=== END DEBUG ===')
-  }
 </script>

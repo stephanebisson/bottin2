@@ -279,7 +279,6 @@
     "verifyToUnlockAccess": "Vous devez vérifier votre adresse courriel pour débloquer l'accès au répertoire. Cliquez sur le lien de vérification dans votre courriel.",
     "autoCheckingIn": "Vérification automatique dans $1s",
     "checkingVerification": "Vérification en cours...",
-    "debugUserState": "🔧 État de débogage utilisateur",
     "differentBrowserHint": " Si vous avez cliqué sur le lien dans un autre navigateur, essayez d'ouvrir cette page dans ce navigateur.",
     "noInternetConnection": "Aucune connexion Internet. Veuillez vérifier votre réseau et réessayer.",
     "emailValidationServiceUnavailable": "Service de validation de courriel temporairement indisponible. Veuillez réessayer dans un moment.",

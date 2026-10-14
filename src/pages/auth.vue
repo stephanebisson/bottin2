@@ -123,8 +123,6 @@
       return false // No action code to process
     }
 
-    console.log(`📧 Processing Firebase action: ${mode}`)
-
     try {
       if (mode === 'verifyEmail') {
         // Show loading overlay
@@ -132,21 +130,18 @@
 
         // Apply the email verification code
         await applyActionCode(auth, oobCode)
-        console.log('✅ Email verified successfully!')
 
         // Check if user is currently logged in
         const isLoggedIn = !!auth.currentUser
 
         if (isLoggedIn) {
           // User is logged in - sign them out and back in to get fresh token
-          console.log('🔄 User is logged in, refreshing session after verification...')
 
           // Get user email before signing out
           const userEmail = auth.currentUser.email
 
           // Store the credentials temporarily (user must be signed in to get here)
           // We'll show the login form with email pre-filled
-          console.log('🔄 Signing out to refresh session...')
 
           // Sign out
           await authStore.logout()
@@ -168,7 +163,6 @@
           return false
         } else {
           // User is NOT logged in - show success on login page
-          console.log('👤 User was not logged in - showing success message on auth page')
           // Hide loading overlay
           processingVerification.value = false
           // Use replace with a clean URL and show the success alert

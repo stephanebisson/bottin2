@@ -29,7 +29,7 @@ function validateEnvironment () {
 }
 
 // Validate environment
-const hasValidEnv = validateEnvironment()
+validateEnvironment()
 
 // Firebase config - you need to get this from Firebase Console
 // Go to: Firebase Console > Project Settings > General > Your apps > Web app > Firebase SDK snippet
@@ -40,16 +40,6 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'bottin2-3b41d.appspot.com',
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
   appId: import.meta.env.VITE_FIREBASE_APP_ID || 'demo-app-id',
-}
-
-// Log configuration status
-if (import.meta.env.DEV) {
-  console.log('🔥 Firebase Config Status:', {
-    environment: import.meta.env.MODE,
-    hasValidEnvironment: hasValidEnv,
-    projectId: firebaseConfig.projectId,
-    authDomain: firebaseConfig.authDomain,
-  })
 }
 
 // Initialize Firebase
@@ -73,11 +63,8 @@ if (import.meta.env.DEV) {
     // Connect to Firestore emulator
     try {
       connectFirestoreEmulator(db, emulatorConfig.firestore.host, emulatorConfig.firestore.port)
-      console.log('✅ Connected to Firestore emulator:', `${emulatorConfig.firestore.host}:${emulatorConfig.firestore.port}`)
     } catch (error) {
-      if (error.message.includes('already connected')) {
-        console.log('🔄 Firestore emulator already connected')
-      } else {
+      if (!error.message.includes('already connected')) {
         console.warn('⚠️  Failed to connect to Firestore emulator:', error.message)
         console.warn('   Make sure Firebase emulators are running: firebase emulators:start')
       }
@@ -86,11 +73,8 @@ if (import.meta.env.DEV) {
     // Connect to Auth emulator
     try {
       connectAuthEmulator(auth, emulatorConfig.auth.url)
-      console.log('✅ Connected to Auth emulator:', emulatorConfig.auth.url)
     } catch (error) {
-      if (error.message.includes('already connected')) {
-        console.log('🔄 Auth emulator already connected')
-      } else {
+      if (!error.message.includes('already connected')) {
         console.warn('⚠️  Failed to connect to Auth emulator:', error.message)
         console.warn('   Make sure Firebase emulators are running: firebase emulators:start')
       }

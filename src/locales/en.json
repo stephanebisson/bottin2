@@ -277,7 +277,6 @@
     "verifyToUnlockAccess": "You must verify your email address to unlock access to the directory. Click the verification link in your email.",
     "autoCheckingIn": "Auto-checking in $1s",
     "checkingVerification": "Checking verification...",
-    "debugUserState": "🔧 Debug User State",
     "differentBrowserHint": " If you clicked the link in a different browser, try opening this page in that browser instead.",
     "noInternetConnection": "No internet connection. Please check your network and try again.",
     "emailValidationServiceUnavailable": "Email validation service temporarily unavailable. Please try again in a moment.",

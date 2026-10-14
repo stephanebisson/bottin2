@@ -65,12 +65,8 @@
   // Global refresh handler
   async function handleRefresh () {
     try {
-      console.log('Pull-to-refresh: Refreshing all data...')
-
       // Force refresh all DTO data (bypasses cache)
       await firebaseStore.loadAllDTOData(true)
-
-      console.log('Pull-to-refresh: All data refreshed successfully')
     } catch (error) {
       console.error('Pull-to-refresh: Error refreshing data', error)
     }
