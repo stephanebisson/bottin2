@@ -60,7 +60,6 @@
   "classes": {
     "title": "Classes",
     "teacher": "Teacher",
-    "students": "Students",
     "student": "Student",
     "parentRepresentative": "Parent Representative",
     "parentRepresentatives": "Parent representatives",
@@ -88,8 +87,7 @@
     "class": "Class",
     "noChildrenFound": "No children found in the school",
     "noParentInfo": "No parent information found for: $1",
-    "studentCount": "{{PLURAL:$1|($1 student)|($1 students)}}",
-    "representative": "(R)",
+    "representative": "Student representative",
     "noParentInfoFound": "No parent information found",
     "editClass": "Edit Class",
     "className": "Class name",

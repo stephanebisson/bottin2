@@ -66,7 +66,6 @@
   "classes": {
     "title": "Classes page. - Page or section title",
     "teacher": "Classes page",
-    "students": "Classes page",
     "student": "Classes page",
     "parentRepresentative": "Classes page",
     "parentRepresentatives": "Classes page",
@@ -94,7 +93,6 @@
     "class": "Classes page",
     "noChildrenFound": "Classes page",
     "noParentInfo": "Classes page. - Parameters: $1 = parent",
-    "studentCount": "Classes page. - Parameters: $1 = count. - Supports plural forms based on count. - Displays count of items",
     "representative": "Classes page",
     "noParentInfoFound": "Classes page",
     "editClass": "Classes page",

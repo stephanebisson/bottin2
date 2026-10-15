@@ -32,21 +32,14 @@
           sm="12"
         >
           <v-card class="d-flex flex-column" height="100%">
-            <!-- Class Header -->
-            <v-card-title class="d-flex justify-space-between align-start bg-primary pa-3">
-              <div class="flex-grow-1 overflow-hidden">
-                <h5 class="text-white text-wrap" style="word-break: break-word; line-height: 1.3; margin-bottom: 0;">
-                  {{ classItem.className }}
-                </h5>
-              </div>
-
-              <div class="flex-shrink-0 ml-3 d-flex align-center ga-2">
-                <span class="text-white text-body-medium" style="white-space: nowrap;">
-                  ({{ classItem.classCode }})
-                </span>
+            <!-- Class Header: the name the students chose, then the teacher and the official class code -->
+            <div class="class-header bg-primary">
+              <div class="d-flex align-start ga-2">
+                <div class="class-name flex-grow-1">{{ classItem.className }}</div>
 
                 <v-btn
                   v-if="authStore.isAdmin"
+                  class="mt-n1 me-n2"
                   color="white"
                   icon="mdi-pencil"
                   size="x-small"
@@ -54,29 +47,16 @@
                   @click="openEditDialog(classItem)"
                 />
               </div>
-            </v-card-title>
 
-            <!-- Class Details -->
-            <v-card-text class="flex-grow-1">
-              <!-- Teacher -->
-              <div v-if="classItem.teacher" class="mb-3 mt-3">
-                <div class="d-flex align-center mb-1">
-                  <v-icon class="me-2" color="primary">mdi-account-tie</v-icon>
-                  <span class="font-weight-medium">{{ $i18n('classes.teacher') }}</span>
-                </div>
-
-                <div class="ms-6 text-body-medium">
+              <div class="class-subtitle d-flex flex-wrap align-baseline">
+                <span v-if="classItem.teacher">
                   <v-tooltip
                     v-if="showPopups"
                     location="top"
                     max-width="350"
                   >
                     <template #activator="{ props }">
-                      <span
-                        v-bind="props"
-                        class="teacher-name"
-                        style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
-                      >
+                      <span v-bind="props" class="person-name">
                         {{ getTeacherName(classItem.teacher) }}
                       </span>
                     </template>
@@ -112,35 +92,31 @@
                     </template>
                   </v-tooltip>
 
-                  <span v-else class="teacher-name">
-                    {{ getTeacherName(classItem.teacher) }}
-                  </span>
-                </div>
+                  <span v-else>{{ getTeacherName(classItem.teacher) }}</span>
+                </span>
+
+                <span class="class-code">{{ classItem.classCode }}</span>
               </div>
+            </div>
 
+            <!-- Class Details -->
+            <v-card-text class="flex-grow-1 pa-0">
               <!-- Parent Representatives -->
-              <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="mb-3">
-                <div class="d-flex align-center mb-1">
-                  <v-icon class="me-2" color="primary">mdi-account-supervisor</v-icon>
-                  <span class="font-weight-medium">{{ $i18n('classes.parentRepresentatives') }}</span>
-                </div>
+              <div v-if="classItem.parent_rep_1 || classItem.parent_rep_2" class="class-reps d-flex align-center ga-2">
+                <v-icon color="secondary" size="small" :title="$i18n('classes.parentRepresentatives')">mdi-account-voice</v-icon>
 
-                <div class="ms-6 text-body-medium">
+                <div class="class-reps-names">
                   <!-- Parent Rep 1 -->
-                  <div v-if="classItem.parent_rep_1" class="mb-2">
+                  <div v-if="classItem.parent_rep_1">
                     <v-tooltip
                       v-if="showPopups"
                       location="top"
                       max-width="450"
                     >
                       <template #activator="{ props }">
-                        <span
-                          v-bind="props"
-                          class="parent-name"
-                          style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
-                        >
+                        <a v-bind="props" class="person-name rep-link" :href="getParentMailto(classItem.parent_rep_1)">
                           {{ getParentName(classItem.parent_rep_1) }}
-                        </span>
+                        </a>
                       </template>
 
                       <template #default>
@@ -214,9 +190,9 @@
                       </template>
                     </v-tooltip>
 
-                    <span v-else class="parent-name">
+                    <a v-else class="rep-link" :href="getParentMailto(classItem.parent_rep_1)">
                       {{ getParentName(classItem.parent_rep_1) }}
-                    </span>
+                    </a>
                   </div>
 
                   <!-- Parent Rep 2 -->
@@ -227,13 +203,9 @@
                       max-width="450"
                     >
                       <template #activator="{ props }">
-                        <span
-                          v-bind="props"
-                          class="parent-name"
-                          style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
-                        >
+                        <a v-bind="props" class="person-name rep-link" :href="getParentMailto(classItem.parent_rep_2)">
                           {{ getParentName(classItem.parent_rep_2) }}
-                        </span>
+                        </a>
                       </template>
 
                       <template #default>
@@ -307,55 +279,37 @@
                       </template>
                     </v-tooltip>
 
-                    <span v-else class="parent-name">
+                    <a v-else class="rep-link" :href="getParentMailto(classItem.parent_rep_2)">
                       {{ getParentName(classItem.parent_rep_2) }}
-                    </span>
+                    </a>
                   </div>
                 </div>
               </div>
 
               <!-- Students List -->
-              <div class="mb-3">
-                <div class="d-flex align-center mb-2">
-                  <v-icon class="me-2" color="primary">mdi-account-multiple</v-icon>
-
-                  <span class="font-weight-medium">
-                    {{ $i18n('classes.students') }} ({{ getClassStudents(classItem.classLetter).length }})
-                  </span>
-                </div>
-
-                <div class="ms-6">
+              <div class="class-students">
+                <div>
                   <template v-if="getClassStudents(classItem.classLetter).length > 0">
-                    <!-- All levels in columns (2 levels per row) -->
+                    <!-- All levels in columns (2 levels per row), sized to the names they hold -->
                     <template v-for="(levelPair, pairIndex) in getLevelPairs(classItem.classLetter)" :key="`pair-${pairIndex}`">
-                      <v-row class="mb-3">
-                        <v-col
+                      <div class="class-levels" :style="{ '--level-count': levelPair.length }">
+                        <div
                           v-for="levelData in levelPair"
                           :key="`level-${levelData.level}`"
-                          cols="6"
+                          class="class-level"
                         >
                           <!-- Level header -->
-                          <div class="d-flex align-center mb-1">
-                            <v-chip
-                              class="me-2"
-                              color="secondary"
-                              size="small"
-                              variant="outlined"
-                            >
-                              {{ formatGradeLevel(levelData.level, bananaI18n.locale) }}
-                            </v-chip>
-
-                            <span class="text-body-small text-medium-emphasis">
-                              {{ $i18n('classes.studentCount', levelData.students.length) }}
-                            </span>
+                          <div class="level-header">
+                            {{ formatGradeLevel(levelData.level, bananaI18n.locale) }}
+                            <span class="level-count">{{ levelData.students.length }}</span>
                           </div>
 
                           <!-- Students in this level -->
-                          <div class="ms-4">
+                          <div>
                             <div
                               v-for="student in levelData.students"
                               :key="student.id"
-                              class="text-body-medium py-1"
+                              class="student-row"
                             >
                               <v-tooltip
                                 v-if="showPopups"
@@ -365,19 +319,25 @@
                                 <template #activator="{ props }">
                                   <span
                                     v-bind="props"
-                                    class="student-name"
-                                    :class="{ 'font-weight-bold': isStudentRepresentative(student.id, classItem.classLetter) }"
-                                    style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
+                                    class="person-name"
                                   >
-                                    {{ student.first_name }} <span class="text-no-wrap">{{ student.last_name }}<v-icon
-                                      v-if="isFevesMember(student.id)"
-                                      class="ml-1"
-                                      color="green"
-                                      size="small"
-                                      :title="$i18n('classes.fevesMember')"
-                                    >mdi-leaf</v-icon></span>
+                                    <span class="text-no-wrap">{{ student.first_name }}</span>
 
-                                    <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $i18n('classes.representative') }}</span>
+                                    {{ ' ' }}<span class="text-no-wrap">{{ student.last_name }}<v-icon
+                                      v-if="isStudentRepresentative(student.id, classItem.classLetter)"
+                                      class="ml-1"
+                                      color="secondary"
+                                      size="small"
+                                      :title="$i18n('classes.representative')"
+                                    >mdi-account-voice</v-icon>
+
+                                      <v-icon
+                                        v-if="isFevesMember(student.id)"
+                                        class="ml-1"
+                                        color="green"
+                                        size="small"
+                                        :title="$i18n('classes.fevesMember')"
+                                      >mdi-leaf</v-icon></span>
                                   </span>
                                 </template>
 
@@ -456,25 +416,29 @@
                                 </template>
                               </v-tooltip>
 
-                              <span
-                                v-else
-                                class="student-name"
-                                :class="{ 'font-weight-bold': isStudentRepresentative(student.id, classItem.classLetter) }"
-                              >
-                                {{ student.first_name }} <span class="text-no-wrap">{{ student.last_name }}<v-icon
-                                  v-if="isFevesMember(student.id)"
-                                  class="ml-1"
-                                  color="green"
-                                  size="small"
-                                  :title="$i18n('classes.fevesMember')"
-                                >mdi-leaf</v-icon></span>
+                              <span v-else>
+                                <span class="text-no-wrap">{{ student.first_name }}</span>
 
-                                <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">(R)</span>
+                                {{ ' ' }}<span class="text-no-wrap">{{ student.last_name }}<v-icon
+                                  v-if="isStudentRepresentative(student.id, classItem.classLetter)"
+                                  class="ml-1"
+                                  color="secondary"
+                                  size="small"
+                                  :title="$i18n('classes.representative')"
+                                >mdi-account-voice</v-icon>
+
+                                  <v-icon
+                                    v-if="isFevesMember(student.id)"
+                                    class="ml-1"
+                                    color="green"
+                                    size="small"
+                                    :title="$i18n('classes.fevesMember')"
+                                  >mdi-leaf</v-icon></span>
                               </span>
                             </div>
                           </div>
-                        </v-col>
-                      </v-row>
+                        </div>
+                      </div>
                     </template>
                   </template>
 
@@ -778,6 +742,12 @@
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
+  // mailto link for a parent rep; no href (plain text) when the parent has no email
+  function getParentMailto (parentId) {
+    const email = getParentData(parentId)?.email
+    return email ? `mailto:${email}` : undefined
+  }
+
   function getParentChildren (parentId) {
     if (!parentId) return []
 
@@ -930,8 +900,136 @@
 </script>
 
 <style scoped>
-.v-card-title {
-  word-break: break-word;
+.class-header {
+  padding: 12px 16px 10px;
+}
+
+/* The name the students chose: playful, set apart from the official class code */
+.class-name {
+  font-family: 'Nunito', 'Roboto', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  /* A light tint of the secondary color; browsers without color-mix fall back to white */
+  color: white;
+  color: color-mix(in srgb, rgb(var(--v-theme-secondary)) 40%, white);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.class-subtitle {
+  column-gap: 12px;
+  margin-top: 4px;
+  font-size: 0.875rem;
+}
+
+.class-code {
+  margin-left: auto;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  opacity: 0.65;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.class-reps {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  font-size: 0.8125rem;
+}
+
+/* Parent reps are mailto links that look like plain names */
+.rep-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rep-link[href] {
+  cursor: pointer;
+}
+
+.class-reps-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.class-students {
+  padding: 12px 16px 16px;
+}
+
+/* Columns size to their names when there is room and shrink together when not,
+   so two levels stay side by side on a phone */
+.class-levels {
+  display: grid;
+  grid-template-columns: repeat(var(--level-count), auto);
+  gap: 14px 24px;
+}
+
+.class-levels + .class-levels {
+  margin-top: 16px;
+}
+
+.class-level {
+  min-width: 0;
+}
+
+.level-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 2px solid rgba(var(--v-theme-on-surface), 0.12);
+  color: rgba(var(--v-theme-on-surface), 0.75);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.level-count {
+  margin-left: auto;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A name breaks only between first and last name, with the last name indented */
+.student-row {
+  padding: 3px 0 3px 12px;
+  text-indent: -12px;
+  line-height: 1.3;
+}
+
+.person-name {
+  cursor: help;
+  border-radius: 3px;
+}
+
+.person-name:hover {
+  background: rgba(var(--v-theme-primary), 0.1);
+}
+
+.class-header .person-name:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 599px) {
+  .class-header,
+  .class-reps,
+  .class-students {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .class-levels {
+    column-gap: 14px;
+  }
 }
 
 .text-body-small {

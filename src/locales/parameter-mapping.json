@@ -27,9 +27,6 @@
     "classes.noParentInfo": [
       "parent"
     ],
-    "classes.studentCount": [
-      "count"
-    ],
     "students.studentsLoaded": [
       "count"
     ],
@@ -156,9 +153,6 @@
     ],
     "classes.noParentInfo": [
       "parent"
-    ],
-    "classes.studentCount": [
-      "count"
     ],
     "students.studentsLoaded": [
       "count"

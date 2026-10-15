@@ -60,7 +60,6 @@
   "classes": {
     "title": "Classes",
     "teacher": "Enseignant",
-    "students": "Élèves",
     "student": "Élève",
     "parentRepresentative": "Représentant des parents",
     "parentRepresentatives": "Représentants des parents",
@@ -88,8 +87,7 @@
     "class": "Classe",
     "noChildrenFound": "Aucun enfant trouvé à l'école",
     "noParentInfo": "Aucune information parent trouvée pour: $1",
-    "studentCount": "{{PLURAL:$1|($1 élève)|($1 élèves)}}",
-    "representative": "(R)",
+    "representative": "Représentant des élèves",
     "noParentInfoFound": "Aucune information parent trouvée",
     "editClass": "Modifier la classe",
     "className": "Nom de la classe",
