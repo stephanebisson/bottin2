@@ -1,3 +1,4 @@
+const { getAuth } = require('firebase-admin/auth')
 const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const logger = require('firebase-functions/logger')
 const { onRequest } = require('firebase-functions/v2/https')
@@ -25,7 +26,52 @@ function logUpdateFailure (endpoint, reason, token, details = {}) {
 }
 
 /**
- * Validate update token and return parent information
+ * Find the parent a request is for: the signed-in parent when the request has
+ * an `Authorization: Bearer <Firebase ID token>` header (profile edit page),
+ * otherwise the parent the emailed update token belongs to.
+ *
+ * @returns {Promise<{ parentDoc: object|null, status?: number, reason?: string }>}
+ */
+async function resolveParent (req, token) {
+  const authHeader = req.headers.authorization
+  if (authHeader?.startsWith('Bearer ')) {
+    let decodedToken
+    try {
+      decodedToken = await getAuth().verifyIdToken(authHeader.split('Bearer ', 2)[1])
+    } catch {
+      return { parentDoc: null, status: 401, reason: 'invalid_id_token' }
+    }
+    if (!decodedToken.email || !decodedToken.email_verified) {
+      return { parentDoc: null, status: 403, reason: 'email_not_verified' }
+    }
+    const snapshot = await db.collection('parents')
+      .where('email', '==', decodedToken.email.toLowerCase())
+      .limit(1)
+      .get()
+    return snapshot.empty
+      ? { parentDoc: null, status: 404, reason: 'parent_not_found' }
+      : { parentDoc: snapshot.docs[0] }
+  }
+
+  if (!token) {
+    return { parentDoc: null, status: 400, reason: 'missing_token' }
+  }
+
+  // Direct O(1) token lookup — token is the document ID
+  const tokenDoc = await db.collection('tokens').doc(token).get()
+  if (!tokenDoc.exists) {
+    return { parentDoc: null, status: 404, reason: 'token_not_found' }
+  }
+
+  const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
+  return parentDoc.exists
+    ? { parentDoc }
+    : { parentDoc: null, status: 404, reason: 'parent_not_found' }
+}
+
+/**
+ * Return the parent's current information for the update form,
+ * from an emailed update token or the signed-in parent's ID token
  */
 exports.validateUpdateTokenV2 = onRequest({
   region: FUNCTIONS_REGION,
@@ -36,7 +82,7 @@ exports.validateUpdateTokenV2 = onRequest({
       'http://localhost:5173',
     ],
     methods: ['POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
 }, async (req, res) => {
@@ -66,19 +112,11 @@ exports.validateUpdateTokenV2 = onRequest({
 
     const { token } = validatedData
 
-    // Direct O(1) token lookup — token is the document ID
-    const tokenDoc = await db.collection('tokens').doc(token).get()
+    const { parentDoc, status, reason } = await resolveParent(req, token)
 
-    if (!tokenDoc.exists) {
-      logUpdateFailure('validateUpdateTokenV2', 'token_not_found', token)
-      return res.status(404).json({ valid: false, error: 'Invalid or expired token.' })
-    }
-
-    const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
-
-    if (!parentDoc.exists) {
-      logUpdateFailure('validateUpdateTokenV2', 'parent_not_found', token)
-      return res.status(404).json({ valid: false, error: 'Invalid or expired token.' })
+    if (!parentDoc) {
+      logUpdateFailure('validateUpdateTokenV2', reason, token)
+      return res.status(status).json({ valid: false, error: 'Invalid or expired token.' })
     }
 
     const parentData = parentDoc.data()
@@ -206,7 +244,7 @@ exports.validateUpdateTokenV2 = onRequest({
 })
 
 /**
- * Process parent information update from the public form
+ * Save the parent update form (emailed link or profile edit page)
  */
 exports.processParentUpdateV2 = onRequest({
   region: FUNCTIONS_REGION,
@@ -217,7 +255,7 @@ exports.processParentUpdateV2 = onRequest({
       'http://localhost:5173',
     ],
     methods: ['POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
 }, async (req, res) => {
@@ -250,18 +288,11 @@ exports.processParentUpdateV2 = onRequest({
       committeeRoles: parentData.committeeRoles || {},
     })
 
-    const tokenDoc = await db.collection('tokens').doc(token).get()
+    const { parentDoc, status, reason } = await resolveParent(req, token)
 
-    if (!tokenDoc.exists) {
-      logUpdateFailure('processParentUpdateV2', 'token_not_found', token)
-      return res.status(404).json({ error: 'Invalid or expired token.' })
-    }
-
-    const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
-
-    if (!parentDoc.exists) {
-      logUpdateFailure('processParentUpdateV2', 'parent_not_found', token)
-      return res.status(404).json({ error: 'Invalid or expired token.' })
+    if (!parentDoc) {
+      logUpdateFailure('processParentUpdateV2', reason, token)
+      return res.status(status).json({ error: 'Invalid or expired token.' })
     }
 
     const existingParentData = parentDoc.data()
@@ -405,7 +436,7 @@ exports.processParentOptOutV2 = onRequest({
       'http://localhost:5173',
     ],
     methods: ['POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
 }, async (req, res) => {
@@ -434,18 +465,11 @@ exports.processParentOptOutV2 = onRequest({
 
     const { token } = validatedData
 
-    const tokenDoc = await db.collection('tokens').doc(token).get()
+    const { parentDoc, status, reason } = await resolveParent(req, token)
 
-    if (!tokenDoc.exists) {
-      logUpdateFailure('processParentOptOutV2', 'token_not_found', token)
-      return res.status(404).json({ error: 'Invalid or expired token.' })
-    }
-
-    const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
-
-    if (!parentDoc.exists) {
-      logUpdateFailure('processParentOptOutV2', 'parent_not_found', token)
-      return res.status(404).json({ error: 'Invalid or expired token.' })
+    if (!parentDoc) {
+      logUpdateFailure('processParentOptOutV2', reason, token)
+      return res.status(status).json({ error: 'Invalid or expired token.' })
     }
 
     const existingParentData = parentDoc.data()

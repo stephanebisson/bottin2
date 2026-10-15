@@ -69,6 +69,17 @@
                 <span class="text-body-large">{{ formattedAddress }}</span>
               </div>
             </div>
+
+            <!-- Edit -->
+            <v-btn
+              class="mt-4 mt-sm-0"
+              color="primary"
+              prepend-icon="mdi-pencil"
+              to="/profile/edit"
+              variant="tonal"
+            >
+              {{ $i18n('profile.edit') }}
+            </v-btn>
           </div>
         </v-card-text>
       </v-card>

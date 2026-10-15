@@ -306,7 +306,9 @@
     "noProfileFound": "User profile page",
     "contactAdmin": "User profile page",
     "staffNotAvailable": "User profile page",
-    "noProfileFoundMessage": "User profile page"
+    "noProfileFoundMessage": "User profile page",
+    "edit": "Button on the profile page that opens the profile edit form. - French: Use sentence case",
+    "editTitle": "App bar title of the profile edit page (/profile/edit), where a signed-in parent edits their own information. - French: Use sentence case"
   },
   "admin": {
     "title": "Administration panel. - Page or section title",

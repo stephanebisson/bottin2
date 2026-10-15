@@ -134,6 +134,7 @@ export const routeConfig = {
     '/classes', // Classes page
     '/committees', // Committees page
     '/profile', // User profile page
+    '/profile/edit', // Signed-in parent edits their own information
     '/admin', // Admin page and all admin sub-pages
   ],
 

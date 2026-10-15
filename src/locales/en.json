@@ -339,7 +339,9 @@
     "noProfileFound": "Profile Not Found",
     "contactAdmin": "Please contact the school administrator if you believe this is an error.",
     "staffNotAvailable": "Staff profiles are not available. This page is for parents only.",
-    "noProfileFoundMessage": "No parent profile found for your account."
+    "noProfileFoundMessage": "No parent profile found for your account.",
+    "edit": "Edit my information",
+    "editTitle": "Edit my profile"
   },
   "admin": {
     "title": "Administration",

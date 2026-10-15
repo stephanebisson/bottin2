@@ -50,7 +50,8 @@ const emailValidationSchema = Joi.object({
 
 // Parent update validation schemas
 const parentUpdateSchema = Joi.object({
-  token: tokenSchema,
+  // Absent when the signed-in parent's ID token identifies them instead
+  token: tokenSchema.optional(),
   parentData: Joi.object({
     first_name: nameSchema,
     last_name: nameSchema,
@@ -75,11 +76,13 @@ const parentUpdateSchema = Joi.object({
 })
 
 const tokenValidationSchema = Joi.object({
-  token: tokenSchema,
+  // Absent when the signed-in parent's ID token identifies them instead
+  token: tokenSchema.optional(),
 })
 
 const parentOptOutSchema = Joi.object({
-  token: tokenSchema,
+  // Absent when the signed-in parent's ID token identifies them instead
+  token: tokenSchema.optional(),
 })
 
 // Admin management schemas

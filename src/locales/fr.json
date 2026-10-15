@@ -346,7 +346,9 @@
     "noProfileFound": "Profil introuvable",
     "contactAdmin": "Veuillez contacter l'administrateur de l'école si vous pensez qu'il s'agit d'une erreur.",
     "staffNotAvailable": "Les profils du personnel ne sont pas disponibles. Cette page est réservée aux parents seulement.",
-    "noProfileFoundMessage": "Aucun profil parent trouvé pour votre compte."
+    "noProfileFoundMessage": "Aucun profil parent trouvé pour votre compte.",
+    "edit": "Modifier mes informations",
+    "editTitle": "Modifier mon profil"
   },
   "admin": {
     "title": "Administration",
