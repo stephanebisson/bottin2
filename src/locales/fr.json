@@ -719,9 +719,8 @@
     }
   },
   "updateForm": {
-    "title": "Mon profil",
+    "title": "Mise à jour de vos informations",
     "loadingInfo": "Chargement de vos informations...",
-    "errorTitle": "Erreur d'Accès",
     "goHome": "Aller à la page d'accueil",
     "welcome": "Bienvenue, $1 !",
     "instructions": "Veuillez réviser et mettre à jour les informations de votre famille ci-dessous. Tous les champs marqués d'un * sont requis.",
@@ -730,38 +729,57 @@
     "lastName": "Nom de famille",
     "phone": "Téléphone",
     "address": "Adresse",
-    "sameAddressAsOther": "L'autre parent de notre famille a la même adresse",
     "confirmOtherParentAddress": "Je confirme que $1 habite aussi à cette adresse",
     "streetAddress": "Adresse civique",
     "city": "Ville",
     "postalCode": "Code postal",
     "committees": "Comités",
-    "committeeInstructions": "Sélectionnez les comités auxquels vous aimeriez joindre ou continuer à participer :",
+    "committeeInstructions": "Cochez les comités dont vous êtes actuellement membre et indiquez votre rôle.",
     "role": "Rôle",
     "interests": "Intérêts et compétences",
     "interestsInstructions": "Sélectionnez vos centres d'intérêt et domaines d'expertise :",
-    "interestsPlaceholder": "Veuillez partager toutes compétences spéciales, intérêts, ou façons dont vous aimeriez contribuer à la communauté scolaire...",
-    "directoryParticipation": "Participation au bottin",
-    "fullParticipation": "Inclure toutes mes informations dans le bottin scolaire",
-    "limitedParticipation": "Inclure seulement les informations de contact de base",
-    "optOut": "Garder seulement mon nom dans le bottin (retirer toutes les autres informations)",
-    "optOutWarning": "Choisir cette option retirera vos coordonnées, adhésions aux comités, et autres informations du bottin, ne gardant que votre nom pour les listes de classe.",
     "submit": "Valider",
-    "privacyNotice": "Vos renseignements paraîtront dans le bottin en ligne, réservé aux parents et au personnel de l'école, et dans le bottin imprimé remis à chaque famille. Ils serviront seulement à la vie de la communauté de l'école. Laissez vide tout champ que vous ne souhaitez pas partager. Ils sont hébergés par Google, en partie à l'extérieur du Québec. Vous pouvez les modifier ou vous retirer du bottin en tout temps.",
-    "invalidToken": "Ce lien de mise à jour est invalide ou a expiré.",
-    "expiredToken": "Ce lien de mise à jour a expiré. Veuillez contacter le bureau de l'école pour assistance.",
-    "serverError": "Impossible de charger vos informations. Veuillez réessayer plus tard.",
-    "submitError": "Échec de la mise à jour des informations. Veuillez réessayer.",
-    "optOutWarningBox": "Besoin de retirer complètement vos informations du bottin scolaire ?",
-    "optOutWarningBoxDescription": "Si vous préférez retirer toutes vos informations personnelles du bottin, vous pouvez vous désinscrire ci-dessous.",
+    "privacyNotice": "Vos renseignements paraîtront dans le bottin en ligne, réservé aux parents et au personnel de l'école, et dans le bottin imprimé remis à chaque famille. Ils serviront seulement à la vie de la communauté de l'école. Laissez vide tout champ que vous ne souhaitez pas partager. Vos renseignements sont hébergés par Google, en partie à l'extérieur du Québec. Vous pouvez les modifier ou vous retirer du bottin en tout temps.",
     "optOutButton": "Retirer mes informations",
     "optOutDialogTitle": "Retirer toutes les informations du bottin",
     "optOutDialogContent": "Cette action retirera toutes vos informations personnelles du bottin scolaire, incluant votre numéro de téléphone, adresse, adhésions aux comités, et intérêts. Seul votre nom restera dans le bottin.",
     "optOutDialogWarning": "Vous pouvez vous réinscrire à tout moment en accédant à nouveau à ce formulaire et en soumettant vos informations mises à jour.",
-    "reOptInWarningBox": "Vous êtes actuellement désinscrit du bottin scolaire",
-    "reOptInWarningBoxDescription": "Vos informations ont été retirées du bottin. Pour rejoindre le bottin et restaurer vos informations, remplissez simplement ce formulaire et soumettez-le en utilisant le bouton 'Valider' ci-dessous.",
+    "reOptInWarningBox": "Vos informations sont actuellement retirées du bottin scolaire",
+    "reOptInWarningBoxDescription": "Pour réintégrer le bottin, remplissez ce formulaire et soumettez-le avec le bouton « Valider » ci-dessous.",
     "optOutDialogConfirm": "Retirer mes informations",
-    "optOutProcessing": "Suppression en cours..."
+    "optOutProcessing": "Suppression en cours...",
+    "optOutPrompt": "Besoin de retirer complètement vos informations du bottin scolaire ?",
+    "error": {
+      "invalidLink": {
+        "title": "Lien de mise à jour invalide",
+        "message": "Ce lien de mise à jour semble invalide. Vérifiez que vous avez utilisé le lien complet reçu par courriel."
+      },
+      "expiredLink": {
+        "title": "Lien de mise à jour expiré",
+        "message": "Ce lien de mise à jour a expiré ou la période de mise à jour est terminée. Veuillez contacter le bureau de l'école pour obtenir de l'aide."
+      },
+      "server": {
+        "title": "Problème temporaire",
+        "message": "Le service éprouve des difficultés temporaires. Veuillez réessayer dans quelques minutes."
+      },
+      "network": {
+        "title": "Problème de connexion",
+        "message": "Impossible de joindre le serveur. Vérifiez votre connexion Internet et réessayez."
+      },
+      "submission": {
+        "title": "Problème d'enregistrement",
+        "message": "Vos modifications n'ont pas pu être enregistrées. Veuillez réessayer."
+      },
+      "optOut": {
+        "title": "Problème de retrait",
+        "message": "Le retrait de vos informations n'a pas pu être effectué. Veuillez réessayer ou contacter le bureau de l'école."
+      },
+      "unexpected": {
+        "title": "Problème inattendu",
+        "message": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard."
+      },
+      "contactOffice": "Si le problème persiste, veuillez contacter le bureau de l'école."
+    }
   },
   "updateSuccess": {
     "title": "Informations mises à jour avec succès !",

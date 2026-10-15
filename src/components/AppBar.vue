@@ -15,8 +15,8 @@
     <v-spacer v-if="!mobile" />
 
     <div class="d-flex align-center" :class="{ 'ml-auto': mobile }">
-      <!-- Refresh Button (tablet/desktop, when authenticated, hidden on small mobile) -->
-      <template v-if="authStore.isAuthenticated && !smAndDown">
+      <!-- Refresh Button (tablet/desktop, when authenticated, hidden on small mobile and on pages that don't use store data) -->
+      <template v-if="authStore.isAuthenticated && !smAndDown && !route.meta.hideRefresh">
         <v-tooltip location="bottom">
           <template #activator="{ props: tooltipProps }">
             <v-btn

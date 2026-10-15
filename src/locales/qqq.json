@@ -509,9 +509,8 @@
     }
   },
   "updateForm": {
-    "title": "Parent information update form. - Page or section title",
+    "title": "App bar title of the parent annual update form (reached from the emailed link). - French: Use sentence case",
     "loadingInfo": "Parent information update form. - Loading indicator message",
-    "errorTitle": "Parent information update form. - Page or section title",
     "goHome": "Parent information update form",
     "welcome": "Parent information update form. - Parameters: $1 = name",
     "instructions": "Parent information update form",
@@ -520,30 +519,17 @@
     "lastName": "Parent information update form. - Label for name field",
     "phone": "Parent information update form. - Label for phone number field",
     "address": "Parent information update form",
-    "sameAddressAsOther": "Parent information update form",
     "confirmOtherParentAddress": "Parent information update form. - Parameters: $1 = fullName",
     "streetAddress": "Parent information update form",
     "city": "Parent information update form",
     "postalCode": "Parent information update form",
     "committees": "Parent information update form",
-    "committeeInstructions": "Parent information update form",
+    "committeeInstructions": "Parent update form, above the committee checkboxes. Parents check only committees they are already members of, not ones they would like to join.",
     "role": "Parent information update form",
     "interests": "Parent information update form",
     "interestsInstructions": "Parent information update form",
-    "interestsPlaceholder": "Parent information update form. - Input field placeholder text",
-    "directoryParticipation": "Parent information update form",
-    "fullParticipation": "Parent information update form",
-    "limitedParticipation": "Parent information update form",
-    "optOut": "Parent information update form",
-    "optOutWarning": "Parent information update form. - Warning message",
     "submit": "Parent information update form",
     "privacyNotice": "Parent information update form. - Privacy notice shown above the submit button, followed by a link to the privacy policy",
-    "invalidToken": "Parent information update form",
-    "expiredToken": "Parent information update form",
-    "serverError": "Parent information update form. - Error message",
-    "submitError": "Parent information update form. - Error message",
-    "optOutWarningBox": "Parent information update form. - Warning message",
-    "optOutWarningBoxDescription": "Parent information update form. - Descriptive text",
     "optOutButton": "Parent information update form. - Button label",
     "optOutDialogTitle": "Parent information update form. - Page or section title",
     "optOutDialogContent": "Parent information update form",
@@ -551,7 +537,39 @@
     "reOptInWarningBox": "Parent information update form. - Warning message",
     "reOptInWarningBoxDescription": "Parent information update form. - Descriptive text",
     "optOutDialogConfirm": "Parent information update form",
-    "optOutProcessing": "Parent information update form"
+    "optOutProcessing": "Parent information update form",
+    "optOutPrompt": "Sentence before the opt-out link at the bottom of the parent update form.",
+    "error": {
+      "invalidLink": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "expiredLink": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "server": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "network": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "submission": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "optOut": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "unexpected": {
+        "title": "Error screen heading on the parent update form. - French: Use sentence case",
+        "message": "Error screen explanation on the parent update form."
+      },
+      "contactOffice": "Shown on the update form error screen when the link is expired or retries keep failing."
+    }
   },
   "updateSuccess": {
     "title": "Update success page. - Page or section title",
