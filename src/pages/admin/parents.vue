@@ -36,7 +36,7 @@
 
         <v-select
           v-model="filterClass"
-          class="filter-select"
+          class="filter-select filter-select-class"
           clearable
           density="compact"
           hide-details
@@ -631,7 +631,15 @@
 
   const classOptions = computed(() => {
     if (!firebaseStore.classes) return []
-    return firebaseStore.classes.map(c => c.classLetter).toSorted()
+    return firebaseStore.classes
+      .toSorted((a, b) => a.classLetter.localeCompare(b.classLetter))
+      .map(c => {
+        const teacherName = getTeacherName(c.teacher)
+        return {
+          title: teacherName ? `${teacherName} (${c.classCode})` : c.classLetter,
+          value: c.classLetter,
+        }
+      })
   })
 
   const emailStatusItems = computed(() => [
@@ -1031,6 +1039,11 @@
   .filter-select {
     flex: 1 1 160px;
     max-width: 220px;
+  }
+
+  .filter-select-class {
+    flex-basis: 240px;
+    max-width: 300px;
   }
 
   .parent-email {
