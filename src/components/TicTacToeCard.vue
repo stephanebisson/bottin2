@@ -6,7 +6,7 @@
   >
     <div class="d-flex flex-column align-center flex-grow-1">
       <!-- Header -->
-      <v-icon class="mb-3" color="success" size="48">mdi-gamepad-variant</v-icon>
+      <v-icon class="mb-3" color="secondary" size="48">mdi-gamepad-variant</v-icon>
       <h3 class="text-title-large font-weight-bold mb-1">{{ $i18n('easterEgg.ticTacToe') }}</h3>
       <p class="text-body-small text-medium-emphasis mb-4">{{ $i18n('easterEgg.takeABreak') }}</p>
 

@@ -46,6 +46,6 @@ export function formatStudentClass (student, classes = [], locale = 'fr') {
   const classItem = classes.find(c => c.classLetter === student.className)
   return [
     student.level ? formatGradeLevel(student.level, locale) : null,
-    classItem?.className || student.className || null,
+    classItem?.className || null,
   ].filter(Boolean).join(' · ')
 }

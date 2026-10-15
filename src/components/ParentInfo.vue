@@ -76,7 +76,7 @@
 
     <!-- Interests (if showInterests) -->
     <div v-if="showInterests && parent.interests?.length" class="text-body-medium d-flex align-center mb-2">
-      <v-icon class="me-1" size="16">mdi-heart</v-icon>
+      <v-icon class="me-1" color="secondary" size="16">mdi-heart</v-icon>
       <span>{{ displayedInterests }}</span>
     </div>
 
@@ -141,7 +141,7 @@
     },
   })
 
-  const memberTypeColor = computed(() => ({ staff: 'blue', student: 'green' })[props.memberType] || 'grey')
+  const memberTypeColor = computed(() => ({ staff: 'staff', student: 'feve' })[props.memberType] || 'grey')
   const memberTypeLabelKey = computed(() => ({ staff: 'committees.staff', student: 'committees.student' })[props.memberType] || 'committees.parent')
 
   const parentName = computed(() => {

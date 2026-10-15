@@ -132,6 +132,7 @@
   import { collection, getDocs, query, where } from 'firebase/firestore'
   import { computed, onMounted, ref } from 'vue'
   import { useTranslate } from '@/composables/useTranslate'
+  import { ACTION_COLORS } from '@/config/entities'
   import { db } from '@/firebase'
   import { getCurrentSchoolYear } from '@/utils/schoolYear.js'
 
@@ -151,16 +152,6 @@
   const filterEntityType = ref(null)
   const filterActor = ref('')
   const filterDateFrom = ref(null)
-
-  const ACTION_COLORS = {
-    send_update_email: 'info',
-    opt_out_parent: 'warning',
-    remove_parent: 'error',
-    progress_student: 'success',
-    graduate_student: 'secondary',
-    depart_student: 'error',
-    assign_class: 'primary',
-  }
 
   const schoolYearOptions = computed(() => {
     const options = [{ title: $i18n('admin.auditLog.allYears'), value: 'all' }]

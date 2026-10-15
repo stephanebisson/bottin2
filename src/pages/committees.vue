@@ -106,7 +106,7 @@
                 <!-- Parent Members Section -->
                 <div v-if="committee.parentMembers.length > 0">
                   <div class="text-title-small font-weight-medium mb-3 d-flex align-center">
-                    <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
+                    <v-icon class="me-2" color="accent" size="small">mdi-account-group</v-icon>
                     {{ committee.hasMixedMemberTypes ? $i18n('committees.parentMembers') : $i18n('committees.membersHeader') }}
                   </div>
 
@@ -158,7 +158,7 @@
                     class="text-title-small font-weight-medium mb-3 d-flex align-center"
                     :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
                   >
-                    <v-icon class="me-2" color="green" size="small">mdi-leaf</v-icon>
+                    <v-icon class="me-2" color="feve" size="small">mdi-leaf</v-icon>
                     {{ $i18n('committees.studentMembers') }}
                   </div>
 
@@ -207,7 +207,7 @@
                 <!-- Single group fallback (committees with only one member type) -->
                 <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.studentMembers.length === 0 && committee.unknownMembers.length === 0">
                   <div class="text-title-small font-weight-medium mb-3 d-flex align-center">
-                    <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
+                    <v-icon class="me-2" color="accent" size="small">mdi-account-group</v-icon>
                     {{ $i18n('committees.membersHeader') }}
                   </div>
 

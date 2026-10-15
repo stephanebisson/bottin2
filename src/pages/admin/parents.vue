@@ -489,6 +489,7 @@
   import { useRoute } from 'vue-router'
   import ParentFormDialog from '@/components/admin/ParentFormDialog.vue'
   import { useTranslate } from '@/composables/useTranslate'
+  import { ACTION_COLORS } from '@/config/entities'
   import { getFunctionsBaseUrl, secureFetch } from '@/config/functions.js'
   import { db } from '@/firebase'
   import { ParentRepository } from '@/repositories/ParentRepository.js'
@@ -573,12 +574,6 @@
 
   const EMAIL_VARIANTS = ['initial', 'reminder', 'final']
 
-  const LOG_CHIP_COLORS = {
-    send_update_email: 'info',
-    opt_out_parent: 'warning',
-    remove_parent: 'error',
-  }
-
   function getTeacherName (teacherId) {
     if (!teacherId || !firebaseStore.staffDTO) return ''
     const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
@@ -615,7 +610,7 @@
   function getLogChipColor (parentId) {
     const log = parentLogs.value.get(parentId)
     if (!log) return 'grey'
-    return LOG_CHIP_COLORS[log.actionType] || 'grey'
+    return ACTION_COLORS[log.actionType] || 'grey'
   }
 
   const tableHeaders = computed(() => [

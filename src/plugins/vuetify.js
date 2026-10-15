@@ -28,6 +28,8 @@ export default createVuetify({
           'primary': '#1565C0',
           'secondary': '#FF8F00',
           'accent': '#3F51B5',
+          'staff': '#00796B',
+          'feve': '#558B2F',
           'success': '#2E7D32',
           'warning': '#F57F17',
           'error': '#C62828',

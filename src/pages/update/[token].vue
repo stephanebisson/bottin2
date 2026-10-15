@@ -265,7 +265,7 @@
               <!-- Interests & Skills Section -->
               <v-col cols="12">
                 <h3 class="text-title-large font-weight-bold mb-4 mt-4">
-                  <v-icon class="mr-2">mdi-star</v-icon>
+                  <v-icon class="mr-2" color="secondary">mdi-heart</v-icon>
                   {{ $i18n('updateForm.interests') }}
                 </h3>
               </v-col>

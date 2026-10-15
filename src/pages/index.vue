@@ -87,6 +87,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useTranslate } from '@/composables/useTranslate'
+  import { ENTITY_STYLES } from '@/config/entities'
   import { db } from '@/firebase'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
   import { useAuthStore } from '@/stores/auth'
@@ -174,15 +175,13 @@
   const navigationItems = computed(() => [
     {
       title: $i18n('nav.classes'),
-      icon: 'mdi-school',
-      color: 'primary',
+      ...ENTITY_STYLES.class,
       route: '/classes',
       counts: [{ count: firebaseStore.classes.length, label: $i18n('dashboard.classes') }],
     },
     {
       title: $i18n('directory.title'),
-      icon: 'mdi-book-account',
-      color: 'secondary',
+      ...ENTITY_STYLES.family,
       route: '/families',
       counts: [
         { count: firebaseStore.studentsDTO.length, label: $i18n('dashboard.students') },
@@ -191,15 +190,13 @@
     },
     {
       title: $i18n('nav.staff'),
-      icon: 'mdi-account-tie',
-      color: 'accent',
+      ...ENTITY_STYLES.staff,
       route: '/staff',
       counts: [{ count: firebaseStore.staffDTO.length, label: $i18n('dashboard.staffMembers') }],
     },
     {
       title: $i18n('nav.committees'),
-      icon: 'mdi-account-group',
-      color: 'warning',
+      ...ENTITY_STYLES.committee,
       route: '/committees',
       counts: [{ count: firebaseStore.committeesDTO.length, label: $i18n('dashboard.committees') }],
     },

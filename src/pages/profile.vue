@@ -41,7 +41,7 @@
               <!-- Contact Information -->
               <div class="d-flex flex-column flex-sm-row gap-4 mb-4">
                 <div v-if="parentProfile.email" class="d-flex align-center">
-                  <v-icon class="me-2" color="primary" size="small">mdi-email</v-icon>
+                  <v-icon class="me-2" size="small">mdi-email</v-icon>
 
                   <a
                     class="text-decoration-none"
@@ -52,7 +52,7 @@
                 </div>
 
                 <div v-if="parentProfile.phone" class="d-flex align-center">
-                  <v-icon class="me-2" color="primary" size="small">mdi-phone</v-icon>
+                  <v-icon class="me-2" size="small">mdi-phone</v-icon>
 
                   <a
                     class="text-decoration-none"
@@ -65,7 +65,7 @@
 
               <!-- Address -->
               <div v-if="formattedAddress" class="d-flex align-center">
-                <v-icon class="me-2" color="primary" size="small">mdi-home</v-icon>
+                <v-icon class="me-2" size="small">mdi-home</v-icon>
                 <span class="text-body-large">{{ formattedAddress }}</span>
               </div>
             </div>
@@ -79,7 +79,7 @@
         <v-col cols="12" lg="8">
           <!-- My Children Section -->
           <v-card class="mb-6">
-            <v-card-title class="d-flex align-center bg-primary-lighten-5">
+            <v-card-title class="d-flex align-center">
               <v-icon class="me-2" color="primary">mdi-account-child</v-icon>
               {{ $i18n('profile.myChildren') }}
             </v-card-title>
@@ -104,31 +104,7 @@
                   </v-list-item-title>
 
                   <v-list-item-subtitle>
-                    <div class="d-flex flex-column flex-sm-row gap-2 mt-1">
-                      <v-chip
-                        v-if="child.className"
-                        color="primary"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {{ $i18n('profile.class') }}: {{ child.className }}
-                      </v-chip>
-
-                      <v-chip
-                        v-if="child.level"
-                        color="secondary"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {{ child.level }}
-                      </v-chip>
-                    </div>
-
-                    <div v-if="getTeacherName(child.className)" class="mt-2">
-                      <span class="text-body-medium">
-                        {{ $i18n('profile.teacher') }}: {{ getTeacherName(child.className) }}
-                      </span>
-                    </div>
+                    <StudentClassInfo :student="child" />
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-list>
@@ -145,8 +121,8 @@
         <v-col cols="12" lg="4">
           <!-- Committee Memberships -->
           <v-card class="mb-6">
-            <v-card-title class="d-flex align-center bg-success-lighten-5">
-              <v-icon class="me-2" color="success">mdi-account-group</v-icon>
+            <v-card-title class="d-flex align-center">
+              <v-icon class="me-2" color="accent">mdi-account-group</v-icon>
               {{ $i18n('profile.committees') }}
             </v-card-title>
 
@@ -158,7 +134,7 @@
                   :class="{ 'border-b': index < committees.length - 1 }"
                 >
                   <template #prepend>
-                    <v-icon color="success">mdi-account-group</v-icon>
+                    <v-icon class="text-medium-emphasis">mdi-account-group</v-icon>
                   </template>
 
                   <v-list-item-title class="font-weight-bold">
@@ -167,7 +143,7 @@
 
                   <v-list-item-subtitle v-if="committee.role && committee.role !== 'Member'">
                     <v-chip
-                      color="success"
+                      color="accent"
                       size="small"
                       variant="tonal"
                     >
@@ -186,8 +162,8 @@
 
           <!-- Interests & Skills -->
           <v-card v-if="displayedInterests.length > 0" class="mb-6">
-            <v-card-title class="d-flex align-center bg-info-lighten-5">
-              <v-icon class="me-2" color="info">mdi-star</v-icon>
+            <v-card-title class="d-flex align-center">
+              <v-icon class="me-2" color="secondary">mdi-heart</v-icon>
               {{ $i18n('profile.interests') }}
             </v-card-title>
 
@@ -247,11 +223,7 @@
     const parentId = parentProfile.value.id
     return firebaseStore.studentsDTO.filter(student =>
       student.parent1_id === parentId || student.parent2_id === parentId,
-    ).toSorted((a, b) => {
-      const aName = `${a.last_name}, ${a.first_name}`.toLowerCase()
-      const bName = `${b.last_name}, ${b.first_name}`.toLowerCase()
-      return aName.localeCompare(bName)
-    })
+    ).toSorted((a, b) => (a.level ?? 0) - (b.level ?? 0))
   })
 
   // Get committees for this parent
@@ -309,14 +281,6 @@
       return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
     }
     return phone
-  }
-
-  function getTeacherName (className) {
-    if (!className) return null
-    const classItem = firebaseStore.classes.find(c => c.classLetter === className)
-    if (!classItem) return null
-    const teacher = firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
-    return teacher ? teacher.first_name : null
   }
 
   onMounted(async () => {

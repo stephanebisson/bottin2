@@ -46,7 +46,7 @@
         <div v-for="subgroup in group.subgroups" :key="subgroup.name" class="mb-6">
           <!-- Subgroup Header (h3) -->
           <div class="d-flex align-center mb-3">
-            <v-icon class="me-3" color="primary" size="large">
+            <v-icon class="me-3" color="staff" size="large">
               {{ getGroupIcon(group.group, subgroup.subgroup) }}
             </v-icon>
 
@@ -87,7 +87,7 @@
                 <!-- Contact Information -->
                 <div class="mb-3">
                   <div v-if="member.email" class="mb-2 d-flex align-center staff-contact-row">
-                    <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-email</v-icon>
+                    <v-icon class="me-2 flex-shrink-0" size="small">mdi-email</v-icon>
 
                     <a class="text-decoration-none text-body-medium" :href="`mailto:${member.email}`">
                       <HighlightedText :query="searchQuery" :text="member.email" />
@@ -95,7 +95,7 @@
                   </div>
 
                   <div v-if="member.phone" class="mb-2 d-flex align-center staff-contact-row">
-                    <v-icon class="me-2 flex-shrink-0" color="primary" size="small">mdi-phone</v-icon>
+                    <v-icon class="me-2 flex-shrink-0" size="small">mdi-phone</v-icon>
 
                     <a class="text-decoration-none text-body-medium" :href="`tel:${member.phone}`">
                       {{ formatPhone(member.phone) }}

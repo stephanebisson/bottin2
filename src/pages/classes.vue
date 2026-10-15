@@ -334,7 +334,7 @@
                                       <v-icon
                                         v-if="isFevesMember(student.id)"
                                         class="ml-1"
-                                        color="green"
+                                        color="feve"
                                         size="small"
                                         :title="$i18n('classes.fevesMember')"
                                       >mdi-leaf</v-icon></span>
@@ -430,7 +430,7 @@
                                   <v-icon
                                     v-if="isFevesMember(student.id)"
                                     class="ml-1"
-                                    color="green"
+                                    color="feve"
                                     size="small"
                                     :title="$i18n('classes.fevesMember')"
                                   >mdi-leaf</v-icon></span>

@@ -299,8 +299,6 @@
   },
   "profile": {
     "myChildren": "User profile page",
-    "class": "User profile page",
-    "teacher": "User profile page",
     "committees": "User profile page",
     "interests": "User profile page",
     "noChildrenFound": "User profile page",

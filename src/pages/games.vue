@@ -2,7 +2,7 @@
   <v-container>
     <!-- Header Section -->
     <div class="text-center mb-8">
-      <v-icon color="success" size="64">mdi-gamepad-variant</v-icon>
+      <v-icon color="secondary" size="64">mdi-gamepad-variant</v-icon>
       <p class="text-title-large text-medium-emphasis">{{ $i18n('games.subtitle') }}</p>
     </div>
 

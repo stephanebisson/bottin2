@@ -164,7 +164,7 @@
         <template #item.className="{ item }">
           <v-chip
             v-if="!item.className"
-            color="orange"
+            color="warning"
             size="small"
             variant="tonal"
           >
@@ -268,12 +268,12 @@
             </div>
 
             <div class="d-flex align-center ga-2">
-              <v-icon color="orange">mdi-swap-horizontal</v-icon>
+              <v-icon color="warning">mdi-swap-horizontal</v-icon>
               <span>{{ $i18n('admin.studentsTable.progressDialog.needsAssignment', progressionPlan.needsAssignment.length) }}</span>
             </div>
 
             <div class="d-flex align-center ga-2">
-              <v-icon color="error">mdi-graduation-cap</v-icon>
+              <v-icon color="secondary">mdi-graduation-cap</v-icon>
               <span>{{ $i18n('admin.studentsTable.progressDialog.graduating', progressionPlan.graduating.length) }}</span>
             </div>
 
@@ -459,6 +459,7 @@
   import { useTranslate } from '@/composables/useTranslate'
   import { CLASS_LEVEL_MAPPING } from '@/config/classLevels'
   import { FEVES_COMMITTEE_ID } from '@/config/committees'
+  import { ACTION_COLORS } from '@/config/entities'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
@@ -639,13 +640,6 @@
 
   // ─── Log Chips ────────────────────────────────────────────────────────────────
 
-  const chipColors = {
-    progress_student: 'blue',
-    graduate_student: 'purple',
-    depart_student: 'red',
-    assign_class: 'green',
-  }
-
   function getLogChip (studentId) {
     const log = studentLogs.value.get(studentId)
     if (!log) return null
@@ -657,7 +651,7 @@
 
   function getLogChipColor (studentId) {
     const log = studentLogs.value.get(studentId)
-    return log ? (chipColors[log.actionType] ?? 'grey') : 'grey'
+    return log ? (ACTION_COLORS[log.actionType] ?? 'grey') : 'grey'
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -28,7 +28,7 @@
         </v-list-item-title>
 
         <v-list-item-subtitle>
-          {{ childDetails(child) }}
+          <StudentClassInfo :student="child" />
         </v-list-item-subtitle>
       </v-list-item>
     </v-list>
@@ -62,12 +62,9 @@
 
 <script setup>
   import { computed } from 'vue'
-  import { useI18n } from 'vue-banana-i18n'
   import { useTranslate } from '@/composables/useTranslate'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-  import { formatGradeLevel } from '@/utils/gradeFormatter'
 
-  const bananaI18n = useI18n()
   const $i18n = useTranslate()
   const firebaseStore = useFirebaseDataStore()
 
@@ -95,16 +92,4 @@
       .filter(c => c.hasMember(parent.value.id))
       .toSorted((a, b) => a.name.localeCompare(b.name))
   })
-
-  function childDetails (child) {
-    const parts = []
-    if (child.className) {
-      parts.push(`${$i18n('profile.class')} ${child.className}`)
-      const classItem = firebaseStore.classes.find(c => c.classLetter === child.className)
-      const teacher = classItem && firebaseStore.staffDTO.find(s => s.id === classItem.teacher)
-      if (teacher) parts.push(teacher.fullName)
-    }
-    if (child.level) parts.push(formatGradeLevel(child.level, bananaI18n.locale))
-    return parts.join(' · ')
-  }
 </script>
