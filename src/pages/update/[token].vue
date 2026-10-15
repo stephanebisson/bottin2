@@ -270,10 +270,21 @@
           </v-btn>
 
           <!-- Opt-out (only if not currently opted out) -->
-          <p v-if="!parentData.optedOut" class="text-body-medium text-medium-emphasis mt-8">
-            {{ $i18n('updateForm.optOutPrompt') }}
-            <a class="text-no-wrap" href="#" role="button" @click.prevent="showOptOutDialog = true">{{ $i18n('updateForm.optOutButton') }}</a>
-          </p>
+          <div v-if="!parentData.optedOut" class="mt-10">
+            <p class="text-body-medium text-medium-emphasis mb-2">
+              {{ $i18n('updateForm.optOutPrompt') }}
+            </p>
+
+            <v-btn
+              color="error"
+              prepend-icon="mdi-account-remove"
+              size="small"
+              variant="outlined"
+              @click="showOptOutDialog = true"
+            >
+              {{ $i18n('updateForm.optOutButton') }}
+            </v-btn>
+          </div>
         </div>
       </v-form>
     </div>
