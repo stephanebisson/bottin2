@@ -101,7 +101,7 @@ export class FeedbackDTO {
     if (this.message.length <= 100) {
       return this.message
     }
-    return this.message.slice(0, 100) + '...'
+    return this.message.slice(0, 100) + '…'
   }
 
   /**

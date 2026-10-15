@@ -14,7 +14,7 @@
         />
 
         <div class="mt-4 text-title-large">
-          Loading...
+          {{ $i18n('common.loading') }}
         </div>
       </div>
     </v-overlay>

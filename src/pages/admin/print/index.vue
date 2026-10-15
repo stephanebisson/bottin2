@@ -1,7 +1,7 @@
 <template>
   <div v-if="loading" class="loading">
     <div class="loading-content">
-      <p>Chargement des données du bottin...</p>
+      <p>Chargement des données du bottin…</p>
     </div>
   </div>
 
