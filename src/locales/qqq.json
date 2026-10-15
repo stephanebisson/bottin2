@@ -203,13 +203,10 @@
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
     "todo": {
       "notEmailed": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "notEmailedDone": "Dashboard admin tile when the count is zero",
       "notUpdated": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "notUpdatedDone": "Dashboard admin tile when the count is zero",
       "unassigned": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "unassignedDone": "Dashboard admin tile when the count is zero",
       "pendingFeedback": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "pendingFeedbackDone": "Dashboard admin tile when the count is zero"
+      "noChildren": "Dashboard admin tile, shown after the count. - Parameters: $1 = count"
     }
   },
   "debug": {

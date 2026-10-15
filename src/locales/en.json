@@ -228,13 +228,10 @@
     "adminTodo": "To do",
     "todo": {
       "notEmailed": "{{PLURAL:$1|parent not emailed this year|parents not emailed this year}}",
-      "notEmailedDone": "All parents emailed",
       "notUpdated": "{{PLURAL:$1|parent not updated this year|parents not updated this year}}",
-      "notUpdatedDone": "All parents updated",
       "unassigned": "{{PLURAL:$1|student without a class|students without a class}}",
-      "unassignedDone": "All students have a class",
       "pendingFeedback": "{{PLURAL:$1|pending comment|pending comments}}",
-      "pendingFeedbackDone": "No pending comments"
+      "noChildren": "{{PLURAL:$1|parent without children|parents without children}}"
     }
   },
   "debug": {

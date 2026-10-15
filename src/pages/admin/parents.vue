@@ -521,7 +521,7 @@
   const tablePage = ref(1)
   const recentlyAddedIds = ref([])
 
-  // Filters (email status and submitted can be preset from the URL, e.g. links from the home page)
+  // Filters (email status, submitted and no children can be preset from the URL, e.g. links from the home page)
   const route = useRoute()
   const filterSearch = ref('')
   const filterClass = ref(null)
@@ -529,7 +529,7 @@
   const filterSubmitted = ref(route.query.submitted === 'no' ? 'no' : 'all')
   const filterAccount = ref('all')
   const filterOptedOut = ref(false)
-  const filterNoChildren = ref(false)
+  const filterNoChildren = ref(route.query.noChildren === '1')
 
   // The two on/off filters, shown as chips
   const toggleFilters = computed({

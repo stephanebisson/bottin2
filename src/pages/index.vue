@@ -43,6 +43,7 @@
 
       <AdminTodoStrip
         v-if="authStore.isAdmin"
+        :no-children="noChildrenCount"
         :not-emailed="notEmailedCount"
         :not-updated="notUpdatedCount"
         :pending-feedback="pendingFeedbackCount"
@@ -159,6 +160,11 @@
   const notUpdatedCount = computed(() =>
     firebaseStore.parentsDTO.filter(p => !isInCurrentSchoolYear(p.lastUpdated)).length,
   )
+
+  const noChildrenCount = computed(() => {
+    const linkedParentIds = new Set(firebaseStore.studentsDTO.flatMap(s => [s.parent1_id, s.parent2_id]))
+    return firebaseStore.parentsDTO.filter(p => !linkedParentIds.has(p.id)).length
+  })
 
   const unassignedCount = computed(() =>
     firebaseStore.studentsDTO.filter(s => !s.className).length,

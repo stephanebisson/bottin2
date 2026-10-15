@@ -228,13 +228,10 @@
     "adminTodo": "À faire",
     "todo": {
       "notEmailed": "{{PLURAL:$1|parent sans courriel cette année|parents sans courriel cette année}}",
-      "notEmailedDone": "Tous les parents ont reçu le courriel",
       "notUpdated": "{{PLURAL:$1|parent pas à jour cette année|parents pas à jour cette année}}",
-      "notUpdatedDone": "Tous les parents sont à jour",
       "unassigned": "{{PLURAL:$1|élève sans classe|élèves sans classe}}",
-      "unassignedDone": "Tous les élèves ont une classe",
       "pendingFeedback": "{{PLURAL:$1|commentaire en attente|commentaires en attente}}",
-      "pendingFeedbackDone": "Aucun commentaire en attente"
+      "noChildren": "{{PLURAL:$1|parent sans enfant|parents sans enfant}}"
     }
   },
   "debug": {
