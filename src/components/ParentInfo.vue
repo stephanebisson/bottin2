@@ -41,7 +41,7 @@
     <!-- Committees (if showCommittees) -->
     <div
       v-if="showCommittees && committees.length > 0"
-      class="text-body-small mb-1 text-primary font-italic"
+      class="text-body-small mb-1 text-accent font-italic"
     >
       {{ committees.join(', ') }}
     </div>

@@ -222,7 +222,7 @@
                       {{ $i18n('feedback.admin.adminNotes') }}
                     </div>
 
-                    <div class="text-body-large pa-3 bg-blue-lighten-5 rounded">
+                    <div class="text-body-large pa-3 bg-surface-light rounded">
                       {{ item.admin_notes }}
                     </div>
                   </div>

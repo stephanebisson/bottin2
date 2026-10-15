@@ -38,7 +38,7 @@
       <!-- Staff Groups -->
       <div v-for="group in filteredStaffGroups" :key="group.name" class="mb-8">
         <!-- Group Header (h2) -->
-        <h2 class="text-headline-large font-weight-bold text-primary mb-6">
+        <h2 class="text-headline-large font-weight-bold mb-6">
           {{ group.name }}
         </h2>
 
@@ -51,7 +51,7 @@
             </v-icon>
 
             <div>
-              <h3 class="text-headline-small font-weight-bold text-primary">
+              <h3 class="text-headline-small font-weight-bold">
                 {{ subgroup.name }}
               </h3>
 

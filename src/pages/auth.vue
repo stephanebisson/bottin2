@@ -233,6 +233,6 @@
 <style scoped>
 .fill-height {
   min-height: 100vh;
-  background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(25, 118, 210, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.1) 0%, rgba(var(--v-theme-primary), 0.05) 100%);
 }
 </style>

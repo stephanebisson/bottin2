@@ -64,7 +64,7 @@
                   </div>
 
                   <v-chip
-                    :color="member.memberType === 'staff' ? 'blue' : member.memberType === 'student' ? 'green' : 'grey'"
+                    :color="member.memberType === 'staff' ? 'staff' : member.memberType === 'student' ? 'feve' : 'grey'"
                     size="small"
                     variant="tonal"
                   >
@@ -140,7 +140,7 @@
               <v-col cols="12" md="2">
                 <div class="d-flex gap-2">
                   <v-btn
-                    color="success"
+                    color="primary"
                     :disabled="!newMemberId || !newMemberRole"
                     icon="mdi-check"
                     @click="addMember"

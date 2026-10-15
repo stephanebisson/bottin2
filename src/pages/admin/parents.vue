@@ -1046,10 +1046,10 @@
   }
 
   :deep(.parent-no-children) {
-    background-color: #fff3e0 !important;
+    background-color: rgba(var(--v-theme-warning), 0.08) !important;
   }
 
   :deep(.parent-no-children:hover) {
-    background-color: #ffe0b2 !important;
+    background-color: rgba(var(--v-theme-warning), 0.16) !important;
   }
 </style>

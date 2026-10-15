@@ -183,8 +183,8 @@
 }
 
 .staff-card--modified {
-  border-left: 4px solid #2196f3;
-  background-color: #f5f9ff;
+  border-left: 4px solid rgb(var(--v-theme-primary));
+  background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 .v-row {

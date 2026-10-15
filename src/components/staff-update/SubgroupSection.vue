@@ -2,12 +2,12 @@
   <div class="subgroup-section mb-8">
     <!-- Subgroup Header -->
     <div class="d-flex align-center mb-4">
-      <v-icon class="mr-3" color="primary" size="large">
+      <v-icon class="mr-3" color="staff" size="large">
         {{ icon }}
       </v-icon>
 
       <div>
-        <h3 class="text-title-large font-weight-bold text-primary">
+        <h3 class="text-title-large font-weight-bold">
           {{ name }}
         </h3>
 

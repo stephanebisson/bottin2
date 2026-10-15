@@ -172,7 +172,6 @@
                 <v-chip
                   v-for="interest in displayedInterests"
                   :key="interest"
-                  color="info"
                   size="small"
                   variant="outlined"
                 >
