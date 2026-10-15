@@ -56,9 +56,9 @@
                     max-width="350"
                   >
                     <template #activator="{ props }">
-                      <span v-bind="props" class="person-name">
+                      <a v-bind="props" class="person-name plain-link" :href="mailto(getTeacherInfo(classItem.teacher)?.email)">
                         {{ getTeacherName(classItem.teacher) }}
-                      </span>
+                      </a>
                     </template>
 
                     <template #default>
@@ -92,7 +92,7 @@
                     </template>
                   </v-tooltip>
 
-                  <span v-else>{{ getTeacherName(classItem.teacher) }}</span>
+                  <a v-else class="plain-link" :href="mailto(getTeacherInfo(classItem.teacher)?.email)">{{ getTeacherName(classItem.teacher) }}</a>
                 </span>
 
                 <span class="class-code">{{ classItem.classCode }}</span>
@@ -114,7 +114,7 @@
                       max-width="450"
                     >
                       <template #activator="{ props }">
-                        <a v-bind="props" class="person-name rep-link" :href="getParentMailto(classItem.parent_rep_1)">
+                        <a v-bind="props" class="person-name plain-link" :href="mailto(getParentData(classItem.parent_rep_1)?.email)">
                           {{ getParentName(classItem.parent_rep_1) }}
                         </a>
                       </template>
@@ -190,7 +190,7 @@
                       </template>
                     </v-tooltip>
 
-                    <a v-else class="rep-link" :href="getParentMailto(classItem.parent_rep_1)">
+                    <a v-else class="plain-link" :href="mailto(getParentData(classItem.parent_rep_1)?.email)">
                       {{ getParentName(classItem.parent_rep_1) }}
                     </a>
                   </div>
@@ -203,7 +203,7 @@
                       max-width="450"
                     >
                       <template #activator="{ props }">
-                        <a v-bind="props" class="person-name rep-link" :href="getParentMailto(classItem.parent_rep_2)">
+                        <a v-bind="props" class="person-name plain-link" :href="mailto(getParentData(classItem.parent_rep_2)?.email)">
                           {{ getParentName(classItem.parent_rep_2) }}
                         </a>
                       </template>
@@ -279,7 +279,7 @@
                       </template>
                     </v-tooltip>
 
-                    <a v-else class="rep-link" :href="getParentMailto(classItem.parent_rep_2)">
+                    <a v-else class="plain-link" :href="mailto(getParentData(classItem.parent_rep_2)?.email)">
                       {{ getParentName(classItem.parent_rep_2) }}
                     </a>
                   </div>
@@ -742,9 +742,8 @@
     return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
   }
 
-  // mailto link for a parent rep; no href (plain text) when the parent has no email
-  function getParentMailto (parentId) {
-    const email = getParentData(parentId)?.email
+  // mailto link for a name; no href (plain text) when there is no email
+  function mailto (email) {
     return email ? `mailto:${email}` : undefined
   }
 
@@ -939,13 +938,13 @@
   font-size: 0.8125rem;
 }
 
-/* Parent reps are mailto links that look like plain names */
-.rep-link {
+/* Teacher and parent reps are mailto links that look like plain names */
+.plain-link {
   color: inherit;
   text-decoration: none;
 }
 
-.rep-link[href] {
+.plain-link[href] {
   cursor: pointer;
 }
 
