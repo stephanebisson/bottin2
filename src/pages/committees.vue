@@ -113,8 +113,7 @@
                   <ParentInfo
                     v-for="member in committee.parentMembers"
                     :key="member.email"
-                    class="member-item-compact mb-2 rounded"
-                    :class="'bg-surface-light'"
+                    class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -132,15 +131,14 @@
                     class="text-title-small font-weight-medium mb-3 d-flex align-center"
                     :class="{ 'mt-4': committee.parentMembers.length > 0 }"
                   >
-                    <v-icon class="me-2" color="primary" size="small">mdi-school</v-icon>
+                    <v-icon class="me-2" color="staff" size="small">mdi-account-tie</v-icon>
                     {{ $i18n('committees.staffMembers') }}
                   </div>
 
                   <ParentInfo
                     v-for="member in committee.staffMembers"
                     :key="member.email"
-                    class="member-item-compact mb-2 rounded"
-                    :class="'bg-blue-lighten-5'"
+                    class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -165,8 +163,7 @@
                   <ParentInfo
                     v-for="member in committee.studentMembers"
                     :key="member.memberId"
-                    class="member-item-compact mb-2 rounded"
-                    :class="'bg-green-lighten-5'"
+                    class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -184,15 +181,14 @@
                     class="text-title-small font-weight-medium mb-3 d-flex align-center"
                     :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 || committee.studentMembers.length > 0 }"
                   >
-                    <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
+                    <v-icon class="me-2 text-medium-emphasis" size="small">mdi-help-circle</v-icon>
                     {{ $i18n('committees.unknownMembers') }}
                   </div>
 
                   <ParentInfo
                     v-for="member in committee.unknownMembers"
                     :key="member.email"
-                    class="member-item-compact mb-2 rounded"
-                    :class="'bg-orange-lighten-5'"
+                    class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -214,8 +210,7 @@
                   <ParentInfo
                     v-for="member in committee.enrichedMembers"
                     :key="member.email"
-                    class="member-item-compact mb-2 rounded"
-                    :class="member.memberType === 'staff' ? 'bg-blue-lighten-5' : member.memberType === 'unknown' ? 'bg-orange-lighten-5' : 'bg-surface-light'"
+                    class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
                     :role="member.role"
@@ -478,18 +473,6 @@
 
 .member-item-compact {
   padding: 12px;
-}
-
-.member-item-compact.bg-blue-lighten-5 .parent-info {
-  border-left-color: rgb(var(--v-theme-blue));
-}
-
-.member-item-compact.bg-surface-light .parent-info {
-  border-left-color: rgb(var(--v-theme-grey));
-}
-
-.member-item-compact.bg-orange-lighten-5 .parent-info {
-  border-left-color: rgb(var(--v-theme-orange));
 }
 
 a {

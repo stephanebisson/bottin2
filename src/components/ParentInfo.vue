@@ -13,7 +13,7 @@
 
       <v-chip
         v-if="showRole && role"
-        :color="role === 'Chair' || role === 'Co-Chair' ? 'primary' : 'grey'"
+        :color="CHAIR_ROLES.includes(role) ? 'primary' : 'grey'"
         size="x-small"
         variant="outlined"
       >
@@ -86,6 +86,7 @@
 <script setup>
   import { computed } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import { CHAIR_ROLES } from '@/config/committees'
   import { getInterestNames } from '@/config/interests'
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
 
