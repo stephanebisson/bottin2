@@ -78,7 +78,7 @@ export class ClassRepository {
 
   /**
    * Get simplified class options for dropdowns
-   * @returns {Promise<Array>} Array of { value: classLetter, text: "A - Teacher Name" }
+   * @returns {Promise<Array>} Array of { value: classLetter, text: "Teacher Name (code)" }
    */
   async getClassDropdownOptions () {
     try {
@@ -86,7 +86,7 @@ export class ClassRepository {
 
       return classes.map(classItem => ({
         value: classItem.classLetter,
-        text: `${classItem.classLetter} - ${classItem.teacherName}`,
+        text: `${classItem.teacherName} (${classItem.classCode || classItem.classLetter})`,
         teacher: classItem.teacherName,
         classLetter: classItem.classLetter,
         classCode: classItem.classCode,

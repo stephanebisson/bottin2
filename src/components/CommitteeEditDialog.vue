@@ -187,7 +187,7 @@
   import { FEVES_COMMITTEE_ID, getCommitteeRoles, STUDENT_MEMBER_ROLE } from '@/config/committees'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
-  import { formatStudentClass } from '@/utils/gradeFormatter.js'
+  import { formatStudentTeacher } from '@/utils/gradeFormatter.js'
   import { matchesSearch } from '@/utils/search'
 
   const props = defineProps({
@@ -319,7 +319,7 @@
           memberType: 'staff',
         })),
         ...students.map(s => {
-          const classLabel = formatStudentClass(s, firebaseStore.classes, bananaI18n.locale)
+          const classLabel = formatStudentTeacher(s, firebaseStore.classes, firebaseStore.staffDTO, bananaI18n.locale)
           return {
             memberId: s.id,
             email: null,

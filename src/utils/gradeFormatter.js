@@ -36,16 +36,18 @@ export function formatGradeLevel (level, locale = 'fr') {
 }
 
 /**
- * Format a student's grade level and class name (e.g., "3e année · Les dauphins mignons")
+ * Format a student's grade level and teacher name (e.g., "3e année · Marie Tremblay")
  * @param {Object} student - Student with level and className (class letter)
- * @param {Object[]} classes - Classes from the store, to resolve the class letter to its name
+ * @param {Object[]} classes - Classes from the store, to resolve the class letter to its teacher
+ * @param {Object[]} staff - Staff from the store, to resolve the teacher ID to a name
  * @param {string} locale - The locale ('fr' or 'en'). Defaults to 'fr'.
  * @returns {string} Formatted label, empty parts omitted
  */
-export function formatStudentClass (student, classes = [], locale = 'fr') {
+export function formatStudentTeacher (student, classes = [], staff = [], locale = 'fr') {
   const classItem = classes.find(c => c.classLetter === student.className)
+  const teacher = classItem && staff.find(s => s.id === classItem.teacher)
   return [
     student.level ? formatGradeLevel(student.level, locale) : null,
-    classItem?.className || null,
+    teacher?.fullName || null,
   ].filter(Boolean).join(' · ')
 }

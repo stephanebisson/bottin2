@@ -258,7 +258,7 @@
   import { getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
-  import { formatStudentClass } from '@/utils/gradeFormatter.js'
+  import { formatStudentTeacher } from '@/utils/gradeFormatter.js'
   import { matchesSearch } from '@/utils/search'
 
   definePage({ meta: { titleKey: 'committees.title' } })
@@ -318,7 +318,7 @@
                   email: null,
                   fullName: `${studentMatch.first_name} ${studentMatch.last_name}`,
                   phone: null,
-                  classLabel: formatStudentClass(studentMatch, firebaseStore.classes, bananaI18n.locale),
+                  classLabel: formatStudentTeacher(studentMatch, firebaseStore.classes, firebaseStore.staffDTO, bananaI18n.locale),
                   memberType: 'student',
                 }
               }
