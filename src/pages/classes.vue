@@ -369,7 +369,14 @@
                                     :class="{ 'font-weight-bold': isStudentRepresentative(student.id, classItem.classLetter) }"
                                     style="cursor: help; text-decoration: underline dotted; text-decoration-color: rgba(0,0,0,0.3);"
                                   >
-                                    {{ student.first_name }} {{ student.last_name }}
+                                    {{ student.first_name }} <span class="text-no-wrap">{{ student.last_name }}<v-icon
+                                      v-if="isFevesMember(student.id)"
+                                      class="ml-1"
+                                      color="green"
+                                      size="small"
+                                      :title="$i18n('classes.fevesMember')"
+                                    >mdi-leaf</v-icon></span>
+
                                     <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">{{ $i18n('classes.representative') }}</span>
                                   </span>
                                 </template>
@@ -454,7 +461,14 @@
                                 class="student-name"
                                 :class="{ 'font-weight-bold': isStudentRepresentative(student.id, classItem.classLetter) }"
                               >
-                                {{ student.first_name }} {{ student.last_name }}
+                                {{ student.first_name }} <span class="text-no-wrap">{{ student.last_name }}<v-icon
+                                  v-if="isFevesMember(student.id)"
+                                  class="ml-1"
+                                  color="green"
+                                  size="small"
+                                  :title="$i18n('classes.fevesMember')"
+                                >mdi-leaf</v-icon></span>
+
                                 <span v-if="isStudentRepresentative(student.id, classItem.classLetter)" class="text-primary font-weight-bold ml-1">(R)</span>
                               </span>
                             </div>
@@ -552,6 +566,31 @@
             persistent-hint
             variant="outlined"
           />
+
+          <!-- Fèves Committee Member Fields (one per level) -->
+          <v-select
+            v-model="editForm.feves_1"
+            class="mt-2"
+            clearable
+            density="comfortable"
+            :hint="$i18n('classes.feves1Hint')"
+            :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 0) : []"
+            :label="$i18n('classes.feves1')"
+            persistent-hint
+            variant="outlined"
+          />
+
+          <v-select
+            v-model="editForm.feves_2"
+            class="mt-2"
+            clearable
+            density="comfortable"
+            :hint="$i18n('classes.feves2Hint')"
+            :items="editingClass ? getStudentsByLevelForClass(editingClass.classLetter, 1) : []"
+            :label="$i18n('classes.feves2')"
+            persistent-hint
+            variant="outlined"
+          />
         </v-card-text>
 
         <v-card-actions>
@@ -583,6 +622,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { FEVES_COMMITTEE_ID, STUDENT_MEMBER_ROLE } from '@/config/committees'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
@@ -609,6 +649,8 @@
     parent_rep_2: null,
     student_rep_1: null,
     student_rep_2: null,
+    feves_1: null,
+    feves_2: null,
   })
   const savingClass = ref(false)
   const editError = ref(null)
@@ -641,6 +683,33 @@
       .toSorted((a, b) => a.title.localeCompare(b.title))
   }
 
+  // Student IDs that are members of the fèves committee
+  const fevesStudentIds = computed(() => {
+    const feves = firebaseStore.committeesDTO.find(c => c.id === FEVES_COMMITTEE_ID)
+    return new Set(feves ? feves.studentMembers.map(m => m.memberId) : [])
+  })
+
+  function isFevesMember (studentId) {
+    return fevesStudentIds.value.has(studentId)
+  }
+
+  // Fèves member among a class level's students (one per level)
+  function findFevesMember (classLetter, levelIndex) {
+    const match = getStudentsByLevelForClass(classLetter, levelIndex).find(s => isFevesMember(s.value))
+    return match ? match.value : null
+  }
+
+  // Sync the class's student members of the fèves committee with the selection
+  async function saveFevesMembers (classLetter, selectedIds) {
+    const desired = new Set(selectedIds.filter(Boolean))
+    const current = new Set(getClassStudents(classLetter).map(s => s.id).filter(id => isFevesMember(id)))
+
+    await Promise.all([
+      ...[...current].filter(id => !desired.has(id)).map(id => firebaseStore.committeeRepository.removeMember(FEVES_COMMITTEE_ID, id)),
+      ...[...desired].filter(id => !current.has(id)).map(id => firebaseStore.committeeRepository.addMember(FEVES_COMMITTEE_ID, id, { role: STUDENT_MEMBER_ROLE, member_type: 'student' })),
+    ])
+  }
+
   // Open edit dialog
   function openEditDialog (classItem) {
     editingClass.value = classItem
@@ -650,6 +719,8 @@
       parent_rep_2: classItem.parent_rep_2 || null,
       student_rep_1: classItem.student_rep_1 || null,
       student_rep_2: classItem.student_rep_2 || null,
+      feves_1: findFevesMember(classItem.classLetter, 0),
+      feves_2: findFevesMember(classItem.classLetter, 1),
     }
     editError.value = null
     editDialog.value = true
@@ -679,9 +750,13 @@
       }
 
       await classRepository.update(editingClass.value.classLetter, updates)
+      await saveFevesMembers(editingClass.value.classLetter, [editForm.value.feves_1, editForm.value.feves_2])
 
-      // Refresh classes data
-      await firebaseStore.loadClasses(true)
+      // Refresh classes and committees data
+      await Promise.all([
+        firebaseStore.loadClasses(true),
+        firebaseStore.loadCommitteesDTO(true),
+      ])
 
       closeEditDialog()
     } catch (error) {
@@ -849,6 +924,7 @@
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
       firebaseStore.loadClasses(),
+      firebaseStore.loadCommitteesDTO(),
     ])
   })
 </script>

@@ -22,11 +22,11 @@
 
       <v-chip
         v-else-if="showMemberType && memberType"
-        :color="memberType === 'staff' ? 'blue' : 'grey'"
+        :color="memberTypeColor"
         size="x-small"
         variant="outlined"
       >
-        {{ memberType === 'staff' ? $i18n('committees.staff') : $i18n('committees.parent') }}
+        {{ $i18n(memberTypeLabelKey) }}
       </v-chip>
     </div>
 
@@ -48,6 +48,11 @@
 
     <!-- Contact Info (if showContact) -->
     <div v-if="showContact" class="contact-info">
+      <div v-if="parent.classLabel" :class="variant === 'compact' ? 'text-body-small d-flex align-center mb-1' : 'text-body-medium d-flex align-center mb-1'">
+        <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-google-classroom</v-icon>
+        <span>{{ parent.classLabel }}</span>
+      </div>
+
       <div v-if="parent.email" :class="variant === 'compact' ? 'text-body-small d-flex align-center mb-1' : 'text-body-medium d-flex align-center mb-1'">
         <v-icon class="me-1" :size="variant === 'compact' ? 12 : 16">mdi-email</v-icon>
         <a class="text-decoration-none" :href="`mailto:${parent.email}`">{{ parent.email }}</a>
@@ -135,6 +140,9 @@
       default: null,
     },
   })
+
+  const memberTypeColor = computed(() => ({ staff: 'blue', student: 'green' })[props.memberType] || 'grey')
+  const memberTypeLabelKey = computed(() => ({ staff: 'committees.staff', student: 'committees.student' })[props.memberType] || 'committees.parent')
 
   const parentName = computed(() => {
     if (props.parent.fullName) {

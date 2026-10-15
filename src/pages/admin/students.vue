@@ -458,6 +458,7 @@
   import StudentFormDialog from '@/components/admin/StudentFormDialog.vue'
   import { useTranslate } from '@/composables/useTranslate'
   import { CLASS_LEVEL_MAPPING } from '@/config/classLevels'
+  import { FEVES_COMMITTEE_ID } from '@/config/committees'
   import { db } from '@/firebase'
   import { ClassRepository } from '@/repositories/ClassRepository'
   import { ParentRepository } from '@/repositories/ParentRepository'
@@ -755,6 +756,12 @@
         batch.update(classDoc.ref, { parent_rep_1: null, parent_rep_2: null, student_rep_1: null, student_rep_2: null })
       }
 
+      // Fèves student members are re-elected each year, like class reps
+      const fevesMembersSnap = await getDocs(collection(db, 'committees', FEVES_COMMITTEE_ID, 'members'))
+      for (const memberDoc of fevesMembersSnap.docs) {
+        if (memberDoc.data().member_type === 'student') batch.delete(memberDoc.ref)
+      }
+
       await batch.commit()
 
       await Promise.all([
@@ -784,7 +791,10 @@
     try {
       const toDepart = selectedStudents.value
       const batch = writeBatch(db)
-      for (const s of toDepart) batch.delete(doc(db, 'students', s.id))
+      for (const s of toDepart) {
+        batch.delete(doc(db, 'students', s.id))
+        batch.delete(doc(db, 'committees', FEVES_COMMITTEE_ID, 'members', s.id))
+      }
       await batch.commit()
       await Promise.all(toDepart.map(s => writeLog({
         actionType: 'depart_student',

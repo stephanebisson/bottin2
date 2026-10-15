@@ -31,7 +31,7 @@ export class CommitteeDTO {
 
   /**
    * Sanitize members array - ensure it's always a valid array of member objects
-   * Each member has: memberId (the parent/staff ID), role, member_type
+   * Each member has: memberId (the parent/staff/student ID), role, member_type
    * Email is NOT stored in the member document - it comes from parent/staff lookup
    */
   sanitizeMembers (members) {
@@ -88,6 +88,13 @@ export class CommitteeDTO {
    */
   get staffMembers () {
     return this.members.filter(m => m.member_type === 'staff')
+  }
+
+  /**
+   * Get student members only (fèves committee)
+   */
+  get studentMembers () {
+    return this.members.filter(m => m.member_type === 'student')
   }
 
   /**
@@ -172,6 +179,7 @@ export class CommitteeDTO {
       memberCount: this.memberCount,
       parentMembers: this.parentMembers,
       staffMembers: this.staffMembers,
+      studentMembers: this.studentMembers,
       hasMixedMemberTypes: this.hasMixedMemberTypes,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

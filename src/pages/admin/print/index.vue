@@ -298,39 +298,63 @@
   })
 
   // Committees with enriched member information
+  const MEMBER_TYPE_ORDER = ['parent', 'staff', 'student', 'unknown']
   const enrichedCommittees = computed(() => {
     return firebaseStore.committeesDTO.map(committee => {
       // Enrich members with full information from parents and staff
       const enrichedMembers = committee.members
         .map(member => {
           // Look up by memberId (parent/staff document ID)
-          if (member.member_type === 'parent') {
-            const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
-            if (parentMatch) {
-              return {
-                ...member,
-                email: parentMatch.email,
-                fullName: parentMatch.fullName,
-                phone: parentMatch.phone,
-                memberType: 'parent',
-                isPorteParole: member.role?.toLowerCase() === 'porte-parole',
+          switch (member.member_type) {
+            case 'parent': {
+              const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
+              if (parentMatch) {
+                return {
+                  ...member,
+                  email: parentMatch.email,
+                  fullName: parentMatch.fullName,
+                  phone: parentMatch.phone,
+                  memberType: 'parent',
+                  isPorteParole: member.role?.toLowerCase() === 'porte-parole',
+                }
               }
+
+              break
             }
-          } else if (member.member_type === 'staff') {
-            const staffMatch = firebaseStore.staffDTO.find(s => s.id === member.memberId)
-            if (staffMatch) {
-              return {
-                ...member,
-                email: staffMatch.email,
-                fullName: staffMatch.fullName,
-                phone: staffMatch.phone,
-                memberType: 'staff',
-                isPorteParole: member.role?.toLowerCase() === 'porte-parole',
+            case 'staff': {
+              const staffMatch = firebaseStore.staffDTO.find(s => s.id === member.memberId)
+              if (staffMatch) {
+                return {
+                  ...member,
+                  email: staffMatch.email,
+                  fullName: staffMatch.fullName,
+                  phone: staffMatch.phone,
+                  memberType: 'staff',
+                  isPorteParole: member.role?.toLowerCase() === 'porte-parole',
+                }
               }
+
+              break
             }
+            case 'student': {
+              const studentMatch = firebaseStore.studentsDTO.find(s => s.id === member.memberId)
+              if (studentMatch) {
+                return {
+                  ...member,
+                  email: null,
+                  fullName: `${studentMatch.first_name} ${studentMatch.last_name}`,
+                  phone: null,
+                  memberType: 'student',
+                  isPorteParole: false,
+                }
+              }
+
+              break
+            }
+          // No default
           }
 
-          // If not found in either collection
+          // If not found in any collection
           return {
             ...member,
             email: null,
@@ -341,12 +365,9 @@
           }
         })
         .toSorted((a, b) => {
-          // First sort by member type (parents first, then staff)
+          // First sort by member type (parents, then staff, then students, unknown last)
           if (a.memberType !== b.memberType) {
-            if (a.memberType === 'parent' && b.memberType === 'staff') return -1
-            if (a.memberType === 'staff' && b.memberType === 'parent') return 1
-            if (a.memberType === 'unknown') return 1
-            if (b.memberType === 'unknown') return -1
+            return MEMBER_TYPE_ORDER.indexOf(a.memberType) - MEMBER_TYPE_ORDER.indexOf(b.memberType)
           }
           // Then sort by name within the same member type
           return a.fullName.localeCompare(b.fullName)
@@ -355,6 +376,7 @@
       // Separate members by type
       const parentMembers = enrichedMembers.filter(member => member.memberType === 'parent')
       const staffMembers = enrichedMembers.filter(member => member.memberType === 'staff')
+      const studentMembers = enrichedMembers.filter(member => member.memberType === 'student')
       const unknownMembers = enrichedMembers.filter(member => member.memberType === 'unknown')
 
       return {
@@ -362,6 +384,7 @@
         enrichedMembers,
         parentMembers,
         staffMembers,
+        studentMembers,
         unknownMembers,
       }
     }).toSorted((a, b) => a.name.localeCompare(b.name))

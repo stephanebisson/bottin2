@@ -96,7 +96,12 @@
     "studentRep1": "Représentant étudiant (premier niveau)",
     "studentRep2": "Représentant étudiant (deuxième niveau)",
     "studentRep1Hint": "Sélectionner un élève du premier niveau de cette classe",
-    "studentRep2Hint": "Sélectionner un élève du deuxième niveau de cette classe"
+    "studentRep2Hint": "Sélectionner un élève du deuxième niveau de cette classe",
+    "feves1": "Fèves (premier niveau)",
+    "feves2": "Fèves (deuxième niveau)",
+    "feves1Hint": "Élève du premier niveau élu au comité des fèves",
+    "feves2Hint": "Élève du deuxième niveau élu au comité des fèves",
+    "fevesMember": "Membre du comité des fèves"
   },
   "students": {
     "title": "Élèves",
@@ -171,10 +176,12 @@
     "noMembersFound": "Aucun membre trouvé pour ce comité",
     "parent": "Parent",
     "staff": "Personnel",
+    "student": "Élève",
     "memberCount": "{{PLURAL:$1|$1 membre|$1 membres}}",
     "membersHeader": "Membres",
     "parentMembers": "Membres parents",
     "staffMembers": "Membres du personnel",
+    "studentMembers": "Membres élèves",
     "unknownMembers": "Autres membres",
     "loadingMembers": "Chargement des membres...",
     "currentMembers": "Membres actuels",

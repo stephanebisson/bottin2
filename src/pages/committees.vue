@@ -152,11 +152,37 @@
                   />
                 </div>
 
+                <!-- Student Members Section (fèves committee) -->
+                <div v-if="committee.studentMembers.length > 0">
+                  <div
+                    class="text-title-small font-weight-medium mb-3 d-flex align-center"
+                    :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
+                  >
+                    <v-icon class="me-2" color="green" size="small">mdi-leaf</v-icon>
+                    {{ $i18n('committees.studentMembers') }}
+                  </div>
+
+                  <ParentInfo
+                    v-for="member in committee.studentMembers"
+                    :key="member.memberId"
+                    class="member-item-compact mb-2 rounded"
+                    :class="'bg-green-lighten-5'"
+                    :member-type="member.memberType"
+                    :parent="member"
+                    :role="member.role"
+                    :search-query="searchQuery"
+                    show-contact
+                    show-member-type
+                    show-role
+                    variant="compact"
+                  />
+                </div>
+
                 <!-- Unknown Members Section (if any) -->
                 <div v-if="committee.unknownMembers.length > 0">
                   <div
                     class="text-title-small font-weight-medium mb-3 d-flex align-center"
-                    :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 }"
+                    :class="{ 'mt-4': committee.parentMembers.length > 0 || committee.staffMembers.length > 0 || committee.studentMembers.length > 0 }"
                   >
                     <v-icon class="me-2" color="primary" size="small">mdi-help-circle</v-icon>
                     {{ $i18n('committees.unknownMembers') }}
@@ -179,7 +205,7 @@
                 </div>
 
                 <!-- Single group fallback (committees with only one member type) -->
-                <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.unknownMembers.length === 0">
+                <div v-if="committee.parentMembers.length === 0 && committee.staffMembers.length === 0 && committee.studentMembers.length === 0 && committee.unknownMembers.length === 0">
                   <div class="text-title-small font-weight-medium mb-3 d-flex align-center">
                     <v-icon class="me-2" color="primary" size="small">mdi-account-group</v-icon>
                     {{ $i18n('committees.membersHeader') }}
@@ -230,16 +256,21 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-banana-i18n'
   import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
   import { getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { formatStudentClass } from '@/utils/gradeFormatter.js'
   import { matchesSearch } from '@/utils/search'
 
   definePage({ meta: { titleKey: 'committees.title' } })
 
+  const MEMBER_TYPE_ORDER = ['parent', 'staff', 'student', 'unknown']
+
+  const bananaI18n = useI18n()
   const searchQuery = ref('')
   const editDialogOpen = ref(false)
   const selectedCommittee = ref(null)
@@ -250,36 +281,59 @@
 
   const enrichedCommittees = computed(() => {
     return firebaseStore.committeesDTO.map(committee => {
-      // Enrich members with full information from parents and staff
-      // memberId is the parent or staff document ID
+      // Enrich members with full information from parents, staff and students
+      // memberId is the parent, staff or student document ID
       const enrichedMembers = committee.members
         .map(member => {
-          // Look up by memberId (parent/staff document ID)
-          if (member.member_type === 'parent') {
-            const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
-            if (parentMatch) {
-              return {
-                ...member,
-                email: parentMatch.email,
-                fullName: parentMatch.fullName,
-                phone: parentMatch.phone,
-                memberType: 'parent',
+          // Look up by memberId (parent/staff/student document ID)
+          switch (member.member_type) {
+            case 'parent': {
+              const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
+              if (parentMatch) {
+                return {
+                  ...member,
+                  email: parentMatch.email,
+                  fullName: parentMatch.fullName,
+                  phone: parentMatch.phone,
+                  memberType: 'parent',
+                }
               }
+
+              break
             }
-          } else if (member.member_type === 'staff') {
-            const staffMatch = firebaseStore.staffDTO.find(s => s.id === member.memberId)
-            if (staffMatch) {
-              return {
-                ...member,
-                email: staffMatch.email,
-                fullName: staffMatch.fullName,
-                phone: staffMatch.phone,
-                memberType: 'staff',
+            case 'staff': {
+              const staffMatch = firebaseStore.staffDTO.find(s => s.id === member.memberId)
+              if (staffMatch) {
+                return {
+                  ...member,
+                  email: staffMatch.email,
+                  fullName: staffMatch.fullName,
+                  phone: staffMatch.phone,
+                  memberType: 'staff',
+                }
               }
+
+              break
             }
+            case 'student': {
+              const studentMatch = firebaseStore.studentsDTO.find(s => s.id === member.memberId)
+              if (studentMatch) {
+                return {
+                  ...member,
+                  email: null,
+                  fullName: `${studentMatch.first_name} ${studentMatch.last_name}`,
+                  phone: null,
+                  classLabel: formatStudentClass(studentMatch, firebaseStore.classes, bananaI18n.locale),
+                  memberType: 'student',
+                }
+              }
+
+              break
+            }
+          // No default
           }
 
-          // If not found in either collection, show member ID
+          // If not found in any collection, show member ID
           return {
             ...member,
             email: null,
@@ -292,13 +346,9 @@
           // Get role display order for this committee (if defined)
           const roleOrder = getCommitteeRoleDisplayOrder(committee.name)
 
-          // First sort by member type (parents first, then staff)
+          // First sort by member type (parents, then staff, then students, unknown last)
           if (a.memberType !== b.memberType) {
-            if (a.memberType === 'parent' && b.memberType === 'staff') return -1
-            if (a.memberType === 'staff' && b.memberType === 'parent') return 1
-            // For 'unknown' type, place it last
-            if (a.memberType === 'unknown') return 1
-            if (b.memberType === 'unknown') return -1
+            return MEMBER_TYPE_ORDER.indexOf(a.memberType) - MEMBER_TYPE_ORDER.indexOf(b.memberType)
           }
 
           // If role order is defined, sort by role order within the same member type
@@ -325,6 +375,7 @@
       // Separate members by type for grouped display
       const parentMembers = enrichedMembers.filter(member => member.memberType === 'parent')
       const staffMembers = enrichedMembers.filter(member => member.memberType === 'staff')
+      const studentMembers = enrichedMembers.filter(member => member.memberType === 'student')
       const unknownMembers = enrichedMembers.filter(member => member.memberType === 'unknown')
 
       return {
@@ -332,8 +383,9 @@
         enrichedMembers,
         parentMembers,
         staffMembers,
+        studentMembers,
         unknownMembers,
-        hasMixedMemberTypes: parentMembers.length > 0 && staffMembers.length > 0,
+        hasMixedMemberTypes: [parentMembers, staffMembers, studentMembers].filter(group => group.length > 0).length > 1,
       }
     }).toSorted((a, b) => a.name.localeCompare(b.name))
   })
@@ -392,6 +444,8 @@
     await Promise.all([
       firebaseStore.loadParentsDTO(),
       firebaseStore.loadStaffDTO(),
+      firebaseStore.loadStudentsDTO(),
+      firebaseStore.loadClasses(),
       firebaseStore.loadCommitteesDTO(),
     ])
   })

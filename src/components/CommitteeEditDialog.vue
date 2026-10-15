@@ -52,7 +52,7 @@
           <div v-if="members.length > 0" class="space-y-2">
             <v-card
               v-for="(member, index) in members"
-              :key="member.email"
+              :key="member.memberId"
               class="pa-3"
               variant="outlined"
             >
@@ -60,15 +60,15 @@
                 <div class="d-flex align-center gap-3">
                   <div>
                     <div class="font-weight-medium">{{ member.fullName || member.email }}</div>
-                    <div class="text-body-medium text-medium-emphasis">{{ member.email }}</div>
+                    <div class="text-body-medium text-medium-emphasis">{{ member.email || member.classLabel }}</div>
                   </div>
 
                   <v-chip
-                    :color="member.memberType === 'staff' ? 'blue' : 'grey'"
+                    :color="member.memberType === 'staff' ? 'blue' : member.memberType === 'student' ? 'green' : 'grey'"
                     size="small"
                     variant="tonal"
                   >
-                    {{ member.memberType === 'staff' ? $i18n('committees.staff') : $i18n('committees.parent') }}
+                    {{ member.memberType === 'staff' ? $i18n('committees.staff') : member.memberType === 'student' ? $i18n('committees.student') : $i18n('committees.parent') }}
                   </v-chip>
                 </div>
 
@@ -77,6 +77,7 @@
                   <v-select
                     v-model="member.role"
                     density="compact"
+                    :disabled="member.memberType === 'student'"
                     hide-details
                     :items="roleItems"
                     :label="$i18n('common.role')"
@@ -113,10 +114,10 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-autocomplete
-                  v-model="newMemberEmail"
+                  v-model="newMemberId"
                   clearable
                   item-title="label"
-                  item-value="email"
+                  item-value="memberId"
                   :items="availableUsers"
                   :label="$i18n('committees.selectUser')"
                   :loading="searchingUsers"
@@ -129,6 +130,7 @@
               <v-col cols="12" md="4">
                 <v-select
                   v-model="newMemberRole"
+                  :disabled="newMemberIsStudent"
                   :items="roleItems"
                   :label="$i18n('common.role')"
                   variant="outlined"
@@ -139,7 +141,7 @@
                 <div class="d-flex gap-2">
                   <v-btn
                     color="success"
-                    :disabled="!newMemberEmail || !newMemberRole"
+                    :disabled="!newMemberId || !newMemberRole"
                     icon="mdi-check"
                     @click="addMember"
                   />
@@ -181,9 +183,12 @@
 
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
-  import { getCommitteeRoles } from '@/config/committees'
+  import { useI18n } from 'vue-banana-i18n'
+  import { FEVES_COMMITTEE_ID, getCommitteeRoles, STUDENT_MEMBER_ROLE } from '@/config/committees'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
+  import { formatStudentClass } from '@/utils/gradeFormatter.js'
+  import { matchesSearch } from '@/utils/search'
 
   const props = defineProps({
     committee: {
@@ -196,6 +201,7 @@
 
   // Stores
   const firebaseStore = useFirebaseDataStore()
+  const bananaI18n = useI18n()
 
   // State
   const loading = ref(true)
@@ -205,10 +211,22 @@
   const originalMembers = ref([])
   const hasChanges = ref(false)
   const showAddMember = ref(false)
-  const newMemberEmail = ref('')
+  const newMemberId = ref('')
   const newMemberRole = ref('')
   const availableUsers = ref([])
   const searchingUsers = ref(false)
+
+  // Only the fèves committee accepts student members
+  const acceptsStudents = computed(() => props.committee.id === FEVES_COMMITTEE_ID)
+
+  const newMemberIsStudent = computed(() =>
+    availableUsers.value.find(u => u.memberId === newMemberId.value)?.memberType === 'student',
+  )
+
+  // Students can only be plain members
+  watch(newMemberIsStudent, isStudent => {
+    if (isStudent) newMemberRole.value = STUDENT_MEMBER_ROLE
+  })
 
   // Get available roles for this committee
   const availableRoles = computed(() => {
@@ -238,6 +256,7 @@
         fullName: member.fullName,
         role: member.role,
         memberType: member.memberType,
+        classLabel: member.classLabel,
       }))
 
       // Store original state for change detection
@@ -264,8 +283,8 @@
       return
     }
 
-    // Don't search if the query looks like a formatted label (contains " - Parent" or " - Staff")
-    if (query.includes(' - Parent') || query.includes(' - Staff')) {
+    // Don't search if the query is the label of the selected item
+    if (query.includes(' - Parent') || query.includes(' - Staff') || availableUsers.value.some(u => u.label === query)) {
       return
     }
 
@@ -277,6 +296,11 @@
         firebaseStore.searchParentsDTO(query),
         firebaseStore.searchStaffDTO(query),
       ])
+
+      // Students are searched in the store (loaded by the committees page)
+      const students = acceptsStudents.value
+        ? firebaseStore.studentsDTO.filter(s => matchesSearch(`${s.first_name} ${s.last_name}`, query))
+        : []
 
       // Combine and format results
       const allUsers = [
@@ -294,6 +318,17 @@
           fullName: s.fullName,
           memberType: 'staff',
         })),
+        ...students.map(s => {
+          const classLabel = formatStudentClass(s, firebaseStore.classes, bananaI18n.locale)
+          return {
+            memberId: s.id,
+            email: null,
+            label: `${s.first_name} ${s.last_name} (${classLabel}) - ${bananaI18n.i18n('committees.student')}`,
+            fullName: `${s.first_name} ${s.last_name}`,
+            classLabel,
+            memberType: 'student',
+          }
+        }),
       ]
 
       // Filter out existing members by memberId
@@ -308,15 +343,16 @@
 
   // Add new member
   function addMember () {
-    const selectedUser = availableUsers.value.find(u => u.email === newMemberEmail.value)
+    const selectedUser = availableUsers.value.find(u => u.memberId === newMemberId.value)
     if (!selectedUser) return
 
     members.value.push({
       memberId: selectedUser.memberId, // Store the parent/staff ID
       email: selectedUser.email,
       fullName: selectedUser.fullName,
-      role: newMemberRole.value,
+      role: selectedUser.memberType === 'student' ? STUDENT_MEMBER_ROLE : newMemberRole.value,
       memberType: selectedUser.memberType,
+      classLabel: selectedUser.classLabel,
     })
 
     // Reset add member form
@@ -327,7 +363,7 @@
   // Cancel adding member
   function cancelAddMember () {
     showAddMember.value = false
-    newMemberEmail.value = ''
+    newMemberId.value = ''
     newMemberRole.value = availableRoles.value[0] || ''
     availableUsers.value = []
   }

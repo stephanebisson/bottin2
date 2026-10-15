@@ -7,6 +7,13 @@
  */
 
 /**
+ * The fèves committee is the only one that has student members (one per level per class).
+ * Students are elected by their class and can only have the 'Membre' role.
+ */
+export const FEVES_COMMITTEE_ID = 'Feves'
+export const STUDENT_MEMBER_ROLE = 'Membre'
+
+/**
  * All available committee roles
  * Sorted alphabetically for easy maintenance
  */

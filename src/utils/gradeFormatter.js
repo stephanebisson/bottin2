@@ -34,3 +34,18 @@ export function formatGradeLevel (level, locale = 'fr') {
     }
   }
 }
+
+/**
+ * Format a student's grade level and class name (e.g., "3e année · Les dauphins mignons")
+ * @param {Object} student - Student with level and className (class letter)
+ * @param {Object[]} classes - Classes from the store, to resolve the class letter to its name
+ * @param {string} locale - The locale ('fr' or 'en'). Defaults to 'fr'.
+ * @returns {string} Formatted label, empty parts omitted
+ */
+export function formatStudentClass (student, classes = [], locale = 'fr') {
+  const classItem = classes.find(c => c.classLetter === student.className)
+  return [
+    student.level ? formatGradeLevel(student.level, locale) : null,
+    classItem?.className || student.className || null,
+  ].filter(Boolean).join(' · ')
+}

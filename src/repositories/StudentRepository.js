@@ -1,4 +1,5 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, writeBatch } from 'firebase/firestore'
+import { FEVES_COMMITTEE_ID } from '@/config/committees'
 import { StudentDTO } from '@/dto/StudentDTO.js'
 import { db } from '@/firebase'
 import { generateStudentId } from '@/utils/parentIdGenerator.js'
@@ -178,13 +179,15 @@ export class StudentRepository {
   }
 
   /**
-   * Delete student - permanently remove from database
+   * Delete student - permanently remove from database, along with their fèves committee membership
    * Use with caution!
    */
   async delete (id) {
     try {
-      const docRef = doc(db, this.collectionName, id)
-      await deleteDoc(docRef)
+      const batch = writeBatch(db)
+      batch.delete(doc(db, this.collectionName, id))
+      batch.delete(doc(db, 'committees', FEVES_COMMITTEE_ID, 'members', id))
+      await batch.commit()
     } catch (error) {
       console.error(`StudentRepository: Error deleting student ${id}:`, error)
       throw new Error(`Failed to delete student ${id}: ${error.message}`, { cause: error })
