@@ -274,7 +274,7 @@
 
   const displayedInterests = computed(() => {
     if (!parentProfile.value?.interests?.length) return []
-    return getInterestNames(parentProfile.value.interests)
+    return getInterestNames(parentProfile.value.interests, $i18n)
   })
 
   // Utility functions

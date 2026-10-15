@@ -146,11 +146,11 @@
                             </div>
 
                             <!-- Interests Section -->
-                            <div v-if="getParentData(classItem.parent_rep_1).interests && getParentData(classItem.parent_rep_1).interests.length > 0" class="mb-3">
+                            <div v-if="getInterestNames(getParentData(classItem.parent_rep_1).interests, $i18n).length > 0" class="mb-3">
                               <div class="text-title-small mb-2 text-white">{{ $i18n('classes.interests') }}</div>
 
                               <div class="text-body-medium">
-                                {{ getParentData(classItem.parent_rep_1).interests.join(', ') }}
+                                {{ getInterestNames(getParentData(classItem.parent_rep_1).interests, $i18n).join(', ') }}
                               </div>
                             </div>
 
@@ -235,11 +235,11 @@
                             </div>
 
                             <!-- Interests Section -->
-                            <div v-if="getParentData(classItem.parent_rep_2).interests && getParentData(classItem.parent_rep_2).interests.length > 0" class="mb-3">
+                            <div v-if="getInterestNames(getParentData(classItem.parent_rep_2).interests, $i18n).length > 0" class="mb-3">
                               <div class="text-title-small mb-2 text-white">{{ $i18n('classes.interests') }}</div>
 
                               <div class="text-body-medium">
-                                {{ getParentData(classItem.parent_rep_2).interests.join(', ') }}
+                                {{ getInterestNames(getParentData(classItem.parent_rep_2).interests, $i18n).join(', ') }}
                               </div>
                             </div>
 
@@ -363,8 +363,8 @@
                                           <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
                                         </div>
 
-                                        <div v-if="getStudentParent(student, 1).interests && getStudentParent(student, 1).interests.length > 0" class="text-body-small mt-1">
-                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 1).interests.join(', ') }}
+                                        <div v-if="getInterestNames(getStudentParent(student, 1).interests, $i18n).length > 0" class="text-body-small mt-1">
+                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getInterestNames(getStudentParent(student, 1).interests, $i18n).join(', ') }}
                                         </div>
                                       </div>
 
@@ -377,8 +377,8 @@
                                           <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
                                         </div>
 
-                                        <div v-if="getStudentParent(student, 2).interests && getStudentParent(student, 2).interests.length > 0" class="text-body-small mt-1">
-                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getStudentParent(student, 2).interests.join(', ') }}
+                                        <div v-if="getInterestNames(getStudentParent(student, 2).interests, $i18n).length > 0" class="text-body-small mt-1">
+                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getInterestNames(getStudentParent(student, 2).interests, $i18n).join(', ') }}
                                         </div>
                                       </div>
 
@@ -587,6 +587,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
   import { FEVES_COMMITTEE_ID, STUDENT_MEMBER_ROLE } from '@/config/committees'
+  import { getInterestNames } from '@/config/interests'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'

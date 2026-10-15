@@ -86,9 +86,12 @@
 <script setup>
   import { computed } from 'vue'
   import HighlightedText from '@/components/HighlightedText.vue'
+  import { useTranslate } from '@/composables/useTranslate'
   import { CHAIR_ROLES } from '@/config/committees'
   import { getInterestNames } from '@/config/interests'
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
+
+  const $i18n = useTranslate()
 
   const props = defineProps({
     parent: {
@@ -180,7 +183,7 @@
 
   const displayedInterests = computed(() => {
     if (!props.parent.interests?.length) return ''
-    return getInterestNames(props.parent.interests).join(', ')
+    return getInterestNames(props.parent.interests, $i18n).join(', ')
   })
 </script>
 

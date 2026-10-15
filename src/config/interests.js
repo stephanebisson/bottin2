@@ -1,163 +1,75 @@
 /**
  * Parent Interests Configuration
  *
- * Define available interest categories that parents can select
- * when updating their profile information.
+ * Interests and skills parents can select when updating their profile,
+ * grouped by category. Labels are translated: interestGroups.<group id>
+ * and interestOptions.<interest id> in the locale files.
  *
- * These interests help match parent skills and passions
- * with volunteer opportunities and committee roles.
+ * Stored parent data may hold IDs that are no longer listed here; they are
+ * ignored when displayed and dropped the next time the parent saves the form.
  */
 
-// Available interest categories for parents
-export const PARENT_INTERESTS = [
+export const INTEREST_GROUPS = [
   {
-    id: 'architecture',
-    name: 'Architecture',
+    id: 'arts',
+    interests: ['arts_plastiques', 'musique', 'danse', 'theatre', 'cinema', 'photos', 'litterature', 'couture', 'histoire'],
   },
   {
-    id: 'arts_plastiques',
-    name: 'Arts Plastiques',
+    id: 'sciences',
+    interests: ['sciences', 'mathematiques', 'informatique', 'robotique', 'architecture', 'environnement'],
   },
   {
-    id: 'banque_alimentaire',
-    name: 'Banque alimentaire',
+    id: 'sports',
+    interests: ['sports_equipe', 'course_velo', 'natation', 'plein_air', 'sports_hiver', 'arts_martiaux', 'yoga'],
   },
   {
-    id: 'cinema',
-    name: 'Cinéma',
+    id: 'loisirs',
+    interests: ['cuisine', 'jardinage', 'bricolage', 'mecanique', 'jeux_de_societe', 'jeux_video', 'voyages'],
   },
   {
-    id: 'couture',
-    name: 'Couture',
-  },
-  {
-    id: 'cuisine',
-    name: 'Cuisine',
-  },
-  {
-    id: 'danse',
-    name: 'Danse',
-  },
-  {
-    id: 'developpement_international',
-    name: 'Développement international',
-  },
-  {
-    id: 'echecs',
-    name: 'Échecs',
-  },
-  {
-    id: 'eco_quartier',
-    name: 'Éco-quartier',
-  },
-  {
-    id: 'histoire',
-    name: 'Histoire',
-  },
-  {
-    id: 'jardinage',
-    name: 'Jardinage',
-  },
-  {
-    id: 'jardin_communautaire',
-    name: 'Jardin communautaire',
-  },
-  {
-    id: 'jeux_de_societe',
-    name: 'Jeux de société',
-  },
-  {
-    id: 'langues_vivantes',
-    name: 'Langues vivantes',
-  },
-  {
-    id: 'litterature',
-    name: 'Littérature',
-  },
-  {
-    id: 'maison_verte',
-    name: 'Maison verte',
-  },
-  {
-    id: 'menuiserie',
-    name: 'Menuiserie',
-  },
-  {
-    id: 'musique',
-    name: 'Musique',
-  },
-  {
-    id: 'photos',
-    name: 'Photos',
-  },
-  {
-    id: 'residence_personnes_agees',
-    name: 'Résidence pour personnes âgées',
-  },
-  {
-    id: 'sports_exterieurs',
-    name: 'Sports extérieurs',
-  },
-  {
-    id: 'sports_interieurs',
-    name: 'Sports intérieurs',
-  },
-  {
-    id: 'theatre',
-    name: 'Théâtre',
-  },
-  {
-    id: 'traduction',
-    name: 'Traduction',
-  },
-  {
-    id: 'tricot',
-    name: 'Tricot',
-  },
-  {
-    id: 'voyages',
-    name: 'Voyages',
-  },
-  {
-    id: 'yoga',
-    name: 'Yoga',
+    id: 'communication',
+    interests: ['reseaux_sociaux', 'graphisme', 'redaction', 'langues_vivantes', 'traduction', 'droit'],
   },
 ]
 
-/**
- * Get all available interests
- * @returns {Object[]} Array of interest objects with id and name
- */
-export function getAvailableInterests () {
-  return PARENT_INTERESTS
-}
+const INTEREST_IDS = new Set(INTEREST_GROUPS.flatMap(group => group.interests))
 
 /**
- * Get interest by ID
+ * Check whether an interest ID is in the current list
  * @param {string} interestId - ID of the interest
- * @returns {Object|null} Interest object or null if not found
+ * @returns {boolean} True if the interest is listed
  */
-export function getInterestById (interestId) {
-  return PARENT_INTERESTS.find(interest => interest.id === interestId) || null
+export function isKnownInterest (interestId) {
+  return INTEREST_IDS.has(interestId)
 }
 
 /**
- * Get interest names by IDs
+ * Get translated interest names by IDs, skipping IDs that are no longer listed
  * @param {string[]} interestIds - Array of interest IDs
+ * @param {Function} $i18n - translation function (useTranslate)
  * @returns {string[]} Array of interest names
  */
-export function getInterestNames (interestIds = []) {
+export function getInterestNames (interestIds = [], $i18n) {
   return interestIds
-    .map(id => getInterestById(id))
-    .filter(interest => interest !== null)
-    .map(interest => interest.name)
+    .filter(id => isKnownInterest(id))
+    .map(id => $i18n(`interestOptions.${id}`))
 }
 
 /**
- * Validate interest IDs
- * @param {string[]} interestIds - Array of interest IDs to validate
- * @returns {boolean} True if all IDs are valid
+ * Get the interest groups with translated labels, groups and the interests
+ * inside each group sorted alphabetically in the current language
+ * @param {Function} $i18n - translation function (useTranslate)
+ * @returns {Object[]} Array of { id, label, interests: [{ id, label }] }
  */
-export function validateInterestIds (interestIds = []) {
-  return interestIds.every(id => getInterestById(id) !== null)
+export function getSortedInterestGroups ($i18n) {
+  const byLabel = (a, b) => a.label.localeCompare(b.label)
+  return INTEREST_GROUPS
+    .map(group => ({
+      id: group.id,
+      label: $i18n(`interestGroups.${group.id}`),
+      interests: group.interests
+        .map(id => ({ id, label: $i18n(`interestOptions.${id}`) }))
+        .toSorted(byLabel),
+    }))
+    .toSorted(byLabel)
 }

@@ -68,7 +68,7 @@ const parentUpdateSchema = Joi.object({
       .pattern(committeeIdSchema, Joi.string().max(50))
       .default({}),
     interests: Joi.alternatives().try(
-      Joi.array().items(Joi.string().max(100)).max(28).default([]), // Max 28 based on available interests
+      Joi.array().items(Joi.string().max(100)).max(50).default([]), // More than the number of available interests
       Joi.string().max(500).allow(''),
     ).default([]),
     sameAddressAsOther: Joi.boolean().default(false),

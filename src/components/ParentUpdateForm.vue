@@ -176,16 +176,20 @@
           </p>
 
           <div class="interests-grid">
-            <v-checkbox
-              v-for="interest in availableInterests"
-              :key="interest.id"
-              v-model="form.interests"
-              color="primary"
-              density="compact"
-              hide-details
-              :label="interest.name"
-              :value="interest.id"
-            />
+            <div v-for="group in interestGroups" :key="group.id">
+              <div class="text-title-small mb-1">{{ group.label }}</div>
+
+              <v-checkbox
+                v-for="interest in group.interests"
+                :key="interest.id"
+                v-model="form.interests"
+                color="primary"
+                density="compact"
+                hide-details
+                :label="interest.label"
+                :value="interest.id"
+              />
+            </div>
           </div>
         </v-card-text>
       </v-card>
@@ -287,7 +291,7 @@
   import { useTranslate } from '@/composables/useTranslate'
   import { getCommitteeRoles } from '@/config/committees'
   import { ENTITY_STYLES } from '@/config/entities'
-  import { getAvailableInterests } from '@/config/interests'
+  import { getSortedInterestGroups, isKnownInterest } from '@/config/interests'
   import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay, formatPostalCodeForStorage, getPostalCodeValidationMessage, getSamplePostalCode, isValidPostalCodeFormat } from '@/utils/postalCodeFormatter'
 
@@ -311,7 +315,7 @@
   const emit = defineEmits(['submit', 'opt-out', 'cancel'])
 
   const $i18n = useTranslate()
-  const availableInterests = getAvailableInterests()
+  const interestGroups = getSortedInterestGroups($i18n)
 
   // Escaped because it is rendered with v-html
   const otherParentNameHtml = computed(() => {
@@ -338,7 +342,8 @@
     sameAddressAsOther: false,
     committees: [...props.parentCommittees],
     committeeRoles: { ...props.parentCommitteeRoles }, // { committeeId: role }
-    interests: Array.isArray(props.parent.interests) ? [...props.parent.interests] : [], // Array of selected interest IDs
+    // Selected interest IDs; IDs no longer listed are dropped on save
+    interests: Array.isArray(props.parent.interests) ? props.parent.interests.filter(id => isKnownInterest(id)) : [],
   })
 
   // Validation rules
@@ -443,7 +448,7 @@
 
 .interests-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
-  gap: 0 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+  gap: 16px 24px;
 }
 </style>
