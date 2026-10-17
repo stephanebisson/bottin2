@@ -20,7 +20,7 @@
         </td>
 
         <td class="sdg-phone-cell">{{ formatPhoneForDisplay(member.phone) || '' }}</td>
-        <td class="sdg-email-cell"><PrintEmail :email="member.email || ''" /></td>
+        <td class="sdg-email-cell"><PrintEmail :email="member.email || ''" one-line /></td>
       </tr>
     </tbody>
   </table>
@@ -114,8 +114,9 @@
   vertical-align: top;
 }
 
+/* Phone and email take their width on one line; the name and title take the rest */
 .sdg-name-title-cell {
-  width: 40%;
+  width: auto;
 }
 
 .sdg-staff-name {
@@ -130,14 +131,10 @@
   font-style: italic;
 }
 
-.sdg-phone-cell {
-  width: 30%;
-  white-space: nowrap;
-}
-
+.sdg-phone-cell,
 .sdg-email-cell {
-  width: 30%;
-  word-break: break-word;
+  width: 1%;
+  white-space: nowrap;
 }
 
 /* SDG Éducateurs Table - 2 Column Layout */

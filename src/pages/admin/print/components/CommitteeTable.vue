@@ -21,7 +21,7 @@
             </td>
 
             <td class="email-cell">
-              <PrintEmail :email="member.email || ''" />
+              <PrintEmail :email="member.email || ''" :one-line="compact" />
             </td>
           </tr>
         </template>
@@ -39,7 +39,7 @@
           </td>
 
           <td class="email-cell">
-            <PrintEmail :email="member.email || ''" />
+            <PrintEmail :email="member.email || ''" :one-line="compact" />
           </td>
         </tr>
       </template>
@@ -128,7 +128,18 @@
   word-break: break-word;
 }
 
-/* Compact Committee Table */
+/* Compact Committee Table (one per committee): phone and email take their width on one line,
+   the name the rest */
+.committee-table-compact .member-name-cell {
+  width: auto;
+}
+
+.committee-table-compact .phone-cell,
+.committee-table-compact .email-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
 .committee-table-compact {
   width: 100%;
   border-collapse: collapse;
