@@ -848,7 +848,7 @@
     background: #525252;
     width: 100%;
     min-height: 100vh;
-    padding: 2rem 0;
+    padding: 1.4rem 0;
   }
 }
 
@@ -868,7 +868,7 @@
 
 /* Committees compact styles */
 .committee {
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
   page-break-inside: avoid;
 }
 
@@ -876,8 +876,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.2rem;
   border-bottom: 1px solid #999;
 }
 
@@ -892,14 +892,14 @@
   font-weight: normal;
   font-style: italic;
   color: #000;
-  margin-left: 0.25rem;
+  margin-left: 0.2rem;
 }
 
 .committee-contact-inline {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.15rem;
+  gap: 0.1rem;
   text-align: right;
 }
 
@@ -913,7 +913,7 @@
 }
 
 .committee-section-compact {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 /* Print-specific styles */

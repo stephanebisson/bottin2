@@ -59,7 +59,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 7pt;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .staff-table tbody tr {
@@ -71,7 +71,7 @@
 }
 
 .staff-table td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   vertical-align: top;
 }
 
@@ -96,7 +96,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 7pt;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .staff-table-sdg tbody tr {
@@ -108,7 +108,7 @@
 }
 
 .staff-table-sdg td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   vertical-align: top;
 }
 
@@ -142,7 +142,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 7pt;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .staff-table-sdg-edu tbody tr {
@@ -154,7 +154,7 @@
 }
 
 .staff-table-sdg-edu td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   vertical-align: top;
 }
 

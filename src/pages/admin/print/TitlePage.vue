@@ -41,7 +41,7 @@
   width: 100%;
   height: 100%;
   border: 4px double #222;
-  padding: 2rem;
+  padding: 1.4rem;
   background: #fafafa;
 }
 
@@ -97,7 +97,7 @@
     height: 100%;
     border: 4px double #222;
     background: white;
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .main-title {

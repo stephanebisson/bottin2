@@ -93,8 +93,8 @@
 <style scoped>
 /* CSSDM Section */
 .cssdm-info {
-  margin: 1.5rem 0 2rem 0;
-  padding: 1rem 1.5rem;
+  margin: 1rem 0 1.4rem 0;
+  padding: 0.7rem 1rem;
   text-align: right;
 }
 
@@ -108,28 +108,28 @@
   font-size: 8.5pt;
   font-weight: 600;
   color: #000;
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .cssdm-email {
   font-size: 8pt;
   color: #000;
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .cssdm-url {
   font-size: 8pt;
   color: #000;
   font-style: italic;
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .cssdm-committee-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
 }
 
 .committee {
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
   page-break-inside: avoid;
 }
 
@@ -137,8 +137,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.2rem;
   border-bottom: 1px solid #999;
 }
 
@@ -153,14 +153,14 @@
   font-weight: normal;
   font-style: italic;
   color: #000;
-  margin-left: 0.25rem;
+  margin-left: 0.2rem;
 }
 
 .committee-contact-inline {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.15rem;
+  gap: 0.1rem;
   text-align: right;
 }
 
@@ -174,15 +174,15 @@
 }
 
 .committee-section-compact {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .committee-header-repaq {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.35rem;
   border-bottom: 2px solid black;
 }
 
@@ -194,7 +194,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16pt;
   font-weight: bold;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.2rem 0;
 }
 
 .committee-description-repaq {
@@ -210,7 +210,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: 0.2rem;
   text-align: right;
 }
 

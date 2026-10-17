@@ -89,15 +89,15 @@
 }
 
 .staff-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .group-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.35rem;
   border-bottom: 2px solid black;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .staff-subgroup {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.9rem;
 }
 
 /* SDG Header Section */
@@ -117,7 +117,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1.5rem 0 1.5rem 0;
+  margin: 1rem 0 1rem 0;
 }
 
 .sdg-logo-space {
@@ -138,7 +138,7 @@
   text-align: right;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
   justify-content: center;
 }
 
@@ -146,7 +146,7 @@
   font-size: 12pt;
   font-weight: 600;
   color: #000;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .sdg-address {

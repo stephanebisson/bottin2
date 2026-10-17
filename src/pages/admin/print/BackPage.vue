@@ -57,27 +57,27 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  padding: 2rem 0;
+  padding: 1.4rem 0;
 }
 
 /* Resources Section */
 .resources-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.4rem;
   align-items: center;
   text-align: center;
 }
 
 .resource-item {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .resource-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   color: #000;
 }
 
@@ -101,8 +101,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.7rem;
+  margin-top: 1.4rem;
 }
 
 .logo-container {
@@ -128,23 +128,19 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   font-weight: bold;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   color: #000;
 }
 
 .address-line {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 8.5pt;
-  margin: 0.15rem 0;
+  margin: 0.1rem 0;
   color: #333;
 }
 
 /* Print-specific styles */
 @media print {
-  .back-page {
-    padding: 1rem 0;
-  }
-
   .resource-title {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;

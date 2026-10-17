@@ -24,9 +24,9 @@
 .parent-entry {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 1rem;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.7rem;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.35rem;
   border-bottom: 1px solid #ddd;
   font-size: 7pt;
   line-height: 1.4;
@@ -41,13 +41,13 @@
 .children-section {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
 }
 
 .child-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .child-name {

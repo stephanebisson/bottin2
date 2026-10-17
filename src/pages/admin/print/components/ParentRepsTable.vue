@@ -39,7 +39,7 @@
 <style scoped>
 .class-parent-reps-section {
   font-size: 7.5pt;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .class-parent-reps-section strong {
@@ -59,7 +59,7 @@
 }
 
 .parent-reps-table td {
-  padding: 0.1rem 0.5rem;
+  padding: 0.1rem 0.35rem;
   vertical-align: top;
 }
 

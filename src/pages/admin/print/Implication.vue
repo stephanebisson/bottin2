@@ -75,7 +75,7 @@
 }
 
 p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 p:last-child {
@@ -83,13 +83,13 @@ p:last-child {
 }
 
 .numbered-list {
-  margin-left: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .numbered-list > li {
-  margin-bottom: 0.75rem;
-  padding-left: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.35rem;
 }
 
 .numbered-list > li > strong {
@@ -97,23 +97,23 @@ p:last-child {
 }
 
 .bullet-list {
-  margin-top: 0.4rem;
-  margin-bottom: 0.4rem;
-  margin-left: 1.5rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+  margin-left: 1rem;
 }
 
 .bullet-list > li {
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.15rem;
 }
 
 .numbered-list > li > p {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   margin-left: 0;
 }
 
 .emphasis {
   font-weight: 600;
   text-transform: uppercase;
-  margin-top: 1rem;
+  margin-top: 0.7rem;
 }
 </style>

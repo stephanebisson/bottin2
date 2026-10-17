@@ -39,10 +39,10 @@
 }
 
 .section-title + .parents-letter-header {
-  margin-top: 1rem;
+  margin-top: 0.7rem;
 }
 
 .parents-list {
-  margin-top: 1rem;
+  margin-top: 0.7rem;
 }
 </style>

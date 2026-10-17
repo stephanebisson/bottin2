@@ -47,15 +47,15 @@
 
 <style scoped>
 .page-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
 }
 
 h2 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 600;
-  margin: 2rem 0 1rem 0;
-  padding-bottom: 0.5rem;
+  margin: 1.4rem 0 0.7rem 0;
+  padding-bottom: 0.35rem;
   border-bottom: 2px solid #333;
   color: #000;
 }
@@ -67,7 +67,7 @@ h2:first-of-type {
 p {
   font-size: 9pt;
   font-weight: 600;
-  margin: 1.5rem 0 0.75rem 0;
+  margin: 1rem 0 0.5rem 0;
   color: #333;
   font-style: italic;
 }
@@ -75,9 +75,9 @@ p {
 .schedule-entry {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2rem;
-  margin: 0.75rem 0;
-  padding: 0.75rem 0;
+  gap: 1.4rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid #e0e0e0;
 }
 
@@ -99,6 +99,6 @@ p {
 
 /* Add some spacing between sections */
 h2 + p {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
 }
 </style>

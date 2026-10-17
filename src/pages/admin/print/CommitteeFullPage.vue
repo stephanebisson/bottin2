@@ -81,8 +81,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.35rem;
   border-bottom: 2px solid black;
   flex-shrink: 0;
 }
@@ -93,14 +93,14 @@
 
 .committee-description {
   font-weight: normal;
-  margin-left: 0.25rem;
+  margin-left: 0.2rem;
 }
 
 .committee-contact {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: 0.2rem;
   text-align: right;
 }
 
@@ -117,6 +117,6 @@
 .committee-section {
   min-height: 0;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 </style>

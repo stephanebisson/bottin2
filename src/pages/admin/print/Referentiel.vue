@@ -66,7 +66,7 @@
 }
 
 p {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 p:last-child {

@@ -86,7 +86,7 @@
 }
 
 .committee-table td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   vertical-align: top;
 }
 
@@ -103,7 +103,7 @@
   font-weight: 600;
   font-size: 8pt;
   color: #000;
-  padding: 0.35rem 0.5rem !important;
+  padding: 0.25rem 0.35rem !important;
 }
 
 /* Member rows */
@@ -112,17 +112,17 @@
 }
 
 .member-name-cell {
-  width: 40%;
+  width: 38%;
   font-size: 8pt;
   line-height: 1.2;
 }
 
 .phone-cell {
-  width: 25%;
+  width: 20%;
 }
 
 .email-cell {
-  width: 35%;
+  width: 42%;
   word-break: break-word;
 }
 
@@ -131,7 +131,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 7pt;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .committee-table-compact tbody tr {
@@ -139,7 +139,7 @@
 }
 
 .committee-table-compact td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   vertical-align: top;
 }
 

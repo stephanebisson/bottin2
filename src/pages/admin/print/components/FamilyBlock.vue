@@ -72,14 +72,14 @@
   max-height: 20%;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-top: 1px solid #ddd;
   overflow: hidden;
 }
 
 .family-students {
   font-size: 8.5pt;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   line-height: 1.4;
 }
 
@@ -87,14 +87,14 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.15rem;
 }
 
 .family-student-left {
   flex: 0 1 auto;
   display: flex;
   align-items: baseline;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .student-name {
@@ -110,14 +110,14 @@
   text-align: right;
   font-size: 7pt;
   color: #000;
-  margin-left: 1rem;
+  margin-left: 0.7rem;
 }
 
 .family-parents {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-left: 1rem;
+  gap: 0.5rem;
+  margin-left: 0.7rem;
 }
 
 .family-parent {

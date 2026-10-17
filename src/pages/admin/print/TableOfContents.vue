@@ -50,13 +50,13 @@
 }
 
 .toc-items {
-  margin-top: 2rem;
+  margin-top: 1.4rem;
 }
 
 .toc-item {
   display: flex;
   align-items: baseline;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
   font-size: 10pt;
 }
 
@@ -68,7 +68,7 @@
 .toc-dots {
   flex: 1;
   border-bottom: 1px dotted #999;
-  margin: 0 0.5rem;
+  margin: 0 0.35rem;
   min-width: 2rem;
 }
 

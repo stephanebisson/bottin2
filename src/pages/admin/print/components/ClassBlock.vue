@@ -78,7 +78,7 @@
 }
 
 .class-block:not(:last-child) {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .class-header-row {
@@ -89,13 +89,13 @@
 }
 
 .class-block:first-child .class-header-row {
-  padding-top: 1rem;
+  padding-top: 0.7rem;
 }
 
 /* Add border-top only for the second class block (not the first) */
 .class-block:not(:first-child) .class-header-row {
   border-top: 1px solid black;
-  padding-top: 1rem;
+  padding-top: 0.7rem;
 }
 
 .class-title {
@@ -122,19 +122,19 @@
   font-size: 9pt;
   font-style: italic;
   color: #000;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
   margin-top: 0;
 }
 
 .class-students-section {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
   flex: 1;
   overflow: hidden;
 }
 
 .students-by-grade {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   height: 100%;
 }
 
@@ -143,7 +143,7 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid #999;
-  padding-right: 0.6rem;
+  padding-right: 0.4rem;
 }
 
 .grade-column:last-child {
@@ -154,8 +154,8 @@
   font-size: 7pt;
   font-weight: bold;
   color: #000;
-  margin-bottom: 0.35rem;
-  padding-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.15rem;
   border-bottom: 1px solid #ddd;
 }
 
@@ -163,7 +163,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 .student-item {

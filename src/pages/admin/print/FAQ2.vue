@@ -49,7 +49,7 @@
 }
 
 p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 p:last-child {
@@ -57,24 +57,24 @@ p:last-child {
 }
 
 .faq-item {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
   page-break-inside: avoid;
 }
 
 .faq-item .question {
   font-size: 10pt;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   text-align: left;
   margin-top: 0;
 }
 
 .faq-item .answer {
-  margin-left: 1.5rem;
+  margin-left: 1rem;
 }
 
 .faq-item .answer p {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .faq-item .answer p:last-child {

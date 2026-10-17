@@ -143,7 +143,7 @@
 @media screen {
   .print-page {
     /* Document-style presentation */
-    margin: 1.5rem auto;
+    margin: 1rem auto;
     background: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     border: 1px solid #d0d0d0;
@@ -151,7 +151,7 @@
   }
 
   .print-page.first-page {
-    margin-top: 2rem;
+    margin-top: 1.4rem;
   }
 
   /* Overflow indicator - shows when content is clipped */
@@ -161,7 +161,7 @@
     bottom: 0.35in;
     left: 0.5in;
     right: 0.5in;
-    padding: 0.5rem;
+    padding: 0.35rem;
     background: linear-gradient(to bottom, transparent, rgba(244, 67, 54, 0.2) 30%, rgba(244, 67, 54, 0.3));
     border: 2px solid #f44336;
     border-radius: 4px;
@@ -305,8 +305,8 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16pt;
   font-weight: bold;
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
+  margin: 0 0 0.7rem 0;
+  padding: 0.35rem 0;
   border-bottom: 2px solid black;
 }
 
@@ -314,7 +314,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
+  margin: 0.7rem 0 0.35rem 0;
   color: #000;
 }
 
@@ -322,7 +322,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   font-weight: 600;
-  margin: 0.5rem 0;
+  margin: 0.35rem 0;
   color: #000;
   text-align: center;
 }
@@ -331,7 +331,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   color: #000;
 }
 
@@ -355,7 +355,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10pt;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   color: #000;
 }
 
@@ -363,7 +363,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12pt;
   font-weight: 600;
-  margin: 1.5rem 0 1rem 0;
+  margin: 1rem 0 0.7rem 0;
   color: #000;
 }
 </style>
