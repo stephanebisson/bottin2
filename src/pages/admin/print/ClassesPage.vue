@@ -11,6 +11,7 @@
       v-for="classData in classesData"
       :key="classData.classItem.id"
       :class-item="classData.classItem"
+      :feves-student-ids="fevesStudentIds"
       :rep1="classData.rep1"
       :rep2="classData.rep2"
       :students-by-grade="classData.studentsByGrade"
@@ -27,6 +28,11 @@
     classesData: {
       type: Array,
       required: true,
+    },
+    // Students on the fèves committee
+    fevesStudentIds: {
+      type: Set,
+      default: () => new Set(),
     },
     levelBadge: {
       type: String,
@@ -62,4 +68,5 @@
   font-weight: 600;
   color: #000;
 }
+
 </style>

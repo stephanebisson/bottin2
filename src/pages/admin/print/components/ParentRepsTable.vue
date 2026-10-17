@@ -1,19 +1,16 @@
 <template>
-  <div v-if="rep1 || rep2" class="class-parent-reps-section">
-    <strong>Représentants des parents</strong>
-
+  <!--
+    One line per parent representative, in three columns (name, phone, email) sized to their content
+    across the full width: nothing wraps unless a line is wider than the page. A thin line separates
+    them from the teacher.
+  -->
+  <div v-if="reps.length > 0" class="parent-reps">
     <table class="parent-reps-table">
       <tbody>
-        <tr v-if="rep1">
-          <td class="parent-rep-name-cell">{{ rep1.name }}</td>
-          <td class="parent-rep-phone-cell">{{ rep1.phone ? formatPhoneForDisplay(rep1.phone) : '' }}</td>
-          <td class="parent-rep-email-cell"><PrintEmail :email="rep1.email || ''" /></td>
-        </tr>
-
-        <tr v-if="rep2">
-          <td class="parent-rep-name-cell">{{ rep2.name }}</td>
-          <td class="parent-rep-phone-cell">{{ rep2.phone ? formatPhoneForDisplay(rep2.phone) : '' }}</td>
-          <td class="parent-rep-email-cell"><PrintEmail :email="rep2.email || ''" /></td>
+        <tr v-for="(rep, index) in reps" :key="index">
+          <td class="parent-rep-name-cell"><RepIcon />{{ ' ' }}{{ rep.name }}</td>
+          <td class="parent-rep-phone-cell">{{ rep.phone ? formatPhoneForDisplay(rep.phone) : '' }}</td>
+          <td class="parent-rep-email-cell"><PrintEmail :email="rep.email || ''" /></td>
         </tr>
       </tbody>
     </table>
@@ -21,10 +18,12 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import PrintEmail from './PrintEmail.vue'
+  import RepIcon from './RepIcon.vue'
 
-  defineProps({
+  const props = defineProps({
     rep1: {
       type: Object,
       default: null,
@@ -35,47 +34,33 @@
     },
   })
 
+  const reps = computed(() => [props.rep1, props.rep2].filter(Boolean))
 </script>
 
 <style scoped>
-.class-parent-reps-section {
-  font-size: var(--print-size-detail);
-  margin-bottom: 0.4rem;
+.parent-reps {
+  border-top: 0.5pt solid #000;
+  padding-top: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
-.class-parent-reps-section strong {
-  display: block;
-  margin-bottom: 0.1rem;
-}
-
+/* No column widths: the table gives each column its full content width whenever the line fits */
 .parent-reps-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0;
   font-size: var(--print-size-contact);
 }
 
-.parent-reps-table tbody tr {
-  border-bottom: none;
-}
-
 .parent-reps-table td {
-  padding: 0.1rem 0.35rem;
+  padding: 0.05rem 0.7rem 0.05rem 0;
   vertical-align: top;
 }
 
-.parent-rep-name-cell {
-  width: 38%;
-  font-weight: 600;
+.parent-reps-table td:last-child {
+  padding-right: 0;
 }
 
 .parent-rep-phone-cell {
-  width: 22%;
   white-space: nowrap;
-}
-
-.parent-rep-email-cell {
-  width: 40%;
-  word-break: break-word;
 }
 </style>

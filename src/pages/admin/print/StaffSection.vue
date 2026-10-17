@@ -101,6 +101,8 @@ table.subgroup-members {
   max-width: 100%;
   height: auto;
   object-fit: contain;
+  /* The print is black and white */
+  filter: grayscale(1);
 }
 
 .sdg-info {

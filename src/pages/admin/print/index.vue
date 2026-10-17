@@ -47,9 +47,9 @@
     <CssdmPage :comite-parents="getCommitteesByNames(['Comité des parents CSSDM'])" :repaq="getCommitteesByNames(['REPAQ'])" :role-groups-map="committeeRoleGroupsMap" />
 
     <!-- Classes Pages -->
-    <ClassesPage :classes-data="getClassesData([1, 2])" level-badge="1<sup>re</sup>-2<sup>e</sup>" section-id="section-classes" />
-    <ClassesPage :classes-data="getClassesData([3, 4])" level-badge="3<sup>e</sup>-4<sup>e</sup>" section-id="section-classes-34" />
-    <ClassesPage :classes-data="getClassesData([5, 6])" level-badge="5<sup>e</sup>-6<sup>e</sup>" section-id="section-classes-56" />
+    <ClassesPage :classes-data="getClassesData([1, 2])" :feves-student-ids="fevesStudentIds" level-badge="1<sup>re</sup>-2<sup>e</sup>" section-id="section-classes" />
+    <ClassesPage :classes-data="getClassesData([3, 4])" :feves-student-ids="fevesStudentIds" level-badge="3<sup>e</sup>-4<sup>e</sup>" section-id="section-classes-34" />
+    <ClassesPage :classes-data="getClassesData([5, 6])" :feves-student-ids="fevesStudentIds" level-badge="5<sup>e</sup>-6<sup>e</sup>" section-id="section-classes-56" />
 
     <!-- Families Pages -->
     <FamiliesPages :families="familiesWithTeachers" />
@@ -77,7 +77,7 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { getCommitteeRoleDisplayOrder } from '@/config/committees'
+  import { FEVES_COMMITTEE_ID, getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
@@ -378,6 +378,12 @@
       map[committee.id] = groupMembersByRole(committee.enrichedMembers, committee.name)
     }
     return map
+  })
+
+  // Students on the fèves committee, shown with a leaf in the class lists (like the app's class view)
+  const fevesStudentIds = computed(() => {
+    const feves = firebaseStore.committeesDTO.find(c => c.id === FEVES_COMMITTEE_ID)
+    return new Set(feves ? feves.studentMembers.map(m => m.memberId) : [])
   })
 
   // Helper: Get teacher name

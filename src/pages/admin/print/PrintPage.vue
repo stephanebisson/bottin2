@@ -123,7 +123,7 @@
 .print-page {
   /*
     Type scale for every print page: components use these roles, never literal sizes.
-    One family, Avenir; Didot only for the cover title and Kalam only for class names.
+    One family, Avenir; Didot only for the cover title and Nunito (as in the app) only for class names.
   */
   --print-size-title: 16pt;     /* Section and page titles, letter headers */
   --print-size-subtitle: 13pt;  /* Subsections: h2, committee categories, teams */
