@@ -1,70 +1,43 @@
 <template>
-  <!-- EF Staff Page -->
-  <PrintPage v-if="group.group === 'EF'" id="section-staff">
-    <div class="staff-page">
-      <div class="staff-group">
-        <!-- Group Header with School Phone -->
-        <div class="group-header">
-          <h1 class="group-title">{{ group.name }}</h1>
-          <span class="school-phone">{{ schoolPhone }}</span>
-        </div>
+  <!-- Staff of one group (EF or SDG), on as many pages as it needs -->
+  <PrintFlow v-if="group.group === 'EF' || group.group === 'SDG'" :section-id="group.group === 'EF' ? 'section-staff' : 'section-sdg'">
+    <!-- Group Header with the group's phone -->
+    <template #header="{ page }">
+      <div class="group-header">
+        <h1 class="group-title">{{ group.name }}<template v-if="page > 0"> (suite)</template></h1>
+        <span class="school-phone">{{ group.group === 'EF' ? schoolPhone : sdgPhone }}</span>
+      </div>
+    </template>
 
-        <!-- Subgroups -->
-        <div v-for="subgroup in group.subgroups" :key="subgroup.subgroup" class="staff-subgroup">
-          <!-- Subgroup Header -->
-          <h2 class="subgroup-title">{{ subgroup.name }}</h2>
+    <!-- SDG Info Header -->
+    <div v-if="group.group === 'SDG'" class="sdg-header">
+      <div class="sdg-logo-space">
+        <img alt="SDG Logo" class="sdg-logo" src="@/assets/SDG_logo.jpg">
+      </div>
 
-          <!-- Staff Members - 3 Column Table -->
-          <StaffTable :members="subgroup.members" variant="ef" />
-        </div>
+      <div class="sdg-info">
+        <div class="sdg-name">{{ SDG_INFO.name }}</div>
+        <div class="sdg-address">{{ SDG_INFO.addressLine1 }}</div>
+        <div class="sdg-address">{{ SDG_INFO.addressLine2 }}</div>
+        <div class="sdg-email">{{ SDG_INFO.email }}</div>
+        <div class="sdg-url">{{ SDG_INFO.url }}</div>
       </div>
     </div>
-  </PrintPage>
 
-  <!-- SDG Staff Page -->
-  <PrintPage v-else-if="group.group === 'SDG'" id="section-sdg">
-    <div class="staff-page">
-      <div class="staff-group">
-        <!-- Group Header with SDG Phone -->
-        <div class="group-header">
-          <h1 class="group-title">{{ group.name }}</h1>
-          <span class="school-phone">{{ sdgPhone }}</span>
-        </div>
-
-        <!-- SDG Info Header -->
-        <div class="sdg-header">
-          <div class="sdg-logo-space">
-            <img alt="SDG Logo" class="sdg-logo" src="@/assets/SDG_logo.jpg">
-          </div>
-
-          <div class="sdg-info">
-            <div class="sdg-name">{{ SDG_INFO.name }}</div>
-            <div class="sdg-address">{{ SDG_INFO.addressLine1 }}</div>
-            <div class="sdg-address">{{ SDG_INFO.addressLine2 }}</div>
-            <div class="sdg-email">{{ SDG_INFO.email }}</div>
-            <div class="sdg-url">{{ SDG_INFO.url }}</div>
-          </div>
-        </div>
-
-        <!-- Subgroups -->
-        <div v-for="subgroup in group.subgroups" :key="subgroup.subgroup" class="staff-subgroup">
-          <!-- Subgroup Header -->
-          <h2 class="subgroup-title">{{ subgroup.name }}</h2>
-
-          <!-- Use appropriate table variant based on subgroup -->
-          <StaffTable :members="subgroup.members" :variant="subgroup.subgroup === 'resp' ? 'sdg-resp' : 'sdg-edu'" />
-        </div>
-      </div>
-    </div>
-  </PrintPage>
+    <!-- Subgroups: title and members -->
+    <template v-for="subgroup in group.subgroups" :key="subgroup.subgroup">
+      <h2 class="subgroup-title">{{ subgroup.name }}</h2>
+      <StaffTable class="subgroup-members" :members="subgroup.members" :variant="tableVariant(subgroup)" />
+    </template>
+  </PrintFlow>
 </template>
 
 <script setup>
   import { SDG_INFO } from '@/config/sdg'
   import StaffTable from './components/StaffTable.vue'
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
-  defineProps({
+  const props = defineProps({
     group: {
       type: Object,
       required: true,
@@ -78,20 +51,16 @@
       default: '',
     },
   })
+
+  // EF staff: title, name, email; SDG: responsables with phones, éducateurs with titles
+  function tableVariant (subgroup) {
+    if (props.group.group === 'EF') return 'ef'
+    return subgroup.subgroup === 'resp' ? 'sdg-resp' : 'sdg-edu'
+  }
 </script>
 
 <style scoped>
 /* Staff Section */
-.staff-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.staff-group {
-  margin-bottom: 1rem;
-}
-
 .group-header {
   display: flex;
   justify-content: space-between;
@@ -103,13 +72,14 @@
 
 .school-phone {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: 600;
   color: #000;
 }
 
-.staff-subgroup {
-  margin-bottom: 0.9rem;
+/* Space between subgroups */
+table.subgroup-members {
+  margin-bottom: 1.4rem;
 }
 
 /* SDG Header Section */
@@ -117,7 +87,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1rem 0 1rem 0;
+  margin: 0.3rem 0 1rem 0;
 }
 
 .sdg-logo-space {
@@ -143,32 +113,32 @@
 }
 
 .sdg-name {
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   color: #000;
   margin-bottom: 0.35rem;
 }
 
 .sdg-address {
-  font-size: 8.5pt;
+  font-size: 9.5pt;
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-email {
-  font-size: 8.5pt;
+  font-size: 9.5pt;
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-phone {
-  font-size: 9pt;
+  font-size: 10.5pt;
   font-weight: 600;
   color: #000;
 }
 
 .sdg-url {
-  font-size: 8pt;
+  font-size: 9.5pt;
   color: #000;
   font-style: italic;
 }

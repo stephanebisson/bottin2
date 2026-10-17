@@ -75,7 +75,7 @@
 
 .resource-title {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   margin: 0 0 0.35rem 0;
   color: #000;
@@ -83,17 +83,17 @@
 
 .resource-link {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   margin: 0;
-  color: #333;
+  color: #000;
   word-break: break-word;
 }
 
 .resource-text {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   margin: 0;
-  color: #333;
+  color: #000;
 }
 
 /* Bottom Section */
@@ -126,7 +126,7 @@
 
 .school-name {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: bold;
   margin: 0 0 0.35rem 0;
   color: #000;
@@ -134,9 +134,9 @@
 
 .address-line {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 8.5pt;
+  font-size: 9.5pt;
   margin: 0.1rem 0;
-  color: #333;
+  color: #000;
 }
 
 /* Print-specific styles */

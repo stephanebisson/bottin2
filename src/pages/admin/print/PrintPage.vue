@@ -1,11 +1,13 @@
 <template>
   <section
     ref="pageRef"
+    :aria-hidden="measure || undefined"
     :class="{
       'print-page': true,
       'no-footer': noFooter,
       'first-page': firstPage,
-      'has-overflow': hasOverflow
+      'has-overflow': hasOverflow,
+      'measure': measure
     }"
   >
     <!-- Optional header slot -->
@@ -19,7 +21,7 @@
     </div>
 
     <!-- Manual page footer (replaces @page @bottom-center) -->
-    <div v-if="!noFooter" class="page-footer">
+    <div v-if="!noFooter && !measure" class="page-footer">
       <span class="page-number-left"><span class="page-number" /></span>
       <span class="footer-center">Le Bottin de L'Étoile filante 2025 - 2026</span>
       <span class="page-number-right"><span class="page-number" /></span>
@@ -33,7 +35,7 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue'
+  import { onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
   import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
 
   const props = defineProps({
@@ -52,6 +54,12 @@
       type: [String, Array],
       default: null,
     },
+    // Off-screen copy used to measure blocks at the real page size (see PrintFlow):
+    // not numbered, not printed
+    measure: {
+      type: Boolean,
+      default: false,
+    },
   })
 
   const { registerPage } = usePrintPageRegistry()
@@ -59,10 +67,14 @@
   const pageRef = ref(null)
   const hasOverflow = ref(false)
 
-  // Register this page with the registry on component creation
-  registerPage(props.id)
+  let unregisterPage = null
 
   onMounted(() => {
+    if (props.measure) return
+
+    // Register this page with the registry once it is in the document
+    unregisterPage = registerPage(pageRef.value, props.id)
+
     // Check for content overflow on screen only
     if (import.meta.env.DEV && pageRef.value) {
       checkOverflow()
@@ -70,6 +82,18 @@
       // Re-check on window resize
       window.addEventListener('resize', checkOverflow)
     }
+  })
+
+  // Pages of a PrintFlow get new content after measuring
+  onUpdated(() => {
+    if (import.meta.env.DEV && !props.measure) {
+      checkOverflow()
+    }
+  })
+
+  onBeforeUnmount(() => {
+    unregisterPage?.()
+    window.removeEventListener('resize', checkOverflow)
   })
 
   function checkOverflow () {
@@ -113,7 +137,7 @@
   /* Typography defaults */
   color: black;
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 8pt;
+  font-size: 9.5pt;
   line-height: 1.4;
 
   /* Flexbox layout for header/content/footer structure */
@@ -133,6 +157,11 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* The last block's bottom margin is only space: it must not push past the end of the page */
+.print-page-content > :deep(:last-child) {
+  margin-bottom: 0;
 }
 
 .print-page-footer {
@@ -167,10 +196,25 @@
     border-radius: 4px;
     color: #c62828;
     font-weight: bold;
-    font-size: 8.5pt;
+    font-size: 9.5pt;
     text-align: center;
     pointer-events: none;
     z-index: 100;
+  }
+}
+
+/* Measuring copy: laid out like a page, but off-screen, not counted and not printed */
+.print-page.measure {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  visibility: hidden;
+  counter-increment: none;
+}
+
+@media print {
+  .print-page.measure {
+    display: none;
   }
 }
 
@@ -194,7 +238,7 @@
   justify-content: space-between;
   align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 7pt;
+  font-size: 8pt;
   color: #000;
   padding: 0 0.5in;
 }
@@ -272,7 +316,7 @@
     align-items: center;
     padding: 0 0.5in;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 7pt;
+    font-size: 8pt;
     color: #000;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
@@ -312,7 +356,7 @@
 
 .print-page :deep(h2) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   margin: 0.7rem 0 0.35rem 0;
   color: #000;
@@ -320,7 +364,7 @@
 
 .print-page :deep(h3) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: 600;
   margin: 0.35rem 0;
   color: #000;
@@ -329,7 +373,7 @@
 
 .print-page :deep(.section-subtitle) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   margin: 0 0 0.35rem 0;
   color: #000;
@@ -353,7 +397,7 @@
 
 .print-page :deep(.subgroup-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: 600;
   margin: 0 0 0.35rem 0;
   color: #000;
@@ -361,7 +405,7 @@
 
 .print-page :deep(.committee-category-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   margin: 1rem 0 0.7rem 0;
   color: #000;

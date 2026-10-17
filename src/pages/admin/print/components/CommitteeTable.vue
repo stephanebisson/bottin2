@@ -21,7 +21,7 @@
             </td>
 
             <td class="email-cell">
-              {{ member.email || '' }}
+              <PrintEmail :email="member.email || ''" />
             </td>
           </tr>
         </template>
@@ -39,7 +39,7 @@
           </td>
 
           <td class="email-cell">
-            {{ member.email || '' }}
+            <PrintEmail :email="member.email || ''" />
           </td>
         </tr>
       </template>
@@ -50,6 +50,7 @@
 <script setup>
   import { getRoleDisplay } from '@/utils/committeeRoleHelpers'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+  import PrintEmail from './PrintEmail.vue'
 
   defineProps({
     members: {
@@ -77,7 +78,7 @@
 .committee-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 8pt;
+  font-size: 9.5pt;
   line-height: 1.2;
 }
 
@@ -101,7 +102,7 @@
 
 .role-header-cell {
   font-weight: 600;
-  font-size: 8pt;
+  font-size: 9.5pt;
   color: #000;
   padding: 0.25rem 0.35rem !important;
 }
@@ -113,12 +114,13 @@
 
 .member-name-cell {
   width: 38%;
-  font-size: 8pt;
+  font-size: 9.5pt;
   line-height: 1.2;
 }
 
 .phone-cell {
   width: 20%;
+  white-space: nowrap;
 }
 
 .email-cell {
@@ -130,7 +132,7 @@
 .committee-table-compact {
   width: 100%;
   border-collapse: collapse;
-  font-size: 7pt;
+  font-size: 9pt;
   margin-bottom: 0.35rem;
 }
 

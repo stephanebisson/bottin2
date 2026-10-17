@@ -7,13 +7,13 @@
         <tr v-if="rep1">
           <td class="parent-rep-name-cell">{{ rep1.name }}</td>
           <td class="parent-rep-phone-cell">{{ rep1.phone ? formatPhoneForDisplay(rep1.phone) : '' }}</td>
-          <td class="parent-rep-email-cell">{{ rep1.email || '' }}</td>
+          <td class="parent-rep-email-cell"><PrintEmail :email="rep1.email || ''" /></td>
         </tr>
 
         <tr v-if="rep2">
           <td class="parent-rep-name-cell">{{ rep2.name }}</td>
           <td class="parent-rep-phone-cell">{{ rep2.phone ? formatPhoneForDisplay(rep2.phone) : '' }}</td>
-          <td class="parent-rep-email-cell">{{ rep2.email || '' }}</td>
+          <td class="parent-rep-email-cell"><PrintEmail :email="rep2.email || ''" /></td>
         </tr>
       </tbody>
     </table>
@@ -22,6 +22,7 @@
 
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+  import PrintEmail from './PrintEmail.vue'
 
   defineProps({
     rep1: {
@@ -38,7 +39,7 @@
 
 <style scoped>
 .class-parent-reps-section {
-  font-size: 7.5pt;
+  font-size: 9pt;
   margin-bottom: 0.4rem;
 }
 
@@ -51,7 +52,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 0;
-  font-size: 7pt;
+  font-size: 9pt;
 }
 
 .parent-reps-table tbody tr {
@@ -70,6 +71,7 @@
 
 .parent-rep-phone-cell {
   width: 33%;
+  white-space: nowrap;
 }
 
 .parent-rep-email-cell {

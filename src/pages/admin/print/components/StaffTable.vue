@@ -5,7 +5,7 @@
       <tr v-for="member in members" :key="member.id">
         <td class="staff-title-cell">{{ member.title || '' }}</td>
         <td class="staff-name-cell">{{ member.first_name }} {{ member.last_name }}</td>
-        <td class="staff-email-cell">{{ member.email || '' }}</td>
+        <td class="staff-email-cell"><PrintEmail :email="member.email || ''" /></td>
       </tr>
     </tbody>
   </table>
@@ -20,7 +20,7 @@
         </td>
 
         <td class="sdg-phone-cell">{{ formatPhoneForDisplay(member.phone) || '' }}</td>
-        <td class="sdg-email-cell">{{ member.email || '' }}</td>
+        <td class="sdg-email-cell"><PrintEmail :email="member.email || ''" /></td>
       </tr>
     </tbody>
   </table>
@@ -38,6 +38,7 @@
 
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
+  import PrintEmail from './PrintEmail.vue'
 
   defineProps({
     members: {
@@ -58,7 +59,7 @@
 .staff-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 7pt;
+  font-size: 9pt;
   margin-bottom: 0.5rem;
 }
 
@@ -95,7 +96,7 @@
 .staff-table-sdg {
   width: 100%;
   border-collapse: collapse;
-  font-size: 7pt;
+  font-size: 9pt;
   margin-bottom: 0.5rem;
 }
 
@@ -118,18 +119,19 @@
 
 .sdg-staff-name {
   font-weight: 600;
-  font-size: 8pt;
+  font-size: 9.5pt;
   margin-bottom: 0.1rem;
 }
 
 .sdg-staff-title {
-  font-size: 7pt;
+  font-size: 9pt;
   color: #000;
   font-style: italic;
 }
 
 .sdg-phone-cell {
   width: 30%;
+  white-space: nowrap;
 }
 
 .sdg-email-cell {
@@ -141,7 +143,7 @@
 .staff-table-sdg-edu {
   width: 100%;
   border-collapse: collapse;
-  font-size: 7pt;
+  font-size: 9pt;
   margin-bottom: 0.5rem;
 }
 

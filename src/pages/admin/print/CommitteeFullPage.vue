@@ -1,44 +1,63 @@
 <template>
-  <PrintPage :id="sectionId">
-    <div class="committee-full-page">
-      <!-- Committee Header -->
+  <PrintFlow :section-id="sectionId">
+    <!-- Committee Header; following pages repeat the name -->
+    <template #header="{ page }">
       <div class="committee-header">
         <h1 class="committee-title">
           {{ committee.name }}
-          <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
+          <span v-if="page > 0" class="committee-description">(suite)</span>
+          <span v-else-if="committee.description" class="committee-description">({{ committee.description }})</span>
         </h1>
 
-        <div class="committee-contact">
+        <div v-if="page === 0" class="committee-contact">
           <div v-if="committee.email" class="committee-email">{{ committee.email }}</div>
           <div v-if="committee.phone" class="committee-phone">{{ formatPhoneForDisplay(committee.phone) }}</div>
           <div v-if="committee.url" class="committee-url">{{ committee.url }}</div>
         </div>
       </div>
+    </template>
 
-      <!-- Parent Members Section (only for committees with separated parent/staff) -->
-      <div v-if="parentRoleGroups.length > 0" class="committee-section">
-        <h2 class="section-subtitle">Équipe parents</h2>
-        <CommitteeTable group-by-role :role-groups="parentRoleGroups" />
-      </div>
+    <!-- Parent Members (only for committees with separated parent/staff); one table per role -->
+    <template v-if="parentRoleGroups.length > 0">
+      <h2 class="section-subtitle">Équipe parents</h2>
 
-      <!-- Staff Members Section (only for committees with separated parent/staff) -->
-      <div v-if="staffRoleGroups.length > 0" class="committee-section">
-        <h2 class="section-subtitle">Équipe école</h2>
-        <CommitteeTable group-by-role :role-groups="staffRoleGroups" />
-      </div>
+      <CommitteeTable
+        v-for="roleGroup in parentRoleGroups"
+        :key="roleGroup.role"
+        class="role-table"
+        group-by-role
+        :role-groups="[roleGroup]"
+      />
+    </template>
 
-      <!-- All Members (for committees without parent/staff separation) -->
-      <div v-if="allRoleGroups.length > 0" class="committee-section">
-        <CommitteeTable group-by-role :role-groups="allRoleGroups" />
-      </div>
-    </div>
-  </PrintPage>
+    <!-- Staff Members (only for committees with separated parent/staff) -->
+    <template v-if="staffRoleGroups.length > 0">
+      <h2 class="section-subtitle">Équipe école</h2>
+
+      <CommitteeTable
+        v-for="roleGroup in staffRoleGroups"
+        :key="roleGroup.role"
+        class="role-table"
+        group-by-role
+        :role-groups="[roleGroup]"
+      />
+    </template>
+
+    <!-- All Members (for committees without parent/staff separation) -->
+    <CommitteeTable
+      v-for="roleGroup in allRoleGroups"
+      :key="roleGroup.role"
+      class="role-table"
+      group-by-role
+      :role-groups="[roleGroup]"
+    />
+  </PrintFlow>
 </template>
 
 <script setup>
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import CommitteeTable from './components/CommitteeTable.vue'
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
   defineProps({
     committee: {
@@ -71,12 +90,6 @@
 
 <style scoped>
 /* Committees Section - Full Page Layout */
-.committee-full-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .committee-header {
   display: flex;
   justify-content: space-between;
@@ -108,15 +121,18 @@
 .committee-phone,
 .committee-url {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 9pt;
+  font-size: 10.5pt;
   font-weight: 500;
   color: #000;
   white-space: nowrap;
 }
 
-.committee-section {
-  min-height: 0;
-  overflow: hidden;
-  margin-bottom: 0.7rem;
+/* Separator between roles, and space before the second team */
+.role-table + .role-table {
+  border-top: 1px solid #ddd;
+}
+
+.role-table + .section-subtitle {
+  margin-top: 0.7rem;
 }
 </style>

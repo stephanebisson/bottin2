@@ -1,28 +1,40 @@
 <template>
-  <PrintPage v-for="(page, pageIndex) in paginatedFamilies" :id="page.isFirstPage ? 'section-families' : undefined" :key="`family-page-${pageIndex}`">
-    <template #header>
+  <PrintFlow section-id="section-families">
+    <template #header="{ page, start, end }">
       <!-- Section title only on first page -->
-      <h1 v-if="page.isFirstPage" class="section-title">Liste alphabétique des élèves</h1>
+      <h1 v-if="page === 0" class="section-title">Liste alphabétique des élèves</h1>
 
       <!-- Letter range header -->
-      <h1 class="families-letter-header">{{ page.letterRange }}</h1>
+      <h1 class="families-letter-header">{{ letterRange(families.slice(start, end)) }}</h1>
     </template>
 
-    <!-- 5 families per page, each taking 20% height -->
-    <FamilyBlock v-for="(family, index) in page.families" :key="`family-${pageIndex}-${index}`" :family="family" />
-  </PrintPage>
+    <FamilyBlock v-for="family in families" :key="family.students[0].id" :family="family" />
+  </PrintFlow>
 </template>
 
 <script setup>
   import FamilyBlock from './components/FamilyBlock.vue'
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
   defineProps({
-    paginatedFamilies: {
+    families: {
       type: Array,
       required: true,
     },
   })
+
+  // First letters of the students' last names on a page, e.g. "A-B"
+  function letterRange (pageFamilies) {
+    const letters = new Set()
+    for (const family of pageFamilies) {
+      for (const student of family.students) {
+        if (student.last_name) {
+          letters.add(student.last_name.charAt(0).toUpperCase())
+        }
+      }
+    }
+    return [...letters].toSorted().join('-')
+  }
 </script>
 
 <style scoped>

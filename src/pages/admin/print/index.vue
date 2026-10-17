@@ -40,111 +40,8 @@
       title="Fondation de l'école Étoile filante"
     />
 
-    <!-- Committees Page 1 - En lien avec le projet éducatif -->
-    <PrintPage id="section-comites">
-      <div class="committees-section">
-        <h1 class="section-title">Comités</h1>
-
-        <!-- En lien avec le projet éducatif -->
-        <h2 class="committee-category-title">En lien avec le projet éducatif</h2>
-
-        <div v-for="committee in getCommitteesByNames(['Admissions', 'CAMPÉR'])" :key="committee.id" class="committee">
-          <div class="committee-header-inline">
-            <h3 class="committee-name">
-              {{ committee.name }}
-              <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
-            </h3>
-
-            <div class="committee-contact-inline">
-              <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
-              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
-            </div>
-          </div>
-
-          <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
-            <CommitteeTable compact :members="committee.enrichedMembers" />
-          </div>
-        </div>
-      </div>
-    </PrintPage>
-
-    <!-- Committees Page 2 - Communications -->
-    <PrintPage>
-      <div class="committees-section">
-        <!-- Communications -->
-        <h2 class="committee-category-title">Communications</h2>
-
-        <div v-for="committee in getCommitteesByNames(['Bottin', 'Groupe Facebook', 'OPP'])" :key="committee.id" class="committee">
-          <div class="committee-header-inline">
-            <h3 class="committee-name">
-              {{ committee.name }}
-              <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
-            </h3>
-
-            <div class="committee-contact-inline">
-              <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
-              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
-            </div>
-          </div>
-
-          <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
-            <CommitteeTable compact :members="committee.enrichedMembers" />
-          </div>
-        </div>
-      </div>
-    </PrintPage>
-
-    <!-- Committees Page 3 - Activités à l'école -->
-    <PrintPage>
-      <div class="committees-section">
-        <h2 class="committee-category-title">Activités à l'école</h2>
-
-        <div v-for="committee in getCommitteesByNames(['Ateliers', 'Bazar', 'Bibliothèque'])" :key="committee.id" class="committee">
-          <div class="committee-header-inline">
-            <h3 class="committee-name">
-              {{ committee.name }}
-              <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
-            </h3>
-
-            <div class="committee-contact-inline">
-              <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
-              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
-            </div>
-          </div>
-
-          <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
-            <CommitteeTable compact :members="filterCommitteeMembers(committee)" />
-          </div>
-        </div>
-      </div>
-    </PrintPage>
-
-    <!-- Committees Page 5 -->
-    <PrintPage>
-      <div class="committees-section">
-        <div v-for="committee in getCommitteesByNames(['JEDI', 'Feves', 'Comité des usagers SDG'])" :key="committee.id" class="committee">
-          <div class="committee-header-inline">
-            <h3 class="committee-name">
-              {{ committee.name }}
-              <span v-if="committee.description" class="committee-description">({{ committee.description }})</span>
-            </h3>
-
-            <div class="committee-contact-inline">
-              <span v-if="committee.email" class="committee-email-inline">{{ committee.email }}</span>
-              <span v-if="committee.phone" class="committee-phone-inline">{{ formatPhoneForDisplay(committee.phone) }}</span>
-              <span v-if="committee.url" class="committee-url-inline">{{ committee.url }}</span>
-            </div>
-          </div>
-
-          <div v-if="committee.enrichedMembers.length > 0" class="committee-section-compact">
-            <CommitteeTable compact :members="committee.enrichedMembers" />
-          </div>
-        </div>
-      </div>
-    </PrintPage>
+    <!-- Comités, by category -->
+    <CommitteesPages :categories="committeeCategories" />
 
     <!-- CSSDM & REPAQ -->
     <CssdmPage :comite-parents="getCommitteesByNames(['Comité des parents CSSDM'])" :repaq="getCommitteesByNames(['REPAQ'])" :role-groups-map="committeeRoleGroupsMap" />
@@ -155,10 +52,10 @@
     <ClassesPage :classes-data="getClassesData([5, 6])" level-badge="5<sup>e</sup>-6<sup>e</sup>" section-id="section-classes-56" />
 
     <!-- Families Pages -->
-    <FamiliesPages :paginated-families="paginatedFamiliesWithTeachers" />
+    <FamiliesPages :families="familiesWithTeachers" />
 
     <!-- Parents Alphabetical List -->
-    <ParentsListPages :paginated-parents="paginatedParentsWithChildren" />
+    <ParentsListPages :parents="parentsWithChildren" />
 
     <!-- Référentiel -->
     <Referentiel />
@@ -180,7 +77,6 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
   import { getCommitteeRoleDisplayOrder } from '@/config/committees'
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
@@ -190,14 +86,13 @@
   import BackPage from './BackPage.vue'
   import ClassesPage from './ClassesPage.vue'
   import CommitteeFullPage from './CommitteeFullPage.vue'
-  import CommitteeTable from './components/CommitteeTable.vue'
+  import CommitteesPages from './CommitteesPages.vue'
   import CssdmPage from './CssdmPage.vue'
   import FamiliesPages from './FamiliesPages.vue'
   import FAQ1 from './FAQ1.vue'
   import FAQ2 from './FAQ2.vue'
   import Implication from './Implication.vue'
   import ParentsListPages from './ParentsListPages.vue'
-  import PrintPage from './PrintPage.vue'
   import Referentiel from './Referentiel.vue'
   import Schedule from './Schedule.vue'
   import StaffSection from './StaffSection.vue'
@@ -206,7 +101,6 @@
 
   // Store references
   const firebaseStore = useFirebaseDataStore()
-  const { reset: resetPageRegistry } = usePrintPageRegistry()
 
   // State
   const loading = ref(true)
@@ -412,6 +306,20 @@
     }
     return committee.enrichedMembers
   }
+
+  // Comités pages: categories in print order, each committee with the members to list
+  const committeeCategories = computed(() => [
+    { title: 'En lien avec le projet éducatif', names: ['Admissions', 'CAMPÉR'] },
+    { title: 'Communications', names: ['Bottin', 'Groupe Facebook', 'OPP'] },
+    { title: 'Activités à l\'école', names: ['Ateliers', 'Bazar', 'Bibliothèque'] },
+    { title: null, names: ['JEDI', 'Feves', 'Comité des usagers SDG'] },
+  ].map(({ title, names }) => ({
+    title,
+    committees: getCommitteesByNames(names).map(committee => ({
+      committee,
+      members: filterCommitteeMembers(committee),
+    })),
+  })))
 
   // Helper: Group members by role
   function groupMembersByRole (members, committeeName = null) {
@@ -628,48 +536,17 @@
     return `${level}e`
   }
 
-  // Paginated families with teacher names added
-  const paginatedFamiliesWithTeachers = computed(() => {
-    const families = groupedFamilies.value
-    const pages = []
+  // Families with teacher names added; FamiliesPages fills pages by height
+  const familiesWithTeachers = computed(() => groupedFamilies.value.map(family => ({
+    ...family,
+    students: family.students.map(student => ({
+      ...student,
+      teacherName: getStudentTeacherName(student),
+    })),
+  })))
 
-    for (let i = 0; i < families.length; i += 5) {
-      const pageFamilies = families.slice(i, i + 5)
-
-      // Add teacher names to students
-      const enrichedFamilies = pageFamilies.map(family => ({
-        ...family,
-        students: family.students.map(student => ({
-          ...student,
-          teacherName: getStudentTeacherName(student),
-        })),
-      }))
-
-      // Get all unique first letters from student last names on this page
-      const letters = new Set()
-      for (const family of enrichedFamilies) {
-        for (const student of family.students) {
-          if (student.last_name) {
-            letters.add(student.last_name.charAt(0).toUpperCase())
-          }
-        }
-      }
-
-      // Sort letters alphabetically and join with hyphens
-      const letterRange = [...letters].toSorted().join('-')
-
-      pages.push({
-        families: enrichedFamilies,
-        letterRange,
-        isFirstPage: i === 0,
-      })
-    }
-
-    return pages
-  })
-
-  // Parents alphabetically with children
-  const paginatedParentsWithChildren = computed(() => {
+  // Parents alphabetically with children; ParentsListPages fills pages by height
+  const parentsWithChildren = computed(() => {
     // Create a map of parent -> children
     const parentChildrenMap = new Map()
 
@@ -748,53 +625,7 @@
       })
     }
 
-    // Paginate: smart pagination based on student count (~22 students per page)
-    // Each parent entry shows all their children, so we count total student lines
-    const pages = []
-    const maxStudentsPerPage = 22
-    let currentPage = []
-    let currentStudentCount = 0
-
-    for (const parent of sortedParents) {
-      const studentCount = parent.children.length
-
-      // Check if adding this parent would exceed the page limit
-      if (currentStudentCount > 0 && currentStudentCount + studentCount > maxStudentsPerPage) {
-        // Start a new page
-        pages.push(currentPage)
-        currentPage = [parent]
-        currentStudentCount = studentCount
-      } else {
-        // Add to current page
-        currentPage.push(parent)
-        currentStudentCount += studentCount
-      }
-    }
-
-    // Add the last page if it has content
-    if (currentPage.length > 0) {
-      pages.push(currentPage)
-    }
-
-    // Format pages with letter ranges
-    return pages.map((pageParents, index) => {
-      // Get all unique first letters from parent last names on this page
-      const letters = new Set()
-      for (const parent of pageParents) {
-        if (parent.last_name && parent.last_name.length > 0) {
-          letters.add(parent.last_name.charAt(0).toUpperCase())
-        }
-      }
-
-      // Sort letters alphabetically and join with hyphens
-      const letterRange = [...letters].toSorted().join('-')
-
-      return {
-        parents: pageParents,
-        letterRange,
-        isFirstPage: index === 0,
-      }
-    })
+    return sortedParents
   })
 
   // Get formatted school phone
@@ -822,9 +653,6 @@
   }
 
   onMounted(async () => {
-    // Reset the page registry for fresh page counting
-    resetPageRegistry()
-
     await loadData()
   })
 </script>
@@ -838,7 +666,7 @@
   background: white;
   color: black;
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 8pt;
+  font-size: 9.5pt;
   line-height: 1.4;
 }
 
@@ -864,56 +692,6 @@
 .loading-content {
   text-align: center;
   font-size: 1.2rem;
-}
-
-/* Committees compact styles */
-.committee {
-  margin-bottom: 1.4rem;
-  page-break-inside: avoid;
-}
-
-.committee-header-inline {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid #999;
-}
-
-.committee-name {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
-  font-weight: bold;
-  margin: 0;
-}
-
-.committee-description {
-  font-weight: normal;
-  font-style: italic;
-  color: #000;
-  margin-left: 0.2rem;
-}
-
-.committee-contact-inline {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.1rem;
-  text-align: right;
-}
-
-.committee-email-inline,
-.committee-phone-inline,
-.committee-url-inline {
-  font-size: 8pt;
-  font-weight: 500;
-  color: #000;
-  white-space: nowrap;
-}
-
-.committee-section-compact {
-  margin-bottom: 0.7rem;
 }
 
 /* Print-specific styles */

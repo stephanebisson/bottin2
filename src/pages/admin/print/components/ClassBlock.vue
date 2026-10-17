@@ -68,13 +68,10 @@
 </script>
 
 <style scoped>
+/* Natural height: ClassesPage puts two classes on a page when they fit */
 .class-block {
-  height: 50%;
-  min-height: 50%;
-  max-height: 50%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .class-block:not(:last-child) {
@@ -98,8 +95,8 @@
   padding-top: 0.7rem;
 }
 
-.class-title {
-  font-size: 10pt;
+.class-header-row .class-title {
+  font-size: 11pt;
   font-weight: bold;
   margin: 0;
   color: #000;
@@ -113,13 +110,13 @@
 
 .class-code {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: 600;
   color: #000;
 }
 
 .class-teacher-name {
-  font-size: 9pt;
+  font-size: 10.5pt;
   font-style: italic;
   color: #000;
   margin-bottom: 0.7rem;
@@ -128,14 +125,11 @@
 
 .class-students-section {
   margin-top: 0.35rem;
-  flex: 1;
-  overflow: hidden;
 }
 
 .students-by-grade {
   display: flex;
   gap: 0.5rem;
-  height: 100%;
 }
 
 .grade-column {
@@ -151,7 +145,7 @@
 }
 
 .grade-label {
-  font-size: 7pt;
+  font-size: 9pt;
   font-weight: bold;
   color: #000;
   margin-bottom: 0.25rem;
@@ -167,7 +161,7 @@
 }
 
 .student-item {
-  font-size: 7pt;
+  font-size: 9pt;
   line-height: 1.35;
   page-break-inside: avoid;
 }

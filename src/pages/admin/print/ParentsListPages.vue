@@ -1,30 +1,38 @@
 <template>
-  <PrintPage v-for="(page, pageIndex) in paginatedParents" :id="page.isFirstPage ? 'section-parents' : undefined" :key="`parents-page-${pageIndex}`">
-    <template #header>
+  <PrintFlow section-id="section-parents">
+    <template #header="{ page, start, end }">
       <!-- Section title only on first page -->
-      <h1 v-if="page.isFirstPage" class="section-title">Liste alphabétique des parents</h1>
+      <h1 v-if="page === 0" class="section-title">Liste alphabétique des parents</h1>
 
       <!-- Letter range header -->
-      <h1 class="parents-letter-header">{{ page.letterRange }}</h1>
+      <h1 class="parents-letter-header">{{ letterRange(parents.slice(start, end)) }}</h1>
     </template>
 
-    <!-- Parent entries -->
-    <div class="parents-list">
-      <ParentBlock v-for="parent in page.parents" :key="parent.id" :parent="parent" />
-    </div>
-  </PrintPage>
+    <ParentBlock v-for="parent in parents" :key="parent.id" :parent="parent" />
+  </PrintFlow>
 </template>
 
 <script setup>
   import ParentBlock from './components/ParentBlock.vue'
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
   defineProps({
-    paginatedParents: {
+    parents: {
       type: Array,
       required: true,
     },
   })
+
+  // First letters of the parents' last names on a page, e.g. "A-B"
+  function letterRange (pageParents) {
+    const letters = new Set()
+    for (const parent of pageParents) {
+      if (parent.last_name) {
+        letters.add(parent.last_name.charAt(0).toUpperCase())
+      }
+    }
+    return [...letters].toSorted().join('-')
+  }
 </script>
 
 <style scoped>
@@ -33,16 +41,12 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16pt;
   font-weight: bold;
-  margin: 0;
+  margin: 0 0 0.7rem;
   text-align: center;
   color: #000;
 }
 
 .section-title + .parents-letter-header {
-  margin-top: 0.7rem;
-}
-
-.parents-list {
   margin-top: 0.7rem;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <PrintPage :id="sectionId">
+  <PrintFlow :section-id="sectionId">
     <template #header>
       <div class="class-page-header">
         <h1 class="section-title">Liste des classes</h1>
@@ -7,23 +7,21 @@
       </div>
     </template>
 
-    <div class="classes-content">
-      <ClassBlock
-        v-for="classData in classesData"
-        :key="classData.classItem.id"
-        :class-item="classData.classItem"
-        :rep1="classData.rep1"
-        :rep2="classData.rep2"
-        :students-by-grade="classData.studentsByGrade"
-        :teacher-name="classData.teacherName"
-      />
-    </div>
-  </PrintPage>
+    <ClassBlock
+      v-for="classData in classesData"
+      :key="classData.classItem.id"
+      :class-item="classData.classItem"
+      :rep1="classData.rep1"
+      :rep2="classData.rep2"
+      :students-by-grade="classData.studentsByGrade"
+      :teacher-name="classData.teacherName"
+    />
+  </PrintFlow>
 </template>
 
 <script setup>
   import ClassBlock from './components/ClassBlock.vue'
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
   defineProps({
     classesData: {
@@ -59,21 +57,10 @@
   padding-bottom: 0;
 }
 
-/* Override h2 margin from PrintPage.vue for class titles */
-.classes-content :deep(h2) {
-  margin: 0;
-}
-
 .class-level-badge {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: 600;
   color: #000;
-}
-
-.classes-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 </style>

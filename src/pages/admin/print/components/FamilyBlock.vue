@@ -19,7 +19,7 @@
         <div class="parent-name">{{ family.parent1.fullName }}</div>
 
         <div class="parent-contact">
-          <span v-if="family.parent1.email" class="parent-email">{{ family.parent1.email }}</span>
+          <span v-if="family.parent1.email" class="parent-email"><PrintEmail :email="family.parent1.email" /></span>
           <span v-if="family.parent1.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent1.phone) }}</span>
           <span v-if="formatAddress(family.parent1)" class="parent-address">{{ formatAddress(family.parent1) }}</span>
         </div>
@@ -29,7 +29,7 @@
         <div class="parent-name">{{ family.parent2.fullName }}</div>
 
         <div class="parent-contact">
-          <span v-if="family.parent2.email" class="parent-email">{{ family.parent2.email }}</span>
+          <span v-if="family.parent2.email" class="parent-email"><PrintEmail :email="family.parent2.email" /></span>
           <span v-if="family.parent2.phone" class="parent-phone">{{ formatPhoneForDisplay(family.parent2.phone) }}</span>
           <span v-if="formatAddress(family.parent2)" class="parent-address">{{ formatAddress(family.parent2) }}</span>
         </div>
@@ -42,6 +42,7 @@
   import { formatGradeLevel } from '@/utils/gradeFormatter.js'
   import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
   import { formatPostalCodeForDisplay } from '@/utils/postalCodeFormatter'
+  import PrintEmail from './PrintEmail.vue'
 
   defineProps({
     family: {
@@ -66,19 +67,16 @@
 </script>
 
 <style scoped>
+/* Natural height: FamiliesPages fills each page with as many families as fit */
 .family {
-  height: 20%;
-  min-height: 20%;
-  max-height: 20%;
   display: flex;
   flex-direction: column;
   padding: 0.5rem 0;
   border-top: 1px solid #ddd;
-  overflow: hidden;
 }
 
 .family-students {
-  font-size: 8.5pt;
+  font-size: 9.5pt;
   margin-bottom: 0.35rem;
   line-height: 1.4;
 }
@@ -98,7 +96,7 @@
 }
 
 .student-name {
-  font-size: 10pt;
+  font-size: 11pt;
   font-weight: bold;
   margin: 0;
   padding: 0;
@@ -108,7 +106,7 @@
 .family-student-right {
   flex: 0 0 auto;
   text-align: right;
-  font-size: 7pt;
+  font-size: 9pt;
   color: #000;
   margin-left: 0.7rem;
 }
@@ -121,13 +119,13 @@
 }
 
 .family-parent {
-  font-size: 8pt;
+  font-size: 9.5pt;
 }
 
 .parent-name {
   font-weight: 600;
   margin-bottom: 0.1rem;
-  font-size: 8pt;
+  font-size: 9.5pt;
 }
 
 .parent-contact span {
@@ -137,16 +135,16 @@
 
 .parent-email {
   color: #000;
-  font-size: 8pt;
+  font-size: 9.5pt;
 }
 
 .parent-phone {
   color: #000;
-  font-size: 8pt;
+  font-size: 9.5pt;
 }
 
 .parent-address {
   color: #000;
-  font-size: 7pt;
+  font-size: 9pt;
 }
 </style>

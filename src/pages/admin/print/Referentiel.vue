@@ -1,8 +1,9 @@
 <template>
-  <PrintPage id="section-referentiel" class="referentiel-page">
-    <div class="page-header">
-      <h1 class="section-title">Notre référentiel pédagogique</h1>
-    </div>
+  <!-- Each paragraph and heading is a block: the text continues on a second page when needed -->
+  <PrintFlow section-id="section-referentiel">
+    <template #header="{ page }">
+      <h1 v-if="page === 0" class="section-title">Notre référentiel pédagogique</h1>
+    </template>
 
     <h2>Les valeurs</h2>
 
@@ -50,22 +51,19 @@
       imprimée du référentiel pédagogique. Le référentiel est également diffusé sur
       le site Web de l’école.</p>
 
-  </PrintPage>
+  </PrintFlow>
 </template>
 
 <script setup>
-  import PrintPage from './PrintPage.vue'
+  import PrintFlow from './PrintFlow.vue'
 
 // No props or logic needed for now
 </script>
 
 <style scoped>
-.referentiel-page {
-  font-size: 9pt;
-  line-height: 1.3;
-}
-
 p {
+  font-size: 10.5pt;
+  line-height: 1.3;
   margin-bottom: 0.7rem;
 }
 

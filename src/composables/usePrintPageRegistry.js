@@ -1,44 +1,32 @@
 /**
  * Print Page Registry
  *
- * Tracks PrintPage components and their section IDs to automatically compute
- * Table of Contents page numbers.
+ * Tracks mounted PrintPage elements and their section IDs to automatically compute
+ * Table of Contents page numbers. A page's number is its position in the document,
+ * so pages rendered later (e.g. lists paginated after measuring) are numbered correctly.
  */
 
-import { reactive, readonly } from 'vue'
+import { computed, shallowReactive } from 'vue'
 
-// Global registry of pages with section IDs
-const pageRegistry = reactive({
-  pages: [], // Array of { sectionId, pageNumber }
-  pageCount: 0,
-})
+// Mounted pages: { el, sectionIds }; shallow so DOM elements stay unproxied
+const pages = shallowReactive([])
 
-// Map of sectionId -> page number for quick lookup
-const sectionPageMap = reactive({})
+// Pages in document order
+const orderedPages = computed(() => pages.toSorted((a, b) =>
+  a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+))
 
 export function usePrintPageRegistry () {
   /**
-   * Register a page with optional section ID(s)
+   * Register a mounted page with optional section ID(s)
+   * @param {HTMLElement} el - The page element
    * @param {string|string[]|null} sectionId - Section identifier(s) for ToC linking
-   * @returns {number} The page number assigned to this page
+   * @returns {Function} Unregisters the page; call it when the page unmounts
    */
-  function registerPage (sectionId = null) {
-    pageRegistry.pageCount++
-    const pageNumber = pageRegistry.pageCount
-
-    if (sectionId) {
-      // Handle multiple section IDs (for pages with multiple sections)
-      const sectionIds = Array.isArray(sectionId) ? sectionId : [sectionId]
-
-      for (const id of sectionIds) {
-        // Register the page with its section ID
-        pageRegistry.pages.push({ sectionId: id, pageNumber })
-        // Update the map for quick lookup
-        sectionPageMap[id] = pageNumber
-      }
-    }
-
-    return pageNumber
+  function registerPage (el, sectionId = null) {
+    const entry = { el, sectionIds: sectionId ? [sectionId].flat() : [] }
+    pages.push(entry)
+    return () => pages.splice(pages.indexOf(entry), 1)
   }
 
   /**
@@ -47,33 +35,12 @@ export function usePrintPageRegistry () {
    * @returns {number|null} Page number or null if not found
    */
   function getPageNumber (sectionId) {
-    return sectionPageMap[sectionId] || null
-  }
-
-  /**
-   * Reset the registry (useful for re-rendering)
-   */
-  function reset () {
-    pageRegistry.pages = []
-    pageRegistry.pageCount = 0
-    for (const key of Object.keys(sectionPageMap)) {
-      delete sectionPageMap[key]
-    }
-  }
-
-  /**
-   * Get all registered pages
-   * @returns {Array} Array of { sectionId, pageNumber }
-   */
-  function getAllPages () {
-    return readonly(pageRegistry.pages)
+    const index = orderedPages.value.findIndex(page => page.sectionIds.includes(sectionId))
+    return index === -1 ? null : index + 1
   }
 
   return {
     registerPage,
     getPageNumber,
-    reset,
-    getAllPages,
-    sectionPageMap: readonly(sectionPageMap),
   }
 }
