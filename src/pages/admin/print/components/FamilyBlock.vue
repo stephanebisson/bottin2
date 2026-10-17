@@ -78,7 +78,7 @@
 }
 
 .family-students {
-  font-size: 11pt;
+  font-size: 8.5pt;
   margin-bottom: 0.5rem;
   line-height: 1.4;
 }
@@ -98,7 +98,7 @@
 }
 
 .student-name {
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: bold;
   margin: 0;
   padding: 0;
@@ -108,7 +108,7 @@
 .family-student-right {
   flex: 0 0 auto;
   text-align: right;
-  font-size: 9pt;
+  font-size: 7pt;
   color: #000;
   margin-left: 1rem;
 }
@@ -121,13 +121,13 @@
 }
 
 .family-parent {
-  font-size: 10pt;
+  font-size: 8pt;
 }
 
 .parent-name {
   font-weight: 600;
   margin-bottom: 0.1rem;
-  font-size: 10pt;
+  font-size: 8pt;
 }
 
 .parent-contact span {
@@ -137,16 +137,16 @@
 
 .parent-email {
   color: #000;
-  font-size: 10pt;
+  font-size: 8pt;
 }
 
 .parent-phone {
   color: #000;
-  font-size: 10pt;
+  font-size: 8pt;
 }
 
 .parent-address {
   color: #000;
-  font-size: 9pt;
+  font-size: 7pt;
 }
 </style>

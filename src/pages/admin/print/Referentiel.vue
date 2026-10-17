@@ -61,7 +61,7 @@
 
 <style scoped>
 .referentiel-page {
-  font-size: 12pt;
+  font-size: 9pt;
   line-height: 1.3;
 }
 

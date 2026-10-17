@@ -103,7 +103,7 @@
 
 .school-phone {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   color: #000;
 }
@@ -143,32 +143,32 @@
 }
 
 .sdg-name {
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   color: #000;
   margin-bottom: 0.5rem;
 }
 
 .sdg-address {
-  font-size: 11pt;
+  font-size: 8.5pt;
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-email {
-  font-size: 11pt;
+  font-size: 8.5pt;
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-phone {
-  font-size: 12pt;
+  font-size: 9pt;
   font-weight: 600;
   color: #000;
 }
 
 .sdg-url {
-  font-size: 10pt;
+  font-size: 8pt;
   color: #000;
   font-style: italic;
 }

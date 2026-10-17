@@ -77,7 +77,7 @@
 .committee-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 10pt;
+  font-size: 8pt;
   line-height: 1.2;
 }
 
@@ -101,7 +101,7 @@
 
 .role-header-cell {
   font-weight: 600;
-  font-size: 10pt;
+  font-size: 8pt;
   color: #000;
   padding: 0.35rem 0.5rem !important;
 }
@@ -113,7 +113,7 @@
 
 .member-name-cell {
   width: 40%;
-  font-size: 10pt;
+  font-size: 8pt;
   line-height: 1.2;
 }
 
@@ -130,7 +130,7 @@
 .committee-table-compact {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: 7pt;
   margin-bottom: 0.5rem;
 }
 

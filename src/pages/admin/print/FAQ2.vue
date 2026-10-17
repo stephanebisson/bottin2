@@ -44,7 +44,7 @@
 
 <style scoped>
 .faq-page {
-  font-size: 12pt;
+  font-size: 9pt;
   line-height: 1.2;
 }
 
@@ -62,7 +62,7 @@ p:last-child {
 }
 
 .faq-item .question {
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   margin-bottom: 0.5rem;
   text-align: left;

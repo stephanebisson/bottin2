@@ -29,7 +29,7 @@
 /* Families Section */
 .families-letter-header {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
+  font-size: 16pt;
   font-weight: bold;
   margin: 0;
   text-align: center;

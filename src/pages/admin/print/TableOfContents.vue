@@ -57,7 +57,7 @@
   display: flex;
   align-items: baseline;
   margin-bottom: 1rem;
-  font-size: 14pt;
+  font-size: 10pt;
 }
 
 .toc-label {

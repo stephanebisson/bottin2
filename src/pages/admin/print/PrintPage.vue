@@ -93,14 +93,14 @@
 */
 
 .print-page {
-  /* Exact page dimensions for US Letter */
-  width: 8.5in;
-  height: 11in;
+  /* Exact page dimensions: half-letter booklet page (5.5in x 8.5in) */
+  width: 5.5in;
+  height: 8.5in;
 
   /* Account for page margins defined in @page rule */
-  /* Default margins: 0.75in top/left/right, 1in bottom */
+  /* Default margins: 0.5in top/left/right, 0.7in bottom (room for the footer) */
   box-sizing: border-box;
-  padding: 0.75in 0.75in 1in 0.75in;
+  padding: 0.5in 0.5in 0.7in 0.5in;
 
   /* Always start a new page when printing */
   page-break-before: always;
@@ -113,7 +113,7 @@
   /* Typography defaults */
   color: black;
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 8pt;
   line-height: 1.4;
 
   /* Flexbox layout for header/content/footer structure */
@@ -158,16 +158,16 @@
   .print-page.has-overflow::after {
     content: '⚠️ CONTENT CLIPPED - This page has more content than fits';
     position: absolute;
-    bottom: 0.5in;
-    left: 0.75in;
-    right: 0.75in;
+    bottom: 0.35in;
+    left: 0.5in;
+    right: 0.5in;
     padding: 0.5rem;
     background: linear-gradient(to bottom, transparent, rgba(244, 67, 54, 0.2) 30%, rgba(244, 67, 54, 0.3));
     border: 2px solid #f44336;
     border-radius: 4px;
     color: #c62828;
     font-weight: bold;
-    font-size: 11pt;
+    font-size: 8.5pt;
     text-align: center;
     pointer-events: none;
     z-index: 100;
@@ -181,22 +181,22 @@
 
 /* Pages with no footer get extra bottom padding */
 .print-page.no-footer {
-  padding-bottom: 0.75in;
+  padding-bottom: 0.5in;
 }
 
 /* Manual page footer */
 .page-footer {
   position: absolute;
-  bottom: 0.5in;
+  bottom: 0.35in;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 9pt;
+  font-size: 7pt;
   color: #000;
-  padding: 0 0.75in;
+  padding: 0 0.5in;
 }
 
 .footer-center {
@@ -238,13 +238,11 @@
     border: 0;
 
     /* Same padding as screen mode - we control all spacing */
-    padding: 0.75in 0.75in 1in 0.75in;
+    padding: 0.5in 0.5in 0.7in 0.5in;
 
-    /* Ensure exact page sizing */
+    /* Exact page sizing - a fixed height, so percentage heights inside the page resolve as on screen */
     width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    max-height: 100vh;
+    height: 8.5in;
 
     /* Force page breaks */
     page-break-before: always;
@@ -260,21 +258,21 @@
   }
 
   .print-page.no-footer {
-    padding: 0.75in;
+    padding: 0.5in;
   }
 
   /* Ensure footer is visible and positioned correctly in print */
   .page-footer {
     position: absolute;
-    bottom: 0.5in;
+    bottom: 0.35in;
     left: 0;
     right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 0.75in;
+    padding: 0 0.5in;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 9pt;
+    font-size: 7pt;
     color: #000;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
@@ -305,7 +303,7 @@
 /* Centralized heading styles for all print pages */
 .print-page :deep(.section-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
+  font-size: 16pt;
   font-weight: bold;
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
@@ -314,7 +312,7 @@
 
 .print-page :deep(h2) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
   color: #000;
@@ -322,7 +320,7 @@
 
 .print-page :deep(h3) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   margin: 0.5rem 0;
   color: #000;
@@ -331,7 +329,7 @@
 
 .print-page :deep(.section-subtitle) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: #000;
@@ -339,7 +337,7 @@
 
 .print-page :deep(.committee-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
+  font-size: 16pt;
   font-weight: bold;
   margin: 0;
   color: #000;
@@ -347,7 +345,7 @@
 
 .print-page :deep(.group-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
+  font-size: 16pt;
   font-weight: bold;
   margin: 0;
   color: #000;
@@ -355,7 +353,7 @@
 
 .print-page :deep(.subgroup-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: #000;
@@ -363,7 +361,7 @@
 
 .print-page :deep(.committee-category-title) {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   margin: 1.5rem 0 1rem 0;
   color: #000;

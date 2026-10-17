@@ -38,7 +38,7 @@
 
 <style scoped>
 .class-parent-reps-section {
-  font-size: 9.5pt;
+  font-size: 7.5pt;
   margin-bottom: 0.6rem;
 }
 
@@ -51,7 +51,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 0;
-  font-size: 8.5pt;
+  font-size: 7pt;
 }
 
 .parent-reps-table tbody tr {

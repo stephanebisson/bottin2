@@ -28,7 +28,7 @@
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
   border-bottom: 1px solid #ddd;
-  font-size: 9pt;
+  font-size: 7pt;
   line-height: 1.4;
   break-inside: avoid;
 }

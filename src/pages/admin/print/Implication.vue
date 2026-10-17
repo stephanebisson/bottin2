@@ -70,7 +70,7 @@
 
 <style scoped>
 .implication-page {
-  font-size: 12pt;
+  font-size: 9pt;
   line-height: 1.2;
 }
 

@@ -55,7 +55,7 @@
 
 .main-title {
   font-family: Didot, 'Bodoni MT', 'Bodoni 72', Georgia, serif;
-  font-size: 72pt;
+  font-size: 48pt;
   font-weight: bold;
   text-align: center;
   line-height: 0.95;
@@ -72,7 +72,7 @@
 
 .title-page .subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 4rem !important;
+  font-size: 2.75rem !important;
   font-weight: 300;
   text-align: center;
   margin: 0 !important;
@@ -84,7 +84,7 @@
 
 .title-section img {
   width: 40%;
-  max-height: 2.5in;
+  max-height: 1.6in;
   height: auto;
   object-fit: contain;
   object-position: center;
@@ -92,11 +92,6 @@
 
 /* Print-specific styles */
 @media print {
-  .title-page {
-    width: 100%;
-    height: 9.5in; /* 11in page - 0.75in top padding - 0.75in bottom padding */
-  }
-
   .title-box {
     width: 100%;
     height: 100%;
@@ -106,14 +101,14 @@
   }
 
   .main-title {
-    font-size: 72pt;
+    font-size: 48pt;
     line-height: 0.95;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 
   .title-page .subtitle {
-    font-size: 4rem !important;
+    font-size: 2.75rem !important;
     margin: 0 !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
@@ -121,7 +116,7 @@
 
   .title-section img {
     width: 40%;
-    max-height: 2.5in;
+    max-height: 1.6in;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }

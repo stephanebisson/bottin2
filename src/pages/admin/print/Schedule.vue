@@ -52,7 +52,7 @@
 
 h2 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   margin: 2rem 0 1rem 0;
   padding-bottom: 0.5rem;
@@ -65,7 +65,7 @@ h2:first-of-type {
 }
 
 p {
-  font-size: 12pt;
+  font-size: 9pt;
   font-weight: 600;
   margin: 1.5rem 0 0.75rem 0;
   color: #333;
@@ -83,7 +83,7 @@ p {
 
 .schedule-entry .time {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   text-align: right;
   color: #666;
@@ -91,7 +91,7 @@ p {
 }
 
 .schedule-entry .what {
-  font-size: 15pt;
+  font-size: 11pt;
   font-weight: 500;
   color: #000;
   order: 1;

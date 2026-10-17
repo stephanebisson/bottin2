@@ -58,7 +58,7 @@
 .staff-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: 7pt;
   margin-bottom: 0.75rem;
 }
 
@@ -95,7 +95,7 @@
 .staff-table-sdg {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: 7pt;
   margin-bottom: 0.75rem;
 }
 
@@ -118,12 +118,12 @@
 
 .sdg-staff-name {
   font-weight: 600;
-  font-size: 10pt;
+  font-size: 8pt;
   margin-bottom: 0.1rem;
 }
 
 .sdg-staff-title {
-  font-size: 9pt;
+  font-size: 7pt;
   color: #000;
   font-style: italic;
 }
@@ -141,7 +141,7 @@
 .staff-table-sdg-edu {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: 7pt;
   margin-bottom: 0.75rem;
 }
 

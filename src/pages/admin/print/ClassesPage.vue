@@ -66,7 +66,7 @@
 
 .class-level-badge {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18pt;
+  font-size: 12pt;
   font-weight: 600;
   color: #000;
 }

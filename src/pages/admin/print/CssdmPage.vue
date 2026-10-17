@@ -99,26 +99,26 @@
 }
 
 .cssdm-address {
-  font-size: 11pt;
+  font-size: 8.5pt;
   color: #000;
   line-height: 1.5;
 }
 
 .cssdm-phone {
-  font-size: 11pt;
+  font-size: 8.5pt;
   font-weight: 600;
   color: #000;
   margin-top: 0.5rem;
 }
 
 .cssdm-email {
-  font-size: 10pt;
+  font-size: 8pt;
   color: #000;
   margin-top: 0.25rem;
 }
 
 .cssdm-url {
-  font-size: 10pt;
+  font-size: 8pt;
   color: #000;
   font-style: italic;
   margin-top: 0.25rem;
@@ -144,7 +144,7 @@
 
 .committee-name {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: bold;
   margin: 0;
 }
@@ -167,7 +167,7 @@
 .committee-email-inline,
 .committee-phone-inline,
 .committee-url-inline {
-  font-size: 10pt;
+  font-size: 8pt;
   font-weight: 500;
   color: #000;
   white-space: nowrap;
@@ -192,14 +192,14 @@
 
 .committee-title-repaq {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 24pt;
+  font-size: 16pt;
   font-weight: bold;
   margin: 0 0 0.25rem 0;
 }
 
 .committee-description-repaq {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 9pt;
   font-weight: normal;
   font-style: italic;
   color: #000;
@@ -218,7 +218,7 @@
 .committee-email,
 .committee-phone {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12pt;
+  font-size: 9pt;
   font-weight: 500;
   color: #000;
   white-space: nowrap;

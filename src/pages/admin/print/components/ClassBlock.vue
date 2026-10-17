@@ -99,7 +99,7 @@
 }
 
 .class-title {
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: bold;
   margin: 0;
   color: #000;
@@ -113,13 +113,13 @@
 
 .class-code {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 600;
   color: #000;
 }
 
 .class-teacher-name {
-  font-size: 12pt;
+  font-size: 9pt;
   font-style: italic;
   color: #000;
   margin-bottom: 1rem;
@@ -151,7 +151,7 @@
 }
 
 .grade-label {
-  font-size: 8.5pt;
+  font-size: 7pt;
   font-weight: bold;
   color: #000;
   margin-bottom: 0.35rem;
@@ -167,7 +167,7 @@
 }
 
 .student-item {
-  font-size: 8.5pt;
+  font-size: 7pt;
   line-height: 1.35;
   page-break-inside: avoid;
 }

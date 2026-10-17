@@ -833,12 +833,12 @@
 /* Reset and base styles for print */
 .print-directory {
   /* Page setup */
-  width: 8.5in;
+  width: 5.5in;
   margin: 0 auto;
   background: white;
   color: black;
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10pt;
+  font-size: 8pt;
   line-height: 1.4;
 }
 
@@ -883,7 +883,7 @@
 
 .committee-name {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: bold;
   margin: 0;
 }
@@ -906,7 +906,7 @@
 .committee-email-inline,
 .committee-phone-inline,
 .committee-url-inline {
-  font-size: 10pt;
+  font-size: 8pt;
   font-weight: 500;
   color: #000;
   white-space: nowrap;
@@ -930,7 +930,7 @@
 
 /* Page setup for print - zero margins, we handle spacing inside PrintPage component */
 @page {
-  size: letter;
+  size: 5.5in 8.5in;
   margin: 0;
 }
 
