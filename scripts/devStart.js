@@ -6,7 +6,7 @@
  * This script handles the complete development environment startup:
  * 1. Starts Firebase emulator (fresh, no import)
  * 2. Waits for emulator to be ready
- * 3. Imports production backup data
+ * 3. Imports the most recent production backup (backups/*-production-backup.json, from npm run backup:prod)
  * 4. Auto-creates admin account
  * 5. Starts Vite dev server
  */
@@ -43,8 +43,20 @@ const EMULATOR_READY_DELAY = 8000 // Wait 8 seconds for emulator
 const RESTORE_DELAY = 5000 // Wait 5 seconds after restore
 const ADMIN_SETUP_DELAY = 3000 // Wait 3 seconds after admin setup
 
-// Configure which backup to use
-const BACKUP_FILE = '2025-10-17T12-05-44-production-backup.json'
+// Use the most recent production backup; file names start with an ISO timestamp, so they sort by date
+function findLatestProductionBackup () {
+  const backupsDir = path.join(__dirname, '..', 'backups')
+  const backups = existsSync(backupsDir)
+    ? readdirSync(backupsDir).filter(name => name.endsWith('-production-backup.json')).toSorted()
+    : []
+  if (backups.length === 0) {
+    console.error('❌ No production backup found in backups/. Create one with: npm run backup:prod')
+    process.exit(1)
+  }
+  return backups.at(-1)
+}
+
+const BACKUP_FILE = findLatestProductionBackup()
 
 let emulatorProcess
 let viteProcess
