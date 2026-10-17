@@ -23,7 +23,7 @@
     <!-- Manual page footer (replaces @page @bottom-center) -->
     <div v-if="!noFooter && !measure" class="page-footer">
       <span class="page-number-left"><span class="page-number" /></span>
-      <span class="footer-center">Le Bottin de L'Étoile filante 2025 - 2026</span>
+      <span class="footer-center">Le Bottin de L'Étoile filante {{ schoolYear }}</span>
       <span class="page-number-right"><span class="page-number" /></span>
     </div>
 
@@ -37,6 +37,7 @@
 <script setup>
   import { onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
   import { usePrintPageRegistry } from '@/composables/usePrintPageRegistry'
+  import { getCurrentSchoolYear } from '@/utils/schoolYear'
 
   const props = defineProps({
     // Hide page footer (useful for title/cover pages)
@@ -63,6 +64,9 @@
   })
 
   const { registerPage } = usePrintPageRegistry()
+
+  // e.g. "2026 - 2027", for the footer
+  const schoolYear = getCurrentSchoolYear().replace('-', ' - ')
 
   const pageRef = ref(null)
   const hasOverflow = ref(false)

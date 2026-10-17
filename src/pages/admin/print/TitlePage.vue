@@ -11,7 +11,7 @@
         </div>
 
         <div class="title-section">
-          <h2 class="subtitle">2025 - 2026</h2>
+          <h2 class="subtitle">{{ schoolYear }}</h2>
         </div>
 
         <div class="title-section">
@@ -23,7 +23,11 @@
 </template>
 
 <script setup>
+  import { getCurrentSchoolYear } from '@/utils/schoolYear'
   import PrintPage from './PrintPage.vue'
+
+  // e.g. "2026 - 2027"; the school year starts July 1, so summer preparation prints the coming year
+  const schoolYear = getCurrentSchoolYear().replace('-', ' - ')
 </script>
 
 <style scoped>
