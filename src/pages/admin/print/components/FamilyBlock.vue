@@ -59,7 +59,8 @@
 
     if (parent.address) addressParts.push(parent.address)
     if (parent.city) addressParts.push(parent.city)
-    if (parent.postal_code) addressParts.push(formatPostalCodeForDisplay(parent.postal_code))
+    // Non-breaking space: a postal code never splits across lines
+    if (parent.postal_code) addressParts.push(formatPostalCodeForDisplay(parent.postal_code).replace(' ', '\u00A0'))
 
     return addressParts.length > 0 ? addressParts.join(', ') : ''
   }
@@ -76,7 +77,7 @@
 }
 
 .family-students {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   margin-bottom: 0.35rem;
   line-height: 1.4;
 }
@@ -96,7 +97,7 @@
 }
 
 .student-name {
-  font-size: 11pt;
+  font-size: var(--print-size-heading);
   font-weight: bold;
   margin: 0;
   padding: 0;
@@ -106,7 +107,7 @@
 .family-student-right {
   flex: 0 0 auto;
   text-align: right;
-  font-size: 9pt;
+  font-size: var(--print-size-detail);
   color: #000;
   margin-left: 0.7rem;
 }
@@ -119,13 +120,13 @@
 }
 
 .family-parent {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
 }
 
 .parent-name {
   font-weight: 600;
   margin-bottom: 0.1rem;
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
 }
 
 .parent-contact span {
@@ -135,16 +136,16 @@
 
 .parent-email {
   color: #000;
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
 }
 
 .parent-phone {
   color: #000;
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
 }
 
 .parent-address {
   color: #000;
-  font-size: 9pt;
+  font-size: var(--print-size-detail);
 }
 </style>

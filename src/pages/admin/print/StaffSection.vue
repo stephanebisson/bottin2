@@ -71,10 +71,10 @@
 }
 
 .school-phone {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11pt;
+  font-size: var(--print-size-heading);
   font-weight: 600;
   color: #000;
+  white-space: nowrap;
 }
 
 /* Space between subgroups */
@@ -113,32 +113,32 @@ table.subgroup-members {
 }
 
 .sdg-name {
-  font-size: 13pt;
+  font-size: var(--print-size-subtitle);
   font-weight: 600;
   color: #000;
   margin-bottom: 0.35rem;
 }
 
 .sdg-address {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-email {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   color: #000;
   line-height: 1.4;
 }
 
 .sdg-phone {
-  font-size: 10.5pt;
+  font-size: var(--print-size-text);
   font-weight: 600;
   color: #000;
 }
 
 .sdg-url {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   color: #000;
   font-style: italic;
 }

@@ -50,9 +50,13 @@
   border-bottom: 1px solid #999;
 }
 
+/* Left-aligned, also when the description wraps (the page's h3 style centers) */
+.committee-header-inline .committee-name {
+  text-align: left;
+}
+
 .committee-name {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11pt;
+  font-size: var(--print-size-heading);
   font-weight: bold;
   margin: 0;
 }
@@ -75,7 +79,7 @@
 .committee-email-inline,
 .committee-phone-inline,
 .committee-url-inline {
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   font-weight: 500;
   color: #000;
   white-space: nowrap;

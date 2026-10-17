@@ -40,8 +40,7 @@
 <style scoped>
 /* Families Section */
 .families-letter-header {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: var(--print-size-title);
   font-weight: bold;
   margin: 0;
   text-align: center;

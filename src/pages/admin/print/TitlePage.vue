@@ -71,7 +71,6 @@
 }
 
 .title-page .subtitle {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 2.75rem !important;
   font-weight: 300;
   text-align: center;

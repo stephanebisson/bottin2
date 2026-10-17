@@ -39,7 +39,7 @@
 
 <style scoped>
 .class-parent-reps-section {
-  font-size: 9pt;
+  font-size: var(--print-size-detail);
   margin-bottom: 0.4rem;
 }
 
@@ -52,7 +52,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 0;
-  font-size: 9pt;
+  font-size: var(--print-size-contact);
 }
 
 .parent-reps-table tbody tr {
@@ -65,17 +65,17 @@
 }
 
 .parent-rep-name-cell {
-  width: 33%;
+  width: 38%;
   font-weight: 600;
 }
 
 .parent-rep-phone-cell {
-  width: 33%;
+  width: 22%;
   white-space: nowrap;
 }
 
 .parent-rep-email-cell {
-  width: 34%;
+  width: 40%;
   word-break: break-word;
 }
 </style>

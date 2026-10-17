@@ -120,8 +120,7 @@
 .committee-email,
 .committee-phone,
 .committee-url {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10.5pt;
+  font-size: var(--print-size-contact);
   font-weight: 500;
   color: #000;
   white-space: nowrap;

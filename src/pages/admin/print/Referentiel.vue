@@ -62,7 +62,7 @@
 
 <style scoped>
 p {
-  font-size: 10.5pt;
+  font-size: var(--print-size-text);
   line-height: 1.3;
   margin-bottom: 0.7rem;
 }

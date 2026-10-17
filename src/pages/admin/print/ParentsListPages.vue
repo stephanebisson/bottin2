@@ -38,8 +38,7 @@
 <style scoped>
 /* Parents Section */
 .parents-letter-header {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: var(--print-size-title);
   font-weight: bold;
   margin: 0 0 0.7rem;
   text-align: center;

@@ -59,7 +59,7 @@
 .staff-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: var(--print-size-contact);
   margin-bottom: 0.5rem;
 }
 
@@ -77,6 +77,7 @@
 }
 
 .staff-title-cell {
+  font-size: var(--print-size-detail);
   width: 30%;
   color: #000;
   font-style: italic;
@@ -96,7 +97,7 @@
 .staff-table-sdg {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: var(--print-size-contact);
   margin-bottom: 0.5rem;
 }
 
@@ -119,12 +120,12 @@
 
 .sdg-staff-name {
   font-weight: 600;
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   margin-bottom: 0.1rem;
 }
 
 .sdg-staff-title {
-  font-size: 9pt;
+  font-size: var(--print-size-detail);
   color: #000;
   font-style: italic;
 }
@@ -143,7 +144,7 @@
 .staff-table-sdg-edu {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9pt;
+  font-size: var(--print-size-contact);
   margin-bottom: 0.5rem;
 }
 
@@ -166,6 +167,7 @@
 }
 
 .sdg-edu-title-cell {
+  font-size: var(--print-size-detail);
   width: 50%;
   color: #000;
   font-style: italic;

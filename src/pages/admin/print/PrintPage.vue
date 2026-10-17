@@ -117,6 +117,18 @@
 */
 
 .print-page {
+  /*
+    Type scale for every print page: components use these roles, never literal sizes.
+    One family, Avenir; Didot only for the cover title and Kalam only for class names.
+  */
+  --print-size-title: 16pt;     /* Section and page titles, letter headers */
+  --print-size-subtitle: 13pt;  /* Subsections: h2, committee categories, teams */
+  --print-size-heading: 11pt;   /* Entry names: h3, committees, families, classes, contents */
+  --print-size-text: 10.5pt;    /* Running text: référentiel, implication, FAQ, notes */
+  --print-size-contact: 9.5pt;  /* Names, phones and emails */
+  --print-size-detail: 9pt;     /* Job titles, addresses, levels, class lists, parents index */
+  --print-size-footer: 8pt;     /* Page footer */
+
   /* Exact page dimensions: half-letter booklet page (5.5in x 8.5in) */
   width: 5.5in;
   height: 8.5in;
@@ -137,7 +149,7 @@
   /* Typography defaults */
   color: black;
   font-family: Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 9.5pt;
+  font-size: var(--print-size-contact);
   line-height: 1.4;
 
   /* Flexbox layout for header/content/footer structure */
@@ -196,7 +208,7 @@
     border-radius: 4px;
     color: #c62828;
     font-weight: bold;
-    font-size: 9.5pt;
+    font-size: var(--print-size-contact);
     text-align: center;
     pointer-events: none;
     z-index: 100;
@@ -237,8 +249,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 8pt;
+  font-size: var(--print-size-footer);
   color: #000;
   padding: 0 0.5in;
 }
@@ -315,8 +326,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 0.5in;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 8pt;
+      font-size: var(--print-size-footer);
     color: #000;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
@@ -346,8 +356,7 @@
 
 /* Centralized heading styles for all print pages */
 .print-page :deep(.section-title) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: var(--print-size-title);
   font-weight: bold;
   margin: 0 0 0.7rem 0;
   padding: 0.35rem 0;
@@ -355,16 +364,14 @@
 }
 
 .print-page :deep(h2) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13pt;
+  font-size: var(--print-size-subtitle);
   font-weight: 600;
   margin: 0.7rem 0 0.35rem 0;
   color: #000;
 }
 
 .print-page :deep(h3) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11pt;
+  font-size: var(--print-size-heading);
   font-weight: 600;
   margin: 0.35rem 0;
   color: #000;
@@ -372,40 +379,35 @@
 }
 
 .print-page :deep(.section-subtitle) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13pt;
+  font-size: var(--print-size-subtitle);
   font-weight: 600;
   margin: 0 0 0.35rem 0;
   color: #000;
 }
 
 .print-page :deep(.committee-title) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: var(--print-size-title);
   font-weight: bold;
   margin: 0;
   color: #000;
 }
 
 .print-page :deep(.group-title) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16pt;
+  font-size: var(--print-size-title);
   font-weight: bold;
   margin: 0;
   color: #000;
 }
 
 .print-page :deep(.subgroup-title) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11pt;
+  font-size: var(--print-size-heading);
   font-weight: 600;
   margin: 0 0 0.35rem 0;
   color: #000;
 }
 
 .print-page :deep(.committee-category-title) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13pt;
+  font-size: var(--print-size-subtitle);
   font-weight: 600;
   margin: 1rem 0 0.7rem 0;
   color: #000;
