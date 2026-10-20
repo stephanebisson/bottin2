@@ -166,38 +166,6 @@ exports.validateUpdateTokenV2 = onRequest({
       }
     }
 
-    // Get available committees (basic info only)
-    const committeesSnapshot = await db.collection('committees').get()
-    const committees = []
-
-    for (const committeeDoc of committeesSnapshot.docs) {
-      const committeeData = committeeDoc.data()
-      committees.push({
-        id: committeeDoc.id,
-        name: committeeData.name,
-      })
-    }
-
-    // Check which committees THIS parent belongs to
-    const parentCommittees = []
-    const parentCommitteeRoles = {}
-
-    for (const committeeDoc of committeesSnapshot.docs) {
-      // Check if parent is a member by looking for their document in members subcollection
-      const memberDoc = await committeeDoc.ref.collection('members').doc(parentId).get()
-
-      if (memberDoc.exists) {
-        const memberData = memberDoc.data()
-        parentCommittees.push(committeeDoc.id)
-        parentCommitteeRoles[committeeDoc.id] = memberData.role || 'Membre'
-      }
-    }
-
-    // Store committees globally for use in processing function
-    global.availableCommittees = committees
-    global.parentCommittees = parentCommittees
-    global.parentCommitteeRoles = parentCommitteeRoles
-
     res.status(200).json({
       valid: true,
       parent: {
@@ -219,10 +187,6 @@ exports.validateUpdateTokenV2 = onRequest({
       },
       otherParentHasAddress,
       otherParentInfo,
-      availableCommittees: committees,
-      // Parent's committee memberships
-      parentCommittees,
-      parentCommitteeRoles,
     })
   } catch (error) {
     // Handle validation errors
@@ -282,12 +246,6 @@ exports.processParentUpdateV2 = onRequest({
 
     const { token, parentData } = validatedData
 
-    console.log('Processing parent update:', {
-      email: parentData.email || 'unknown',
-      committees: parentData.committees || [],
-      committeeRoles: parentData.committeeRoles || {},
-    })
-
     const { parentDoc, status, reason } = await resolveParent(req, token)
 
     if (!parentDoc) {
@@ -300,7 +258,7 @@ exports.processParentUpdateV2 = onRequest({
     const batch = db.batch()
     const parentRef = db.collection('parents').doc(parentDoc.id)
 
-    // Prepare updated data - committees are NOT stored in parent document
+    // Prepare updated data
     // If parent was previously opted out, re-opt them in by clearing the optedOut flag
     const updatedData = {
       first_name: parentData.first_name || existingParentData.first_name,
@@ -363,36 +321,6 @@ exports.processParentUpdateV2 = onRequest({
 
     // Update parent document
     batch.update(parentRef, updatedData)
-
-    // Update committee memberships if committees were provided
-    console.log('Committee update check:', {
-      hasCommittees: !!parentData.committees,
-      hasRoles: !!parentData.committeeRoles,
-      committeesLength: parentData.committees?.length || 0,
-      rolesCount: Object.keys(parentData.committeeRoles || {}).length,
-    })
-
-    if (parentData.committees !== undefined && parentData.committeeRoles !== undefined) {
-      // Load committees fresh for this update (don't rely on global)
-      const committeesSnapshot = await db.collection('committees').get()
-      const allCommittees = []
-      for (const doc of committeesSnapshot.docs) {
-        allCommittees.push({
-          id: doc.id,
-          ...doc.data(),
-        })
-      }
-      console.log('🔄 Loaded committees for update:', allCommittees.length)
-
-      await updateCommitteeMemberships(
-        db,
-        batch,
-        parentDoc.id, // Use parent document ID, not email
-        parentData.committees,
-        parentData.committeeRoles,
-        allCommittees,
-      )
-    }
 
     // Online directory account status, for the confirmation page
     const accountStatus = await getAccountStatus(existingParentData.email)
@@ -538,57 +466,3 @@ exports.processParentOptOutV2 = onRequest({
     })
   }
 })
-
-/**
- * Update committee memberships for a parent using subcollections
- * @param {FirebaseFirestore.Firestore} db - Firestore database instance
- * @param {FirebaseFirestore.WriteBatch} batch - Firestore batch for atomic operations
- * @param {string} parentId - Parent document ID
- * @param {string[]} selectedCommittees - Array of committee IDs the parent selected
- * @param {Object} committeeRoles - Object mapping committee IDs to roles
- * @param {Object[]} allCommittees - Array of all available committees
- */
-async function updateCommitteeMemberships (db, batch, parentId, selectedCommittees, committeeRoles, allCommittees) {
-  console.log('🔄 Updating committee memberships for parent ID:', parentId)
-  console.log('📋 Selected committees:', selectedCommittees)
-  console.log('🏷️  Committee roles:', committeeRoles)
-  console.log('📊 Total available committees:', allCommittees.length)
-
-  try {
-    // Process each committee to add/update/remove membership
-    for (const committee of allCommittees) {
-      const committeeRef = db.collection('committees').doc(committee.id)
-      const memberRef = committeeRef.collection('members').doc(parentId)
-      const isSelected = selectedCommittees.includes(committee.id)
-
-      // Check if member exists in subcollection
-      const memberDoc = await memberRef.get()
-
-      if (isSelected) {
-        // Parent should be in this committee
-        const role = committeeRoles[committee.id] || 'Membre'
-        const memberData = {
-          role,
-          member_type: 'parent',
-        }
-
-        if (memberDoc.exists) {
-          // Update existing member
-          batch.update(memberRef, memberData)
-          console.log(`✅ Updated ${committee.name}: updated parent ${parentId} with role ${role}`)
-        } else {
-          // Add new member
-          batch.set(memberRef, memberData)
-          console.log(`✅ Updated ${committee.name}: added parent ${parentId} with role ${role}`)
-        }
-      } else if (memberDoc.exists) {
-        // Parent should be removed from this committee
-        batch.delete(memberRef)
-        console.log(`❌ Updated ${committee.name}: removed parent ${parentId}`)
-      }
-    }
-  } catch (error) {
-    console.error('Error updating committee memberships:', error)
-    throw error
-  }
-}

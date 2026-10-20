@@ -37,12 +37,6 @@ const postalCodeSchema = Joi.string()
     'string.pattern.base': 'Postal code must be in Canadian format A9A9A9 (e.g., H1A2B3)',
   })
 
-// Committee ID validation (supports French committee names with accents, apostrophes, and spaces)
-const committeeIdSchema = Joi.string()
-  .min(1)
-  .max(100)
-  .pattern(/^[\w\u00C0-\u017F\s\-']+$/)
-
 // Auth validation schemas
 const emailValidationSchema = Joi.object({
   email: emailSchema,
@@ -59,14 +53,6 @@ const parentUpdateSchema = Joi.object({
     address: Joi.string().max(200).allow(''),
     city: Joi.string().max(100).allow(''),
     postal_code: postalCodeSchema,
-    committees: Joi.array()
-      .items(committeeIdSchema)
-      .max(20)
-      .unique()
-      .default([]),
-    committeeRoles: Joi.object()
-      .pattern(committeeIdSchema, Joi.string().max(50))
-      .default({}),
     interests: Joi.alternatives().try(
       Joi.array().items(Joi.string().max(100)).max(50).default([]), // More than the number of available interests
       Joi.string().max(500).allow(''),

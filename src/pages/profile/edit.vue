@@ -63,7 +63,6 @@
     await Promise.all([
       firebaseStore.loadCurrentParent(authStore.user.email),
       firebaseStore.loadParentsDTO(true),
-      firebaseStore.loadCommitteesDTO(true),
     ])
     router.push('/profile')
   }

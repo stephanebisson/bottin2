@@ -119,50 +119,6 @@
         </v-card-text>
       </v-card>
 
-      <!-- Committee Memberships Section -->
-      <v-card class="mb-6">
-        <v-card-title class="d-flex align-center">
-          <v-icon class="me-2" :color="ENTITY_STYLES.committee.color">{{ ENTITY_STYLES.committee.icon }}</v-icon>
-          {{ $i18n('updateForm.committees') }}
-        </v-card-title>
-
-        <v-card-text>
-          <p class="text-body-medium text-medium-emphasis mb-4">
-            {{ $i18n('updateForm.committeeInstructions') }}
-          </p>
-
-          <div class="committee-grid">
-            <div
-              v-for="committee in availableCommittees"
-              :key="committee.id"
-              class="committee-item"
-            >
-              <v-checkbox
-                v-model="form.committees"
-                class="flex-grow-1"
-                color="primary"
-                density="compact"
-                hide-details
-                :label="committee.name"
-                :value="committee.id"
-                @change="handleCommitteeChange(committee.id)"
-              />
-
-              <v-select
-                v-if="form.committees.includes(committee.id)"
-                v-model="form.committeeRoles[committee.id]"
-                class="committee-role-select"
-                density="compact"
-                hide-details
-                :items="getCommitteeRoles(committee.name)"
-                :label="$i18n('updateForm.role')"
-                variant="outlined"
-              />
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-
       <!-- Interests & Skills Section -->
       <v-card class="mb-6">
         <v-card-title class="d-flex align-center">
@@ -289,7 +245,6 @@
 <script setup>
   import { computed, ref, watch } from 'vue'
   import { useTranslate } from '@/composables/useTranslate'
-  import { getCommitteeRoles } from '@/config/committees'
   import { ENTITY_STYLES } from '@/config/entities'
   import { getSortedInterestGroups, isKnownInterest } from '@/config/interests'
   import { formatPhoneForDisplay, formatPhoneForStorage, getPhoneValidationMessage, isValidPhoneFormat } from '@/utils/phoneFormatter'
@@ -302,10 +257,7 @@
    */
   const props = defineProps({
     parent: { type: Object, required: true },
-    availableCommittees: { type: Array, default: () => [] },
     otherParentInfo: { type: Object, default: null },
-    parentCommittees: { type: Array, default: () => [] },
-    parentCommitteeRoles: { type: Object, default: () => ({}) },
     submitting: { type: Boolean, default: false },
     optingOut: { type: Boolean, default: false },
     // Show a cancel button next to submit
@@ -340,8 +292,6 @@
     city: props.parent.city || '',
     postal_code: formatPostalCodeForDisplay(props.parent.postal_code || ''),
     sameAddressAsOther: false,
-    committees: [...props.parentCommittees],
-    committeeRoles: { ...props.parentCommitteeRoles }, // { committeeId: role }
     // Selected interest IDs; IDs no longer listed are dropped on save
     interests: Array.isArray(props.parent.interests) ? props.parent.interests.filter(id => isKnownInterest(id)) : [],
   })
@@ -349,21 +299,6 @@
   // Validation rules
   const rules = {
     required: value => !!value || $i18n('validation.required'),
-  }
-
-  // Handle committee checkbox change
-  function handleCommitteeChange (committeeId) {
-    if (form.value.committees.includes(committeeId)) {
-      // Committee was checked, set default role if not already set
-      if (!form.value.committeeRoles[committeeId]) {
-        const committee = props.availableCommittees.find(c => c.id === committeeId)
-        const roles = getCommitteeRoles(committee?.name)
-        form.value.committeeRoles[committeeId] = roles[0] || 'Membre'
-      }
-    } else {
-      // Committee was unchecked, remove role
-      delete form.value.committeeRoles[committeeId]
-    }
   }
 
   // Phone formatting methods
@@ -416,8 +351,6 @@
       city: form.value.city,
       postal_code: formatPostalCodeForStorage(form.value.postal_code),
       sameAddressAsOther: form.value.sameAddressAsOther,
-      committees: form.value.committees,
-      committeeRoles: form.value.committeeRoles,
       interests: form.value.interests,
     })
   }
@@ -426,24 +359,6 @@
 <style scoped>
 .privacy-notice {
   max-width: 600px;
-}
-
-.committee-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-  gap: 4px 24px;
-}
-
-/* Same height whether or not the role picker shows, so rows line up */
-.committee-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 48px;
-}
-
-.committee-role-select {
-  flex: 0 0 160px;
 }
 
 .interests-grid {

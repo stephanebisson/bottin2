@@ -30,7 +30,7 @@ export function useParentUpdate (token = null) {
   const error = ref(null)
   const errorType = ref(null) // 'network', 'expired', 'temporary', 'invalid'
   const retryCount = ref(0)
-  const data = ref(null) // { parent, availableCommittees, otherParentInfo, parentCommittees, parentCommitteeRoles }
+  const data = ref(null) // { parent, otherParentInfo }
 
   const errorKey = computed(() => ERROR_KEYS[error.value] || 'unexpected')
 
@@ -87,10 +87,7 @@ export function useParentUpdate (token = null) {
 
       data.value = {
         parent: result.parent,
-        availableCommittees: result.availableCommittees || [],
         otherParentInfo: result.otherParentInfo || null,
-        parentCommittees: result.parentCommittees || [],
-        parentCommitteeRoles: result.parentCommitteeRoles || {},
       }
     } catch (error_) {
       console.error('Failed to load parent data:', error_)
