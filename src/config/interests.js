@@ -12,7 +12,7 @@
 export const INTEREST_GROUPS = [
   {
     id: 'arts',
-    interests: ['arts_plastiques', 'musique', 'danse', 'theatre', 'cinema', 'photos', 'litterature', 'couture', 'histoire'],
+    interests: ['arts_plastiques', 'musique', 'danse', 'theatre', 'cinema', 'photos', 'litterature', 'couture', 'tricot', 'histoire'],
   },
   {
     id: 'sciences',
