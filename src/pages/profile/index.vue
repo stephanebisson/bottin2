@@ -39,7 +39,7 @@
               </h1>
 
               <!-- Contact Information -->
-              <div class="d-flex flex-column flex-sm-row gap-4 mb-4">
+              <div class="d-flex flex-column flex-sm-row flex-wrap gap-4 mb-4">
                 <div v-if="parentProfile.email" class="d-flex align-center">
                   <v-icon class="me-2" size="small">mdi-email</v-icon>
 
@@ -55,10 +55,10 @@
                   <v-icon class="me-2" size="small">mdi-phone</v-icon>
 
                   <a
-                    class="text-decoration-none"
+                    class="text-decoration-none text-no-wrap"
                     :href="`tel:${parentProfile.phone}`"
                   >
-                    {{ formatPhone(parentProfile.phone) }}
+                    {{ formatPhoneForDisplay(parentProfile.phone) }}
                   </a>
                 </div>
               </div>
@@ -212,6 +212,7 @@
   import { getInterestNames } from '@/config/interests'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { formatPhoneForDisplay } from '@/utils/phoneFormatter'
 
   definePage({ meta: { titleKey: 'nav.profile' } })
 
@@ -282,15 +283,6 @@
     const first = firstName ? firstName.charAt(0).toUpperCase() : ''
     const last = lastName ? lastName.charAt(0).toUpperCase() : ''
     return `${first}${last}` || '?'
-  }
-
-  function formatPhone (phone) {
-    if (!phone) return ''
-    const cleaned = phone.toString().replace(/\D/g, '')
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-    return phone
   }
 
   onMounted(async () => {
