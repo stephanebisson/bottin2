@@ -100,11 +100,11 @@ export function getPhoneValidationMessage (phone, t) {
   }
 
   if (digits.length < 10) {
-    return t('validation.phone.tooShort', { digits: digits.length })
+    return t('validation.phone.tooShort', digits.length)
   }
 
   if (digits.length > 11) {
-    return t('validation.phone.tooLong', { digits: digits.length })
+    return t('validation.phone.tooLong', digits.length)
   }
 
   if (digits.length === 11 && !digits.startsWith('1')) {

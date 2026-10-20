@@ -103,11 +103,11 @@ export function getPostalCodeValidationMessage (postalCode, t) {
   }
 
   if (alphanumeric.length < 6) {
-    return t('validation.postalCode.tooShort', { chars: alphanumeric.length })
+    return t('validation.postalCode.tooShort', alphanumeric.length)
   }
 
   if (alphanumeric.length > 6) {
-    return t('validation.postalCode.tooLong', { chars: alphanumeric.length })
+    return t('validation.postalCode.tooLong', alphanumeric.length)
   }
 
   // Check pattern

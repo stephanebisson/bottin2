@@ -4,6 +4,7 @@ import {
   formatPhoneForDisplay,
   formatPhoneForStorage,
   formatPhoneInput,
+  getPhoneValidationMessage,
   isValidPhoneFormat,
 } from './phoneFormatter.js'
 
@@ -136,6 +137,16 @@ describe('Phone Formatter Utilities', () => {
       const result = formatPhoneInput(longInput, 5)
       expect(result.value).toBe(longInput)
       expect(result.cursorPos).toBe(5)
+    })
+  })
+
+  describe('getPhoneValidationMessage', () => {
+    // Like banana-i18n: fills $1, $2… from the arguments in order
+    const t = (key, ...params) => `${key}(${params.join(',')})`
+
+    test('passes the count as a positional parameter', () => {
+      expect(getPhoneValidationMessage('514 555', t)).toBe('validation.phone.tooShort(6)')
+      expect(getPhoneValidationMessage('514 555 0101 22', t)).toBe('validation.phone.tooLong(12)')
     })
   })
 })

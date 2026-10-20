@@ -4,6 +4,7 @@ import {
   formatPostalCodeForDisplay,
   formatPostalCodeForStorage,
   formatPostalCodeInput,
+  getPostalCodeValidationMessage,
   getSamplePostalCode,
   isPostalCodeFormatValid,
   isValidPostalCodeFormat,
@@ -198,6 +199,16 @@ describe('Postal Code Formatter Utilities', () => {
       const result = formatPostalCodeInput('H1A2', 4)
       expect(result.value).toBe('H1A 2')
       expect(result.cursorPos).toBe(5) // Cursor moves after inserted space
+    })
+  })
+
+  describe('getPostalCodeValidationMessage', () => {
+    // Like banana-i18n: fills $1, $2… from the arguments in order
+    const t = (key, ...params) => `${key}(${params.join(',')})`
+
+    test('passes the count as a positional parameter', () => {
+      expect(getPostalCodeValidationMessage('H1A 1', t)).toBe('validation.postalCode.tooShort(4)')
+      expect(getPostalCodeValidationMessage('H1A 1A1B', t)).toBe('validation.postalCode.tooLong(7)')
     })
   })
 })
