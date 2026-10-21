@@ -1,7 +1,7 @@
 <template>
   <v-card v-if="parent" class="mb-6">
     <v-card-title class="d-flex align-center">
-      <v-icon class="me-2" color="primary">mdi-home-heart</v-icon>
+      <v-icon class="me-2" :color="ENTITY_STYLES.family.color">{{ ENTITY_STYLES.family.icon }}</v-icon>
       {{ $i18n('dashboard.myFamily') }}
       <v-spacer />
 
@@ -63,6 +63,7 @@
 <script setup>
   import { computed } from 'vue'
   import { useTranslate } from '@/composables/useTranslate'
+  import { ENTITY_STYLES } from '@/config/entities'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   const $i18n = useTranslate()

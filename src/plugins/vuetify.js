@@ -30,6 +30,8 @@ export default createVuetify({
           'accent': '#3F51B5',
           'staff': '#00796B',
           'feve': '#558B2F',
+          'school': '#6A1B9A',
+          'sdg': '#AD1457',
           'success': '#2E7D32',
           'warning': '#F57F17',
           'error': '#C62828',

@@ -223,6 +223,8 @@
     "myFamily": "My family",
     "viewProfile": "My profile",
     "withParent": "With $1",
+    "callContact": "Call $1",
+    "emailContact": "Email $1",
     "adminTodo": "To do",
     "todo": {
       "notEmailed": "{{PLURAL:$1|parent not emailed this year|parents not emailed this year}}",

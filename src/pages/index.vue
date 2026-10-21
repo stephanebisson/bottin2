@@ -41,6 +41,8 @@
     <div v-else-if="!firebaseStore.classesLoading">
       <MyFamilyCard />
 
+      <ContactCards />
+
       <AdminTodoStrip
         v-if="authStore.isAdmin"
         :no-children="noChildrenCount"

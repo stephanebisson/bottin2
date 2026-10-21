@@ -198,6 +198,8 @@
     "myFamily": "Dashboard page. - Title of the signed-in parent's family card",
     "viewProfile": "Dashboard page. - Link from the family card to the profile page",
     "withParent": "Dashboard page. - The children's other parent(s). - Parameters: $1 = parent names",
+    "callContact": "Dashboard page. - Label of the call button on a contact card. - Parameters: $1 = person or place name",
+    "emailContact": "Dashboard page. - Label of the email button on a contact card. - Parameters: $1 = person name",
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
     "todo": {
       "notEmailed": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",

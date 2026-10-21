@@ -13,6 +13,8 @@ export const ENTITY_STYLES = {
   feve: { icon: 'mdi-leaf', color: 'feve' },
   interests: { icon: 'mdi-heart', color: 'secondary' },
   games: { icon: 'mdi-gamepad-variant', color: 'secondary' },
+  school: { icon: 'mdi-domain', color: 'school' },
+  sdg: { icon: 'mdi-weather-sunny', color: 'sdg' },
 }
 
 /**

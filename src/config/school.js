@@ -13,6 +13,7 @@ export const SCHOOL_LOCATION = {
   province: 'QC',
   country: 'Canada',
   phone: '5145965682',
+  email: 'efilante@cssdm.gouv.qc.ca',
 }
 
 /**
