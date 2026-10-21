@@ -183,11 +183,11 @@
     return emails.length > 0 ? `mailto:?bcc=${emails.join(',')}` : null
   }
 
-  // The children's other parent(s); more than one in blended families
+  // The children's other parent(s) living at the same address; more than one in blended families
   const otherParents = computed(() => {
     const ids = new Set(children.value.flatMap(({ child }) => [child.parent1_id, child.parent2_id]))
     ids.delete(parent.value?.id)
-    return firebaseStore.parentsDTO.filter(p => ids.has(p.id))
+    return firebaseStore.parentsDTO.filter(p => ids.has(p.id) && parent.value.sharesAddressWith(p))
   })
 </script>
 

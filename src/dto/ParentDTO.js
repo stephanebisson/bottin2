@@ -182,6 +182,26 @@ export class ParentDTO {
   }
 
   /**
+   * Whether this parent and another live at the same address.
+   * Compares addresses (and postal codes when both have one) ignoring case, accents,
+   * punctuation and spaces; false when either address is missing, since it can't be confirmed
+   */
+  sharesAddressWith (other) {
+    const normalize = value => (value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036F]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '')
+    const address = normalize(this.address)
+    if (!address || address !== normalize(other?.address)) {
+      return false
+    }
+    const postalCode = normalize(this.postal_code)
+    const otherPostalCode = normalize(other.postal_code)
+    return !postalCode || !otherPostalCode || postalCode === otherPostalCode
+  }
+
+  /**
    * Check if parent has a specific interest
    * @param {string} interest - Interest name to check
    * @returns {boolean} True if parent has this interest

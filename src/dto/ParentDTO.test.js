@@ -281,6 +281,26 @@ describe('ParentDTO', () => {
       })
     })
 
+    describe('sharesAddressWith', () => {
+      const home = { address: '4826, av. Harvard', postal_code: 'H4A 2W8' }
+
+      test.each([
+        ['identical address', { ...home }, true],
+        ['different case, accents and punctuation', { address: '4826 AV HARVÁRD', postal_code: 'h4a2w8' }, true],
+        ['only one postal code', { address: '4826, av. Harvard', postal_code: '' }, true],
+        ['different address', { address: '4621, av. Coolbrook', postal_code: 'H4A 2W8' }, false],
+        ['same address, different postal code', { address: '4826, av. Harvard', postal_code: 'H3X 1A1' }, false],
+        ['other has no address', { address: '', postal_code: 'H4A 2W8' }, false],
+      ])('%s', (_label, other, expected) => {
+        expect(new ParentDTO(home).sharesAddressWith(new ParentDTO(other))).toBe(expected)
+      })
+
+      test('is false when this parent has no address or there is no other parent', () => {
+        expect(new ParentDTO({}).sharesAddressWith(new ParentDTO({}))).toBe(false)
+        expect(new ParentDTO(home).sharesAddressWith(null)).toBe(false)
+      })
+    })
+
     describe('updateContactInfo', () => {
       test('updates contact fields correctly', () => {
         const updated = parent.updateContactInfo({
