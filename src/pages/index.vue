@@ -42,6 +42,8 @@
       <v-col cols="12" md>
         <MyFamilyCard />
 
+        <MyCommitteesCard />
+
         <ContactCards />
 
         <!-- Navigation Tiles -->

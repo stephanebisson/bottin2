@@ -211,6 +211,10 @@
     "classPending": "Class to come",
     "emailClassParents": "Email all parents in the class",
     "viewClass": "View class",
+    "myCommittees": "My committees",
+    "committeeChairs": "Chairs",
+    "emailCommitteeMembers": "Email all members",
+    "visitWebsite": "Website of $1",
     "adminTodo": "To do",
     "percent": "$1%",
     "progress": {

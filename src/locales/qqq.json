@@ -186,6 +186,10 @@
     "classPending": "Dashboard page. - Heading of a child's card in My family when the child has no class yet.",
     "emailClassParents": "Dashboard page. - Label of the button, shown to a class's parent rep on their child's card, that writes to every parent in the class.",
     "viewClass": "Dashboard page. - Button on a child in the My family card that opens the classes page at that child's class.",
+    "myCommittees": "Dashboard page. - Title of the signed-in user's committee cards",
+    "committeeChairs": "Dashboard page. - Tooltip of the icon before the names of a committee's chairs on a committee card",
+    "emailCommitteeMembers": "Dashboard page. - Button, shown to a committee's chair on its card, that writes to every member of the committee.",
+    "visitWebsite": "Dashboard page. - Label of the website button on a committee card. - Parameters: $1 = committee name",
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
     "percent": "Dashboard admin progress tile. - Percentage, emphasized. - Parameters: $1 = whole number from 0 to 99",
     "progress": {

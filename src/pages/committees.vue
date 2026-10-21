@@ -39,12 +39,14 @@
       <v-row>
         <v-col
           v-for="committee in filteredCommittees"
+          :id="`committee-${committee.id}`"
           :key="committee.id"
+          class="committee-col"
           cols="12"
           lg="4"
           md="6"
         >
-          <v-card height="100%">
+          <v-card :class="{ 'committee-highlight': highlightedCommittee === committee.id }" height="100%">
             <!-- Committee Header -->
             <div class="bg-primary text-white pa-4">
               <div class="d-flex align-start justify-space-between gap-3 mb-2">
@@ -250,8 +252,9 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, nextTick, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useRoute } from 'vue-router'
   import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
@@ -260,6 +263,7 @@
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatStudentTeacher } from '@/utils/gradeFormatter.js'
   import { matchesSearch } from '@/utils/search'
+  import { ensureHttps } from '@/utils/url'
 
   definePage({ meta: { titleKey: 'committees.title' } })
 
@@ -424,14 +428,19 @@
     return phone
   }
 
-  // Helper: Ensure URL has https:// protocol
-  function ensureHttps (url) {
-    if (!url) return ''
-    const urlStr = url.toString().trim()
-    if (/^https?:\/\//i.test(urlStr)) {
-      return urlStr
-    }
-    return `https://${urlStr}`
+  // A link like /committees#committee-X (from the home page) scrolls to that committee and briefly highlights it
+  const route = useRoute()
+  const highlightedCommittee = ref(null)
+
+  async function scrollToLinkedCommittee () {
+    const id = route.hash.replace('#committee-', '')
+    if (!route.hash.startsWith('#committee-') || !firebaseStore.committeesDTO.some(c => c.id === id)) return
+    await nextTick()
+    document.querySelector(`#committee-${CSS.escape(id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    highlightedCommittee.value = id
+    setTimeout(() => {
+      highlightedCommittee.value = null
+    }, 2000)
   }
 
   onMounted(async () => {
@@ -443,10 +452,26 @@
       firebaseStore.loadClasses(),
       firebaseStore.loadCommitteesDTO(),
     ])
+    await scrollToLinkedCommittee()
   })
 </script>
 
 <style scoped>
+/* Scrolling to a linked committee leaves room for the app bar */
+.committee-col {
+  scroll-margin-top: 80px;
+}
+
+/* The committee a link pointed to pulses once so it stands out */
+.committee-highlight {
+  animation: committee-highlight 2s ease-out;
+}
+
+@keyframes committee-highlight {
+  0%, 40% { box-shadow: 0 0 0 4px rgb(var(--v-theme-secondary)); }
+  100% { box-shadow: 0 0 0 4px transparent; }
+}
+
 .committee-name {
   word-wrap: break-word;
   overflow-wrap: break-word;

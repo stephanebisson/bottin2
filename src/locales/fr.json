@@ -211,6 +211,10 @@
     "classPending": "Classe à venir",
     "emailClassParents": "Écrire à tous les parents de la classe",
     "viewClass": "Voir la classe",
+    "myCommittees": "Mes comités",
+    "committeeChairs": "Présidence",
+    "emailCommitteeMembers": "Écrire à tous les membres",
+    "visitWebsite": "Site web de $1",
     "adminTodo": "À faire",
     "percent": "$1 %",
     "progress": {
