@@ -34,13 +34,9 @@
           sm="12"
         >
           <v-card :class="['d-flex flex-column', { 'class-highlight': highlightedClass === classItem.classLetter }]" height="100%">
-            <!-- Class Header: the name the students chose, then the teacher and the official class code -->
-            <div class="class-header bg-primary">
-              <div class="d-flex align-start ga-2">
-                <div class="class-name flex-grow-1">{{ classItem.className }}</div>
-
+            <ClassCardHeader :class-item="classItem">
+              <template v-if="authStore.isAdmin" #actions>
                 <v-btn
-                  v-if="authStore.isAdmin"
                   class="mt-n1 me-n2"
                   color="white"
                   icon="mdi-pencil"
@@ -48,58 +44,8 @@
                   variant="text"
                   @click="openEditDialog(classItem)"
                 />
-              </div>
-
-              <div class="class-subtitle d-flex flex-wrap align-baseline">
-                <span v-if="classItem.teacher">
-                  <v-tooltip
-                    v-if="showPopups"
-                    location="top"
-                    max-width="350"
-                  >
-                    <template #activator="{ props }">
-                      <a v-bind="props" class="person-name plain-link" :href="mailto(getTeacherInfo(classItem.teacher)?.email)">
-                        {{ getTeacherName(classItem.teacher) }}
-                      </a>
-                    </template>
-
-                    <template #default>
-                      <div class="pa-3" style="min-width: 280px;">
-                        <div v-if="getTeacherInfo(classItem.teacher)">
-                          <div class="text-title-large mb-2 text-white">
-                            {{ getTeacherInfo(classItem.teacher).first_name }} {{ getTeacherInfo(classItem.teacher).last_name }}
-                          </div>
-
-                          <div v-if="getTeacherInfo(classItem.teacher).title" class="mb-1">
-                            <strong>{{ $i18n('classes.teacherTitle') }}:</strong> {{ getTeacherInfo(classItem.teacher).title }}
-                          </div>
-
-                          <div v-if="getTeacherInfo(classItem.teacher).email" class="mb-1">
-                            <strong>{{ $i18n('common.email') }}:</strong> {{ getTeacherInfo(classItem.teacher).email }}
-                          </div>
-
-                          <div v-if="getTeacherInfo(classItem.teacher).phone" class="mb-1">
-                            <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getTeacherInfo(classItem.teacher).phone) }}
-                          </div>
-
-                          <div v-if="getTeacherInfo(classItem.teacher).ce_role" class="mb-1">
-                            <strong>{{ $i18n('classes.ceRole') }}:</strong> {{ getTeacherInfo(classItem.teacher).ce_role }}
-                          </div>
-                        </div>
-
-                        <div v-else class="text-body-small">
-                          {{ $i18n('classes.noStaffInfo', classItem.teacher) }}
-                        </div>
-                      </div>
-                    </template>
-                  </v-tooltip>
-
-                  <a v-else class="plain-link" :href="mailto(getTeacherInfo(classItem.teacher)?.email)">{{ getTeacherName(classItem.teacher) }}</a>
-                </span>
-
-                <span class="class-code">{{ classItem.classCode }}</span>
-              </div>
-            </div>
+              </template>
+            </ClassCardHeader>
 
             <!-- Class Details -->
             <v-card-text class="flex-grow-1 pa-0">
@@ -110,178 +56,14 @@
                 <div class="class-reps-names">
                   <!-- Parent Rep 1 -->
                   <div v-if="classItem.parent_rep_1">
-                    <v-tooltip
-                      v-if="showPopups"
-                      location="top"
-                      max-width="450"
-                    >
-                      <template #activator="{ props }">
-                        <a v-bind="props" class="person-name plain-link" :href="mailto(getParentData(classItem.parent_rep_1)?.email)">
-                          {{ getParentName(classItem.parent_rep_1) }}
-                        </a>
-                      </template>
-
-                      <template #default>
-                        <div class="pa-3" style="min-width: 350px;">
-                          <div v-if="getParentData(classItem.parent_rep_1)">
-                            <div class="text-title-large mb-3 text-white">
-                              {{ getParentData(classItem.parent_rep_1).first_name }} {{ getParentData(classItem.parent_rep_1).last_name }}
-                              <br>
-                              <span class="text-body-medium">{{ $i18n('classes.parentRepresentative') }}</span>
-                            </div>
-
-                            <!-- Contact Information -->
-                            <div class="mb-3">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.contactInformation') }}</div>
-
-                              <div class="mb-1">
-                                <strong>{{ $i18n('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_1).email }}
-                              </div>
-
-                              <div v-if="getParentData(classItem.parent_rep_1).phone" class="mb-1">
-                                <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_1).phone) }}
-                              </div>
-
-                              <div v-if="formatAddress(getParentData(classItem.parent_rep_1))" class="mb-1">
-                                <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_1)) }}
-                              </div>
-                            </div>
-
-                            <!-- Interests Section -->
-                            <div v-if="getInterestNames(getParentData(classItem.parent_rep_1).interests, $i18n).length > 0" class="mb-3">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.interests') }}</div>
-
-                              <div class="text-body-medium">
-                                {{ getInterestNames(getParentData(classItem.parent_rep_1).interests, $i18n).join(', ') }}
-                              </div>
-                            </div>
-
-                            <!-- Children Section -->
-                            <div class="mb-2">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.children') }}</div>
-
-                              <div v-if="getParentChildren(classItem.parent_rep_1).length > 0">
-                                <div
-                                  v-for="child in getParentChildren(classItem.parent_rep_1)"
-                                  :key="child.id"
-                                  class="mb-1"
-                                >
-                                  <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
-
-                                  <div class="text-body-small">
-                                    {{ $i18n('classes.class') }}: {{ child.className }}
-                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
-
-                                    <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                      - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div v-else class="text-body-small text-medium-emphasis">
-                                {{ $i18n('classes.noChildrenFound') }}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div v-else class="text-body-small">
-                            {{ $i18n('classes.noParentInfo', classItem.parent_rep_1) }}
-                          </div>
-                        </div>
-                      </template>
-                    </v-tooltip>
-
-                    <a v-else class="plain-link" :href="mailto(getParentData(classItem.parent_rep_1)?.email)">
+                    <a class="plain-link" :href="mailto(getParentData(classItem.parent_rep_1)?.email)">
                       {{ getParentName(classItem.parent_rep_1) }}
                     </a>
                   </div>
 
                   <!-- Parent Rep 2 -->
                   <div v-if="classItem.parent_rep_2">
-                    <v-tooltip
-                      v-if="showPopups"
-                      location="top"
-                      max-width="450"
-                    >
-                      <template #activator="{ props }">
-                        <a v-bind="props" class="person-name plain-link" :href="mailto(getParentData(classItem.parent_rep_2)?.email)">
-                          {{ getParentName(classItem.parent_rep_2) }}
-                        </a>
-                      </template>
-
-                      <template #default>
-                        <div class="pa-3" style="min-width: 350px;">
-                          <div v-if="getParentData(classItem.parent_rep_2)">
-                            <div class="text-title-large mb-3 text-white">
-                              {{ getParentData(classItem.parent_rep_2).first_name }} {{ getParentData(classItem.parent_rep_2).last_name }}
-                              <br>
-                              <span class="text-body-medium">{{ $i18n('classes.parentRepresentative') }}</span>
-                            </div>
-
-                            <!-- Contact Information -->
-                            <div class="mb-3">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.contactInformation') }}</div>
-
-                              <div class="mb-1">
-                                <strong>{{ $i18n('common.email') }}:</strong> {{ getParentData(classItem.parent_rep_2).email }}
-                              </div>
-
-                              <div v-if="getParentData(classItem.parent_rep_2).phone" class="mb-1">
-                                <strong>{{ $i18n('common.phone') }}:</strong> {{ formatPhone(getParentData(classItem.parent_rep_2).phone) }}
-                              </div>
-
-                              <div v-if="formatAddress(getParentData(classItem.parent_rep_2))" class="mb-1">
-                                <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getParentData(classItem.parent_rep_2)) }}
-                              </div>
-                            </div>
-
-                            <!-- Interests Section -->
-                            <div v-if="getInterestNames(getParentData(classItem.parent_rep_2).interests, $i18n).length > 0" class="mb-3">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.interests') }}</div>
-
-                              <div class="text-body-medium">
-                                {{ getInterestNames(getParentData(classItem.parent_rep_2).interests, $i18n).join(', ') }}
-                              </div>
-                            </div>
-
-                            <!-- Children Section -->
-                            <div class="mb-2">
-                              <div class="text-title-small mb-2 text-white">{{ $i18n('classes.children') }}</div>
-
-                              <div v-if="getParentChildren(classItem.parent_rep_2).length > 0">
-                                <div
-                                  v-for="child in getParentChildren(classItem.parent_rep_2)"
-                                  :key="child.id"
-                                  class="mb-1"
-                                >
-                                  <div class="font-weight-bold">{{ child.first_name }} {{ child.last_name }}</div>
-
-                                  <div class="text-body-small">
-                                    {{ $i18n('classes.class') }}: {{ child.className }}
-                                    <span v-if="child.level"> - {{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
-
-                                    <span v-if="getTeacherName(getClassTeacher(child.className))">
-                                      - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(child.className)) }}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div v-else class="text-body-small text-medium-emphasis">
-                                {{ $i18n('classes.noChildrenFound') }}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div v-else class="text-body-small">
-                            {{ $i18n('classes.noParentInfo', classItem.parent_rep_2) }}
-                          </div>
-                        </div>
-                      </template>
-                    </v-tooltip>
-
-                    <a v-else class="plain-link" :href="mailto(getParentData(classItem.parent_rep_2)?.email)">
+                    <a class="plain-link" :href="mailto(getParentData(classItem.parent_rep_2)?.email)">
                       {{ getParentName(classItem.parent_rep_2) }}
                     </a>
                   </div>
@@ -313,112 +95,7 @@
                               :key="student.id"
                               class="student-row"
                             >
-                              <v-tooltip
-                                v-if="showPopups"
-                                location="top"
-                                max-width="450"
-                              >
-                                <template #activator="{ props }">
-                                  <span
-                                    v-bind="props"
-                                    class="person-name"
-                                  >
-                                    <span class="text-no-wrap">{{ student.first_name }}</span>
-
-                                    {{ ' ' }}<span class="text-no-wrap">{{ student.last_name }}<v-icon
-                                      v-if="isStudentRepresentative(student.id, classItem.classLetter)"
-                                      class="ml-1"
-                                      color="secondary"
-                                      size="small"
-                                      :title="$i18n('classes.representative')"
-                                    >mdi-account-voice</v-icon>
-
-                                      <v-icon
-                                        v-if="isFevesMember(student.id)"
-                                        class="ml-1"
-                                        color="feve"
-                                        size="small"
-                                        :title="$i18n('classes.fevesMember')"
-                                      >mdi-leaf</v-icon></span>
-                                  </span>
-                                </template>
-
-                                <template #default>
-                                  <div class="pa-3" style="min-width: 350px;">
-                                    <div class="text-title-large mb-3 text-white">
-                                      {{ student.first_name }} {{ student.last_name }}
-                                      <span v-if="student.level" class="text-body-small ml-2">({{ formatGradeLevel(student.level, bananaI18n.locale) }})</span>
-                                      <br>
-                                      <span class="text-body-medium">{{ student.className }}</span>
-                                    </div>
-
-                                    <!-- Parents Section -->
-                                    <div class="mb-3">
-                                      <div class="text-title-small mb-2 text-white">{{ $i18n('classes.parents') }}</div>
-
-                                      <div v-if="getStudentParent(student, 1)" class="mb-2">
-                                        <div class="font-weight-bold">{{ getStudentParent(student, 1).first_name }} {{ getStudentParent(student, 1).last_name }}</div>
-                                        <div class="text-body-small">{{ getStudentParent(student, 1).email }}</div>
-                                        <div v-if="getStudentParent(student, 1).phone" class="text-body-small">{{ formatPhone(getStudentParent(student, 1).phone) }}</div>
-
-                                        <div v-if="formatAddress(getStudentParent(student, 1))" class="text-body-small">
-                                          <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 1)) }}
-                                        </div>
-
-                                        <div v-if="getInterestNames(getStudentParent(student, 1).interests, $i18n).length > 0" class="text-body-small mt-1">
-                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getInterestNames(getStudentParent(student, 1).interests, $i18n).join(', ') }}
-                                        </div>
-                                      </div>
-
-                                      <div v-if="getStudentParent(student, 2)" class="mb-2">
-                                        <div class="font-weight-bold">{{ getStudentParent(student, 2).first_name }} {{ getStudentParent(student, 2).last_name }}</div>
-                                        <div class="text-body-small">{{ getStudentParent(student, 2).email }}</div>
-                                        <div v-if="getStudentParent(student, 2).phone" class="text-body-small">{{ formatPhone(getStudentParent(student, 2).phone) }}</div>
-
-                                        <div v-if="formatAddress(getStudentParent(student, 2))" class="text-body-small">
-                                          <strong>{{ $i18n('common.address') }}:</strong> {{ formatAddress(getStudentParent(student, 2)) }}
-                                        </div>
-
-                                        <div v-if="getInterestNames(getStudentParent(student, 2).interests, $i18n).length > 0" class="text-body-small mt-1">
-                                          <strong>{{ $i18n('common.interests') }}:</strong> {{ getInterestNames(getStudentParent(student, 2).interests, $i18n).join(', ') }}
-                                        </div>
-                                      </div>
-
-                                      <div v-if="!getStudentParent(student, 1) && !getStudentParent(student, 2)" class="text-body-small text-medium-emphasis">
-                                        {{ $i18n('classes.noParentInfoFound') }}
-                                      </div>
-                                    </div>
-
-                                    <!-- Siblings Section -->
-                                    <div class="mb-2">
-                                      <div class="text-title-small mb-2 text-white">{{ $i18n('classes.siblings') }}</div>
-
-                                      <div v-if="getStudentSiblings(student).length > 0">
-                                        <div
-                                          v-for="sibling in getStudentSiblings(student)"
-                                          :key="sibling.id"
-                                          class="mb-1"
-                                        >
-                                          <div class="font-weight-bold">{{ sibling.first_name }} {{ sibling.last_name }}</div>
-
-                                          <div class="text-body-small">
-                                            {{ $i18n('classes.class') }}: {{ sibling.className }}
-                                            <span v-if="getTeacherName(getClassTeacher(sibling.className))">
-                                              - {{ $i18n('classes.teacher') }}: {{ getTeacherName(getClassTeacher(sibling.className)) }}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div v-else class="text-body-small text-medium-emphasis">
-                                        {{ $i18n('classes.noSiblingsFound') }}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </template>
-                              </v-tooltip>
-
-                              <span v-else>
+                              <span>
                                 <span class="text-no-wrap">{{ student.first_name }}</span>
 
                                 {{ ' ' }}<span class="text-no-wrap">{{ student.last_name }}<v-icon
@@ -590,7 +267,6 @@
   import { useI18n } from 'vue-banana-i18n'
   import { useRoute } from 'vue-router'
   import { FEVES_COMMITTEE_ID, STUDENT_MEMBER_ROLE } from '@/config/committees'
-  import { getInterestNames } from '@/config/interests'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
@@ -599,9 +275,6 @@
   definePage({ meta: { titleKey: 'classes.title' } })
 
   const bananaI18n = useI18n()
-
-  // Feature flags
-  const showPopups = ref(false)
 
   // Use centralized data store
   const firebaseStore = useFirebaseDataStore()
@@ -751,48 +424,6 @@
     return email ? `mailto:${email}` : undefined
   }
 
-  function getParentChildren (parentId) {
-    if (!parentId) return []
-
-    // Find all students where this parent is either parent1 or parent2
-    return firebaseStore.studentsDTO.filter(student =>
-      student.parent1_id === parentId || student.parent2_id === parentId,
-    )
-  }
-
-  function formatAddress (parent) {
-    if (!parent) return ''
-
-    const addressParts = []
-
-    if (parent.address) addressParts.push(parent.address)
-    if (parent.city) addressParts.push(parent.city)
-    if (parent.postal_code) addressParts.push(parent.postal_code)
-
-    return addressParts.length > 0 ? addressParts.join(', ') : ''
-  }
-
-  function formatPhone (phone) {
-    if (!phone) return ''
-
-    const cleaned = phone.toString().replace(/\D/g, '')
-
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-    }
-
-    return phone
-  }
-
-  function getTeacherName (teacherId) {
-    const teacher = firebaseStore.staffDTO.find(s => s.id === teacherId)
-    return teacher ? teacher.fullName : teacherId
-  }
-
-  function getTeacherInfo (teacherId) {
-    return firebaseStore.staffDTO.find(s => s.id === teacherId) || null
-  }
-
   function getClassStudents (classLetter) {
     return firebaseStore.studentsDTO.filter(student => student.className === classLetter)
   }
@@ -857,37 +488,11 @@
     return pairs
   }
 
-  function getStudentParent (student, parentNumber) {
-    const parentIdField = parentNumber === 1 ? 'parent1_id' : 'parent2_id'
-    const parentId = student[parentIdField]
-
-    if (!parentId) return null
-
-    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
-  }
-
-  function getStudentSiblings (student) {
-    if (!student.parent1_id && !student.parent2_id) return []
-
-    // Find siblings by matching parent IDs (excluding the student themselves)
-    return firebaseStore.studentsDTO.filter(s =>
-      s.id !== student.id && (
-        (student.parent1_id && (s.parent1_id === student.parent1_id || s.parent2_id === student.parent1_id))
-        || (student.parent2_id && (s.parent1_id === student.parent2_id || s.parent2_id === student.parent2_id))
-      ),
-    )
-  }
-
   function isStudentRepresentative (studentId, classLetter) {
     const classItem = firebaseStore.classes.find(c => c.classLetter === classLetter)
     if (!classItem) return false
 
     return classItem.student_rep_1 === studentId || classItem.student_rep_2 === studentId
-  }
-
-  function getClassTeacher (classLetter) {
-    const classItem = firebaseStore.classes.find(c => c.classLetter === classLetter)
-    return classItem ? classItem.teacher : null
   }
 
   // A link like /classes#class-B (from the home page) scrolls to that class and briefly highlights it
@@ -934,59 +539,22 @@
   100% { box-shadow: 0 0 0 4px transparent; }
 }
 
-.class-header {
-  padding: 12px 16px 10px;
-}
-
-/* The name the students chose: playful, set apart from the official class code */
-.class-name {
-  font-family: 'Nunito', 'Roboto', sans-serif;
-  font-weight: 800;
-  font-size: 1.5rem;
-  line-height: 1.15;
-  /* A light tint of the secondary color; browsers without color-mix fall back to white */
-  color: white;
-  color: color-mix(in srgb, rgb(var(--v-theme-secondary)) 40%, white);
-  text-wrap: balance;
-  overflow-wrap: anywhere;
-}
-
-.class-subtitle {
-  column-gap: 12px;
-  margin-top: 4px;
-  font-size: 0.875rem;
-}
-
-.class-code {
-  margin-left: auto;
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.03em;
-  opacity: 0.65;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
 .class-reps {
   padding: 10px 16px;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   font-size: 0.8125rem;
 }
 
-/* Teacher and parent reps are mailto links that look like plain names */
-.plain-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.plain-link[href] {
-  cursor: pointer;
-}
-
 .class-reps-names {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 16px;
+}
+
+/* Parent reps are mailto links that look like plain names */
+.plain-link {
+  color: inherit;
+  text-decoration: none;
 }
 
 .class-students {
@@ -1040,21 +608,7 @@
   line-height: 1.3;
 }
 
-.person-name {
-  cursor: help;
-  border-radius: 3px;
-}
-
-.person-name:hover {
-  background: rgba(var(--v-theme-primary), 0.1);
-}
-
-.class-header .person-name:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
 @media (max-width: 599px) {
-  .class-header,
   .class-reps,
   .class-students {
     padding-left: 12px;

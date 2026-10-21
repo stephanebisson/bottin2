@@ -18,49 +18,45 @@
     <!-- Each child as the classes page shows their class, with them as its only student -->
     <v-row v-if="children.length > 0">
       <v-col
-        v-for="{ child, classItem, teacher, reps, classParentsMailto } in children"
+        v-for="{ child, classItem, reps, classParentsMailto } in children"
         :key="child.id"
         cols="12"
         sm="6"
       >
         <v-card class="d-flex flex-column h-100">
-          <div class="class-header" :class="classItem ? 'bg-primary' : 'bg-surface-variant'">
-            <div class="child-name">
-              {{ child.fullName }}
-              <span v-if="child.level" class="child-level">{{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
-            </div>
+          <ClassCardHeader :class-item="classItem" :placeholder="$i18n('dashboard.classPending')">
+            <template #top>
+              <div class="child-name">
+                {{ child.fullName }}
+                <span v-if="child.level" class="child-level">{{ formatGradeLevel(child.level, bananaI18n.locale) }}</span>
+              </div>
+            </template>
 
-            <div class="class-name">{{ classItem?.className ?? $i18n('dashboard.classPending') }}</div>
+            <template #teacher="{ teacher }">
+              {{ teacher.fullName }}
+              <v-btn
+                v-if="teacher.email"
+                :aria-label="$i18n('dashboard.emailContact', teacher.fullName)"
+                class="contact-button"
+                density="compact"
+                :href="`mailto:${teacher.email}`"
+                icon="mdi-email"
+                size="small"
+                variant="text"
+              />
 
-            <div v-if="classItem" class="class-subtitle d-flex flex-wrap align-center">
-              <span v-if="teacher" class="contact">
-                {{ teacher.fullName }}
-                <v-btn
-                  v-if="teacher.email"
-                  :aria-label="$i18n('dashboard.emailContact', teacher.fullName)"
-                  class="contact-button"
-                  density="compact"
-                  :href="`mailto:${teacher.email}`"
-                  icon="mdi-email"
-                  size="small"
-                  variant="text"
-                />
-
-                <v-btn
-                  v-if="teacher.phone"
-                  :aria-label="$i18n('dashboard.callContact', teacher.fullName)"
-                  class="contact-button"
-                  density="compact"
-                  :href="`tel:${teacher.phone}`"
-                  icon="mdi-phone"
-                  size="small"
-                  variant="text"
-                />
-              </span>
-
-              <span class="class-code">{{ classItem.classCode }}</span>
-            </div>
-          </div>
+              <v-btn
+                v-if="teacher.phone"
+                :aria-label="$i18n('dashboard.callContact', teacher.fullName)"
+                class="contact-button"
+                density="compact"
+                :href="`tel:${teacher.phone}`"
+                icon="mdi-phone"
+                size="small"
+                variant="text"
+              />
+            </template>
+          </ClassCardHeader>
 
           <div v-if="reps.length > 0" class="class-reps d-flex align-center ga-2">
             <v-icon color="secondary" size="small" :title="$i18n('classes.parentRepresentatives')">mdi-account-voice</v-icon>
@@ -165,7 +161,6 @@
         return {
           child,
           classItem,
-          teacher: classItem && firebaseStore.staffDTO.find(s => s.id === classItem.teacher),
           reps: classItem
             ? [classItem.parent_rep_1, classItem.parent_rep_2]
               .filter(Boolean)
@@ -197,43 +192,7 @@
 </script>
 
 <style scoped>
-/* Same look as a class card on the classes page */
-.class-header {
-  padding: 12px 16px 10px;
-}
-
-.class-name {
-  font-family: 'Nunito', 'Roboto', sans-serif;
-  font-weight: 800;
-  font-size: 1.5rem;
-  line-height: 1.15;
-  /* A light tint of the secondary color; browsers without color-mix fall back to white */
-  color: white;
-  color: color-mix(in srgb, rgb(var(--v-theme-secondary)) 40%, white);
-  text-wrap: balance;
-  overflow-wrap: anywhere;
-}
-
-.bg-surface-variant .class-name {
-  color: inherit;
-}
-
-.class-subtitle {
-  column-gap: 12px;
-  margin-top: 4px;
-  font-size: 0.875rem;
-}
-
-.class-code {
-  margin-left: auto;
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.03em;
-  opacity: 0.65;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
+/* Same reps row as a class card on the classes page */
 .class-reps {
   padding: 6px 16px;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
