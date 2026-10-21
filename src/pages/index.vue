@@ -38,55 +38,59 @@
     </div>
 
     <!-- Dashboard Content -->
-    <div v-else-if="!firebaseStore.classesLoading">
-      <MyFamilyCard />
+    <v-row v-else-if="!firebaseStore.classesLoading">
+      <v-col cols="12" md>
+        <MyFamilyCard />
 
-      <ContactCards />
+        <ContactCards />
+
+        <!-- Navigation Tiles -->
+        <v-row>
+          <v-col
+            v-for="navItem in navigationItems"
+            :key="navItem.route"
+            cols="12"
+            lg="3"
+            :md="hasAdminTodo ? 6 : 3"
+            sm="6"
+          >
+            <v-card
+              class="h-100"
+              hover
+              :to="navItem.route"
+            >
+              <v-card-text class="d-flex align-center ga-4">
+                <v-icon :color="navItem.color" size="40">{{ navItem.icon }}</v-icon>
+
+                <div>
+                  <div class="text-title-medium font-weight-bold">{{ navItem.title }}</div>
+
+                  <div class="text-body-small text-medium-emphasis">
+                    {{ navItem.counts.map(c => `${c.count} ${c.label}`).join(' · ') }}
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
 
       <AdminTodoStrip
         v-if="authStore.isAdmin"
+        ref="adminTodoStrip"
         :class-assigned="classAssignedProgress"
         :email-sent="emailSentProgress"
         :no-children="noChildrenCount"
         :pending-feedback="pendingFeedbackCount"
         :updated="updatedProgress"
       />
-
-      <!-- Navigation Tiles -->
-      <v-row>
-        <v-col
-          v-for="navItem in navigationItems"
-          :key="navItem.route"
-          cols="12"
-          md="3"
-          sm="6"
-        >
-          <v-card
-            class="h-100"
-            hover
-            :to="navItem.route"
-          >
-            <v-card-text class="d-flex align-center ga-4">
-              <v-icon :color="navItem.color" size="40">{{ navItem.icon }}</v-icon>
-
-              <div>
-                <div class="text-title-medium font-weight-bold">{{ navItem.title }}</div>
-
-                <div class="text-body-small text-medium-emphasis">
-                  {{ navItem.counts.map(c => `${c.count} ${c.label}`).join(' · ') }}
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </div>
+    </v-row>
   </v-container>
 </template>
 
 <script setup>
   import { collection, getDocs, query, where } from 'firebase/firestore'
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref, useTemplateRef } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useTranslate } from '@/composables/useTranslate'
   import { ENTITY_STYLES } from '@/config/entities'
@@ -132,6 +136,10 @@
       console.error('Error during dashboard initialization:', error)
     }
   })
+
+  // The to-do column narrows the main column, so the tiles go two per row at md
+  const adminTodoStrip = useTemplateRef('adminTodoStrip')
+  const hasAdminTodo = computed(() => !!adminTodoStrip.value?.hasItems)
 
   // Admin to-do: same rules as the filters on the admin lists the tiles link to
   const emailedParentIds = ref(null)

@@ -1,46 +1,62 @@
 <template>
-  <div v-if="progressItems.length + countItems.length > 0" class="mb-6">
+  <!-- Side column on desktop, first on mobile; absent when there's nothing to do -->
+  <v-col
+    v-if="hasItems"
+    class="order-first order-md-last"
+    cols="12"
+    md="3"
+  >
     <div class="text-title-small text-medium-emphasis mb-2">
       <v-icon class="me-1" size="small">mdi-shield-account</v-icon>
       {{ $i18n('dashboard.adminTodo') }}
     </div>
 
-    <div class="d-flex flex-wrap ga-2">
-      <v-card
+    <v-row density="compact">
+      <v-col
         v-for="item in progressItems"
         :key="item.key"
-        color="warning"
-        :to="item.to"
-        variant="tonal"
-        width="180"
+        cols="6"
+        md="12"
       >
-        <v-card-text>
-          <div class="text-body-medium">{{ $i18n(`dashboard.progress.${item.key}`) }}</div>
+        <v-card
+          class="h-100"
+          color="warning"
+          :to="item.to"
+          variant="tonal"
+        >
+          <v-card-text>
+            <div class="text-body-medium">{{ $i18n(`dashboard.progress.${item.key}`) }}</div>
 
-          <div class="d-flex align-baseline ga-2">
-            <span class="text-headline-small font-weight-bold">{{ $i18n('dashboard.percent', item.percent) }}</span>
-            <span class="text-body-small">{{ item.done }}/{{ item.total }}</span>
-          </div>
+            <div class="d-flex align-baseline ga-2">
+              <span class="text-headline-small font-weight-bold">{{ $i18n('dashboard.percent', item.percent) }}</span>
+              <span class="text-body-small">{{ item.done }}/{{ item.total }}</span>
+            </div>
 
-          <v-progress-linear class="mt-2" :model-value="item.percent" rounded />
-        </v-card-text>
-      </v-card>
+            <v-progress-linear class="mt-2" :model-value="item.percent" rounded />
+          </v-card-text>
+        </v-card>
+      </v-col>
 
-      <v-card
+      <v-col
         v-for="item in countItems"
         :key="item.key"
-        color="warning"
-        :to="item.to"
-        variant="tonal"
-        width="180"
+        cols="6"
+        md="12"
       >
-        <v-card-text class="d-flex align-center ga-3">
-          <span class="text-headline-small font-weight-bold">{{ item.count }}</span>
-          <span class="text-body-medium">{{ $i18n(`dashboard.todo.${item.key}`, item.count) }}</span>
-        </v-card-text>
-      </v-card>
-    </div>
-  </div>
+        <v-card
+          class="h-100"
+          color="warning"
+          :to="item.to"
+          variant="tonal"
+        >
+          <v-card-text class="d-flex align-center ga-3">
+            <span class="text-headline-small font-weight-bold">{{ item.count }}</span>
+            <span class="text-body-medium">{{ $i18n(`dashboard.todo.${item.key}`, item.count) }}</span>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script setup>
@@ -69,4 +85,8 @@
     { key: 'noChildren', count: props.noChildren, to: '/admin/parents?noChildren=1' },
     { key: 'pendingFeedback', count: props.pendingFeedback, to: '/admin/feedback?status=pending' },
   ].filter(item => item.count > 0))
+
+  const hasItems = computed(() => progressItems.value.length + countItems.value.length > 0)
+
+  defineExpose({ hasItems })
 </script>
