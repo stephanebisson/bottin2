@@ -225,6 +225,9 @@
     "withParent": "Avec $1",
     "callContact": "Appeler $1",
     "emailContact": "Écrire à $1",
+    "classPending": "Classe à venir",
+    "emailClassParents": "Écrire à tous les parents de la classe",
+    "viewClass": "Voir la classe",
     "adminTodo": "À faire",
     "percent": "$1 %",
     "progress": {

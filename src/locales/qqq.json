@@ -200,6 +200,9 @@
     "withParent": "Dashboard page. - The children's other parent(s). - Parameters: $1 = parent names",
     "callContact": "Dashboard page. - Label of the call button on a contact card. - Parameters: $1 = person or place name",
     "emailContact": "Dashboard page. - Label of the email button on a contact card. - Parameters: $1 = person name",
+    "classPending": "Dashboard page. - Heading of a child's card in My family when the child has no class yet.",
+    "emailClassParents": "Dashboard page. - Label of the button, shown to a class's parent rep on their child's card, that writes to every parent in the class.",
+    "viewClass": "Dashboard page. - Button on a child in the My family card that opens the classes page at that child's class.",
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
     "percent": "Dashboard admin progress tile. - Percentage, emphasized. - Parameters: $1 = whole number from 0 to 99",
     "progress": {

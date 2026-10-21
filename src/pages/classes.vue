@@ -25,13 +25,15 @@
       <v-row>
         <v-col
           v-for="classItem in firebaseStore.classes"
+          :id="`class-${classItem.classLetter}`"
           :key="classItem.id"
+          class="class-col"
           cols="12"
           lg="6"
           md="6"
           sm="12"
         >
-          <v-card class="d-flex flex-column" height="100%">
+          <v-card :class="['d-flex flex-column', { 'class-highlight': highlightedClass === classItem.classLetter }]" height="100%">
             <!-- Class Header: the name the students chose, then the teacher and the official class code -->
             <div class="class-header bg-primary">
               <div class="d-flex align-start ga-2">
@@ -584,8 +586,9 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, nextTick, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-banana-i18n'
+  import { useRoute } from 'vue-router'
   import { FEVES_COMMITTEE_ID, STUDENT_MEMBER_ROLE } from '@/config/committees'
   import { getInterestNames } from '@/config/interests'
   import { ClassRepository } from '@/repositories/ClassRepository.js'
@@ -887,6 +890,21 @@
     return classItem ? classItem.teacher : null
   }
 
+  // A link like /classes#class-B (from the home page) scrolls to that class and briefly highlights it
+  const route = useRoute()
+  const highlightedClass = ref(null)
+
+  async function scrollToLinkedClass () {
+    const letter = route.hash.replace('#class-', '')
+    if (!route.hash.startsWith('#class-') || !firebaseStore.classes.some(c => c.classLetter === letter)) return
+    await nextTick()
+    document.querySelector(`#class-${CSS.escape(letter)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    highlightedClass.value = letter
+    setTimeout(() => {
+      highlightedClass.value = null
+    }, 2000)
+  }
+
   // Load data on component mount
   onMounted(async () => {
     await Promise.all([
@@ -896,10 +914,26 @@
       firebaseStore.loadClasses(),
       firebaseStore.loadCommitteesDTO(),
     ])
+    await scrollToLinkedClass()
   })
 </script>
 
 <style scoped>
+/* Scrolling to a linked class leaves room for the app bar */
+.class-col {
+  scroll-margin-top: 80px;
+}
+
+/* The class a link pointed to pulses once so it stands out */
+.class-highlight {
+  animation: class-highlight 2s ease-out;
+}
+
+@keyframes class-highlight {
+  0%, 40% { box-shadow: 0 0 0 4px rgb(var(--v-theme-secondary)); }
+  100% { box-shadow: 0 0 0 4px transparent; }
+}
+
 .class-header {
   padding: 12px 16px 10px;
 }
