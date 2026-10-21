@@ -45,11 +45,11 @@
 
       <AdminTodoStrip
         v-if="authStore.isAdmin"
+        :class-assigned="classAssignedProgress"
+        :email-sent="emailSentProgress"
         :no-children="noChildrenCount"
-        :not-emailed="notEmailedCount"
-        :not-updated="notUpdatedCount"
         :pending-feedback="pendingFeedbackCount"
-        :unassigned="unassignedCount"
+        :updated="updatedProgress"
       />
 
       <!-- Navigation Tiles -->
@@ -155,13 +155,17 @@
     }
   }
 
-  const notEmailedCount = computed(() => {
+  function progress (items, isDone) {
+    return { done: items.filter(item => isDone(item)).length, total: items.length }
+  }
+
+  const emailSentProgress = computed(() => {
     if (!emailedParentIds.value) return null
-    return firebaseStore.parentsDTO.filter(p => p.email && !emailedParentIds.value.has(p.id)).length
+    return progress(firebaseStore.parentsDTO.filter(p => p.email), p => emailedParentIds.value.has(p.id))
   })
 
-  const notUpdatedCount = computed(() =>
-    firebaseStore.parentsDTO.filter(p => !isInCurrentSchoolYear(p.lastUpdated)).length,
+  const updatedProgress = computed(() =>
+    progress(firebaseStore.parentsDTO, p => isInCurrentSchoolYear(p.lastUpdated)),
   )
 
   const noChildrenCount = computed(() => {
@@ -169,8 +173,8 @@
     return firebaseStore.parentsDTO.filter(p => !linkedParentIds.has(p.id)).length
   })
 
-  const unassignedCount = computed(() =>
-    firebaseStore.studentsDTO.filter(s => !s.className).length,
+  const classAssignedProgress = computed(() =>
+    progress(firebaseStore.studentsDTO, s => s.className),
   )
 
   // Navigation tiles

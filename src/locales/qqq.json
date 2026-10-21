@@ -201,10 +201,13 @@
     "callContact": "Dashboard page. - Label of the call button on a contact card. - Parameters: $1 = person or place name",
     "emailContact": "Dashboard page. - Label of the email button on a contact card. - Parameters: $1 = person name",
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
+    "percent": "Dashboard admin progress tile. - Percentage, emphasized. - Parameters: $1 = whole number from 0 to 99",
+    "progress": {
+      "emailSent": "Dashboard admin progress tile label: parents with an email address who were sent the update email this school year",
+      "updated": "Dashboard admin progress tile label: parents whose info was updated this school year",
+      "classAssigned": "Dashboard admin progress tile label: students assigned to a class"
+    },
     "todo": {
-      "notEmailed": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "notUpdated": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
-      "unassigned": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
       "pendingFeedback": "Dashboard admin tile, shown after the count. - Parameters: $1 = count",
       "noChildren": "Dashboard admin tile, shown after the count. - Parameters: $1 = count"
     }

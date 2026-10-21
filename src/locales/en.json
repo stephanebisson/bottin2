@@ -226,10 +226,13 @@
     "callContact": "Call $1",
     "emailContact": "Email $1",
     "adminTodo": "To do",
+    "percent": "$1%",
+    "progress": {
+      "emailSent": "Email sent",
+      "updated": "Info updated",
+      "classAssigned": "Class assigned"
+    },
     "todo": {
-      "notEmailed": "{{PLURAL:$1|parent not emailed this year|parents not emailed this year}}",
-      "notUpdated": "{{PLURAL:$1|parent not updated this year|parents not updated this year}}",
-      "unassigned": "{{PLURAL:$1|student without a class|students without a class}}",
       "pendingFeedback": "{{PLURAL:$1|pending comment|pending comments}}",
       "noChildren": "{{PLURAL:$1|parent without children|parents without children}}"
     }
