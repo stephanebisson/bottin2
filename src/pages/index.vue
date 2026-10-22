@@ -44,6 +44,8 @@
 
         <MyCommitteesCard />
 
+        <InterestCloudCard />
+
         <ContactCards />
 
         <!-- Navigation Tiles -->

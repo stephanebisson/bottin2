@@ -14,6 +14,7 @@
     "directory": "Familles",
     "staff": "Personnel",
     "committees": "Comités",
+    "interests": "Intérêts",
     "about": "À propos",
     "adminMenu": {
       "logs": "Journal",
@@ -215,6 +216,8 @@
     "committeeChairs": "Présidence",
     "emailCommitteeMembers": "Écrire à tous les membres",
     "visitWebsite": "Site web de $1",
+    "interestCloud": "Intérêts des parents",
+    "interestCloudHint": "Choisissez un intérêt pour trouver des parents avec qui organiser une activité.",
     "adminTodo": "À faire",
     "percent": "$1 %",
     "progress": {
@@ -976,6 +979,17 @@
     "cookiesBody": "Le bottin enregistre dans votre navigateur votre choix de langue et votre session de connexion. Il n'utilise aucun outil de statistiques ni de publicité.\nNos serveurs conservent des journaux techniques (date, erreurs et adresse IP) pour diagnostiquer les problèmes. Ils sont supprimés automatiquement après 30 jours.",
     "changesTitle": "Modifications",
     "changesBody": "Nous pouvons modifier cette politique. En cas de changement important, nous vous en aviserons par courriel ou dans le bottin. La date d'entrée en vigueur figure en haut de la page."
+  },
+  "interests": {
+    "title": "Intérêts des parents",
+    "pickPrompt": "Choisissez un ou plusieurs intérêts pour trouver des parents à contacter.",
+    "matchAny": "Au moins un",
+    "matchAll": "Tous",
+    "parentCount": "{{PLURAL:$1|$1 parent|$1 parents}}",
+    "noResults": "Aucun parent ne correspond à ces filtres.",
+    "emailAll": "Écrire à ces parents",
+    "copyEmails": "Copier les courriels",
+    "emailsCopied": "{{PLURAL:$1|$1 courriel copié|$1 courriels copiés}}"
   },
   "interestGroups": {
     "arts": "Arts",

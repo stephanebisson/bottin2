@@ -130,6 +130,7 @@ export const routeConfig = {
     '/students', // Students directory
     '/parents', // Parents directory
     '/families', // Families directory
+    '/interests', // Parents by interest
     '/staff', // Staff directory
     '/classes', // Classes page
     '/committees', // Committees page

@@ -134,6 +134,11 @@
         to: '/families',
       },
       {
+        title: $i18n('nav.interests'),
+        icon: 'mdi-heart',
+        to: '/interests',
+      },
+      {
         title: $i18n('nav.staff'),
         icon: 'mdi-account-tie',
         to: '/staff',

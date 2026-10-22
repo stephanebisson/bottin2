@@ -14,6 +14,7 @@
     "directory": "Directory",
     "staff": "Staff",
     "committees": "Committees",
+    "interests": "Interests",
     "about": "About",
     "adminMenu": {
       "logs": "Log",
@@ -215,6 +216,8 @@
     "committeeChairs": "Chairs",
     "emailCommitteeMembers": "Email all members",
     "visitWebsite": "Website of $1",
+    "interestCloud": "Parents' interests",
+    "interestCloudHint": "Pick an interest to find parents to organize an activity with.",
     "adminTodo": "To do",
     "percent": "$1%",
     "progress": {
@@ -969,6 +972,17 @@
     "cookiesBody": "The directory stores your language choice and your sign-in session in your browser. It does not use any analytics or advertising tools.\nOur servers keep technical logs (date, errors and IP address) to diagnose problems. They are deleted automatically after 30 days.",
     "changesTitle": "Changes",
     "changesBody": "We may change this policy. If we make a significant change, we will notify you by email or in the directory. The effective date appears at the top of the page."
+  },
+  "interests": {
+    "title": "Parents' interests",
+    "pickPrompt": "Pick one or more interests to find parents to contact.",
+    "matchAny": "Any",
+    "matchAll": "All",
+    "parentCount": "{{PLURAL:$1|$1 parent|$1 parents}}",
+    "noResults": "No parents match these filters.",
+    "emailAll": "Email these parents",
+    "copyEmails": "Copy emails",
+    "emailsCopied": "{{PLURAL:$1|$1 email copied|$1 emails copied}}"
   },
   "interestGroups": {
     "arts": "Arts",

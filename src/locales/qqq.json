@@ -20,6 +20,7 @@
     "directory": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "staff": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
     "committees": "Navigation menu item. - French: Use sentence case (capitalize first word only)",
+    "interests": "Navigation menu item for the page that finds parents by interest. - French: Use sentence case (capitalize first word only)",
     "adminMenu": {
       "logs": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
       "parents": "Admin submenu item in the navigation sidebar; keep very short to avoid clipping. - French: Use sentence case (capitalize first word only)",
@@ -190,6 +191,8 @@
     "committeeChairs": "Dashboard page. - Tooltip of the icon before the names of a committee's chairs on a committee card",
     "emailCommitteeMembers": "Dashboard page. - Button, shown to a committee's chair on its card, that writes to every member of the committee.",
     "visitWebsite": "Dashboard page. - Label of the website button on a committee card. - Parameters: $1 = committee name",
+    "interestCloud": "Dashboard page. - Title of the cloud of interests parents share",
+    "interestCloudHint": "Dashboard page. - Hint under the interest cloud; each interest opens the interests page filtered on it",
     "adminTodo": "Dashboard page. - Heading of the admin to-do tiles",
     "percent": "Dashboard admin progress tile. - Percentage, emphasized. - Parameters: $1 = whole number from 0 to 99",
     "progress": {
@@ -752,6 +755,17 @@
     "cookiesBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item",
     "changesTitle": "Privacy policy page. - Section heading",
     "changesBody": "Privacy policy page. - Section text; \\n starts a new line and • marks a list item"
+  },
+  "interests": {
+    "title": "Interests page. - Page title",
+    "pickPrompt": "Interests page. - Shown before any interest is selected",
+    "matchAny": "Interests page. - Toggle: show parents with at least one of the selected interests",
+    "matchAll": "Interests page. - Toggle: show only parents with all the selected interests",
+    "parentCount": "Interests page. - Number of parents found. - Parameters: $1 = count",
+    "noResults": "Interests page. - Shown when no parent matches the filters",
+    "emailAll": "Interests page. - Button that writes to every parent found (in Bcc)",
+    "copyEmails": "Interests page. - Button that copies the email addresses of every parent found",
+    "emailsCopied": "Interests page. - Confirmation after copying the addresses. - Parameters: $1 = count"
   },
   "interestGroups": {
     "arts": "Interest category heading on the parent update form. - French: Use sentence case (capitalize first word only)",
