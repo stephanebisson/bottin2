@@ -20,6 +20,7 @@ functions/
 
 ### Authentication (`auth.js`)
 - `validateEmailV2` - Validates if an email is authorized to create an account
+- `restrictSignUpToParents` - Blocking function (`beforeUserCreated`): rejects any sign-up whose email is not in the parents collection. Requires Firebase Authentication with Identity Platform in production.
 
 ### Workflow Management (`workflow.js`)
 - `startAnnualUpdate` - Initiates the annual parent information update workflow

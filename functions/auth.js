@@ -1,5 +1,6 @@
 const { getFirestore } = require('firebase-admin/firestore')
 const { onRequest } = require('firebase-functions/v2/https')
+const { beforeUserCreated, HttpsError } = require('firebase-functions/v2/identity')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
 const { validateFunctionData } = require('./middleware/validation')
@@ -161,5 +162,31 @@ exports.validateEmailV2 = onRequest({
       authorized: false,
       error: 'Internal server error occurred during validation.',
     })
+  }
+})
+
+/**
+ * Blocks the creation of any account whose email is not in the parents collection.
+ * The registration form checks validateEmailV2 first, but the Auth sign-up API can
+ * be called directly with the public API key, so this is the check that counts.
+ * Accounts created with the Admin SDK (scripts) don't go through it.
+ */
+exports.restrictSignUpToParents = beforeUserCreated({
+  region: FUNCTIONS_REGION,
+}, async event => {
+  const email = event.data?.email?.toLowerCase().trim()
+  if (!email) {
+    console.log('Sign-up blocked - no email')
+    throw new HttpsError('permission-denied', 'UNAUTHORIZED_EMAIL')
+  }
+
+  const parentsQuery = await retryFirestoreQuery(() => db.collection('parents')
+    .where('email', '==', email)
+    .limit(1)
+    .get())
+
+  if (parentsQuery.empty) {
+    console.log(`Sign-up blocked - domain: ${getEmailDomain(email)}`)
+    throw new HttpsError('permission-denied', 'UNAUTHORIZED_EMAIL')
   }
 })
