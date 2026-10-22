@@ -47,7 +47,9 @@
     "users:list:dev:verified": "NODE_ENV=development node scripts/list-users.js --verified",
     "users:list:prod:verified": "NODE_ENV=production node scripts/list-users.js --verified",
     "users:list:dev:unverified": "NODE_ENV=development node scripts/list-users.js --unverified",
-    "users:list:prod:unverified": "NODE_ENV=production node scripts/list-users.js --unverified"
+    "users:list:prod:unverified": "NODE_ENV=production node scripts/list-users.js --unverified",
+    "users:unauthorized:dev": "NODE_ENV=development node scripts/find-unauthorized-accounts.js",
+    "users:unauthorized:prod": "NODE_ENV=production node scripts/find-unauthorized-accounts.js"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
