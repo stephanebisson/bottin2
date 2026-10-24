@@ -6,7 +6,7 @@ const { onRequest } = require('firebase-functions/v2/https')
 const nodemailer = require('nodemailer')
 const { getAccountStatus } = require('./accounts')
 const { FUNCTIONS_REGION, SIMULATE_EMAILS, EMAIL_SIMULATION_DELAY_MS } = require('./config')
-const { getCurrentSchoolYear } = require('./schoolYear')
+const { formatUpdateDeadline, getCurrentSchoolYear, isPastUpdateDeadline } = require('./schoolYear')
 const { generateOrReuseToken } = require('./tokens')
 
 // Email configuration constants
@@ -100,7 +100,7 @@ const ONLINE_DIRECTORY_TEXTS = {
 
 function getEmailTemplate (parentName, updateUrl, schoolYear, variant, accountStatus) {
   const currentYear = new Date().getFullYear()
-  const deadline = '31 octobre' // TODO: Make this configurable based on workflow settings
+  const deadline = formatUpdateDeadline(schoolYear)
   const templatePath = path.join(__dirname, 'annual-update-email.html')
   const { subject, intro } = EMAIL_VARIANTS[variant]
 
@@ -186,6 +186,10 @@ exports.sendParentUpdateEmail = onRequest({
     }
 
     const schoolYear = getCurrentSchoolYear()
+    // The link in the email would not work anymore
+    if (isPastUpdateDeadline(schoolYear)) {
+      return res.status(409).json({ error: `The update deadline (${formatUpdateDeadline(schoolYear)}) has passed: the update link would not work` })
+    }
     const token = await generateOrReuseToken(parentId, schoolYear)
     const updateUrl = `${EMAIL_CONFIG.APP_URL}/update/${token}`
     const parentName = `${parentData.first_name || ''} ${parentData.last_name || ''}`.trim() || 'Parent'

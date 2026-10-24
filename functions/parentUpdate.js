@@ -6,6 +6,7 @@ const { getAccountStatus } = require('./accounts')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
 const { validateFunctionData } = require('./middleware/validation')
+const { isPastUpdateDeadline } = require('./schoolYear')
 const { tokenValidationSchema, parentUpdateSchema, parentOptOutSchema } = require('./validators/schemas')
 
 // Get Firestore instance
@@ -63,7 +64,14 @@ async function resolveParent (req, token) {
     return { parentDoc: null, status: 404, reason: 'token_not_found' }
   }
 
-  const parentDoc = await db.collection('parents').doc(tokenDoc.data().parentId).get()
+  // Emailed links stop working after their school year's update deadline.
+  // Signed-in parents can still edit their information from their profile.
+  const { parentId, schoolYear } = tokenDoc.data()
+  if (!schoolYear || isPastUpdateDeadline(schoolYear)) {
+    return { parentDoc: null, status: 410, reason: 'token_expired' }
+  }
+
+  const parentDoc = await db.collection('parents').doc(parentId).get()
   return parentDoc.exists
     ? { parentDoc }
     : { parentDoc: null, status: 404, reason: 'parent_not_found' }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { getCurrentSchoolYear } from './schoolYear.js'
+import { formatUpdateDeadline, getCurrentSchoolYear, getUpdateDeadline, isPastUpdateDeadline } from './schoolYear.js'
 
 describe('getCurrentSchoolYear', () => {
   beforeEach(() => {
@@ -41,5 +41,26 @@ describe('getCurrentSchoolYear', () => {
 
     vi.setSystemTime(new Date('2026-07-01T00:00:00'))
     expect(getCurrentSchoolYear()).toBe('2026-2027')
+  })
+})
+
+describe('update deadline', () => {
+  test('falls on October 31 of the school year\'s first fall', () => {
+    expect(getUpdateDeadline('2026-2027')).toBe('2026-10-31')
+  })
+
+  test('is written in French for the emails', () => {
+    expect(formatUpdateDeadline('2026-2027')).toBe('31 octobre')
+  })
+
+  // Explicit UTC offsets: the deadline ends at midnight Montreal time (UTC-4 in October)
+  test.each([
+    ['during the update period', '2026-2027', '2026-09-15T12:00:00-04:00', false],
+    ['last second of the deadline day', '2026-2027', '2026-10-31T23:59:59-04:00', false],
+    ['Oct 31, 10 p.m. in Montreal, already Nov 1 in UTC', '2026-2027', '2026-11-01T02:00:00Z', false],
+    ['midnight after the deadline', '2026-2027', '2026-11-01T00:00:00-04:00', true],
+    ['link from last school year', '2025-2026', '2026-09-15T12:00:00-04:00', true],
+  ])('%s → past: %s', (_, schoolYear, dateStr, expected) => {
+    expect(isPastUpdateDeadline(schoolYear, new Date(dateStr))).toBe(expected)
   })
 })

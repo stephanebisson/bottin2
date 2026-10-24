@@ -78,7 +78,7 @@ firebase deploy --only functions:startAnnualUpdate
 
 - JWT token validation for admin functions
 - At most 10 instances per function (`setGlobalOptions` in `index.js`): a flood of requests is throttled instead of scaling the bill. There is no per-client rate limiting.
-- Token expiration (30 days)
+- Emailed update links stop working after the school year's update deadline (`UPDATE_DEADLINE` in `schoolYear.js`, October 31)
 - Duplicate submission prevention
 - Input validation and sanitization
 
