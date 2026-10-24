@@ -78,6 +78,39 @@ async function resolveParent (req, token) {
 }
 
 /**
+ * Find the other parent for the "same address" checkbox: the first co-parent of
+ * this parent's children who has not opted out. An opted-out parent's address
+ * stays cleared, so they are never offered and never written to.
+ *
+ * @param {string} parentId
+ * @returns {Promise<object|null>} the other parent's document, or null
+ */
+async function findOtherParent (parentId) {
+  const [snapshot1, snapshot2] = await Promise.all([
+    db.collection('students').where('parent1_id', '==', parentId).get(),
+    db.collection('students').where('parent2_id', '==', parentId).get(),
+  ])
+
+  const otherParentIds = new Set()
+  for (const studentDoc of [...snapshot1.docs, ...snapshot2.docs]) {
+    const student = studentDoc.data()
+    for (const id of [student.parent1_id, student.parent2_id]) {
+      if (id && id !== parentId) {
+        otherParentIds.add(id)
+      }
+    }
+  }
+
+  for (const otherParentId of otherParentIds) {
+    const otherParentDoc = await db.collection('parents').doc(otherParentId).get()
+    if (otherParentDoc.exists && !otherParentDoc.data().optedOut) {
+      return otherParentDoc
+    }
+  }
+  return null
+}
+
+/**
  * Return the parent's current information for the update form,
  * from an emailed update token or the signed-in parent's ID token
  */
@@ -128,49 +161,16 @@ exports.validateUpdateTokenV2 = onRequest({
     const parentData = parentDoc.data()
     console.log('✓ Token validation successful')
 
-    // Check if there's another parent with the same address (for shared address feature)
-    let otherParentHasAddress = false
-    let otherParentInfo = null
-
-    // Find students that belong to this parent (using parent document ID)
-    const parentId = parentDoc.id
-    const studentsSnapshot = await db.collection('students')
-      .where('parent1_id', '==', parentId)
-      .get()
-
-    const studentsSnapshot2 = await db.collection('students')
-      .where('parent2_id', '==', parentId)
-      .get()
-
-    // Combine results and find other parent IDs
-    const allStudents = [...studentsSnapshot.docs, ...studentsSnapshot2.docs]
-    const otherParentIds = new Set()
-
-    for (const studentDoc of allStudents) {
-      const student = studentDoc.data()
-      if (student.parent1_id && student.parent1_id !== parentId) {
-        otherParentIds.add(student.parent1_id)
-      }
-      if (student.parent2_id && student.parent2_id !== parentId) {
-        otherParentIds.add(student.parent2_id)
-      }
-    }
-
-    // Check if there are other parents and get their info
-    for (const otherParentId of otherParentIds) {
-      const otherParentDoc = await db.collection('parents').doc(otherParentId).get()
-
-      if (otherParentDoc.exists) {
-        const otherParentData = otherParentDoc.data()
-        // Show checkbox for any other parent, regardless of whether they have address info
-        otherParentHasAddress = true
-        otherParentInfo = {
+    // The other parent named by the "same address" checkbox, if any
+    const otherParentDoc = await findOtherParent(parentDoc.id)
+    const otherParentData = otherParentDoc?.data()
+    const otherParentHasAddress = !!otherParentDoc
+    const otherParentInfo = otherParentData
+      ? {
           email: otherParentData.email,
           fullName: `${otherParentData.first_name || ''} ${otherParentData.last_name || ''}`.trim(),
         }
-        break // Take the first other parent found
-      }
-    }
+      : null
 
     res.status(200).json({
       valid: true,
@@ -277,48 +277,16 @@ exports.processParentUpdateV2 = onRequest({
 
     // Always use the provided address data
 
-    // If user confirms other parent lives at the same address, mark other parent as confirmed
+    // If the parent confirms the other parent lives at the same address, copy the
+    // address to them. Their lastUpdated is left alone: they haven't submitted the
+    // form themselves, so they still get reminders.
     if (parentData.sameAddressAsOther) {
-      // Find students that belong to this parent to get other parent IDs
-      const currentParentId = parentDoc.id
-      const studentsSnapshot1 = await db.collection('students')
-        .where('parent1_id', '==', currentParentId)
-        .get()
-
-      const studentsSnapshot2 = await db.collection('students')
-        .where('parent2_id', '==', currentParentId)
-        .get()
-
-      const allStudents = [...studentsSnapshot1.docs, ...studentsSnapshot2.docs]
-      let confirmedParentId = null
-
-      // Find other parent IDs
-      for (const studentDoc of allStudents) {
-        const student = studentDoc.data()
-        const otherIds = []
-
-        if (student.parent1_id && student.parent1_id !== currentParentId) {
-          otherIds.push(student.parent1_id)
-        }
-        if (student.parent2_id && student.parent2_id !== currentParentId) {
-          otherIds.push(student.parent2_id)
-        }
-
-        // Find the first other parent (the one we're confirming)
-        if (otherIds.length > 0) {
-          confirmedParentId = otherIds[0]
-          break
-        }
-      }
-
-      // Mark the other parent's address as confirmed by updating their workflow participant record
-      if (confirmedParentId) {
-        const otherParentRef = db.collection('parents').doc(confirmedParentId)
-        batch.update(otherParentRef, {
+      const otherParentDoc = await findOtherParent(parentDoc.id)
+      if (otherParentDoc) {
+        batch.update(otherParentDoc.ref, {
           address: updatedData.address,
           city: updatedData.city,
           postal_code: updatedData.postal_code,
-          lastUpdated: FieldValue.serverTimestamp(),
         })
       }
     }
