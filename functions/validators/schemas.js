@@ -71,6 +71,11 @@ const parentOptOutSchema = Joi.object({
   token: tokenSchema.optional(),
 })
 
+// Feedback validation schemas: the message is all the client sends (same limits as the feedback page)
+const feedbackSchema = Joi.object({
+  message: Joi.string().trim().min(10).max(2000).required(),
+})
+
 // Email workflow schemas
 const sendEmailsSchema = Joi.object({
   workflowId: Joi.string().min(1).max(128).required(),
@@ -118,6 +123,9 @@ module.exports = {
   parentUpdateSchema,
   tokenValidationSchema,
   parentOptOutSchema,
+
+  // Feedback schemas
+  feedbackSchema,
 
   // Email schemas
   sendEmailsSchema,

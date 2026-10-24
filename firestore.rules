@@ -50,8 +50,8 @@ service cloud.firestore {
     }
 
     match /feedback/{document} {
-      // Parents can create feedback (authenticated users with verified email)
-      allow create: if request.auth != null && request.auth.token.email_verified;
+      // Parents send feedback through the submitFeedback function, which sets the
+      // sender and status itself: clients can't create feedback directly.
       // Only admins can read, update, and delete feedback
       allow read, update, delete: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
     }

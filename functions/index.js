@@ -13,6 +13,7 @@ const { deleteOrphanedParentAccount, getParentAccountStatuses } = require('./acc
 const { restrictSignUpToParents, validateEmailV2 } = require('./auth')
 const { updateCommitteeMembersV2 } = require('./committees')
 const { sendParentUpdateEmail } = require('./email')
+const { submitFeedback } = require('./feedback')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
 const { healthCheckV2 } = require('./utils')
 
@@ -27,3 +28,4 @@ exports.processParentUpdateV2 = processParentUpdateV2
 exports.processParentOptOutV2 = processParentOptOutV2
 exports.healthCheckV2 = healthCheckV2
 exports.updateCommitteeMembersV2 = updateCommitteeMembersV2
+exports.submitFeedback = submitFeedback

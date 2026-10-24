@@ -823,7 +823,7 @@
     "validation": {
       "messageRequired": "Please enter your feedback message",
       "messageTooShort": "Message must be at least 10 characters",
-      "messageTooLong": "Message must be less than 5000 characters"
+      "messageTooLong": "Message must be less than 2000 characters"
     },
     "error": {
       "parentNotFound": "Unable to identify your account. Please make sure you're logged in.",

@@ -22,6 +22,9 @@ functions/
 - `validateEmailV2` - Validates if an email is authorized to create an account
 - `restrictSignUpToParents` - Blocking function (`beforeUserCreated`): rejects any sign-up whose email is not in the parents collection. Requires Firebase Authentication with Identity Platform in production.
 
+### Feedback (`feedback.js`)
+- `submitFeedback` - Saves a feedback message from the signed-in parent. The client sends only the text (10 to 2000 characters); the sender, status and dates are set by the function. Clients can't create feedback directly.
+
 ### Workflow Management (`workflow.js`)
 - `startAnnualUpdate` - Initiates the annual parent information update workflow
 - `getWorkflowStatus` - Retrieves current and historical workflow status

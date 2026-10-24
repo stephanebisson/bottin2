@@ -128,23 +128,8 @@ export class FeedbackRepository {
   }
 
   /**
-   * Create new feedback
-   */
-  async create (feedbackData) {
-    const feedbackDTO = new FeedbackDTO(feedbackData)
-    const id = await this.save(feedbackDTO)
-
-    // Return the feedback DTO with the generated ID (no need to re-fetch)
-    return new FeedbackDTO({
-      ...feedbackData,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
-  }
-
-  /**
    * Update existing feedback
+   * (New feedback is created by the submitFeedback function, not from the client.)
    */
   async update (id, updates) {
     const existingFeedback = await this.getById(id)

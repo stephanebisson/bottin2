@@ -830,7 +830,7 @@
     "validation": {
       "messageRequired": "Veuillez entrer votre message",
       "messageTooShort": "Le message doit contenir au moins 10 caractères",
-      "messageTooLong": "Le message doit contenir moins de 5000 caractères"
+      "messageTooLong": "Le message doit contenir moins de 2000 caractères"
     },
     "error": {
       "parentNotFound": "Impossible d'identifier votre compte. Veuillez vous assurer que vous êtes connecté.",

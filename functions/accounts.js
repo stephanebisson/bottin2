@@ -31,6 +31,32 @@ async function getAccountStatus (email) {
 }
 
 /**
+ * Find the signed-in parent from an `Authorization: Bearer <Firebase ID token>`
+ * header: the parent whose email is the account's verified email.
+ *
+ * @param {string} authHeader
+ * @returns {Promise<{ parentDoc: object|null, uid?: string, status?: number, reason?: string }>}
+ */
+async function findSignedInParent (authHeader) {
+  let decodedToken
+  try {
+    decodedToken = await getAuth().verifyIdToken(authHeader.split('Bearer ', 2)[1])
+  } catch {
+    return { parentDoc: null, status: 401, reason: 'invalid_id_token' }
+  }
+  if (!decodedToken.email || !decodedToken.email_verified) {
+    return { parentDoc: null, status: 403, reason: 'email_not_verified' }
+  }
+  const snapshot = await db.collection('parents')
+    .where('email', '==', decodedToken.email.toLowerCase())
+    .limit(1)
+    .get()
+  return snapshot.empty
+    ? { parentDoc: null, status: 404, reason: 'parent_not_found' }
+    : { parentDoc: snapshot.docs[0], uid: decodedToken.uid }
+}
+
+/**
  * Return the account status of every parent, keyed by parent ID (admin only)
  */
 exports.getParentAccountStatuses = onRequest({
@@ -127,3 +153,4 @@ exports.deleteOrphanedParentAccount = onDocumentWritten({
 })
 
 exports.getAccountStatus = getAccountStatus
+exports.findSignedInParent = findSignedInParent

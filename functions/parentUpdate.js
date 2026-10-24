@@ -1,8 +1,7 @@
-const { getAuth } = require('firebase-admin/auth')
 const { FieldValue, getFirestore } = require('firebase-admin/firestore')
 const logger = require('firebase-functions/logger')
 const { onRequest } = require('firebase-functions/v2/https')
-const { getAccountStatus } = require('./accounts')
+const { findSignedInParent, getAccountStatus } = require('./accounts')
 const { FUNCTIONS_REGION } = require('./config')
 const { applySecurity } = require('./middleware/security')
 const { validateFunctionData } = require('./middleware/validation')
@@ -36,22 +35,7 @@ function logUpdateFailure (endpoint, reason, token, details = {}) {
 async function resolveParent (req, token) {
   const authHeader = req.headers.authorization
   if (authHeader?.startsWith('Bearer ')) {
-    let decodedToken
-    try {
-      decodedToken = await getAuth().verifyIdToken(authHeader.split('Bearer ', 2)[1])
-    } catch {
-      return { parentDoc: null, status: 401, reason: 'invalid_id_token' }
-    }
-    if (!decodedToken.email || !decodedToken.email_verified) {
-      return { parentDoc: null, status: 403, reason: 'email_not_verified' }
-    }
-    const snapshot = await db.collection('parents')
-      .where('email', '==', decodedToken.email.toLowerCase())
-      .limit(1)
-      .get()
-    return snapshot.empty
-      ? { parentDoc: null, status: 404, reason: 'parent_not_found' }
-      : { parentDoc: snapshot.docs[0] }
+    return findSignedInParent(authHeader)
   }
 
   if (!token) {

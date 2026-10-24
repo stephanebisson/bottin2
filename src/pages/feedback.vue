@@ -45,7 +45,7 @@
                 v-model="message"
                 auto-grow
                 clearable
-                counter="5000"
+                counter="2000"
                 :label="$i18n('feedback.messageLabel')"
                 :placeholder="$i18n('feedback.messagePlaceholder')"
                 rows="8"
@@ -89,14 +89,15 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue'
   import { useTranslate } from '@/composables/useTranslate'
-  import { FeedbackRepository } from '@/repositories/FeedbackRepository'
+  import { getFunctionsBaseUrl, secureFetch } from '@/config/functions.js'
+  import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
 
   definePage({ meta: { titleKey: 'feedback.title' } })
 
   const $i18n = useTranslate()
+  const authStore = useAuthStore()
   const firebaseStore = useFirebaseDataStore()
-  const feedbackRepository = new FeedbackRepository()
 
   // Component state
   const formRef = ref(null)
@@ -111,7 +112,7 @@
   const messageRules = [
     v => !!v || $i18n('feedback.validation.messageRequired'),
     v => (v && v.length >= 10) || $i18n('feedback.validation.messageTooShort'),
-    v => (v && v.length <= 5000) || $i18n('feedback.validation.messageTooLong'),
+    v => (v && v.length <= 2000) || $i18n('feedback.validation.messageTooLong'),
   ]
 
   // Submit feedback
@@ -130,12 +131,16 @@
       submitting.value = true
       errorMessage.value = null
 
-      // Create feedback
-      await feedbackRepository.create({
-        parent_id: parentProfile.value.id,
-        message: message.value,
-        status: 'pending',
+      // Only the text: the function sets the sender and status itself
+      const idToken = await authStore.user.getIdToken()
+      const response = await secureFetch(`${getFunctionsBaseUrl()}/submitFeedback`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ message: message.value }),
       })
+      if (!response.ok) {
+        throw new Error(`submitFeedback failed: HTTP ${response.status}`)
+      }
 
       // Show success message
       successMessage.value = $i18n('feedback.success')
