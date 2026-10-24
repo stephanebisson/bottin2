@@ -11,11 +11,9 @@ setGlobalOptions({ maxInstances: 10 })
 const { deleteOrphanedParentAccount, getParentAccountStatuses } = require('./accounts')
 // Import all functions from separate modules
 const { restrictSignUpToParents, validateEmailV2 } = require('./auth')
-const { updateCommitteeMembersV2 } = require('./committees')
 const { sendParentUpdateEmail } = require('./email')
 const { submitFeedback } = require('./feedback')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
-const { healthCheckV2 } = require('./utils')
 
 // Export all functions
 exports.validateEmailV2 = validateEmailV2
@@ -26,6 +24,4 @@ exports.deleteOrphanedParentAccount = deleteOrphanedParentAccount
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2
 exports.processParentOptOutV2 = processParentOptOutV2
-exports.healthCheckV2 = healthCheckV2
-exports.updateCommitteeMembersV2 = updateCommitteeMembersV2
 exports.submitFeedback = submitFeedback

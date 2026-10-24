@@ -38,9 +38,6 @@ functions/
 - `validateUpdateToken` - Validates update tokens and returns parent data
 - `processParentUpdate` - Processes parent information updates from public forms
 
-### Utilities (`utils.js`)
-- `healthCheck` - Simple health check endpoint
-
 ## Environment Configuration
 
 ### Email Service
@@ -95,7 +92,6 @@ All functions are accessible via HTTPS endpoints:
 - `sendUpdateEmails` - POST - Sends notification emails (requires admin auth)
 - `validateUpdateToken` - POST - Validates parent update token (public)
 - `processParentUpdate` - POST - Processes parent form submission (public)
-- `healthCheck` - GET - Health check (public)
 
 ## Error Handling
 

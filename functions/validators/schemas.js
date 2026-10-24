@@ -87,19 +87,6 @@ const sendEmailsSchema = Joi.object({
     .required(),
 })
 
-// Committee update schemas
-const updateCommitteeMembersSchema = Joi.object({
-  committeeId: Joi.string().min(1).max(128).required(),
-  members: Joi.array()
-    .items(Joi.object({
-      email: emailSchema,
-      role: Joi.string().max(50).default('Member'),
-      member_type: Joi.string().valid('parent', 'staff').required(),
-    }))
-    .max(100)
-    .default([]),
-})
-
 // Annual update workflow schemas
 const startAnnualUpdateSchema = Joi.object({
   schoolYear: Joi.string()
@@ -129,9 +116,6 @@ module.exports = {
 
   // Email schemas
   sendEmailsSchema,
-
-  // Committee schemas
-  updateCommitteeMembersSchema,
 
   // Annual update schemas
   startAnnualUpdateSchema,
