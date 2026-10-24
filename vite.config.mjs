@@ -85,59 +85,6 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            // Firestore - Stale-While-Revalidate (instant load + background update)
-            urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'firestore-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            // Firebase Auth - Network-first for security
-            urlPattern: /^https:\/\/identitytoolkit\.googleapis\.com\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'auth-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 5, // 5 minutes
-              },
-            },
-          },
-          {
-            // Google Fonts - Cache-first
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
-          {
-            // Map tiles - Cache-first with long expiry
-            urlPattern: /^https:\/\/.*\.tile\.openstreetmap\.org\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'map-tiles-cache',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-              },
-            },
-          },
-        ],
       },
       devOptions: {
         enabled: false,
