@@ -71,12 +71,6 @@ const parentOptOutSchema = Joi.object({
   token: tokenSchema.optional(),
 })
 
-// Admin management schemas
-const setAdminClaimSchema = Joi.object({
-  uid: Joi.string().min(1).max(128).required(),
-  isAdmin: Joi.boolean().default(true),
-})
-
 // Email workflow schemas
 const sendEmailsSchema = Joi.object({
   workflowId: Joi.string().min(1).max(128).required(),
@@ -124,9 +118,6 @@ module.exports = {
   parentUpdateSchema,
   tokenValidationSchema,
   parentOptOutSchema,
-
-  // Admin schemas
-  setAdminClaimSchema,
 
   // Email schemas
   sendEmailsSchema,
