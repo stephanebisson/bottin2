@@ -168,68 +168,9 @@ function validateOrigin (allowedOrigins = []) {
 }
 
 /**
- * Rate limiting middleware (basic implementation)
- * For production, consider using Firebase Extensions or external service
- * @param {Object} options - Rate limiting options
- * @returns {Function} Middleware function
- */
-function rateLimit (options = {}) {
-  const {
-    windowMs = 60 * 1000, // 1 minute
-    maxRequests = 60, // Max 60 requests per minute
-    keyGenerator = req => req.ip || req.headers['x-forwarded-for'] || 'unknown',
-  } = options
-
-  const requests = new Map()
-
-  return (req, res, next) => {
-    const key = keyGenerator(req)
-    const now = Date.now()
-    const windowStart = now - windowMs
-
-    // Clean up old requests
-    if (requests.has(key)) {
-      const userRequests = requests.get(key).filter(time => time > windowStart)
-      requests.set(key, userRequests)
-    } else {
-      requests.set(key, [])
-    }
-
-    const userRequests = requests.get(key)
-
-    // Check rate limit
-    if (userRequests.length >= maxRequests) {
-      console.warn('Rate limit exceeded:', {
-        key,
-        requests: userRequests.length,
-        limit: maxRequests,
-        windowMs,
-      })
-
-      return res.status(429).json({
-        error: 'Too many requests',
-        code: 'RATE_LIMIT_EXCEEDED',
-        retryAfter: Math.ceil(windowMs / 1000),
-      })
-    }
-
-    // Add current request
-    userRequests.push(now)
-    requests.set(key, userRequests)
-
-    // Set rate limit headers
-    res.set('X-RateLimit-Limit', maxRequests.toString())
-    res.set('X-RateLimit-Remaining', (maxRequests - userRequests.length).toString())
-    res.set('X-RateLimit-Reset', new Date(now + windowMs).toISOString())
-
-    if (next) {
-      next()
-    }
-  }
-}
-
-/**
  * Combined security middleware for Firebase Functions
+ * There is no per-client rate limiting: an in-memory counter only sees one
+ * instance's traffic. maxInstances (set in index.js) caps the load instead.
  * @param {Object} options - Security options
  * @returns {Function} Middleware function
  */
@@ -238,8 +179,6 @@ function applySecurity (options = {}) {
     enforceHttpsInProd = true,
     useApiHeaders = true,
     allowedOrigins = [],
-    enableRateLimit = false,
-    rateLimitOptions = {},
   } = options
 
   return (req, res, next) => {
@@ -255,16 +194,7 @@ function applySecurity (options = {}) {
       enforceHttps(req, res, () => {
         // Origin validation
         if (allowedOrigins.length > 0) {
-          validateOrigin(allowedOrigins)(req, res, () => {
-            // Rate limiting
-            if (enableRateLimit) {
-              rateLimit(rateLimitOptions)(req, res, next)
-            } else if (next) {
-              next()
-            }
-          })
-        } else if (enableRateLimit) {
-          rateLimit(rateLimitOptions)(req, res, next)
+          validateOrigin(allowedOrigins)(req, res, next)
         } else if (next) {
           next()
         }
@@ -272,16 +202,7 @@ function applySecurity (options = {}) {
     } else {
       // Origin validation
       if (allowedOrigins.length > 0) {
-        validateOrigin(allowedOrigins)(req, res, () => {
-          // Rate limiting
-          if (enableRateLimit) {
-            rateLimit(rateLimitOptions)(req, res, next)
-          } else if (next) {
-            next()
-          }
-        })
-      } else if (enableRateLimit) {
-        rateLimit(rateLimitOptions)(req, res, next)
+        validateOrigin(allowedOrigins)(req, res, next)
       } else if (next) {
         next()
       }
@@ -294,6 +215,5 @@ module.exports = {
   setApiSecurityHeaders,
   enforceHttps,
   validateOrigin,
-  rateLimit,
   applySecurity,
 }

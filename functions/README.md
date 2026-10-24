@@ -77,7 +77,7 @@ firebase deploy --only functions:startAnnualUpdate
 ## Security Features
 
 - JWT token validation for admin functions
-- Rate limiting on workflow creation and form submissions
+- At most 10 instances per function (`setGlobalOptions` in `index.js`): a flood of requests is throttled instead of scaling the bill. There is no per-client rate limiting.
 - Token expiration (30 days)
 - Duplicate submission prevention
 - Input validation and sanitization
@@ -103,7 +103,7 @@ All functions include comprehensive error handling with appropriate HTTP status 
 - `404` - Not Found (invalid token/resource)
 - `409` - Conflict (workflow already exists)
 - `410` - Gone (expired token)
-- `429` - Too Many Requests (rate limiting)
+- `429` - Too Many Requests (all instances of the function are busy)
 - `500` - Internal Server Error
 
 ## Logging

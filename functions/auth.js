@@ -76,8 +76,6 @@ exports.validateEmailV2 = onRequest({
   // Apply security headers
   applySecurity({
     useApiHeaders: true,
-    enableRateLimit: true,
-    rateLimitOptions: { maxRequests: 30, windowMs: 60 * 1000 },
   })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {

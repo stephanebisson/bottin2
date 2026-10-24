@@ -1,7 +1,12 @@
 const { initializeApp } = require('firebase-admin/app')
+const { setGlobalOptions } = require('firebase-functions/v2')
 
 // Initialize Firebase Admin
 initializeApp()
+
+// Cap instances per function so a flood of requests is throttled instead of
+// scaling the bill. Set before the modules below define their functions.
+setGlobalOptions({ maxInstances: 10 })
 
 const { deleteOrphanedParentAccount, getParentAccountStatuses } = require('./accounts')
 const { setAdminClaimV2, getAdminStatusV2, listAdminsV2 } = require('./adminManagement')

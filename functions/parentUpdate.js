@@ -89,8 +89,6 @@ exports.validateUpdateTokenV2 = onRequest({
   // Apply security headers
   applySecurity({
     useApiHeaders: true,
-    enableRateLimit: true,
-    rateLimitOptions: { maxRequests: 20, windowMs: 60 * 1000 }, // 20 requests per minute for token validation
   })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
@@ -226,8 +224,6 @@ exports.processParentUpdateV2 = onRequest({
   // Apply security headers
   applySecurity({
     useApiHeaders: true,
-    enableRateLimit: true,
-    rateLimitOptions: { maxRequests: 10, windowMs: 60 * 1000 }, // 10 requests per minute for updates
   })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
@@ -371,8 +367,6 @@ exports.processParentOptOutV2 = onRequest({
   // Apply security headers
   applySecurity({
     useApiHeaders: true,
-    enableRateLimit: true,
-    rateLimitOptions: { maxRequests: 5, windowMs: 60 * 1000 }, // 5 requests per minute for opt-out
   })(req, res)
   // Only allow POST requests
   if (req.method !== 'POST') {
