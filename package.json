@@ -49,7 +49,11 @@
     "users:list:dev:unverified": "NODE_ENV=development node scripts/list-users.js --unverified",
     "users:list:prod:unverified": "NODE_ENV=production node scripts/list-users.js --unverified",
     "users:unauthorized:dev": "NODE_ENV=development node scripts/find-unauthorized-accounts.js",
-    "users:unauthorized:prod": "NODE_ENV=production node scripts/find-unauthorized-accounts.js"
+    "users:unauthorized:prod": "NODE_ENV=production node scripts/find-unauthorized-accounts.js",
+    "tokens:cleanup:dev": "NODE_ENV=development node scripts/remove-expired-tokens.js",
+    "tokens:cleanup:prod": "NODE_ENV=production node scripts/remove-expired-tokens.js",
+    "tokens:cleanup:dev:dry-run": "NODE_ENV=development node scripts/remove-expired-tokens.js --dry-run",
+    "tokens:cleanup:prod:dry-run": "NODE_ENV=production node scripts/remove-expired-tokens.js --dry-run"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
