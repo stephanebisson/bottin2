@@ -9,7 +9,12 @@ import { generateParentId } from '@/utils/parentIdGenerator.js'
  * Note: Parents use structured IDs: FirstName_LastName_ABC123 (see utils/parentIdGenerator.js)
  */
 export class ParentRepository {
-  constructor () {
+  /**
+   * @param {string} [collectionName] - 'parents' (admins, and a parent's own record)
+   *   or 'parentDirectory' (everyone else: no contact information until the parent confirms it)
+   */
+  constructor (collectionName = 'parents') {
+    this.collectionName = collectionName
     this.collectionRef = collection(db, this.collectionName)
   }
 
@@ -294,6 +299,4 @@ export class ParentRepository {
       throw new Error(`Failed to get parent statistics: ${error.message}`, { cause: error })
     }
   }
-
-  collectionName = 'parents'
 }

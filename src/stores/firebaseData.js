@@ -6,6 +6,7 @@ import { CommitteeRepository } from '@/repositories/CommitteeRepository.js'
 import { ParentRepository } from '@/repositories/ParentRepository.js'
 import { StaffRepository } from '@/repositories/StaffRepository.js'
 import { StudentRepository } from '@/repositories/StudentRepository.js'
+import { useAuthStore } from '@/stores/auth'
 
 // Loaded data is reused for 5 minutes unless a reload is forced
 const CACHE_DURATION = 5 * 60 * 1000
@@ -53,12 +54,27 @@ function createCachedCollection (name, fetchAll) {
 
 export const useFirebaseDataStore = defineStore('firebaseData', () => {
   const studentRepository = new StudentRepository()
+  // Own record (currentParent) and admin reads
   const parentRepository = new ParentRepository()
+  // What non-admins read: no contact information for parents who haven't confirmed it
+  const parentDirectoryRepository = new ParentRepository('parentDirectory')
+  const parentListRepository = () => useAuthStore().isAdmin ? parentRepository : parentDirectoryRepository
   const staffRepository = new StaffRepository()
   const committeeRepository = new CommitteeRepository()
 
   const students = createCachedCollection('students', () => studentRepository.getAll())
-  const parents = createCachedCollection('parents', () => parentRepository.getAll())
+  // Reloaded when the user's role changes, so a non-admin never keeps the full records an admin loaded
+  let parentsSource = null
+  const parentsCollection = createCachedCollection('parents', () => {
+    const repository = parentListRepository()
+    parentsSource = repository.collectionName
+    return repository.getAll()
+  })
+  const parents = {
+    ...parentsCollection,
+    load: (forceRefresh = false) =>
+      parentsCollection.load(forceRefresh || parentsSource !== parentListRepository().collectionName),
+  }
   const staff = createCachedCollection('staff', () => staffRepository.getAll())
   const committees = createCachedCollection('committees', () => committeeRepository.getAll())
   const classes = createCachedCollection('classes', async () => {
@@ -111,7 +127,7 @@ export const useFirebaseDataStore = defineStore('firebaseData', () => {
     parentsLoadingDTO: parents.loading,
     parentsErrorDTO: parents.error,
     loadParentsDTO: parents.load,
-    searchParentsDTO: searchText => parentRepository.search(searchText),
+    searchParentsDTO: searchText => parentListRepository().search(searchText),
 
     staffDTO: staff.items,
     staffLoadingDTO: staff.loading,

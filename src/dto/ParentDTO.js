@@ -168,6 +168,14 @@ export class ParentDTO {
   }
 
   /**
+   * Whether the parent has submitted the update form, which makes their contact
+   * information visible to other parents (see functions/parentDirectory.js)
+   */
+  get hasConfirmed () {
+    return !!this.lastUpdated
+  }
+
+  /**
    * Check if parent has interests recorded
    */
   get hasInterests () {
@@ -282,6 +290,14 @@ export class ParentDTO {
       ...this.toJSON(),
       ...updates,
     })
+  }
+
+  /**
+   * Copy of this DTO without phone, email and address, for parents who
+   * haven't confirmed them (same fields as functions/parentDirectory.js leaves out)
+   */
+  withoutContactInfo () {
+    return this.withUpdates({ phone: '', email: '', address: '', city: '', postal_code: '' })
   }
 
   /**

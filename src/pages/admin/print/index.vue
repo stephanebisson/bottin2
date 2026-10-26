@@ -105,6 +105,12 @@
   // State
   const loading = ref(true)
 
+  // Parents as the booklet shows them: no phone, email or address until the
+  // parent confirms them with the update form, like the online directory
+  const printableParents = computed(() =>
+    firebaseStore.parentsDTO.map(parent => parent.hasConfirmed ? parent : parent.withoutContactInfo()),
+  )
+
   // Staff grouping (hierarchical: groups contain subgroups)
   const groupedStaff = computed(() => {
     const hierarchicalGroups = []
@@ -201,7 +207,7 @@
           // Look up by memberId (parent/staff document ID)
           switch (member.member_type) {
             case 'parent': {
-              const parentMatch = firebaseStore.parentsDTO.find(p => p.id === member.memberId)
+              const parentMatch = printableParents.value.find(p => p.id === member.memberId)
               if (parentMatch) {
                 return {
                   ...member,
@@ -394,7 +400,7 @@
 
   // Helper: Get parent data for rep
   function getParentRepData (parentId) {
-    const parent = firebaseStore.parentsDTO.find(p => p.id === parentId)
+    const parent = printableParents.value.find(p => p.id === parentId)
     return parent ? { name: parent.fullName, phone: parent.phone, email: parent.email } : null
   }
 
@@ -512,7 +518,7 @@
 
     if (!parentId) return null
 
-    return firebaseStore.parentsDTO.find(p => p.id === parentId) || null
+    return printableParents.value.find(p => p.id === parentId) || null
   }
 
   // Helper: Get student's teacher name

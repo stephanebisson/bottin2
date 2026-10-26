@@ -114,7 +114,7 @@
 
                   <ParentInfo
                     v-for="member in committee.parentMembers"
-                    :key="member.email"
+                    :key="member.memberId"
                     class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
@@ -139,7 +139,7 @@
 
                   <ParentInfo
                     v-for="member in committee.staffMembers"
-                    :key="member.email"
+                    :key="member.memberId"
                     class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
@@ -189,7 +189,7 @@
 
                   <ParentInfo
                     v-for="member in committee.unknownMembers"
-                    :key="member.email"
+                    :key="member.memberId"
                     class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"
@@ -211,7 +211,7 @@
 
                   <ParentInfo
                     v-for="member in committee.enrichedMembers"
-                    :key="member.email"
+                    :key="member.memberId"
                     class="member-item-compact mb-2 rounded bg-surface-light"
                     :member-type="member.memberType"
                     :parent="member"

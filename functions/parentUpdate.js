@@ -151,7 +151,6 @@ exports.validateUpdateTokenV2 = onRequest({
     const otherParentHasAddress = !!otherParentDoc
     const otherParentInfo = otherParentData
       ? {
-          email: otherParentData.email,
           fullName: `${otherParentData.first_name || ''} ${otherParentData.last_name || ''}`.trim(),
         }
       : null

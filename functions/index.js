@@ -13,6 +13,7 @@ const { deleteOrphanedParentAccount, getParentAccountStatuses } = require('./acc
 const { restrictSignUpToParents, validateEmailV2 } = require('./auth')
 const { sendParentUpdateEmail } = require('./email')
 const { submitFeedback } = require('./feedback')
+const { syncParentDirectory } = require('./parentDirectory')
 const { validateUpdateTokenV2, processParentUpdateV2, processParentOptOutV2 } = require('./parentUpdate')
 
 // Export all functions
@@ -21,6 +22,7 @@ exports.restrictSignUpToParents = restrictSignUpToParents
 exports.sendParentUpdateEmail = sendParentUpdateEmail
 exports.getParentAccountStatuses = getParentAccountStatuses
 exports.deleteOrphanedParentAccount = deleteOrphanedParentAccount
+exports.syncParentDirectory = syncParentDirectory
 exports.validateUpdateTokenV2 = validateUpdateTokenV2
 exports.processParentUpdateV2 = processParentUpdateV2
 exports.processParentOptOutV2 = processParentOptOutV2

@@ -8,9 +8,20 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
     }
 
+    // Full parent records: admins, and each parent their own record.
+    // Everyone else reads /parentDirectory, which leaves out the contact
+    // information of parents who haven't confirmed it with the update form.
     match /parents/{document} {
-      allow read: if request.auth != null && request.auth.token.email_verified;
+      allow read: if request.auth != null && request.auth.token.email_verified
+        && (request.auth.token.admin == true
+          || resource.data.email == request.auth.token.email.lower());
       allow write: if request.auth != null && request.auth.token.email_verified && request.auth.token.admin == true;
+    }
+
+    // Written only by the syncParentDirectory function
+    match /parentDirectory/{document} {
+      allow read: if request.auth != null && request.auth.token.email_verified;
+      allow write: if false;
     }
 
     match /staff/{document} {
