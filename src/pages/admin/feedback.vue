@@ -318,12 +318,11 @@
   import { useRoute } from 'vue-router'
   import { useTranslate } from '@/composables/useTranslate'
   import { FeedbackRepository } from '@/repositories/FeedbackRepository'
-  import { useFirebaseDataStore } from '@/stores/firebaseData'
+  import { ParentRepository } from '@/repositories/ParentRepository'
 
   definePage({ meta: { titleKey: 'feedback.admin.title' } })
 
   const $i18n = useTranslate()
-  const firebaseStore = useFirebaseDataStore()
   const feedbackRepository = new FeedbackRepository()
 
   // State
@@ -505,9 +504,8 @@
       loading.value = true
       error.value = null
 
-      // Load parents and feedback
-      await firebaseStore.loadParentsDTO()
-      parents.value = firebaseStore.parentsDTO
+      // Full parent records: the directory leaves out unconfirmed parents' emails
+      parents.value = await new ParentRepository().getAll()
 
       const feedbackData = await feedbackRepository.getAll()
       feedback.value = feedbackData
