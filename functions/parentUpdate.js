@@ -62,39 +62,6 @@ async function resolveParent (req, token) {
 }
 
 /**
- * Find the other parent for the "same address" checkbox: the first co-parent of
- * this parent's children who has not opted out. An opted-out parent's address
- * stays cleared, so they are never offered and never written to.
- *
- * @param {string} parentId
- * @returns {Promise<object|null>} the other parent's document, or null
- */
-async function findOtherParent (parentId) {
-  const [snapshot1, snapshot2] = await Promise.all([
-    db.collection('students').where('parent1_id', '==', parentId).get(),
-    db.collection('students').where('parent2_id', '==', parentId).get(),
-  ])
-
-  const otherParentIds = new Set()
-  for (const studentDoc of [...snapshot1.docs, ...snapshot2.docs]) {
-    const student = studentDoc.data()
-    for (const id of [student.parent1_id, student.parent2_id]) {
-      if (id && id !== parentId) {
-        otherParentIds.add(id)
-      }
-    }
-  }
-
-  for (const otherParentId of otherParentIds) {
-    const otherParentDoc = await db.collection('parents').doc(otherParentId).get()
-    if (otherParentDoc.exists && !otherParentDoc.data().optedOut) {
-      return otherParentDoc
-    }
-  }
-  return null
-}
-
-/**
  * Return the parent's current information for the update form,
  * from an emailed update token or the signed-in parent's ID token
  */
@@ -145,16 +112,6 @@ exports.validateUpdateTokenV2 = onRequest({
     const parentData = parentDoc.data()
     console.log('✓ Token validation successful')
 
-    // The other parent named by the "same address" checkbox, if any
-    const otherParentDoc = await findOtherParent(parentDoc.id)
-    const otherParentData = otherParentDoc?.data()
-    const otherParentHasAddress = !!otherParentDoc
-    const otherParentInfo = otherParentData
-      ? {
-          fullName: `${otherParentData.first_name || ''} ${otherParentData.last_name || ''}`.trim(),
-        }
-      : null
-
     res.status(200).json({
       valid: true,
       parent: {
@@ -174,8 +131,6 @@ exports.validateUpdateTokenV2 = onRequest({
               : []),
         optedOut: parentData.optedOut || false,
       },
-      otherParentHasAddress,
-      otherParentInfo,
     })
   } catch (error) {
     // Handle validation errors
@@ -259,20 +214,6 @@ exports.processParentUpdateV2 = onRequest({
       address: parentData.address || '', city: parentData.city || '', postal_code: parentData.postal_code || '' }
 
     // Always use the provided address data
-
-    // If the parent confirms the other parent lives at the same address, copy the
-    // address to them. Their lastUpdated is left alone: they haven't submitted the
-    // form themselves, so they still get reminders.
-    if (parentData.sameAddressAsOther) {
-      const otherParentDoc = await findOtherParent(parentDoc.id)
-      if (otherParentDoc) {
-        batch.update(otherParentDoc.ref, {
-          address: updatedData.address,
-          city: updatedData.city,
-          postal_code: updatedData.postal_code,
-        })
-      }
-    }
 
     // Update parent document
     batch.update(parentRef, updatedData)

@@ -30,7 +30,7 @@ export function useParentUpdate (token = null) {
   const error = ref(null)
   const errorType = ref(null) // 'network', 'expired', 'temporary', 'invalid'
   const retryCount = ref(0)
-  const data = ref(null) // { parent, otherParentInfo }
+  const data = ref(null) // { parent }
 
   const errorKey = computed(() => ERROR_KEYS[error.value] || 'unexpected')
 
@@ -87,7 +87,6 @@ export function useParentUpdate (token = null) {
 
       data.value = {
         parent: result.parent,
-        otherParentInfo: result.otherParentInfo || null,
       }
     } catch (error_) {
       console.error('Failed to load parent data:', error_)

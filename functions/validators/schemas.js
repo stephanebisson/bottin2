@@ -57,7 +57,8 @@ const parentUpdateSchema = Joi.object({
       Joi.array().items(Joi.string().max(100)).max(50).default([]), // More than the number of available interests
       Joi.string().max(500).allow(''),
     ).default([]),
-    sameAddressAsOther: Joi.boolean().default(false),
+    // No longer offered; ignored if a form loaded before its removal still sends it
+    sameAddressAsOther: Joi.any().strip(),
   }).required(),
 })
 

@@ -110,9 +110,6 @@
     "updateForm.welcome": [
       "name"
     ],
-    "updateForm.confirmOtherParentAddress": [
-      "fullName"
-    ],
     "map.dataLoaded": [
       "parents"
     ],
@@ -236,9 +233,6 @@
     ],
     "updateForm.welcome": [
       "name"
-    ],
-    "updateForm.confirmOtherParentAddress": [
-      "fullName"
     ],
     "map.dataLoaded": [
       "parents"

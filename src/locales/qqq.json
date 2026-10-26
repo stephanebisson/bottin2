@@ -519,7 +519,6 @@
     "lastName": "Parent information update form. - Label for name field",
     "phone": "Parent information update form. - Label for phone number field",
     "address": "Parent information update form",
-    "confirmOtherParentAddress": "Parent information update form. - Parameters: $1 = fullName",
     "streetAddress": "Parent information update form",
     "city": "Parent information update form",
     "postalCode": "Parent information update form",

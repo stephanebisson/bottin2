@@ -99,22 +99,6 @@
                 @input="handlePostalCodeInput"
               />
             </v-col>
-
-            <!-- Same Address Checkbox (only show if other parent exists) -->
-            <v-col v-if="otherParentInfo" cols="12">
-              <v-checkbox
-                v-model="form.sameAddressAsOther"
-                color="primary"
-                density="compact"
-                hide-details
-              >
-                <template #label>
-                  <span
-                    v-html="$i18n('updateForm.confirmOtherParentAddress', otherParentNameHtml)"
-                  />
-                </template>
-              </v-checkbox>
-            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -243,7 +227,7 @@
 </template>
 
 <script setup>
-  import { computed, ref, watch } from 'vue'
+  import { ref, watch } from 'vue'
   import { useTranslate } from '@/composables/useTranslate'
   import { ENTITY_STYLES } from '@/config/entities'
   import { getSortedInterestGroups, isKnownInterest } from '@/config/interests'
@@ -257,7 +241,6 @@
    */
   const props = defineProps({
     parent: { type: Object, required: true },
-    otherParentInfo: { type: Object, default: null },
     submitting: { type: Boolean, default: false },
     optingOut: { type: Boolean, default: false },
     // Show a cancel button next to submit
@@ -269,12 +252,6 @@
   const $i18n = useTranslate()
   const interestGroups = getSortedInterestGroups($i18n)
 
-  // Escaped because it is rendered with v-html
-  const otherParentNameHtml = computed(() => {
-    const name = props.otherParentInfo?.fullName || ''
-    const escaped = name.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' })[c])
-    return `<strong>${escaped}</strong>`
-  })
   const formRef = ref(null)
   const showOptOutDialog = ref(false)
 
@@ -291,7 +268,6 @@
     address: props.parent.address || '',
     city: props.parent.city || '',
     postal_code: formatPostalCodeForDisplay(props.parent.postal_code || ''),
-    sameAddressAsOther: false,
     // Selected interest IDs; IDs no longer listed are dropped on save
     interests: Array.isArray(props.parent.interests) ? props.parent.interests.filter(id => isKnownInterest(id)) : [],
   })
@@ -350,7 +326,6 @@
       address: form.value.address,
       city: form.value.city,
       postal_code: formatPostalCodeForStorage(form.value.postal_code),
-      sameAddressAsOther: form.value.sameAddressAsOther,
       interests: form.value.interests,
     })
   }
