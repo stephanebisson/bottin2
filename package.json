@@ -42,6 +42,8 @@
     "export:staff:prod": "NODE_ENV=production node scripts/export-staff.js",
     "export:staff:dev:dry-run": "NODE_ENV=development node scripts/export-staff.js --dry-run",
     "export:staff:prod:dry-run": "NODE_ENV=production node scripts/export-staff.js --dry-run",
+    "export:parents:emails:dev": "NODE_ENV=development node scripts/export-parent-emails.js",
+    "export:parents:emails:prod": "NODE_ENV=production node scripts/export-parent-emails.js",
     "users:list:dev": "NODE_ENV=development node scripts/list-users.js",
     "users:list:prod": "NODE_ENV=production node scripts/list-users.js",
     "users:list:dev:verified": "NODE_ENV=development node scripts/list-users.js --verified",
