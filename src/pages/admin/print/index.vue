@@ -25,16 +25,16 @@
     <CommitteeFullPage
       v-if="conseilEtablissement"
       :committee="conseilEtablissement"
-      :parent-role-groups="groupMembersByRole(conseilEtablissement.parentMembers, conseilEtablissement.name)"
+      :parent-role-groups="groupMembersByRole(conseilEtablissement.parentMembers, conseilEtablissement.id)"
       section-id="section-committees"
-      :staff-role-groups="groupMembersByRole(conseilEtablissement.staffMembers, conseilEtablissement.name)"
+      :staff-role-groups="groupMembersByRole(conseilEtablissement.staffMembers, conseilEtablissement.id)"
       title="Conseil d'établissement"
     />
 
     <!-- Fondation -->
     <CommitteeFullPage
       v-if="fondation"
-      :all-role-groups="groupMembersByRole(fondation.enrichedMembers, fondation.name)"
+      :all-role-groups="groupMembersByRole(fondation.enrichedMembers, fondation.id)"
       :committee="fondation"
       section-id="section-fondation"
       title="Fondation de l'école Étoile filante"
@@ -77,7 +77,7 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue'
-  import { FEVES_COMMITTEE_ID, getCommitteeRoleDisplayOrder } from '@/config/committees'
+  import { FEVES_COMMITTEE_ID, getCommitteeRoles } from '@/config/committees'
   import { SCHOOL_LOCATION } from '@/config/school'
   import { SDG_INFO } from '@/config/sdg'
   import { GROUP_DISPLAY_NAMES, GROUP_SUBGROUP_MAPPING, STAFF_GROUPS, SUBGROUP_DISPLAY_NAMES } from '@/config/staffGroups'
@@ -322,7 +322,7 @@
   })))
 
   // Helper: Group members by role
-  function groupMembersByRole (members, committeeName = null) {
+  function groupMembersByRole (members, committeeId) {
     // Group members by role
     const grouped = members.reduce((acc, member) => {
       const role = member.role || ''
@@ -333,36 +333,13 @@
       return acc
     }, {})
 
-    // Get display order for this committee if available
-    const displayOrder = committeeName ? getCommitteeRoleDisplayOrder(committeeName) : null
-
-    let sortedRoles
-    if (displayOrder) {
-      // Sort roles according to the specified display order
-      const roleKeys = Object.keys(grouped)
-      const orderedRoles = []
-      const unorderedRoles = []
-
-      // First, add roles that are in the display order
-      for (const role of displayOrder) {
-        if (roleKeys.includes(role)) {
-          orderedRoles.push(role)
-        }
-      }
-
-      // Then, add any remaining roles alphabetically
-      for (const role of roleKeys) {
-        if (!displayOrder.includes(role)) {
-          unorderedRoles.push(role)
-        }
-      }
-      unorderedRoles.sort()
-
-      sortedRoles = [...orderedRoles, ...unorderedRoles]
-    } else {
-      // Default: sort alphabetically
-      sortedRoles = Object.keys(grouped).toSorted()
-    }
+    // Roles in the committee's order, then any other roles (old data) alphabetically
+    const displayOrder = getCommitteeRoles(committeeId)
+    const roleKeys = Object.keys(grouped)
+    const sortedRoles = [
+      ...displayOrder.filter(role => roleKeys.includes(role)),
+      ...roleKeys.filter(role => !displayOrder.includes(role)).toSorted(),
+    ]
 
     // Convert to array
     return sortedRoles.map(role => ({
@@ -375,7 +352,7 @@
   const committeeRoleGroupsMap = computed(() => {
     const map = {}
     for (const committee of enrichedCommittees.value) {
-      map[committee.id] = groupMembersByRole(committee.enrichedMembers, committee.name)
+      map[committee.id] = groupMembersByRole(committee.enrichedMembers, committee.id)
     }
     return map
   })

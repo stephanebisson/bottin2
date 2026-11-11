@@ -181,6 +181,7 @@
     "presidente": "{{PLURAL:$1|Présidente|Présidentes}}",
     "vice-president": "{{PLURAL:$1|Vice-président|Vice-présidents}}",
     "vice-presidente": "{{PLURAL:$1|Vice-présidente|Vice-présidentes}}",
+    "co-president": "{{PLURAL:$1|Co-président|Co-présidents}}",
     "co-presidente": "{{PLURAL:$1|Co-présidente|Co-présidentes}}",
     "secretaire": "{{PLURAL:$1|Secrétaire|Secrétaires}}",
     "tresorier": "{{PLURAL:$1|Trésorier|Trésoriers}}",

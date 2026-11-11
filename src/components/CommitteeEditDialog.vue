@@ -79,7 +79,7 @@
                     density="compact"
                     :disabled="member.memberType === 'student'"
                     hide-details
-                    :items="roleItems"
+                    :items="roleItemsFor(member.role)"
                     :label="$i18n('common.role')"
                     style="min-width: 150px;"
                     variant="outlined"
@@ -228,18 +228,20 @@
     if (isStudent) newMemberRole.value = STUDENT_MEMBER_ROLE
   })
 
-  // Get available roles for this committee
-  const availableRoles = computed(() => {
-    return getCommitteeRoles(props.committee.name)
-  })
+  // Roles available for this committee
+  const availableRoles = computed(() => getCommitteeRoles(props.committee.id))
 
-  // Get role items with display text for dropdowns
-  const roleItems = computed(() => {
-    return availableRoles.value.map(role => ({
-      value: role,
-      title: getRoleDisplay(role),
-    }))
-  })
+  // Role items with display text for dropdowns
+  const roleItems = computed(() => availableRoles.value.map(role => ({
+    value: role,
+    title: getRoleDisplay(role),
+  })))
+
+  // A member's dropdown keeps their current role even if the committee no longer lists it
+  function roleItemsFor (currentRole) {
+    if (!currentRole || availableRoles.value.includes(currentRole)) return roleItems.value
+    return [...roleItems.value, { value: currentRole, title: getRoleDisplay(currentRole) }]
+  }
 
   // Initialize members data
   async function initializeMembers () {

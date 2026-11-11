@@ -258,7 +258,7 @@
   import CommitteeEditDialog from '@/components/CommitteeEditDialog.vue'
   import HighlightedText from '@/components/HighlightedText.vue'
   import ParentInfo from '@/components/ParentInfo.vue'
-  import { getCommitteeRoleDisplayOrder } from '@/config/committees'
+  import { getCommitteeRoles } from '@/config/committees'
   import { useAuthStore } from '@/stores/auth'
   import { useFirebaseDataStore } from '@/stores/firebaseData'
   import { formatStudentTeacher } from '@/utils/gradeFormatter.js'
@@ -282,6 +282,7 @@
     return firebaseStore.committeesDTO.map(committee => {
       // Enrich members with full information from parents, staff and students
       // memberId is the parent, staff or student document ID
+      const roleOrder = getCommitteeRoles(committee.id)
       const enrichedMembers = committee.members
         .map(member => {
           // Look up by memberId (parent/staff/student document ID)
@@ -342,29 +343,18 @@
           }
         })
         .toSorted((a, b) => {
-          // Get role display order for this committee (if defined)
-          const roleOrder = getCommitteeRoleDisplayOrder(committee.name)
-
           // First sort by member type (parents, then staff, then students, unknown last)
           if (a.memberType !== b.memberType) {
             return MEMBER_TYPE_ORDER.indexOf(a.memberType) - MEMBER_TYPE_ORDER.indexOf(b.memberType)
           }
 
-          // If role order is defined, sort by role order within the same member type
-          if (roleOrder) {
-            const aRoleIndex = roleOrder.indexOf(a.role)
-            const bRoleIndex = roleOrder.indexOf(b.role)
-
-            // If both roles are in the order, sort by their position
-            if (aRoleIndex !== -1 && bRoleIndex !== -1) {
-              return aRoleIndex - bRoleIndex
-            }
-
-            // If only one role is in the order, it comes first
-            if (aRoleIndex !== -1) return -1
-            if (bRoleIndex !== -1) return 1
-
-            // If neither role is in the order, fall through to name sorting
+          // Then by the committee's role order; roles not in it (old data) come last
+          const aRoleIndex = roleOrder.indexOf(a.role)
+          const bRoleIndex = roleOrder.indexOf(b.role)
+          if (aRoleIndex !== bRoleIndex) {
+            if (aRoleIndex === -1) return 1
+            if (bRoleIndex === -1) return -1
+            return aRoleIndex - bRoleIndex
           }
 
           // Then sort by name within the same member type and role order

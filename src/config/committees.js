@@ -19,40 +19,16 @@ export const STUDENT_MEMBER_ROLE = 'Membre'
 export const CHAIR_ROLES = ['Président', 'Présidente', 'Co-président', 'Co-présidente']
 
 /**
- * All available committee roles
- * Sorted alphabetically for easy maintenance
+ * Roles for committees that have no list of their own (including new committees)
  */
-export const ALL_ROLES = [
-  'Administrateur',
-  'Administratrice',
-  'Bénévole',
-  'Co-présidente',
-  'Enseignant',
-  'Enseignante',
-  'Membre',
-  'Membre non votant direction',
-  'Membre parent',
-  'Observateur',
-  'Observatrice',
-  'Porte-parole',
-  'Président',
-  'Présidente',
-  'SDG',
-  'Secrétaire',
-  'Substitut',
-  'Trésorier',
-  'Trésorière',
-  'Vice-président',
-  'Vice-présidente',
-]
+export const DEFAULT_COMMITTEE_ROLES = ['Porte-parole', 'Membre']
 
 /**
- * Display order for roles in specific committees (for print layout)
- * Key: committee name
- * Value: array of role names in the order they should be displayed
- * Roles not listed will appear after the ordered roles in alphabetical order
+ * Roles available in each committee, keyed by committee ID
+ * The order is used both for the role dropdown and for sorting members
+ * Committees not listed use DEFAULT_COMMITTEE_ROLES
  */
-export const COMMITTEE_ROLE_DISPLAY_ORDER = {
+export const COMMITTEE_ROLES = {
   'Conseil d\'établissement': [
     'Président',
     'Présidente',
@@ -67,6 +43,7 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
     'Membre non votant direction',
   ],
   'Fondation': [
+    'Co-président',
     'Co-présidente',
     'Vice-président',
     'Vice-présidente',
@@ -78,35 +55,18 @@ export const COMMITTEE_ROLE_DISPLAY_ORDER = {
     'Observateur',
     'Observatrice',
   ],
+  'Bibliothèque': [
+    'Porte-parole',
+    'Membre',
+    'Bénévole',
+  ],
 }
 
 /**
- * Get display order for roles in a specific committee
- * @param {string} committeeName - Name of the committee
- * @returns {string[] | null} Array of role names in display order, or null if no order is specified
+ * Get the roles of a committee, in display order
+ * @param {string} committeeId - Committee document ID
+ * @returns {string[]} Role names
  */
-export function getCommitteeRoleDisplayOrder (committeeName) {
-  return COMMITTEE_ROLE_DISPLAY_ORDER[committeeName] || null
-}
-
-/**
- * Get valid roles for a specific committee
- * All committees can use any role from the master list
- * @param {string} committeeName - Name of the committee (unused, all committees have same roles)
- * @returns {string[]} Array of valid role names
- */
-// eslint-disable-next-line no-unused-vars
-export function getCommitteeRoles (committeeName) {
-  return ALL_ROLES
-}
-
-/**
- * Check if a role is valid for a specific committee
- * @param {string} committeeName - Name of the committee (unused, all committees have same roles)
- * @param {string} role - Role to validate
- * @returns {boolean} True if role is valid
- */
-
-export function isValidRole (committeeName, role) {
-  return ALL_ROLES.includes(role)
+export function getCommitteeRoles (committeeId) {
+  return COMMITTEE_ROLES[committeeId] ?? DEFAULT_COMMITTEE_ROLES
 }
