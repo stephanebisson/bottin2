@@ -55,6 +55,13 @@ export const COMMITTEE_ROLES = {
     'Observateur',
     'Observatrice',
   ],
+  [FEVES_COMMITTEE_ID]: [
+    'Porte-parole',
+    'Liaison OPP',
+    'Liaison direction',
+    'Liaison parents',
+    'Membre',
+  ],
   'Bibliothèque': [
     'Porte-parole',
     'Membre',
