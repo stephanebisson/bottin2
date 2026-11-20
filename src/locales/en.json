@@ -601,7 +601,8 @@
       "logs": {
         "send_update_email": "Link sent",
         "opt_out_parent": "Opted out",
-        "remove_parent": "Removed"
+        "remove_parent": "Removed",
+        "restore_previous_submission": "Previous submission"
       },
       "emailStatusOptions": {
         "all": "All",
@@ -695,6 +696,7 @@
         "send_update_email": "Link sent",
         "opt_out_parent": "Parent opted out",
         "remove_parent": "Parent removed",
+        "restore_previous_submission": "Previous year submission",
         "progress_student": "Student progressed",
         "graduate_student": "Student graduated",
         "depart_student": "Student departed",

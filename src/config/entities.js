@@ -24,6 +24,7 @@ export const ACTION_COLORS = {
   send_update_email: 'info',
   opt_out_parent: 'warning',
   remove_parent: 'error',
+  restore_previous_submission: 'success',
   progress_student: 'success',
   graduate_student: 'secondary',
   depart_student: 'error',

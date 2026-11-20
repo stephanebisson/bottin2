@@ -608,7 +608,8 @@
       "logs": {
         "send_update_email": "Lien envoyé",
         "opt_out_parent": "Retiré",
-        "remove_parent": "Supprimé"
+        "remove_parent": "Supprimé",
+        "restore_previous_submission": "Soumission précédente"
       },
       "emailStatusOptions": {
         "all": "Tous",
@@ -702,6 +703,7 @@
         "send_update_email": "Lien envoyé",
         "opt_out_parent": "Parent retiré",
         "remove_parent": "Parent supprimé",
+        "restore_previous_submission": "Soumission d'une année précédente",
         "progress_student": "Élève progressé",
         "graduate_student": "Élève diplômé",
         "depart_student": "Élève parti",
